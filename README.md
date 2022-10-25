@@ -14,8 +14,8 @@ Mock frameworks can be useful for writing fast unit tests, especially for testin
 The sample code in this project will illustrate techniques for creating automated tests in several languages. The initial samples are written in Python and we will publish samples in other languages over time. The samples demonstrate a variety of approaches including testing in the cloud, mocking and emulation. 
 
 - [Python Samples](./python-test-samples/)
-- Java Sample (coming soon)
-- .NET Sample (coming soon)
-- TypeScript Sample (coming soon)
-- Go Sample (coming soon)
+- Java Samples (coming soon)
+- .NET Samples (coming soon)
+- TypeScript Samples (coming soon)
+- Go Samples (coming soon)
 
