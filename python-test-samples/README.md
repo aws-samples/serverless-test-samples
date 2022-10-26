@@ -1,10 +1,10 @@
 # Python Test Samples
 
-This project contains automated test sample code samples for serverless applications. The project uses the [AWS Serverless Application Model](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) (SAM) CLI for configuration, testing and deployment. 
+This project contains code samples for testing serverless applications using Python. 
 
 ## Basic Examples
 * [python-test-intro](./python-test-intro) : This folder contains introductory examples of Python tests written for AWS Lambda. This is the best place to start!
-* [python-test-layer](./python-test-layer) : This folder contains unit tests of for Lambda layers utilizing mocks.
+* [python-test-layer](./python-test-layer) : This folder contains unit tests for Lambda layers utilizing mocks.
 
 ## API Tests
 These projects have excellent examples of unit and integration tests for API based applications. 
