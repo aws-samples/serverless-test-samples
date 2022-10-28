@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "axios": "^1.1.3"
+  }
+}
