@@ -98,7 +98,7 @@ describe('list-buckets', () => {
             expect(result.body).toEqual('');
         });
         it('returns failure code and empty list for error getting bucket list', async () => {
-            s3Mock.on(ListBucketsCommand).rejects({ message: 'Filed to list buckets' });
+            s3Mock.on(ListBucketsCommand).rejects({ message: 'Failed to list buckets' });
             const result: APIGatewayProxyResult = await listBucketsLambdaHandler(inputEvent);
             expect(result.statusCode).toBe(500);
             expect(result.body).toBe('');
