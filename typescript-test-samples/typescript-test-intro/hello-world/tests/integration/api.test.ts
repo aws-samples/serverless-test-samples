@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT-0
 
 import axios from 'axios';
-import { beforeAll, it, expect } from '@jest/globals';
+import { describe, beforeAll, it, expect } from '@jest/globals';
 
 let baseApiUrl: string;
 
@@ -14,8 +14,10 @@ beforeAll(() => {
     }
 });
 
-it('should return sucess code for http get', async () => {
-    console.log(`${baseApiUrl}/hello`);
-    const response = await axios.get(`${baseApiUrl}/hello`);
-    expect(response.status).toBe(200);
+describe('Integration test for hello endpoint', () => {
+    it('should return sucess code for http get', async () => {
+        console.log(`${baseApiUrl}/hello`);
+        const response = await axios.get(`${baseApiUrl}/hello`);
+        expect(response.status).toBe(200);
+    });
 });
