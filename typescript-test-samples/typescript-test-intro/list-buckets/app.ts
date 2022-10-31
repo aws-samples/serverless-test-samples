@@ -16,7 +16,7 @@ const s3Client = new S3Client({ region: region });
  * @returns {Object} object - API Gateway Lambda Proxy Output Format
  *
  */
-export const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+export const listBucketsLambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     try {
         console.log('Called with event', event);
 
@@ -25,6 +25,7 @@ export const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGat
         if (listBucketsOutput.Buckets) {
             bucketList = listBucketsOutput.Buckets?.map((bucket) => bucket.Name).join(' | ');
         }
+
         console.log('Bucket list created');
 
         return {

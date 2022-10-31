@@ -16,8 +16,8 @@ beforeAll(() => {
 
 describe('Integration test for hello endpoint', () => {
     it('should return sucess code for http get', async () => {
-        console.log(`${baseApiUrl}/hello`);
-        const response = await axios.get(`${baseApiUrl}/hello`);
+        console.log(`${baseApiUrl}/buckets`);
+        const response = await axios.get(`${baseApiUrl}/buckets`);
         expect(response.status).toBe(200);
     });
 });

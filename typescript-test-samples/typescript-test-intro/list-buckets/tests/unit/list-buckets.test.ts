@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT-0
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { lambdaHandler } from '../../app';
+import { listBucketsLambdaHandler } from '../../app';
 import { beforeEach, beforeAll, describe, it, expect } from '@jest/globals';
 import { mockClient } from 'aws-sdk-client-mock';
 import { S3Client, ListBucketsCommand } from '@aws-sdk/client-s3';
@@ -70,19 +70,19 @@ beforeEach(() => {
 describe('Unit test for app handler', () => {
     it('returns success code and concatenated list for nonempty bucket list', async () => {
         s3Mock.on(ListBucketsCommand).resolves({ Buckets: [{ Name: 'test1' }, { Name: 'test2' }] });
-        const result: APIGatewayProxyResult = await lambdaHandler(inputEvent);
+        const result: APIGatewayProxyResult = await listBucketsLambdaHandler(inputEvent);
         expect(result.statusCode).toBe(200);
         expect(result.body).toEqual('test1 | test2');
     });
     it('returns success code and empty list for empty bucket list', async () => {
         s3Mock.on(ListBucketsCommand).resolves({});
-        const result: APIGatewayProxyResult = await lambdaHandler(inputEvent);
+        const result: APIGatewayProxyResult = await listBucketsLambdaHandler(inputEvent);
         expect(result.statusCode).toBe(200);
         expect(result.body).toEqual('');
     });
     it('returns failure code and empty list for error getting bucket list', async () => {
         s3Mock.on(ListBucketsCommand).rejects({ message: 'Filed to list buckets' });
-        const result: APIGatewayProxyResult = await lambdaHandler(inputEvent);
+        const result: APIGatewayProxyResult = await listBucketsLambdaHandler(inputEvent);
         expect(result.statusCode).toBe(500);
         expect(result.body).toBe('');
     });
