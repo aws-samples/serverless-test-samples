@@ -10,3 +10,8 @@ This portion of the repository contains the test samples for Java based serverle
 * [S3 Triggering Lambda Function](./s3-trigger-lambda)
 * [SNS Triggering Lambda Function](./sns-trigger-lambda)
 * [SQS Triggering Lambda Function](./sqs-trigger-lambda)
+
+## Coming Soon
+* [S3 Triggering Lambda Function](./s3-trigger-lambda)
+* [SNS Triggering Lambda Function](./sns-trigger-lambda)
+* [SQS Triggering Lambda Function](./sqs-trigger-lambda)
