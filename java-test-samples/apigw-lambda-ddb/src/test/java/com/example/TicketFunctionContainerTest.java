@@ -99,4 +99,23 @@ public class TicketFunctionContainerTest {
     }
   }
 
+  @ParameterizedTest
+  @Event(value = "events/apigw_request_nobody.json", type = APIGatewayProxyRequestEvent.class)
+  public void testPutTicketBadRequest(APIGatewayProxyRequestEvent event) {
+    try {
+      TicketFunction function = new TicketFunction();
+      //Use Reflection to inject private field
+      Field field = TicketFunction.class.getDeclaredField("ddbUtils");
+      field.setAccessible(true);
+      field.set(function, ddbUtils);
+
+      APIGatewayProxyResponseEvent response = function.handleRequest(event, null);
+      Assertions.assertNotNull(response);
+      Assertions.assertNull(response.getBody());
+    } catch (Exception e) {
+      e.printStackTrace();
+      Assertions.fail();
+    }
+  }
+
 }

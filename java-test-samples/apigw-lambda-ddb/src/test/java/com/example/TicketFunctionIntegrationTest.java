@@ -32,7 +32,6 @@ public class TicketFunctionIntegrationTest {
 
   @SystemStub
   private EnvironmentVariables environmentVariables;
-  public static final String DB_TABLE = "tickets";
 
   private final DynamoDbClient ddbClient = DynamoDbClient.builder()
     .region(Region.US_EAST_1)
@@ -66,6 +65,20 @@ public class TicketFunctionIntegrationTest {
       Assertions.assertNotNull(uuidStr);
       ticketList.add(uuidStr.substring(1, uuidStr.length() - 1));
       DynamoTestUtil.validateItems(ticketList, ddbClient);
+    } catch (Exception e) {
+      e.printStackTrace();
+      Assertions.fail();
+    }
+  }
+
+  @ParameterizedTest
+  @Event(value = "events/apigw_request_nobody.json", type = APIGatewayProxyRequestEvent.class)
+  public void testPutTicketBadRequest(APIGatewayProxyRequestEvent event, EnvironmentVariables environmentVariables) {
+    try {
+      TicketFunction function = new TicketFunction();
+      APIGatewayProxyResponseEvent response = function.handleRequest(event, null);
+      Assertions.assertNotNull(response);
+      Assertions.assertNull(response.getBody());
     } catch (Exception e) {
       e.printStackTrace();
       Assertions.fail();
