@@ -247,5 +247,14 @@ $RECYCLE.BIN/
 samconfig.toml
 .DS_Store
 
+/java-test-samples/.idea/
+/java-test-samples/HelloWorldFunction/target/
+/java-test-samples/apigw-lambda-dynamodb/target/
+/.idea/
+**/samconfig.toml
+/java-test-samples/apigw-lambda-ddb/apigw-lambda-ddb.iml
+**/*.iml
+/java-test-samples/apigw-lambda-list-s3-buckets/target/
+
 # End of https://www.gitignore.io/api/osx,linux,python,windows,pycharm,visualstudiocode
 
