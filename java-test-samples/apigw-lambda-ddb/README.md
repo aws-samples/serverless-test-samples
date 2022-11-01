@@ -32,7 +32,6 @@ the request will be intercepted by the Lambda function which will persist the ob
 
 The lambda function will return the ID of the inserted object.
 
-
 ## Deployment commands
 
 ````
@@ -82,11 +81,3 @@ aws cloudformation delete-stack --stack-name ticket-stack
 * [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html) installed and configured
 * [Git Installed](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 * [AWS Serverless Application Model](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html) (AWS SAM) installed
-
-
-
-## Author bio
-Razvan Minciuna
-https://www.linkedin.com/in/razvanminciuna/
-Software Architect
-
