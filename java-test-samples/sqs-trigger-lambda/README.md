@@ -1,0 +1,1 @@
+## SQS Triggering Lambda Function Sample
