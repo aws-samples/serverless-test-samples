@@ -20,10 +20,10 @@ import org.testcontainers.utility.DockerImageName;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
+import software.amazon.awssdk.http.HttpStatusCode;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,11 +31,11 @@ import static org.testcontainers.containers.localstack.LocalStackContainer.Servi
 
 @Testcontainers
 public class TicketFunctionContainerTest {
-  private static DDBUtils ddbUtils;
-  private static DynamoDbClient ddbClient;
   private static final DockerImageName localStackImage = DockerImageName.parse("localstack/localstack:0.14.3");
   @Container
   public static final LocalStackContainer localstack = new LocalStackContainer(localStackImage).withServices(DYNAMODB);
+  private static DDBUtils ddbUtils;
+  private static DynamoDbClient ddbClient;
   private List<String> ticketList = new ArrayList<>();
 
   @BeforeAll
@@ -58,16 +58,7 @@ public class TicketFunctionContainerTest {
       .dynamoDbClient(ddbClient)
       .build();
 
-    ddbUtils = new DDBUtils();
-    //Use Reflection to inject private field
-    try {
-      Field field = DDBUtils.class.getDeclaredField("enhancedClient");
-      field.setAccessible(true);
-      field.set(ddbUtils, enhancedClient);
-    } catch (Exception e) {
-      e.printStackTrace();
-      Assertions.fail();
-    }
+    ddbUtils = new DDBUtils(enhancedClient);
   }
 
   @AfterAll
@@ -80,12 +71,7 @@ public class TicketFunctionContainerTest {
   @Event(value = "events/apigw_request_1.json", type = APIGatewayProxyRequestEvent.class)
   public void testPutTicket(APIGatewayProxyRequestEvent event) {
     try {
-      TicketFunction function = new TicketFunction();
-      //Use Reflection to inject private field
-      Field field = TicketFunction.class.getDeclaredField("ddbUtils");
-      field.setAccessible(true);
-      field.set(function, ddbUtils);
-
+      TicketFunction function = new TicketFunction(ddbUtils);
       APIGatewayProxyResponseEvent response = function.handleRequest(event, null);
       Assertions.assertNotNull(response);
       Assertions.assertNotNull(response.getBody());
@@ -103,15 +89,10 @@ public class TicketFunctionContainerTest {
   @Event(value = "events/apigw_request_nobody.json", type = APIGatewayProxyRequestEvent.class)
   public void testPutTicketBadRequest(APIGatewayProxyRequestEvent event) {
     try {
-      TicketFunction function = new TicketFunction();
-      //Use Reflection to inject private field
-      Field field = TicketFunction.class.getDeclaredField("ddbUtils");
-      field.setAccessible(true);
-      field.set(function, ddbUtils);
-
+      TicketFunction function = new TicketFunction(ddbUtils);
       APIGatewayProxyResponseEvent response = function.handleRequest(event, null);
       Assertions.assertNotNull(response);
-      Assertions.assertNull(response.getBody());
+      Assertions.assertEquals(HttpStatusCode.BAD_REQUEST, response.getStatusCode());
     } catch (Exception e) {
       e.printStackTrace();
       Assertions.fail();

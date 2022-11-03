@@ -77,20 +77,20 @@ These tests are run while packaging the lambda function using `mvn clean package
 ### Types of Automated Tests
 The sample includes the following tests:
 
-#### Unit Test (TicketFunctionMockTest.java)
+#### Unit Test ([TicketFunctionMockTest.java](src/test/java/com/example/TicketFunctionMockTest.java))
 The goal of this test is to run a unit test on the handler method of the Lambda function. It uses [Mockito](https://site.mockito.org/) as a mocking framework. All the calls to the Amazon DynamoDB service are mocked using Mockito. 
 It also uses [aws-lambda-java-test](https://github.com/aws/aws-lambda-java-libs/tree/master/aws-lambda-java-tests) library. This library helps 
 to easily inject `APIGatewayProxyRequestEvent` into the Lambda function's handler method. To know more about how to leverage `aws-lambda-java-test` you can refer to [this](https://aws.amazon.com/blogs/opensource/testing-aws-lambda-functions-written-in-java/) blog.
 
-#### Integration Test (TicketFunctionIntegrationTest.java)
+#### Integration Test ([TicketFunctionIntegrationTest.java](src/test/java/com/example/TicketFunctionIntegrationTest.java))
 The goal of this test is to demonstrate a test that runs the Lambda function's code locally without mocking any calls to the Amazon DynamoDB service. It assumes that [AWS CLI](https://aws.amazon.com/cli/) is installed locally and that AWS Credentials are stored in ~/.aws/credentials file with default profile.
 If your local AWS CLI configuration is different, please update the tests accordingly.
 
-#### Local Test using containers (TicketFunctionContainerTest.java)
+#### Local Test using containers ([TicketFunctionContainerTest.java](src/test/java/com/example/TicketFunctionContainerTest.java))
 The goal of this test is to demonstrate a test that simulates AWS services locally using [localstack](https://github.com/localstack/localstack).  This test uses containers and requires [Docker](https://docs.docker.com/get-docker/) installed locally.
 Similar to the integration test above, this test runs Lambda function's code locally but, it integrates with the DynamoDB service that is part of the localstack container image which is running on the local machine. 
 
-#### End-to-End Test (TicketEnd2EndTest.java)
+#### End-to-End Test ([TicketEnd2EndTest.java](src/test/java/com/example/TicketEnd2EndTest.java))
 The goal of this test is to run an end-to-end test on AWS. This test assumes the sample stack provided in the sample is deployed to AWS. The stack name is referred in the test class as a String constant.
 ```
 private static final String STACK_NAME = "APIGW-Lambda-DDB-Sample";

@@ -15,32 +15,48 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import software.amazon.awssdk.http.HttpStatusCode;
 
 public class TicketFunction implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
-    Logger logger = LoggerFactory.getLogger(TicketFunction.class);
-    ObjectMapper mapper = new ObjectMapper();
-    DDBUtils ddbUtils = new DDBUtils();
+  private Logger logger = LoggerFactory.getLogger(TicketFunction.class);
+  private ObjectMapper mapper = new ObjectMapper();
+  private DDBUtils ddbUtils;
 
-    @Override
-    public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent event, Context context) {
-
-        APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
-
-        String ticketId = "";
-        try {
-            Ticket ticket = mapper.readValue(event.getBody(), Ticket.class);
-
-            logger.info("[ticket userId] " + ticket.getUserId());
-            logger.info("[ticket description] " + ticket.getDescription());
-
-            ticketId = ddbUtils.persistTicket(ticket);
-
-            response.setBody(mapper.writeValueAsString(ticketId));
-
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        return response;
+  public TicketFunction(DDBUtils ddbUtils) {
+    if (ddbUtils == null) {
+      this.ddbUtils = new DDBUtils();
+    } else {
+      this.ddbUtils = ddbUtils;
     }
+  }
+
+  public TicketFunction() {
+    this(null);
+  }
+
+  @Override
+  public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent event, Context context) {
+
+    APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
+
+    String ticketId = "";
+    try {
+      Ticket ticket = mapper.readValue(event.getBody(), Ticket.class);
+
+      logger.info("[ticket userId] " + ticket.getUserId());
+      logger.info("[ticket description] " + ticket.getDescription());
+
+      ticketId = ddbUtils.persistTicket(ticket);
+      response.setBody(mapper.writeValueAsString(ticketId));
+
+    } catch (JsonProcessingException e) {
+      logger.error("Error creating new ticket ", e);
+      response.setStatusCode(HttpStatusCode.BAD_REQUEST);
+    } catch (Exception e) {
+      logger.error("Error creating new ticket ", e);
+      response.setStatusCode(HttpStatusCode.INTERNAL_SERVER_ERROR);
+    }
+    return response;
+  }
 }
