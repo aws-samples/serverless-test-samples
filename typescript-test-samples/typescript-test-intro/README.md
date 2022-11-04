@@ -1,47 +1,71 @@
 # typescript-test-intro
 
+This project contains automated test sample code samples for serverless applications written in TypeScript. The project demonstrates several techniques for executing tests including mocking, emulation and testing in the cloud. Based on current tooling, we recommend customers **focus on testing in the cloud** as much as possible. 
+
+## Testing in the Cloud
+
+While testing in the cloud may create additional developer latency, increase costs, and require some customers to invest in additional dev-ops controls, this technique provides the most reliable, accurate, and complete test coverage. Performing tests in the context of the cloud allows you to test IAM policies, service configurations, quotas, and the most up to date API signatures and return values. Tests run in the cloud are most likely to produce consistent results as your code is promoted from environment to environment.
+
+## Project contents
+
+The project uses the [AWS Serverless Application Model](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) (SAM) CLI for configuration, testing and deployment. 
+
+- [Project contents](#project-contents)
+- [Prerequisites](#prerequisites)
+- [Build and deploy with the SAM CLI](#build-and-deploy-with-the-sam-cli)
+- [Working with events](#working-with-events)
+- [Working with local emulators](#working-with-local-emulators)
+- [Use the SAM Lambda emulator](#use-the-sam-lambda-emulator)
+- [Use the SAM API Gateway emulator](#use-the-sam-api-gateway-emulator)
+- [Run a unit test using a mock framework](#run-a-unit-test-using-a-mock-framework)
+- [Run integration tests against cloud resources](#run-integration-tests-against-cloud-resources)
+- [Invoke a Lambda function in the cloud](#invoke-a-lambda-function-in-the-cloud)
+- [Fetch, tail, and filter Lambda function logs locally](#fetch-tail-and-filter-lambda-function-logs-locally)
+- [Use SAM Accerate to speed up feedback cycles](#use-sam-accerate-to-speed-up-feedback-cycles)
+- [Implement application tracing](#implement-application-tracing)
+- [Perform a load test](#perform-a-load-test)
+- [Cleanup](#cleanup)
+- [Additional Resources](#additional-resources)
+
 This project contains source code and supporting files for a serverless application that you can deploy with the SAM CLI. It includes the following files and folders.
 
-- hello-world - Code for the application's Lambda function written in TypeScript.
-- events - Invocation events that you can use to invoke the function.
-- hello-world/tests - Unit tests for the application code. 
+- list-buckets - Code for the application's Lambda function.
+- list-buckets/tests - Unit and integration tests for the application code. 
+- events - synthetic events that you can use to invoke the function.
 - template.yaml - A template that defines the application's AWS resources.
 
 The application uses several AWS resources, including Lambda functions and an API Gateway API. These resources are defined in the `template.yaml` file in this project. You can update the template to add AWS resources through the same deployment process that updates your application code.
 
-If you prefer to use an integrated development environment (IDE) to build and test your application, you can use the AWS Toolkit.  
-The AWS Toolkit is an open source plug-in for popular IDEs that uses the SAM CLI to build and deploy serverless applications on AWS. The AWS Toolkit also adds a simplified step-through debugging experience for Lambda function code. See the following links to get started.
+## Prerequisites
 
-* [CLion](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [GoLand](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [IntelliJ](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [WebStorm](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [Rider](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [PhpStorm](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [PyCharm](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [RubyMine](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [DataGrip](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [VS Code](https://docs.aws.amazon.com/toolkit-for-vscode/latest/userguide/welcome.html)
-* [Visual Studio](https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/welcome.html)
-
-## Deploy the sample application
-
-The Serverless Application Model Command Line Interface (SAM CLI) is an extension of the AWS CLI that adds functionality for building and testing Lambda applications. It uses Docker to run your functions in an Amazon Linux environment that matches Lambda. It can also emulate your application's build environment and API.
+The SAM CLI is an extension of the AWS CLI that adds functionality for building and testing serverless applications. It contains features for building your appcation locally, deploying it to AWS, and emulating AWS services locally to support automated unit tests.  
 
 To use the SAM CLI, you need the following tools.
 
 * SAM CLI - [Install the SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
-* Node.js - [Install Node.js 16](https://nodejs.org/en/), including the NPM package management tool.
+* Python 3 - [Install Python 3](https://www.python.org/downloads/)
 * Docker - [Install Docker community edition](https://hub.docker.com/search/?type=edition&offering=community)
 
-To build and deploy your application for the first time, run the following in your shell:
+[[top]](#typescript-test-intro)
+
+## Build and deploy with the SAM CLI
+
+Use the following command to build your application locally: 
 
 ```bash
-sam build
-sam deploy --guided
+# build your application locally
+typescript-test-intro$ sam build
+```
+The SAM CLI installs dependencies defined in `list-buckets/package.json`, creates a deployment package, and saves it in the `.aws-sam/build` folder. [Read the documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-building.html).
+
+Use the following command to deploy your application package to AWS: 
+
+``` bash
+# deploy your application to the AWS cloud 
+typescript-test-intro$ sam deploy --guided
 ```
 
-The first command will build the source of your application. The second command will package and deploy your application to AWS, with a series of prompts:
+The second command will package and deploy your application to AWS, with a series of prompts:
 
 * **Stack Name**: The name of the stack to deploy to CloudFormation. This should be unique to your account and region, and a good starting point would be something matching your project name.
 * **AWS Region**: The AWS region you want to deploy your app to.
@@ -49,9 +73,36 @@ The first command will build the source of your application. The second command 
 * **Allow SAM CLI IAM role creation**: Many AWS SAM templates, including this example, create AWS IAM roles required for the AWS Lambda function(s) included to access AWS services. By default, these are scoped down to minimum required permissions. To deploy an AWS CloudFormation stack which creates or modifies IAM roles, the `CAPABILITY_IAM` value for `capabilities` must be provided. If permission isn't provided through this prompt, to deploy this example you must explicitly pass `--capabilities CAPABILITY_IAM` to the `sam deploy` command.
 * **Save arguments to samconfig.toml**: If set to yes, your choices will be saved to a configuration file inside the project, so that in the future you can just re-run `sam deploy` without parameters to deploy changes to your application.
 
-You can find your API Gateway Endpoint URL in the output values displayed after deployment.
+You can find your API Gateway Endpoint URL in the output values displayed after deployment. Take note of this URL for use in the testing section below. On subsequent deploys you can run `sam deploy` without the `--guided` flag. [Read the documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-deploying.html).
 
-## Use the SAM CLI to build and test locally
+[[top]](#typescript-test-intro)
+
+## Working with events
+
+Testing event driven architectures often requires working with synthetic events. Events are frequently defined as JSON documents. Synthetic events are test data that represent the payloads AWS sends between service integrations, such as a requests from API Gateway or a messages from SQS.
+
+AWS Lambda always requires an event during invocation. A sample test event is included in the `events` folder in this project. SAM provides the capability of generating additional synthetic events for a variety of AWS services. [Read the documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-cli-command-reference-sam-local-generate-event.html).
+
+Use the following command to learn more about generating synthetic events:
+```bash
+# generate a synthetic event
+typescript-test-intro$ sam local generate-event
+```
+[[top]](#typescript-test-intro)
+
+## Working with local emulators
+
+Local emulation of AWS services offers a simple way to build and test cloud native applications using local resources. Local emulation can speed up the build and deploy cycle creating faster feedback loops for application developers. 
+
+Local emulation has several limitations. Cloud services evolve rapidly, so local emulators are unlikely to have feature parity with their counterpart services in the cloud. Local emulators may not be able to provide an accurate representation of IAM permissions or service quotas. Local emulators do not exist for every AWS service.
+
+SAM provides local emulation features for [AWS Lambda](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-using-invoke.html) and [Amazon API Gateway](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-using-start-api.html). AWS provides [Amazon DynamoDB Local](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.html) as well as [AWS Step Functions Local](https://docs.aws.amazon.com/step-functions/latest/dg/sfn-local.html). Third party vendors like [LocalStack](https://docs.localstack.cloud/overview/) may provide emulation for additional AWS services. 
+
+This project demonstrates local emulation of Lambda and API Gateway with SAM.
+
+## Use the SAM Lambda emulator
+
+The SAM CLI can emulate a Lambda function inside a Docker container deployed to your local desktop. To use this feature, invoke the function with the `sam local invoke` command passing a synthetic event. Print statements log to standard out. [Read the documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-using-invoke.html).
 
 Build your application with the `sam build` command.
 
@@ -66,29 +117,84 @@ Test a single function by invoking it directly with a test event. An event is a 
 Run functions locally and invoke them with the `sam local invoke` command.
 
 ```bash
-typescript-test-intro$ sam local invoke HelloWorldFunction --event events/event.json
+typescript-test-intro$ sam local invoke ListBucketsFunction --event events/event.json
 ```
+
+The `sam local start-lambda` command starts a local endpoint that emulates the AWS Lambda invoke endpoint. You can invoke it from your automated tests. Because this endpoint emulates the AWS Lambda invoke endpoint, you can write tests and then run them against the local Lambda emulator. You can also run the same tests against a deployed AWS SAM stack in your CI/CD pipeline. [Read the documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-using-automated-tests.html).
+
+```bash
+# start a local emulator for a Lambda function endpoint
+typescript-test-intro$ sam local start-lambda
+```
+
+```bash
+# run a unit test in a separate terminal
+typescript-test-intro/list-buckets$ npm test NEED_TEST_NAME_HERE
+```
+
+[[top]](#typescript-test-intro)
+
+## Use the SAM API Gateway emulator
 
 The SAM CLI can also emulate your application's API. Use the `sam local start-api` to run the API locally on port 3000.
 
 ```bash
 typescript-test-intro$ sam local start-api
-typescript-test-intro$ curl http://localhost:3000/
+```
+
+```bash
+# make a request to the endpoint in a separate terminal
+python-test-intro$ curl http://localhost:3000/buckets
 ```
 
 The SAM CLI reads the application template to determine the API's routes and the functions that they invoke. The `Events` property on each function's definition includes the route and method for each path.
 
 ```yaml
       Events:
-        HelloWorld:
+        ListBuckets:
           Type: Api
           Properties:
-            Path: /hello
+            Path: /buckets
             Method: get
 ```
 
-## Add a resource to your application
-The application template uses AWS Serverless Application Model (AWS SAM) to define application resources. AWS SAM is an extension of AWS CloudFormation with a simpler syntax for configuring common serverless application resources such as functions, triggers, and APIs. For resources not included in [the SAM specification](https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md), you can use standard [AWS CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html) resource types.
+## Run a unit test using a mock framework
+
+Lambda functions frequently call other AWS or 3rd party services. Mock frameworks are useful to simulate service responses. Mock frameworks can speed the development process by enabling rapid feedback iterations. Mocks can be particularly useful for testing failure cases when testing these branches of logic are difficult to do in the cloud.
+
+This project uses mocks to test the internal logic of a Lambda function. 
+The project uses the [aws-sdk-client-mock](https://m-radzikowski.github.io/aws-sdk-client-mock/) dependency library to mock an external service call to Amazon S3. The `aws-sdk-client-mock` library can simulate responses from [AWS services](https://m-radzikowski.github.io/aws-sdk-client-mock/#mock), or for specific client instances. Tests with mocks are defined in the `tests/unit` folder. Use `npm` to install test dependencies and `jest` to run the unit test.
+
+```bash
+# install dependencies
+typescript-test-intro/list-buckets$ npm install
+
+# run unit tests with mocks
+typescript-test-intro/list-buckets$ npm test unit
+```
+
+[[top]](#typescript-test-intro)
+
+## Run integration tests against cloud resources
+
+Integration tests run against deployed cloud resources. Since local unit tests cannot adequately test IAM permissions or other policy configurations, our integration tests confirm that permissions are properly configured. Run integration tests against your deployed cloud resources with the following command:
+
+```bash
+# Set the environment variable AWS_SAM_STACK_NAME to the name of the stack you specified during deploy
+typescript-test-intro$ API_URL=...PULL URL SOMEHOW... npm test integration
+```
+
+[[top]](#typescript-test-intro)
+
+## Invoke a Lambda function in the cloud
+The `AWS CLI` enables you to invoke a Lambda function in the cloud.
+
+```bash
+# invoke a Lambda function in the cloud using the AWS CLI
+aws lambda invoke --function-name PULL URL SOMEHOW outfile.txt
+```
+
+[[top]](#typescript-test-intro)
 
 ## Fetch, tail, and filter Lambda function logs
 
@@ -97,20 +203,26 @@ To simplify troubleshooting, SAM CLI has a command called `sam logs`. `sam logs`
 `NOTE`: This command works for all AWS Lambda functions; not just the ones you deploy using SAM.
 
 ```bash
-typescript-test-intro$ sam logs -n HelloWorldFunction --stack-name typescript-test-intro --tail
+typescript-test-intro$ sam logs -n ListBucketsFunction --stack-name typescript-test-intro --tail
 ```
 
 You can find more information and examples about filtering Lambda function logs in the [SAM CLI Documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-logging.html).
 
-## Unit tests
+[[top]](#typescript-test-intro)
 
-Tests are defined in the `hello-world/tests` folder in this project. Use NPM to install the [Jest test framework](https://jestjs.io/) and run unit tests.
+## Use SAM Accerate to speed up feedback cycles
+
+AWS SAM Accelerate is a set of features that reduces deployment latency and enable developers to test their code quickly against production AWS services in the cloud.
+[Read the blog post](https://aws.amazon.com/blogs/compute/accelerating-serverless-development-with-aws-sam-accelerate/)
 
 ```bash
-typescript-test-intro$ cd hello-world
-hello-world$ npm install
-hello-world$ npm run test
+# synchronize local code with the cloud
+typescript-test-intro$ sam sync --watch --stack-name typescript-test-intro
 ```
+
+AWS Cloud Development Kit (CDK) has a similar synchronization feature, `cdk watch`. To learn more about `cdk watch` read this [blog post](https://aws.amazon.com/blogs/developer/increasing-development-speed-with-cdk-watch/). 
+
+[[top]](#typescript-test-intro)
 
 ## Cleanup
 
