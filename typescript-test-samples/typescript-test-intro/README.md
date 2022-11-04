@@ -100,38 +100,6 @@ SAM provides local emulation features for [AWS Lambda](https://docs.aws.amazon.c
 
 This project demonstrates local emulation of Lambda and API Gateway with SAM.
 
-## Use the SAM Lambda emulator
-
-The SAM CLI can emulate a Lambda function inside a Docker container deployed to your local desktop. To use this feature, invoke the function with the `sam local invoke` command passing a synthetic event. Print statements log to standard out. [Read the documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-using-invoke.html).
-
-Build your application with the `sam build` command.
-
-```bash
-typescript-test-intro$ sam build
-```
-
-The SAM CLI installs dependencies defined in `hello-world/package.json`, compiles TypeScript with esbuild, creates a deployment package, and saves it in the `.aws-sam/build` folder.
-
-Test a single function by invoking it directly with a test event. An event is a JSON document that represents the input that the function receives from the event source. Test events are included in the `events` folder in this project.
-
-Run functions locally and invoke them with the `sam local invoke` command.
-
-```bash
-typescript-test-intro$ sam local invoke ListBucketsFunction --event events/event.json
-```
-
-The `sam local start-lambda` command starts a local endpoint that emulates the AWS Lambda invoke endpoint. You can invoke it from your automated tests. Because this endpoint emulates the AWS Lambda invoke endpoint, you can write tests and then run them against the local Lambda emulator. You can also run the same tests against a deployed AWS SAM stack in your CI/CD pipeline. [Read the documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-using-automated-tests.html).
-
-```bash
-# start a local emulator for a Lambda function endpoint
-typescript-test-intro$ sam local start-lambda
-```
-
-```bash
-# run a unit test in a separate terminal
-typescript-test-intro/list-buckets$ npm test NEED_TEST_NAME_HERE
-```
-
 [[top]](#typescript-test-intro)
 
 ## Use the SAM API Gateway emulator
