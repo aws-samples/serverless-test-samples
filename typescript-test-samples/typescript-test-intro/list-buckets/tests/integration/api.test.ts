@@ -6,7 +6,7 @@
  *
  * Integration tests for the app's HTTP API.
  *
- * These tests exercise how the system's component work together, verifying
+ * These tests exercise how the system's components work together, verifying
  * that they've been configured to provide the result we're expecting. Besides
  * making sure that they're referencing each other correctly, this also verifies
  * that the security polices between components will allow the actions we expect.
