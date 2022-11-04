@@ -72,7 +72,7 @@ The second command will package and deploy your application to AWS, with a serie
 * **Allow SAM CLI IAM role creation**: Many AWS SAM templates, including this example, create AWS IAM roles required for the AWS Lambda function(s) included to access AWS services. By default, these are scoped down to minimum required permissions. To deploy an AWS CloudFormation stack which creates or modifies IAM roles, the `CAPABILITY_IAM` value for `capabilities` must be provided. If permission isn't provided through this prompt, to deploy this example you must explicitly pass `--capabilities CAPABILITY_IAM` to the `sam deploy` command.
 * **Save arguments to samconfig.toml**: If set to yes, your choices will be saved to a configuration file inside the project, so that in the future you can just re-run `sam deploy` without parameters to deploy changes to your application.
 
-You can find your API Gateway Endpoint URL in the output values displayed after deployment. Take note of this URL for use in the testing section below. On subsequent deploys you can run `sam deploy` without the `--guided` flag. [Read the documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-deploying.html).
+You can find your API Gateway Endpoint URL in the output values displayed after deployment. Take note of this URL for use in the [integration testing section](run-integration-tests-against-cloud-resources) below. On subsequent deploys you can run `sam deploy` without the `--guided` flag. [Read the documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-deploying.html).
 
 [[top]](#typescript-test-intro)
 
@@ -127,18 +127,24 @@ Integration tests run against deployed cloud resources. Since local unit tests c
 # move to lambda-specific directory
 typescript-test-intro$ cd list-buckets
 
-# Set the environment variable AWS_SAM_STACK_NAME to the name of the stack you specified during deploy
-list-buckets$ API_URL=...PULL URL SOMEHOW... npm test integration
+# Set the environment variable API_URL to the base of the ListBucketsApi CloudFormation output from the deploy step above
+# E.g. https://aaaaaaaaaaa.execute-api.us-east-2.amazonaws.com/Prod
+# You can do this as a separate step if you prefer
+list-buckets$ API_URL=https://YOUR_API_URL npm test integration
 ```
 
 [[top]](#typescript-test-intro)
 
 ## Invoke a Lambda function in the cloud
+
 The `AWS CLI` enables you to invoke a Lambda function in the cloud.
 
 ```bash
 # invoke a Lambda function in the cloud using the AWS CLI
-aws lambda invoke --function-name PULL FULL LAMBDA NAME outfile.txt
+# replace YOUR_LAMBDA_NAME with the full name of your lambda
+# you can find this in the ListBucketsFunction output of the deploy step above
+# E.g. typescript-test-intro-ListBucketsFunction-aaaaaaaaaaaaa
+aws lambda invoke --function-name YOUR_FULL_LAMBDA_NAME outfile.txt
 ```
 
 [[top]](#typescript-test-intro)
