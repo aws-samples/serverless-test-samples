@@ -27,12 +27,12 @@ The project uses the [AWS Serverless Application Model](https://docs.aws.amazon.
 
 This project contains source code and supporting files for a serverless application that you can deploy with the SAM CLI. It includes the following files and folders.
 
-- list-buckets - Code for the application's Lambda function.
-- list-buckets/tests - Unit and integration tests for the application code. 
-- events - synthetic events that you can use to invoke the function.
-- template.yaml - A template that defines the application's AWS resources.
+- [list-buckets](./list-buckets/) - Code for the application's Lambda function.
+- [list-buckets/tests](./list-buckets/tests/) - [Unit](./list-buckets/tests/unit/) and [integration](./list-buckets/tests/integration/) tests for the application code. 
+- [events](./events/) - synthetic events that you can use to invoke the function.
+- [template.yaml](./template.yaml) - A template that defines the application's AWS resources.
 
-The application uses several AWS resources, including Lambda functions and an API Gateway API. These resources are defined in the `template.yaml` file in this project. You can update the template to add AWS resources through the same deployment process that updates your application code.
+The application uses several AWS resources, including Lambda functions and an API Gateway API. These resources are defined in the [template.yaml](./template.yaml) file in this project. You can update the template to add AWS resources through the same deployment process that updates your application code.
 
 ## Prerequisites
 
@@ -79,7 +79,7 @@ You can find your API Gateway Endpoint URL in the output values displayed after 
 
 Testing event driven architectures often requires working with synthetic events. Events are frequently defined as JSON documents. Synthetic events are test data that represent the payloads AWS sends between service integrations, such as a requests from API Gateway or a messages from SQS.
 
-AWS Lambda always requires an event during invocation. A sample test event is included in the `events` folder in this project. SAM provides the capability of generating additional synthetic events for a variety of AWS services. [Read the documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-cli-command-reference-sam-local-generate-event.html).
+AWS Lambda always requires an event during invocation. A sample test event is included in the [events](./events/) folder in this project. SAM provides the capability of generating additional synthetic events for a variety of AWS services. [Read the documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-cli-command-reference-sam-local-generate-event.html).
 
 Use the following command to learn more about generating synthetic events:
 ```bash
@@ -102,7 +102,7 @@ SAM provides local emulation features for [AWS Lambda](https://docs.aws.amazon.c
 
 Lambda functions frequently call other AWS or 3rd party services. Mock frameworks are useful to simulate service responses. Mock frameworks can speed the development process by enabling rapid feedback iterations. Mocks can be particularly useful for testing failure cases when testing these branches of logic are difficult to do in the cloud.
 
-This project uses mocks to test the internal logic of a Lambda function. 
+This project [uses mocks](./list-buckets/tests/unit/list-buckets.test.ts) to test the internal logic of a Lambda function. 
 The project uses the [aws-sdk-client-mock](https://m-radzikowski.github.io/aws-sdk-client-mock/) dependency library to mock an external service call to Amazon S3. The `aws-sdk-client-mock` library can simulate responses from [AWS services](https://m-radzikowski.github.io/aws-sdk-client-mock/#mock), or for specific client instances. Tests with mocks are defined in the `tests/unit` folder. Use `npm` to install test dependencies and `jest` to run the unit test.
 
 ```bash
@@ -120,7 +120,7 @@ list-buckets$ npm test unit
 
 ## Run integration tests against cloud resources
 
-Integration tests run against deployed cloud resources. Since local unit tests cannot adequately test IAM permissions or other policy configurations, our integration tests confirm that permissions are properly configured. Run integration tests against your deployed cloud resources with the following command:
+[Integration tests](./list-buckets/tests/integration/api.test.ts) run against deployed cloud resources. Since local unit tests cannot adequately test IAM permissions or other policy configurations, our integration tests confirm that permissions are properly configured. Run integration tests against your deployed cloud resources with the following command:
 
 ```bash
 # move to lambda-specific directory
