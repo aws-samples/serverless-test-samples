@@ -17,25 +17,39 @@ import java.util.UUID;
 
 public class DDBUtils {
 
-    private final DynamoDbClient ddb = DynamoDbClient.builder()
-            .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
-            .region(Region.US_EAST_1)
-            .build();
-    private final DynamoDbEnhancedClient enhancedClient = DynamoDbEnhancedClient.builder()
-            .dynamoDbClient(ddb)
-            .build();
+  private DynamoDbEnhancedClient enhancedClient;
 
-    public String persistTicket(Ticket ticket){
+  public DDBUtils() {
+    this(null);
+  }
 
-        DynamoDbTable<Ticket> mappedTable = enhancedClient
-                .table("tickets", TableSchema.fromBean(Ticket.class));
-
-        String ticketId = UUID.randomUUID().toString();
-
-        ticket.setTicketId(ticketId);
-
-        mappedTable.putItem(ticket);
-
-        return ticketId;
+  public DDBUtils(DynamoDbEnhancedClient enhancedClient) {
+    if (enhancedClient == null) {
+      DynamoDbClient ddb = DynamoDbClient.builder()
+        .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
+        .region(Region.US_EAST_1)
+        .build();
+      this.enhancedClient = enhancedClient = DynamoDbEnhancedClient.builder()
+        .dynamoDbClient(ddb)
+        .build();
+    } else {
+      this.enhancedClient = enhancedClient;
     }
+
+  }
+
+
+  public String persistTicket(Ticket ticket) {
+
+    DynamoDbTable<Ticket> mappedTable = enhancedClient
+      .table("tickets", TableSchema.fromBean(Ticket.class));
+
+    String ticketId = UUID.randomUUID().toString();
+
+    ticket.setTicketId(ticketId);
+
+    mappedTable.putItem(ticket);
+
+    return ticketId;
+  }
 }
