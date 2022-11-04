@@ -22,7 +22,6 @@ The project uses the [AWS Serverless Application Model](https://docs.aws.amazon.
 - [Fetch, tail, and filter Lambda function logs locally](#fetch-tail-and-filter-lambda-function-logs-locally)
 - [Use SAM Accerate to speed up feedback cycles](#use-sam-accerate-to-speed-up-feedback-cycles)
 - [Implement application tracing](#implement-application-tracing)
-- [Perform a load test](#perform-a-load-test)
 - [Cleanup](#cleanup)
 - [Additional Resources](#additional-resources)
 
@@ -177,6 +176,15 @@ AWS Cloud Development Kit (CDK) has a similar synchronization feature, `cdk watc
 
 [[top]](#typescript-test-intro)
 
+## Implement application tracing
+You can use AWS X-Ray to track user requests as they travel through your entire application. With X-Ray, you can understand how your application and its underlying services are performing to identify and troubleshoot the root cause of performance issues and errors.
+
+This [Lambda function](./list-buckets/app.ts) handler has been instrumented using AWS X-Ray. Find to your Lambda function in the console. Then navigate to `Monitor` -> `Traces` and you should see a graph of your X-Ray trace.
+
+You may also navigate to the [X-Ray service](https://console.aws.amazon.com/xray/home) in the console to examine your traces in greater detail.
+
+[[top]](#typescript-test-intro)
+
 ## Cleanup
 
 To delete the sample application that you created, use the AWS CLI. Assuming you used your project name for the stack name, you can run the following:
@@ -185,7 +193,7 @@ To delete the sample application that you created, use the AWS CLI. Assuming you
 aws cloudformation delete-stack --stack-name typescript-test-intro
 ```
 
-## Resources
+## Additional Resources
 
 See the [AWS SAM developer guide](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) for an introduction to SAM specification, the SAM CLI, and serverless application concepts.
 
