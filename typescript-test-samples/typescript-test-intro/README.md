@@ -1,6 +1,6 @@
-# typescript-test-intro
+# Typescript Test Intro
 
-This project contains automated test sample code samples for serverless applications written in TypeScript. The project demonstrates several techniques for executing tests including mocking, emulation and testing in the cloud. Based on current tooling, we recommend customers **focus on testing in the cloud** as much as possible. 
+This project contains automated test samples for serverless applications written in TypeScript. The project includes techniques for executing tests including mocking and testing in the cloud. Based on current tooling, we recommend customers **focus on testing in the cloud** as much as possible. 
 
 ## Testing in the Cloud
 
@@ -15,7 +15,6 @@ The project uses the [AWS Serverless Application Model](https://docs.aws.amazon.
 - [Build and deploy with the SAM CLI](#build-and-deploy-with-the-sam-cli)
 - [Working with events](#working-with-events)
 - [Working with local emulators](#working-with-local-emulators)
-- [Use the SAM Lambda emulator](#use-the-sam-lambda-emulator)
 - [Use the SAM API Gateway emulator](#use-the-sam-api-gateway-emulator)
 - [Run a unit test using a mock framework](#run-a-unit-test-using-a-mock-framework)
 - [Run integration tests against cloud resources](#run-integration-tests-against-cloud-resources)
@@ -98,33 +97,7 @@ Local emulation has several limitations. Cloud services evolve rapidly, so local
 
 SAM provides local emulation features for [AWS Lambda](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-using-invoke.html) and [Amazon API Gateway](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-using-start-api.html). AWS provides [Amazon DynamoDB Local](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.html) as well as [AWS Step Functions Local](https://docs.aws.amazon.com/step-functions/latest/dg/sfn-local.html). Third party vendors like [LocalStack](https://docs.localstack.cloud/overview/) may provide emulation for additional AWS services. 
 
-This project demonstrates local emulation of Lambda and API Gateway with SAM.
-
 [[top]](#typescript-test-intro)
-
-## Use the SAM API Gateway emulator
-
-The SAM CLI can also emulate your application's API. Use the `sam local start-api` to run the API locally on port 3000.
-
-```bash
-typescript-test-intro$ sam local start-api
-```
-
-```bash
-# make a request to the endpoint in a separate terminal
-python-test-intro$ curl http://localhost:3000/buckets
-```
-
-The SAM CLI reads the application template to determine the API's routes and the functions that they invoke. The `Events` property on each function's definition includes the route and method for each path.
-
-```yaml
-      Events:
-        ListBuckets:
-          Type: Api
-          Properties:
-            Path: /buckets
-            Method: get
-```
 
 ## Run a unit test using a mock framework
 
@@ -134,11 +107,14 @@ This project uses mocks to test the internal logic of a Lambda function.
 The project uses the [aws-sdk-client-mock](https://m-radzikowski.github.io/aws-sdk-client-mock/) dependency library to mock an external service call to Amazon S3. The `aws-sdk-client-mock` library can simulate responses from [AWS services](https://m-radzikowski.github.io/aws-sdk-client-mock/#mock), or for specific client instances. Tests with mocks are defined in the `tests/unit` folder. Use `npm` to install test dependencies and `jest` to run the unit test.
 
 ```bash
-# install dependencies
-typescript-test-intro/list-buckets$ npm install
+# move to lambda-specific directory
+typescript-test-intro$ cd list-buckets
+
+# install dev dependencies
+list-buckets$ npm install
 
 # run unit tests with mocks
-typescript-test-intro/list-buckets$ npm test unit
+list-buckets$ npm test unit
 ```
 
 [[top]](#typescript-test-intro)
@@ -148,8 +124,11 @@ typescript-test-intro/list-buckets$ npm test unit
 Integration tests run against deployed cloud resources. Since local unit tests cannot adequately test IAM permissions or other policy configurations, our integration tests confirm that permissions are properly configured. Run integration tests against your deployed cloud resources with the following command:
 
 ```bash
+# move to lambda-specific directory
+typescript-test-intro$ cd list-buckets
+
 # Set the environment variable AWS_SAM_STACK_NAME to the name of the stack you specified during deploy
-typescript-test-intro$ API_URL=...PULL URL SOMEHOW... npm test integration
+list-buckets$ API_URL=...PULL URL SOMEHOW... npm test integration
 ```
 
 [[top]](#typescript-test-intro)
@@ -159,7 +138,7 @@ The `AWS CLI` enables you to invoke a Lambda function in the cloud.
 
 ```bash
 # invoke a Lambda function in the cloud using the AWS CLI
-aws lambda invoke --function-name PULL URL SOMEHOW outfile.txt
+aws lambda invoke --function-name PULL FULL LAMBDA NAME outfile.txt
 ```
 
 [[top]](#typescript-test-intro)
