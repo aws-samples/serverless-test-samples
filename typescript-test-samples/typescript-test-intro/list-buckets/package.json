@@ -1,5 +1,5 @@
 {
-  "name": "hello_world",
+  "name": "typescript-test-intro-list-buckets",
   "version": "1.0.0",
   "description": "TypeScript testing hello world sample for NodeJS",
   "main": "app.js",
