@@ -102,7 +102,7 @@ SAM provides local emulation features for [AWS Lambda](https://docs.aws.amazon.c
 
 Lambda functions frequently call other AWS or 3rd party services. Mock frameworks are useful to simulate service responses. Mock frameworks can speed the development process by enabling rapid feedback iterations. Mocks can be particularly useful for testing failure cases when testing these branches of logic are difficult to do in the cloud.
 
-This project [uses mocks](./list-buckets/tests/unit/list-buckets.test.ts) to test the internal logic of a Lambda function. 
+This project [uses mocks](./list-buckets/tests/unit/list-buckets.test.ts#L39) to test the internal logic of a Lambda function. 
 The project uses the [aws-sdk-client-mock](https://m-radzikowski.github.io/aws-sdk-client-mock/) dependency library to mock an external service call to Amazon S3. The `aws-sdk-client-mock` library can simulate responses from [AWS services](https://m-radzikowski.github.io/aws-sdk-client-mock/#mock), or for specific client instances. Tests with mocks are defined in the `tests/unit` folder. Use `npm` to install test dependencies and `jest` to run the unit test.
 
 ```bash
