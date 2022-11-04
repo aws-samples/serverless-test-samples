@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.http.HttpStatusCode;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
@@ -30,14 +31,11 @@ import java.util.List;
 @ExtendWith(SystemStubsExtension.class)
 public class TicketFunctionIntegrationTest {
 
-  @SystemStub
-  private EnvironmentVariables environmentVariables;
-  public static final String DB_TABLE = "tickets";
-
   private final DynamoDbClient ddbClient = DynamoDbClient.builder()
     .region(Region.US_EAST_1)
     .build();
-
+  @SystemStub
+  private EnvironmentVariables environmentVariables;
   private List<String> ticketList = new ArrayList<>();
 
   @BeforeEach
@@ -66,6 +64,20 @@ public class TicketFunctionIntegrationTest {
       Assertions.assertNotNull(uuidStr);
       ticketList.add(uuidStr.substring(1, uuidStr.length() - 1));
       DynamoTestUtil.validateItems(ticketList, ddbClient);
+    } catch (Exception e) {
+      e.printStackTrace();
+      Assertions.fail();
+    }
+  }
+
+  @ParameterizedTest
+  @Event(value = "events/apigw_request_nobody.json", type = APIGatewayProxyRequestEvent.class)
+  public void testPutTicketBadRequest(APIGatewayProxyRequestEvent event, EnvironmentVariables environmentVariables) {
+    try {
+      TicketFunction function = new TicketFunction();
+      APIGatewayProxyResponseEvent response = function.handleRequest(event, null);
+      Assertions.assertNotNull(response);
+      Assertions.assertEquals(HttpStatusCode.BAD_REQUEST, response.getStatusCode());
     } catch (Exception e) {
       e.printStackTrace();
       Assertions.fail();

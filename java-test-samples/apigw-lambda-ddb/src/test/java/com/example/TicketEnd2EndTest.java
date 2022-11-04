@@ -5,6 +5,7 @@
 
 package com.example;
 
+import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -16,6 +17,7 @@ import software.amazon.awssdk.services.cloudformation.model.DescribeStacksRespon
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -27,13 +29,12 @@ import java.util.List;
 // This test runs END 2 END by HTTP request to API Gateway URL and
 // verifies if entries are persisted in DDB
 public class TicketEnd2EndTest {
+  //Name of the stack you used when deploying SAM template
+  private static final String STACK_NAME = "APIGW-Lambda-DDB-Sample";
   private static DynamoDbClient ddbClient;
   private static CloudFormationClient cloudFormationClient;
-  private List<String> ticketList = new ArrayList<>();
-
-  //Name of the stack you used when deploying SAm template
-  private static final String STACK_NAME = "APIGW-Lambda-DDB-Sample";
   private static String endPoint = "";
+  private List<String> ticketList = new ArrayList<>();
 
   @BeforeAll
   static void setUp() {
@@ -78,8 +79,34 @@ public class TicketEnd2EndTest {
           httpResponse.append(responseLine.trim());
         }
         String ticketId = httpResponse.toString();
+        Assert.assertNotNull(ticketId);
         ticketList.add(ticketId.substring(1, ticketId.length() - 1));
         DynamoTestUtil.validateItems(ticketList, ddbClient);
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      Assertions.fail(e.getMessage());
+    }
+  }
+
+  @Test
+  public void testPostWithBadPayload() {
+    try {
+      URL url = new URL(endPoint);
+      HttpURLConnection con = (HttpURLConnection) url.openConnection();
+      con.setRequestMethod("POST");
+      con.setRequestProperty("Content-Type", "application/json");
+      con.setRequestProperty("Accept", "application/json");
+      con.setDoOutput(true);
+      String jsonInputString = "{\"description\": , \"userId\": \"testuser\"}";
+      try (OutputStream os = con.getOutputStream()) {
+        byte[] input = jsonInputString.getBytes("utf-8");
+        os.write(input, 0, input.length);
+      }
+      try (BufferedReader br = new BufferedReader(
+        new InputStreamReader(con.getInputStream(), "utf-8"))) {
+      } catch (IOException ioe) {
+        Assert.assertTrue(ioe.getMessage().contains("Server returned HTTP response code: 400"));
       }
     } catch (Exception e) {
       e.printStackTrace();
