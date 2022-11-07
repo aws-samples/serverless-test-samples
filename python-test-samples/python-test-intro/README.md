@@ -8,7 +8,8 @@ While testing in the cloud may create additional developer latency, increase cos
 ## Project contents
 The project uses the [AWS Serverless Application Model](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) (SAM) CLI for configuration, testing and deployment. 
 
-- [Python Test of Layers](#python-test-of-layers)
+- [Python Test Samples Project](#python-test-samples-project)
+  - [Testing in the Cloud](#testing-in-the-cloud)
   - [Project contents](#project-contents)
   - [Prerequisites](#prerequisites)
   - [Build and deploy with the SAM CLI](#build-and-deploy-with-the-sam-cli)

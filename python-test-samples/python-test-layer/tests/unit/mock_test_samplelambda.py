@@ -2,12 +2,12 @@
 # SPDX-License-Identifier: MIT-0
 
 import json
-import sys
+from sys import path
 import pytest
 from aws_lambda_powertools.utilities.data_classes import APIGatewayProxyEvent
 
-sys.path.append("src/sampleCodeLayer/python")
-sys.path.append("src/sampleSchemaLayer/python")
+path.append("src/sampleCodeLayer/python")
+path.append("src/sampleSchemaLayer/python")
 from src.sampleLambda import app
 
 @pytest.fixture()
