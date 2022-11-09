@@ -13,8 +13,8 @@ When creating unit tests, create a separate test harnesses for each layer to tes
 When running in the unit tests for the Lambda function, the layer modules are not available to the Lambda function as they would be in a deployed Lambda runtime environment.  To accomodate this in the unit test code, add the path of the layers in the unit test before importing the lambda hander, as seen on lines 9:10 of [tests/unit/mock_test_samplelambda.py](tests/unit/mock_test_samplelambda.py#L9-L10):
 
 ```python
-sys.path.append("src/sampleCodeLayer/python")
-sys.path.append("src/sampleSchemaLayer/python")
+path.append("src/sampleCodeLayer/python")
+path.append("src/sampleSchemaLayer/python")
 from src.sampleLambda import app
 ```
 
