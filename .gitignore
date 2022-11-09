@@ -249,3 +249,13 @@ samconfig.toml
 
 # End of https://www.gitignore.io/api/osx,linux,python,windows,pycharm,visualstudiocode
 
+# .NET Ignores
+**/.idea/*
+**/bin/*
+**/.vs/*
+**/obj/*
+launchSettings.json
+samconfig.toml
+.dcignore
+*.DotSettings*
+# End of .NET ignores
