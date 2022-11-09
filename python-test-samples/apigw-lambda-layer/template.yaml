@@ -1,7 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: >
-  SAM Template for apigw-lambda
+Description: SAM Template for apigw-lambda-layer
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
@@ -13,6 +12,7 @@ Globals:
         
 Resources:
 
+  # More info about Layers: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-layers.html
   LambdaLayerCode:
     Type: 'AWS::Serverless::LayerVersion'
     Properties:
