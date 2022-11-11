@@ -15,17 +15,28 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.http.HttpStatusCode;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 public class TicketFunction implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
-  private Logger logger = LoggerFactory.getLogger(TicketFunction.class);
-  private ObjectMapper mapper = new ObjectMapper();
+  private static final Logger logger = LoggerFactory.getLogger(TicketFunction.class);
+  private static final ObjectMapper mapper = new ObjectMapper();
   private DDBUtils ddbUtils;
 
   public TicketFunction(DDBUtils ddbUtils) {
     if (ddbUtils == null) {
-      this.ddbUtils = new DDBUtils();
+      DynamoDbClient ddb = DynamoDbClient.builder()
+        .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
+        .region(Region.US_EAST_1)
+        .build();
+      DynamoDbEnhancedClient enhancedClient = DynamoDbEnhancedClient.builder()
+        .dynamoDbClient(ddb)
+        .build();
+      this.ddbUtils = new DDBUtils(enhancedClient);
     } else {
       this.ddbUtils = ddbUtils;
     }

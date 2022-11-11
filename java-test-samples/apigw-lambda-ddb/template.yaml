@@ -26,7 +26,7 @@ Resources:
     Properties:
       FunctionName: ticketPublisher
       Handler: com.example.TicketFunction::handleRequest
-      CodeUri: target/ticketPublisher.zip
+      CodeUri: TicketsFunction
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref ticketDDBTable

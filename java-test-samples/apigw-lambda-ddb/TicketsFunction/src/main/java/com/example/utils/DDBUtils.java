@@ -19,10 +19,6 @@ public class DDBUtils {
 
   private DynamoDbEnhancedClient enhancedClient;
 
-  public DDBUtils() {
-    this(null);
-  }
-
   public DDBUtils(DynamoDbEnhancedClient enhancedClient) {
     if (enhancedClient == null) {
       DynamoDbClient ddb = DynamoDbClient.builder()

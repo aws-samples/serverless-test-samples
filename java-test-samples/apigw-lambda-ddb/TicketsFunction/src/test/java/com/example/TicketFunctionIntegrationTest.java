@@ -10,7 +10,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.amazonaws.services.lambda.runtime.tests.annotations.Event;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
@@ -31,15 +31,15 @@ import java.util.List;
 @ExtendWith(SystemStubsExtension.class)
 public class TicketFunctionIntegrationTest {
 
+  @SystemStub
+  private static EnvironmentVariables environmentVariables;
   private final DynamoDbClient ddbClient = DynamoDbClient.builder()
     .region(Region.US_EAST_1)
     .build();
-  @SystemStub
-  private EnvironmentVariables environmentVariables;
   private List<String> ticketList = new ArrayList<>();
 
-  @BeforeEach
-  public void setup() {
+  @BeforeAll
+  public static void setup() {
     ProfileCredentialsProvider credentialsProvider = ProfileCredentialsProvider.create("default");
     AwsCredentials awsCredentials = credentialsProvider.resolveCredentials();
     environmentVariables.set("AWS_ACCESS_KEY_ID", awsCredentials.accessKeyId());
@@ -55,33 +55,23 @@ public class TicketFunctionIntegrationTest {
   @ParameterizedTest
   @Event(value = "events/apigw_request_1.json", type = APIGatewayProxyRequestEvent.class)
   public void testPutTicket(APIGatewayProxyRequestEvent event, EnvironmentVariables environmentVariables) {
-    try {
-      TicketFunction function = new TicketFunction();
-      APIGatewayProxyResponseEvent response = function.handleRequest(event, null);
-      Assertions.assertNotNull(response);
-      Assertions.assertNotNull(response.getBody());
-      String uuidStr = response.getBody();
-      Assertions.assertNotNull(uuidStr);
-      ticketList.add(uuidStr.substring(1, uuidStr.length() - 1));
-      DynamoTestUtil.validateItems(ticketList, ddbClient);
-    } catch (Exception e) {
-      e.printStackTrace();
-      Assertions.fail();
-    }
+    TicketFunction function = new TicketFunction();
+    APIGatewayProxyResponseEvent response = function.handleRequest(event, null);
+    Assertions.assertNotNull(response);
+    Assertions.assertNotNull(response.getBody());
+    String uuidStr = response.getBody();
+    Assertions.assertNotNull(uuidStr);
+    ticketList.add(uuidStr.substring(1, uuidStr.length() - 1));
+    DynamoTestUtil.validateItems(ticketList, ddbClient);
   }
 
   @ParameterizedTest
   @Event(value = "events/apigw_request_nobody.json", type = APIGatewayProxyRequestEvent.class)
   public void testPutTicketBadRequest(APIGatewayProxyRequestEvent event, EnvironmentVariables environmentVariables) {
-    try {
-      TicketFunction function = new TicketFunction();
-      APIGatewayProxyResponseEvent response = function.handleRequest(event, null);
-      Assertions.assertNotNull(response);
-      Assertions.assertEquals(HttpStatusCode.BAD_REQUEST, response.getStatusCode());
-    } catch (Exception e) {
-      e.printStackTrace();
-      Assertions.fail();
-    }
+    TicketFunction function = new TicketFunction();
+    APIGatewayProxyResponseEvent response = function.handleRequest(event, null);
+    Assertions.assertNotNull(response);
+    Assertions.assertEquals(HttpStatusCode.BAD_REQUEST, response.getStatusCode());
   }
 
 }

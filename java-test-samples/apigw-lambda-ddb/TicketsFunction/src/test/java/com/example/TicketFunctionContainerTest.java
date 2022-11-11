@@ -31,7 +31,7 @@ import static org.testcontainers.containers.localstack.LocalStackContainer.Servi
 
 @Testcontainers
 public class TicketFunctionContainerTest {
-  private static final DockerImageName localStackImage = DockerImageName.parse("localstack/localstack:0.14.3");
+  private static final DockerImageName localStackImage = DockerImageName.parse("localstack/localstack:1.2.0");
   @Container
   public static final LocalStackContainer localstack = new LocalStackContainer(localStackImage).withServices(DYNAMODB);
   private static DDBUtils ddbUtils;
@@ -70,33 +70,23 @@ public class TicketFunctionContainerTest {
   @ParameterizedTest
   @Event(value = "events/apigw_request_1.json", type = APIGatewayProxyRequestEvent.class)
   public void testPutTicket(APIGatewayProxyRequestEvent event) {
-    try {
-      TicketFunction function = new TicketFunction(ddbUtils);
-      APIGatewayProxyResponseEvent response = function.handleRequest(event, null);
-      Assertions.assertNotNull(response);
-      Assertions.assertNotNull(response.getBody());
-      String uuidStr = response.getBody();
-      Assertions.assertNotNull(uuidStr);
-      ticketList.add(uuidStr.substring(1, uuidStr.length() - 1));
-      DynamoTestUtil.validateItems(ticketList, ddbClient);
-    } catch (Exception e) {
-      e.printStackTrace();
-      Assertions.fail();
-    }
+    TicketFunction function = new TicketFunction(ddbUtils);
+    APIGatewayProxyResponseEvent response = function.handleRequest(event, null);
+    Assertions.assertNotNull(response);
+    Assertions.assertNotNull(response.getBody());
+    String uuidStr = response.getBody();
+    Assertions.assertNotNull(uuidStr);
+    ticketList.add(uuidStr.substring(1, uuidStr.length() - 1));
+    DynamoTestUtil.validateItems(ticketList, ddbClient);
   }
 
   @ParameterizedTest
   @Event(value = "events/apigw_request_nobody.json", type = APIGatewayProxyRequestEvent.class)
   public void testPutTicketBadRequest(APIGatewayProxyRequestEvent event) {
-    try {
-      TicketFunction function = new TicketFunction(ddbUtils);
-      APIGatewayProxyResponseEvent response = function.handleRequest(event, null);
-      Assertions.assertNotNull(response);
-      Assertions.assertEquals(HttpStatusCode.BAD_REQUEST, response.getStatusCode());
-    } catch (Exception e) {
-      e.printStackTrace();
-      Assertions.fail();
-    }
+    TicketFunction function = new TicketFunction(ddbUtils);
+    APIGatewayProxyResponseEvent response = function.handleRequest(event, null);
+    Assertions.assertNotNull(response);
+    Assertions.assertEquals(HttpStatusCode.BAD_REQUEST, response.getStatusCode());
   }
 
 }
