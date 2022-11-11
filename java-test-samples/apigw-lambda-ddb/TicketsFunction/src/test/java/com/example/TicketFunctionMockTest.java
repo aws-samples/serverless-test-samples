@@ -39,65 +39,42 @@ public class TicketFunctionMockTest {
   @ParameterizedTest
   @Event(value = "events/apigw_request_1.json", type = APIGatewayProxyRequestEvent.class)
   public void testEventDeserialization(APIGatewayProxyRequestEvent event) {
-    try {
-
-      uuid = UUID.randomUUID().toString();
-      Mockito.when(testUtils.persistTicket(Mockito.any(Ticket.class))).thenReturn(uuid);
-
-      APIGatewayProxyResponseEvent response = function.handleRequest(event, null);
-      ArgumentCaptor<Ticket> ticketArgumentCaptor = ArgumentCaptor.forClass(Ticket.class);
-      Mockito.verify(testUtils).persistTicket(ticketArgumentCaptor.capture());
-      Assertions.assertEquals("Lambda rocks", ticketArgumentCaptor.getValue().getDescription());
-      Assertions.assertEquals("testuser", ticketArgumentCaptor.getValue().getUserId());
-    } catch (Exception e) {
-      e.printStackTrace();
-      Assertions.fail();
-    }
+    uuid = UUID.randomUUID().toString();
+    Mockito.when(testUtils.persistTicket(Mockito.any(Ticket.class))).thenReturn(uuid);
+    APIGatewayProxyResponseEvent response = function.handleRequest(event, null);
+    ArgumentCaptor<Ticket> ticketArgumentCaptor = ArgumentCaptor.forClass(Ticket.class);
+    Mockito.verify(testUtils).persistTicket(ticketArgumentCaptor.capture());
+    Assertions.assertEquals("Lambda rocks", ticketArgumentCaptor.getValue().getDescription());
+    Assertions.assertEquals("testuser", ticketArgumentCaptor.getValue().getUserId());
   }
 
   @ParameterizedTest
   @Event(value = "events/apigw_request_1.json", type = APIGatewayProxyRequestEvent.class)
   public void testPutTicketWithEvent(APIGatewayProxyRequestEvent event) {
-    try {
 
-      uuid = UUID.randomUUID().toString();
-      Mockito.when(testUtils.persistTicket(Mockito.any(Ticket.class))).thenReturn(uuid);
+    uuid = UUID.randomUUID().toString();
+    Mockito.when(testUtils.persistTicket(Mockito.any(Ticket.class))).thenReturn(uuid);
 
-      APIGatewayProxyResponseEvent response = function.handleRequest(event, null);
-      Assertions.assertNotNull(response);
-      Assertions.assertNotNull(response.getBody());
-      Assertions.assertEquals(response.getBody(), "\"" + uuid + "\"");
-
-    } catch (Exception e) {
-      e.printStackTrace();
-      Assertions.fail();
-    }
+    APIGatewayProxyResponseEvent response = function.handleRequest(event, null);
+    Assertions.assertNotNull(response);
+    Assertions.assertNotNull(response.getBody());
+    Assertions.assertEquals(response.getBody(), "\"" + uuid + "\"");
   }
 
   @ParameterizedTest
   @Event(value = "events/apigw_request_nobody.json", type = APIGatewayProxyRequestEvent.class)
   public void testPutTicketWithBadEvent(APIGatewayProxyRequestEvent event) {
-    try {
-      APIGatewayProxyResponseEvent response = function.handleRequest(event, null);
-      Assertions.assertNotNull(response);
-      Assertions.assertEquals(HttpStatusCode.BAD_REQUEST, response.getStatusCode());
-    } catch (Exception e) {
-      e.printStackTrace();
-      Assertions.fail();
-    }
+    APIGatewayProxyResponseEvent response = function.handleRequest(event, null);
+    Assertions.assertNotNull(response);
+    Assertions.assertEquals(HttpStatusCode.BAD_REQUEST, response.getStatusCode());
   }
 
   @ParameterizedTest
   @Event(value = "events/apigw_request_1.json", type = APIGatewayProxyRequestEvent.class)
   public void testDynamoDBError(APIGatewayProxyRequestEvent event) {
-    try {
-      Mockito.when(testUtils.persistTicket(Mockito.any(Ticket.class))).thenThrow(DynamoDbException.class);
-      APIGatewayProxyResponseEvent response = function.handleRequest(event, null);
-      Assertions.assertNotNull(response);
-      Assertions.assertEquals(HttpStatusCode.INTERNAL_SERVER_ERROR, response.getStatusCode());
-    } catch (Exception e) {
-      e.printStackTrace();
-      Assertions.fail();
-    }
+    Mockito.when(testUtils.persistTicket(Mockito.any(Ticket.class))).thenThrow(DynamoDbException.class);
+    APIGatewayProxyResponseEvent response = function.handleRequest(event, null);
+    Assertions.assertNotNull(response);
+    Assertions.assertEquals(HttpStatusCode.INTERNAL_SERVER_ERROR, response.getStatusCode());
   }
 }

@@ -22,7 +22,7 @@
       <dependency>
         <groupId>software.amazon.awssdk</groupId>
         <artifactId>bom</artifactId>
-        <version>2.17.265</version>
+        <version>2.18.14</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -78,12 +78,6 @@
       <version>2.17.116</version>
     </dependency>
     <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-lambda-java-tests</artifactId>
-      <version>1.1.1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
       <version>2.13.1</version>
@@ -93,12 +87,21 @@
       <artifactId>jackson-annotations</artifactId>
       <version>2.13.1</version>
     </dependency>
-
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
       <version>2.14.0-rc1</version>
     </dependency>
+
+    <!-- Start Test dependencies -->
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-lambda-java-tests</artifactId>
+      <version>1.1.1</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- Junit dependencies -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
@@ -123,6 +126,8 @@
       <version>1.1.0</version>
       <scope>test</scope>
     </dependency>
+
+    <!-- Mockito Dependencies -->
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
@@ -141,6 +146,8 @@
       <version>4.8.0</version>
       <scope>test</scope>
     </dependency>
+
+    <!-- Test Containers dependencies -->
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>testcontainers</artifactId>
@@ -159,51 +166,33 @@
     <!-- AWS SDK v1 needed by Testcontainers, therefore test scope -->
     <dependency>
       <groupId>com.amazonaws</groupId>
-      <artifactId>aws-java-sdk-s3</artifactId>
-      <version>1.12.307</version>
+      <artifactId>aws-java-sdk-dynamodb</artifactId>
+      <version>1.12.339</version>
       <scope>test</scope>
     </dependency>
-  </dependencies>
+    <!-- Rest Assured dependency for End2End Test -->
+    <dependency>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>rest-assured</artifactId>
+      <version>5.2.0</version>
+      <scope>test</scope>
+    </dependency>
 
+  </dependencies>
   <build>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.1</version>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.2.4</version>
         <configuration>
-          <source>11</source>
-          <target>11</target>
+          <createDependencyReducedPom>false</createDependencyReducedPom>
         </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>3.3.0</version>
         <executions>
           <execution>
             <phase>package</phase>
             <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <appendAssemblyId>false</appendAssemblyId>
-          <descriptors>
-            <descriptor>src/lambda-zip.xml</descriptor>
-          </descriptors>
-          <finalName>ticketPublisher</finalName>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>io.github.zlika</groupId>
-        <artifactId>reproducible-build-maven-plugin</artifactId>
-        <version>0.10</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>strip-jar</goal>
+              <goal>shade</goal>
             </goals>
           </execution>
         </executions>
