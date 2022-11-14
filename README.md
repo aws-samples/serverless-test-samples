@@ -15,7 +15,7 @@ The sample code in this project will illustrate techniques for creating automate
 
 - [Python Samples](./python-test-samples/)
 - Java Samples (coming soon)
-- .NET Samples (coming soon)
+- [.NET Sample](./dotnet-test-samples/)
 - TypeScript Samples (coming soon)
 - Go Samples (coming soon)
 

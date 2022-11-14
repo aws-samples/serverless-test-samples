@@ -1,0 +1,48 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  SAM Template for dotnet-test-samples
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Tracing: PassThrough
+    Timeout: 10
+    Runtime: dotnet6
+    Architectures:
+      - arm64
+    Environment:
+      Variables:
+          ENV: !Sub '${Env}'
+  Api:
+    TracingEnabled: True
+
+Parameters:
+  Env:
+   Type: String
+   Description: 'Environment'
+   Default: 'dev'
+
+Resources:
+  ListStorageAreasFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: src/ServerlessTestSamples
+      Handler: ServerlessTestSamples::ServerlessTestSamples.Function::Handler
+      Events:
+        OrderEndpoint:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /storage
+            Method: get
+      Policies:
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action: s3:List*
+              Resource: "*"
+Outputs:
+  ApiEndpoint:
+    Description: "API Gateway endpoint URL"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+
