@@ -30,7 +30,7 @@ public class MockDeleteProductFunctionTests
             .WithHttpMethod("DELETE")
             .Build();
         
-        var mockDataAccessLayer = new Mock<ProductsDAO>();
+        var mockDataAccessLayer = new Mock<IProductsDAO>();
         mockDataAccessLayer.Setup(p => p.DeleteProduct(It.IsAny<string>())).Verifiable();
         mockDataAccessLayer.Setup(p => p.GetProduct(It.IsAny<string>())).ReturnsAsync(new ProductDTO("123456", "Test Product", 10)).Verifiable();
         
@@ -53,7 +53,7 @@ public class MockDeleteProductFunctionTests
             .WithHttpMethod(httpMethod)
             .Build();
         
-        var mockDataAccessLayer = new Mock<ProductsDAO>();
+        var mockDataAccessLayer = new Mock<IProductsDAO>();
         mockDataAccessLayer.Setup(p => p.DeleteProduct(It.IsAny<string>())).Verifiable();
         mockDataAccessLayer.Setup(p => p.GetProduct(It.IsAny<string>())).ReturnsAsync(new ProductDTO("123456", "Test Product", 10)).Verifiable();
         
@@ -72,7 +72,7 @@ public class MockDeleteProductFunctionTests
             .WithHttpMethod("DELETE")
             .Build();
         
-        var mockDataAccessLayer = new Mock<ProductsDAO>();
+        var mockDataAccessLayer = new Mock<IProductsDAO>();
         mockDataAccessLayer.Setup(p => p.DeleteProduct(It.IsAny<string>()))
             .ThrowsAsync(new NullReferenceException());
         mockDataAccessLayer.Setup(p => p.GetProduct(It.IsAny<string>())).ReturnsAsync(new ProductDTO("123456", "Test Product", 10)).Verifiable();
@@ -92,7 +92,7 @@ public class MockDeleteProductFunctionTests
             .WithHttpMethod("DELETE")
             .Build();
         
-        var mockDataAccessLayer = new Mock<ProductsDAO>();
+        var mockDataAccessLayer = new Mock<IProductsDAO>();
         mockDataAccessLayer.Setup(p => p.DeleteProduct(It.IsAny<string>()))
             .ThrowsAsync(new NullReferenceException());
         mockDataAccessLayer.Setup(p => p.GetProduct(It.IsAny<string>())).ThrowsAsync(new NullReferenceException());
@@ -112,7 +112,7 @@ public class MockDeleteProductFunctionTests
             .WithPathParameter("id", "123456")
             .Build();
         
-        var mockDataAccessLayer = new Mock<ProductsDAO>();
+        var mockDataAccessLayer = new Mock<IProductsDAO>();
         mockDataAccessLayer.Setup(p => p.DeleteProduct(It.IsAny<string>())).Verifiable();
         mockDataAccessLayer.Setup(p => p.GetProduct(It.IsAny<string>())).ReturnsAsync(() => null).Verifiable();
         

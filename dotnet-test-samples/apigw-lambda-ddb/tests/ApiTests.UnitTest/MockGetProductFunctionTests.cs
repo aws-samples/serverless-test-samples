@@ -30,7 +30,7 @@ public class MockGetProductFunctionTests
             .WithHttpMethod("GET")
             .Build();
         
-        var mockDataAccessLayer = new Mock<ProductsDAO>();
+        var mockDataAccessLayer = new Mock<IProductsDAO>();
         mockDataAccessLayer.Setup(p => p.GetProduct(It.IsAny<string>())).ReturnsAsync(new ProductDTO("testid", "test product", 10));
         
         var function = new Function(mockDataAccessLayer.Object, _mockLogger.Object);
@@ -58,7 +58,7 @@ public class MockGetProductFunctionTests
             .WithHttpMethod(httpMethod)
             .Build();
         
-        var mockDataAccessLayer = new Mock<ProductsDAO>();
+        var mockDataAccessLayer = new Mock<IProductsDAO>();
         mockDataAccessLayer.Setup(p => p.GetAllProducts()).ReturnsAsync(new ProductWrapper());
         
         var function = new Function(mockDataAccessLayer.Object, _mockLogger.Object);
@@ -76,7 +76,7 @@ public class MockGetProductFunctionTests
             .WithHttpMethod("GET")
             .Build();
         
-        var mockDataAccessLayer = new Mock<ProductsDAO>();
+        var mockDataAccessLayer = new Mock<IProductsDAO>();
         mockDataAccessLayer.Setup(p => p.GetProduct(It.IsAny<string>()))
             .ThrowsAsync(new NullReferenceException());
         
@@ -95,7 +95,7 @@ public class MockGetProductFunctionTests
             .WithPathParameter("id", "123456")
             .Build();
         
-        var mockDataAccessLayer = new Mock<ProductsDAO>();
+        var mockDataAccessLayer = new Mock<IProductsDAO>();
         mockDataAccessLayer.Setup(p => p.GetProduct(It.IsAny<string>()))
             .ReturnsAsync(() => null);
         

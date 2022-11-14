@@ -33,7 +33,7 @@ public class MockPutProductFunctionTests
             .WithPathParameter("id", testProduct.Id)
             .Build();
         
-        var mockDataAccessLayer = new Mock<ProductsDAO>();
+        var mockDataAccessLayer = new Mock<IProductsDAO>();
         mockDataAccessLayer.Setup(p => p.PutProduct(It.IsAny<Product>())).Verifiable();
         
         var function = new Function(mockDataAccessLayer.Object, _mockLogger.Object);
@@ -54,7 +54,7 @@ public class MockPutProductFunctionTests
             .WithPathParameter("id", testProduct.Id)
             .Build();
         
-        var mockDataAccessLayer = new Mock<ProductsDAO>();
+        var mockDataAccessLayer = new Mock<IProductsDAO>();
         mockDataAccessLayer.Setup(p => p.PutProduct(It.IsAny<Product>())).Verifiable();
         
         var function = new Function(mockDataAccessLayer.Object, _mockLogger.Object);
@@ -76,7 +76,7 @@ public class MockPutProductFunctionTests
             .WithBody(testProduct)
             .Build();
         
-        var mockDataAccessLayer = new Mock<ProductsDAO>();
+        var mockDataAccessLayer = new Mock<IProductsDAO>();
         mockDataAccessLayer.Setup(p => p.PutProduct(It.IsAny<Product>())).Verifiable();
         
         var function = new Function(mockDataAccessLayer.Object, _mockLogger.Object);
@@ -97,7 +97,7 @@ public class MockPutProductFunctionTests
             .WithHttpMethod(httpMethod)
             .Build();
         
-        var mockDataAccessLayer = new Mock<ProductsDAO>();
+        var mockDataAccessLayer = new Mock<IProductsDAO>();
         mockDataAccessLayer.Setup(p => p.PutProduct(It.IsAny<Product>())).Verifiable();
         
         var function = new Function(mockDataAccessLayer.Object, _mockLogger.Object);
@@ -118,7 +118,7 @@ public class MockPutProductFunctionTests
             .WithBody(testProduct)
             .Build();
         
-        var mockDataAccessLayer = new Mock<ProductsDAO>();
+        var mockDataAccessLayer = new Mock<IProductsDAO>();
         mockDataAccessLayer.Setup(p => p.PutProduct(It.IsAny<Product>()))
             .ThrowsAsync(new NullReferenceException());
         

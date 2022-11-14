@@ -1,5 +1,5 @@
-﻿using Amazon.DynamoDBv2;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Formatting.Compact;
 using ServerlessTestApi.Core.DataAccess;
@@ -17,7 +17,7 @@ public static class Startup
         {
             if (_serviceProvider == null)
             {
-                InitializeServiceProvider();
+                _serviceProvider = InitializeServiceProvider();
             }
 
             return _serviceProvider;
@@ -25,7 +25,7 @@ public static class Startup
         private set => _serviceProvider = value;
     }
 
-    private static void InitializeServiceProvider()
+    private static ServiceProvider InitializeServiceProvider()
     {
         var services = new ServiceCollection();
         
@@ -33,11 +33,24 @@ public static class Startup
             .WriteTo.Console(new RenderedCompactJsonFormatter())
             .CreateLogger();
         
-        services.AddLogging();
+        services.AddLogging(builder =>
+        {
+            builder.AddSerilog(logger);
+        });
 
-        services.AddSingleton<IAmazonDynamoDB>(new AmazonDynamoDBClient());
-        services.AddSingleton<ProductsDAO, DynamoDbProducts>();
+        if (Environment.GetEnvironmentVariable("USE_MOCKS") == "true")
+        {
+            logger.Warning("WARNING! Application is running using mock implementations");
 
-        _serviceProvider = services.BuildServiceProvider();
+            services.AddMockServices();
+        }
+        else
+        {
+            services.AddInfrastructureServices();
+        }
+        
+        services.AddSingleton<IProductsDAO, DynamoDbProducts>();
+
+        return services.BuildServiceProvider();
     }
 }

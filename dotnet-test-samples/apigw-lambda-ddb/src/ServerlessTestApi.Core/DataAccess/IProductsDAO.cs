@@ -3,9 +3,9 @@ using ServerlessTestApi.Core.Models;
 
 namespace ServerlessTestApi.Core.DataAccess
 {
-    public interface ProductsDAO
+    public interface IProductsDAO
     {
-        Task<ProductDTO> GetProduct(string id);
+        Task<ProductDTO?> GetProduct(string id);
 
         Task PutProduct(Product product);
 

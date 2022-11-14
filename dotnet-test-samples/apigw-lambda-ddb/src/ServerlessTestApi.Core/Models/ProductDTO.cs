@@ -13,9 +13,9 @@ public record ProductDTO
         this.Price = price;
     }
         
-    public string Id { get; set; }
+    public string Id { get; init; }
         
-    public string Name { get; set; }
+    public string Name { get; init; }
         
-    public decimal Price { get; set; }
+    public decimal Price { get; init; }
 }

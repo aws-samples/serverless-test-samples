@@ -19,15 +19,15 @@ namespace PutProduct
 {
     public class Function
     {
-        private readonly ProductsDAO _dataAccess;
+        private readonly IProductsDAO _dataAccess;
         private readonly ILogger<Function> _logger;
         public Function()
         {
-            this._dataAccess = Startup.ServiceProvider.GetRequiredService<ProductsDAO>();
+            this._dataAccess = Startup.ServiceProvider.GetRequiredService<IProductsDAO>();
             this._logger = Startup.ServiceProvider.GetRequiredService<ILogger<Function>>();
         }
 
-        internal Function(ProductsDAO dataAccess = null, ILogger<Function> logger = null)
+        internal Function(IProductsDAO dataAccess = null, ILogger<Function> logger = null)
         {
             this._dataAccess = dataAccess;
             this._logger = logger;
@@ -53,7 +53,7 @@ namespace PutProduct
                     StatusCode = (int)HttpStatusCode.BadRequest,
                 };
             }
-            
+                
             try
             {
                 var id = apigProxyEvent.PathParameters["id"];

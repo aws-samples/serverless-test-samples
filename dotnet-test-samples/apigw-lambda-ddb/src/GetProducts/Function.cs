@@ -18,15 +18,15 @@ namespace GetProducts
 {
     public class Function
     {
-        private readonly ProductsDAO _dataAccess;
+        private readonly IProductsDAO _dataAccess;
         private readonly ILogger<Function> _logger;
         public Function()
         {
-            this._dataAccess = Startup.ServiceProvider.GetRequiredService<ProductsDAO>();
+            this._dataAccess = Startup.ServiceProvider.GetRequiredService<IProductsDAO>();
             this._logger = Startup.ServiceProvider.GetRequiredService<ILogger<Function>>();
         }
 
-        internal Function(ProductsDAO dataAccess = null, ILogger<Function> logger = null)
+        internal Function(IProductsDAO dataAccess = null, ILogger<Function> logger = null)
         {
             this._dataAccess = dataAccess;
             this._logger = logger;
@@ -46,7 +46,7 @@ namespace GetProducts
 
             try
             {
-                context.Logger.LogLine($"Received {apigProxyEvent}");
+                this._logger.LogInformation($"Received {apigProxyEvent}");
 
                 var products = await _dataAccess.GetAllProducts();
     

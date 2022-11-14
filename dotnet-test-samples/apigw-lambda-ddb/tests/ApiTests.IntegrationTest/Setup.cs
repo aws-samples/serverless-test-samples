@@ -42,8 +42,12 @@ public class Setup : IDisposable
             StackName = stackName
         }).Result;
 
-        ApiUrl = response.Stacks[0].Outputs.FirstOrDefault(p => p.OutputKey == "ApiUrl").OutputValue;
-        _tableName = response.Stacks[0].Outputs.FirstOrDefault(p => p.OutputKey == "TableName").OutputValue;
+        var apiUrlOutputValue = response.Stacks[0].Outputs.FirstOrDefault(p => p.OutputKey == "ApiUrl") ?? throw new Exception("CloudFormation stack does not have an output variable named 'ApiUrl'");
+        var tableNameOutputValue = response.Stacks[0].Outputs.FirstOrDefault(p => p.OutputKey == "TableName") ?? throw new Exception("CloudFormation stack does not have an output variable named 'TableName'");
+
+        ApiUrl = apiUrlOutputValue.OutputValue;
+
+        _tableName = tableNameOutputValue.OutputValue;
     }
 
     public void Dispose()

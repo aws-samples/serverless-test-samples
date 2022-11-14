@@ -5,17 +5,17 @@ using ServerlessTestApi.Core.Models;
 
 namespace ServerlessTestApi.Infrastructure.DataAccess
 {
-    public class DynamoDbProducts : ProductsDAO
+    public class DynamoDbProducts : IProductsDAO
     {
-        private static string PRODUCT_TABLE_NAME = Environment.GetEnvironmentVariable("PRODUCT_TABLE_NAME");
-        private readonly AmazonDynamoDBClient _dynamoDbClient;
+        private static string PRODUCT_TABLE_NAME = Environment.GetEnvironmentVariable("PRODUCT_TABLE_NAME") ?? throw new ArgumentException("PRODUCT_TABLE_NAME environment variable is null");
+        private readonly IAmazonDynamoDB _dynamoDbClient;
 
-        public DynamoDbProducts()
+        public DynamoDbProducts(IAmazonDynamoDB dynamoDbClient)
         {
-            this._dynamoDbClient = new AmazonDynamoDBClient();
+            this._dynamoDbClient = dynamoDbClient;
         }
         
-        public async Task<ProductDTO> GetProduct(string id)
+        public async Task<ProductDTO?> GetProduct(string id)
         {
             var getItemResponse = await this._dynamoDbClient.GetItemAsync(new GetItemRequest(PRODUCT_TABLE_NAME,
                 new Dictionary<string, AttributeValue>(1)
