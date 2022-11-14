@@ -28,6 +28,8 @@ import { S3Client, ListBucketsCommand } from '@aws-sdk/client-s3';
 
 import { listBucketsLambdaHandler } from '../../app';
 
+import apiGWProxyEventStub from '../../../events/unit-test-event.json';
+
 /**
  * Set up Mocks
  *
@@ -67,7 +69,7 @@ describe('list-buckets', () => {
          */
         beforeEach(() => {
             s3Mock.reset();
-            inputEvent = getEmptyAPIGatewayProxyEvent();
+            inputEvent = apiGWProxyEventStub;
         });
 
         /**
@@ -105,54 +107,3 @@ describe('list-buckets', () => {
         });
     });
 });
-
-/**
- * Builds an empty API Gateway Proxy Event input object, with default values
- * @returns {APIGatewayProxyEvent}
- */
-function getEmptyAPIGatewayProxyEvent(): APIGatewayProxyEvent {
-    const result: APIGatewayProxyEvent = {
-        body: null,
-        headers: {},
-        multiValueHeaders: {},
-        httpMethod: '',
-        isBase64Encoded: false,
-        path: '',
-        pathParameters: {},
-        queryStringParameters: null,
-        multiValueQueryStringParameters: null,
-        stageVariables: null,
-        requestContext: {
-            accountId: '',
-            apiId: '',
-            authorizer: {},
-            protocol: '',
-            httpMethod: '',
-            identity: {
-                accessKey: null,
-                accountId: null,
-                apiKey: null,
-                apiKeyId: null,
-                caller: null,
-                clientCert: null,
-                cognitoAuthenticationProvider: null,
-                cognitoAuthenticationType: null,
-                cognitoIdentityId: null,
-                cognitoIdentityPoolId: null,
-                principalOrgId: null,
-                sourceIp: '',
-                user: null,
-                userAgent: null,
-                userArn: null,
-            },
-            path: '',
-            stage: '',
-            requestId: '',
-            requestTimeEpoch: 0,
-            resourceId: '',
-            resourcePath: '',
-        },
-        resource: '',
-    };
-    return result;
-}
