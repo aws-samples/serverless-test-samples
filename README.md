@@ -11,7 +11,7 @@ When testing in the cloud we encourage developers to explore options for acceler
 Mock frameworks can be useful for writing fast unit tests, especially for testing complex internal business logic or mathematical operations. Emulators may be convenient for some use cases but we encourage developers to use them sparingly, due to lack of feature parity with actual cloud services, configuration costs, and limited emulator service coverage. Mocks and emulators can be valuable testing tools, but they cannot provide the complete test coverage that testing in the cloud provides.  
 
 ## Sample Code
-The sample code in this project will illustrate techniques for creating automated tests in several languages. The initial samples are written in Python and we will publish samples in other languages over time. The samples demonstrate a variety of approaches including testing in the cloud, mocking and emulation. 
+The sample code in this project will illustrate techniques for creating automated tests in several languages. The samples demonstrate a variety of approaches including testing in the cloud, mocking and emulation. 
 
 - [Python Samples](./python-test-samples/)
 - [TypeScript Samples](./typescript-test-samples/)
