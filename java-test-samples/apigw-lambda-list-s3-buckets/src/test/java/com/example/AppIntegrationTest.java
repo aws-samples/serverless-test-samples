@@ -26,7 +26,7 @@ public class AppIntegrationTest {
   private static S3Client s3Client;
 
   private static final DockerImageName localStackImage =
-    DockerImageName.parse("localstack/localstack:0.14.3");
+    DockerImageName.parse("localstack/localstack:1.2.0");
 
   @Rule
   public static final LocalStackContainer localstack = new LocalStackContainer(localStackImage).withServices(S3);

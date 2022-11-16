@@ -258,3 +258,4 @@ samconfig.toml
 
 # End of https://www.gitignore.io/api/osx,linux,python,windows,pycharm,visualstudiocode
 
+/java-test-samples/apigw-lambda-ddb/TicketsFunction/apigw-lambda-ddb.ipr

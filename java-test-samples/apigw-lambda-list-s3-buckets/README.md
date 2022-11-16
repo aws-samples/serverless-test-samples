@@ -131,7 +131,7 @@ HelloWorld:
 
 [[top]](#api-gateway-to-lambda-to-list-s3-buckets)
 
-## Run a unit tests
+## Run unit test
 
 Tests are defined in the `apigw-lambda-list-s3-buckets/src/test` folder in this project.
 
@@ -183,7 +183,7 @@ In order to run integration tests, you can use [Testcontainers and Localstack](h
 
 ```java
 private static final DockerImageName localStackImage =
-  DockerImageName.parse("localstack/localstack:0.14.3");
+  DockerImageName.parse("localstack/localstack:1.2.0");
 
 @Rule
 public static final LocalStackContainer localstack = 
