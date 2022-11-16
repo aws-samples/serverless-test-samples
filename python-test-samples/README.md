@@ -3,8 +3,8 @@
 This project contains code samples for testing serverless applications using Python. 
 
 ## Basic Examples
-* [python-test-intro](./python-test-intro) : This folder contains introductory examples of Python tests written for AWS Lambda. This is the best place to start!
-* [python-test-layer](./python-test-layer) : This folder contains unit tests for Lambda layers utilizing mocks.
+* [apigw-lambda](./apigw-lambda) : This folder contains introductory examples of Python tests written for AWS Lambda. This is the best place to start!
+* [apigw-lambda-layer](./apigw-lambda-layer) : This folder contains unit tests for Lambda layers using mocks.
 
 ## API Tests
 These projects have excellent examples of unit and integration tests for API based applications. 

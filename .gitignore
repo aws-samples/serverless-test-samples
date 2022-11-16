@@ -255,7 +255,17 @@ samconfig.toml
 /java-test-samples/apigw-lambda-ddb/apigw-lambda-ddb.iml
 **/*.iml
 /java-test-samples/apigw-lambda-list-s3-buckets/target/
+/java-test-samples/apigw-lambda-ddb/TicketsFunction/apigw-lambda-ddb.ipr
 
 # End of https://www.gitignore.io/api/osx,linux,python,windows,pycharm,visualstudiocode
 
-/java-test-samples/apigw-lambda-ddb/TicketsFunction/apigw-lambda-ddb.ipr
+# .NET Ignores
+**/.idea/*
+**/bin/*
+**/.vs/*
+**/obj/*
+launchSettings.json
+samconfig.toml
+.dcignore
+*.DotSettings*
+# End of .NET ignores
