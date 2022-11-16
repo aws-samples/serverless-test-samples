@@ -1,17 +1,13 @@
-<div align="center">
-<h2>
-Serverless Test Samples
-</h2>
-This repo is designed to provide developers with guidance for implementing comprehensive test suites for their serverless applications.
-</br>
-<b>Runtime Guides:</b>
+## Serverless Test Samples
 
-<a href="https://github.com/aws-samples/serverless-test-samples/tree/main/python-test-samples">Python</a>
-·
-<a href="https://github.com/aws-samples/serverless-test-samples/tree/main/python-test-samples">Typescript</a>
-·
-<a href="https://github.com/aws-samples/serverless-test-samples/tree/main/python-test-samples">Java</a>
-</div>
+This repo is designed to provide developers with guidance for implementing comprehensive test suites for their serverless applications.
+
+### Runtime Guides:
+
+[Python](./python-test-samples/) ·
+[TypeScript](./typescript-test-samples/) ·
+[.NET](./dotnet-test-samples/) ·
+[Java](./java-test-samples/)
 
 ![Run Unit Tests](READMEIntro.gif)
 
@@ -22,16 +18,16 @@ How do you use this repo?
 - If you would like to implement the test samples in your own project, check out the sample code.
 
 ## Sample Code
-The sample code in this project will illustrate techniques for creating automated tests in several languages. The initial samples are written in Python and we will publish samples in other languages over time. The samples demonstrate a variety of approaches including testing in the cloud, mocking and emulation. 
-
-### Runtime Samples
-- [Python](./python-test-samples/)
-- TypeScript (coming soon)
-- Java (coming soon)
-- .NET (coming soon)
-- Go (coming soon)
+The sample code in this project will illustrate techniques for creating automated tests in several languages. The samples demonstrate a variety of approaches including testing in the cloud, mocking and emulation. 
 
 ### Sample Content
+
+- [Python Samples](./python-test-samples/)
+- [TypeScript Samples](./typescript-test-samples/)
+- [.NET Samples](./dotnet-test-samples/)
+- [Java Samples](./java-test-samples/)
+- Go (coming soon)
+
 Each runtime sample covers the following topics:
 - Unit, Integration and Load Tests
 - Mocks and Emulators
