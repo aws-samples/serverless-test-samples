@@ -5,13 +5,10 @@
 
 package com.example;
 
-import io.restassured.RestAssured;
-import io.restassured.response.Response;
-import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import software.amazon.awssdk.http.HttpStatusCode;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cloudformation.CloudFormationClient;
 import software.amazon.awssdk.services.cloudformation.model.DescribeStacksRequest;
@@ -20,6 +17,9 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.notNullValue;
 
 // This test requires an AWS account and assumes the SAM template part of this repo is deployed to AWS
 // This test runs END 2 END by sending an HTTP request to API Gateway URL and
@@ -55,29 +55,32 @@ public class TicketEnd2EndTest {
 
   @Test
   public void testPost() {
-    Response response = RestAssured.given()
-      .header("Content-Type", "application/json")
-      .header("Accept", "application/json")
-      .body("{\"description\": \"Lambda rocks\", \"userId\": \"testuser\"}")
+    String ticketId =
+      given()
+        .header("Content-Type", "application/json")
+        .header("Accept", "application/json")
+        .body("{\"description\": \"Lambda rocks\", \"userId\": \"testuser\"}")
       .when()
-      .post(apiEndPoint);
+        .post(apiEndPoint)
+      .then()
+        .assertThat().statusCode(HttpStatusCode.OK)
+        .body(notNullValue())
+        .extract()
+        .asString();
 
-    Assertions.assertEquals(response.statusCode(), 200);
-    String ticketId = response.asString();
-    Assert.assertNotNull(ticketId);
     ticketList.add(ticketId.substring(1, ticketId.length() - 1));
     DynamoTestUtil.validateItems(ticketList, ddbClient);
   }
 
   @Test
   public void testPostWithBadPayload() {
-    Response response = RestAssured.given()
+    given()
       .header("Content-Type", "application/json")
       .header("Accept", "application/json")
       .body("{\"description\":, \"userId\": \"testuser\"}")
-      .when()
-      .post(apiEndPoint);
-
-    Assertions.assertEquals(response.statusCode(), 400);
+    .when()
+      .post(apiEndPoint)
+    .then()
+      .assertThat().statusCode(HttpStatusCode.BAD_REQUEST);
   }
 }

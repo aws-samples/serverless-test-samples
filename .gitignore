@@ -268,3 +268,5 @@ samconfig.toml
 .dcignore
 *.DotSettings*
 # End of .NET ignores
+
+/java-test-samples/apigw-lambda-ddb/TicketsFunction/apigw-lambda-ddb.ipr
