@@ -9,6 +9,9 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import org.apache.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
@@ -21,6 +24,8 @@ import java.util.Map;
 import static java.util.stream.Collectors.joining;
 
 public class App implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+
+  private static final Logger logger = LoggerFactory.getLogger(App.class);
   private final S3Client s3client;
 
   public App() {
@@ -34,26 +39,33 @@ public class App implements RequestHandler<APIGatewayProxyRequestEvent, APIGatew
       .build();
   }
 
-  public APIGatewayProxyResponseEvent handleRequest(final APIGatewayProxyRequestEvent input, final Context context) {
+  public APIGatewayProxyResponseEvent handleRequest(final APIGatewayProxyRequestEvent event, final Context context) {
     Map<String, String> headers = new HashMap<>();
     headers.put("Content-Type", "text/plain");
 
     APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent()
       .withHeaders(headers);
 
-    try {
-      String output = s3client.listBuckets().buckets().stream()
-        .map(Bucket::name)
-        .collect(joining("|"));
+    if(event.getHttpMethod().equals("GET")) {
+      logger.info("Http Method " + event.getHttpMethod());
+      try {
+        String output = s3client.listBuckets().buckets().stream()
+          .map(Bucket::name)
+          .collect(joining("|"));
 
-      return response
-        .withStatusCode(200)
-        .withBody(output);
-    } catch (AwsServiceException e) {
-      e.printStackTrace();
-      return response
-        .withBody("{}")
-        .withStatusCode(500);
+        return response
+          .withStatusCode(HttpStatus.SC_OK)
+          .withBody(output);
+      } catch (AwsServiceException e) {
+        e.printStackTrace();
+        return response
+          .withBody("{}")
+          .withStatusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+      }
+    } else {
+      logger.info("Http Method Not Supported " + event.getHttpMethod());
+
+      return response.withStatusCode(HttpStatus.SC_METHOD_NOT_ALLOWED).withBody("Http Method Not Supported");
     }
   }
 }

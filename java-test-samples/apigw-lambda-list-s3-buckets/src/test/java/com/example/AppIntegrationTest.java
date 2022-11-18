@@ -5,11 +5,16 @@
 
 package com.example;
 
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.amazonaws.services.lambda.runtime.tests.annotations.Event;
+import org.apache.http.HttpStatus;
 import org.junit.Rule;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
 import org.testcontainers.containers.localstack.LocalStackContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
@@ -17,6 +22,7 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.testcontainers.containers.localstack.LocalStackContainer.Service.S3;
@@ -55,15 +61,29 @@ public class AppIntegrationTest {
     localstack.stop();
   }
 
-  @Test
-  public void successfulResponse() {
+  @ParameterizedTest
+  @Event(value = "events/apigw_req_s3_buckets_get.json", type = APIGatewayProxyRequestEvent.class)
+  public void successfulGetResponse(APIGatewayProxyRequestEvent event) {
     App app = new App(s3Client);
-    APIGatewayProxyResponseEvent result = app.handleRequest(null, null);
-    assertEquals(200, result.getStatusCode().intValue());
-    assertEquals("text/plain", result.getHeaders().get("Content-Type"));
-    String content = result.getBody();
+    APIGatewayProxyResponseEvent response = app.handleRequest(event, null);
+    Assertions.assertNotNull(response);
+    assertEquals(HttpStatus.SC_OK, response.getStatusCode().intValue());
+    assertEquals("text/plain", response.getHeaders().get("Content-Type"));
+    String content = response.getBody();
     assertNotNull(content);
     assertTrue(content.length() > 0);
     assertEquals("foo|bar", content);
   }
+
+  @ParameterizedTest
+  @Event(value = "events/apigw_req_s3_buckets_post.json", type = APIGatewayProxyRequestEvent.class)
+  public void methodNotSupportedResponse(APIGatewayProxyRequestEvent event) {
+    App app = new App(s3Client);
+    APIGatewayProxyResponseEvent response = app.handleRequest(event, null);
+    Assertions.assertNotNull(response);
+    assertEquals(HttpStatus.SC_METHOD_NOT_ALLOWED, response.getStatusCode().intValue());
+    String content = response.getBody();
+    assertEquals("Http Method Not Supported", content);
+  }
+
 }
