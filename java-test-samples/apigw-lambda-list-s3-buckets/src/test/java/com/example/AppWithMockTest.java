@@ -11,16 +11,12 @@ import com.amazonaws.services.lambda.runtime.tests.annotations.Event;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.mockito.junit.jupiter.MockitoExtension;
-import software.amazon.awssdk.auth.credentials.AwsCredentials;
-import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.Bucket;
 import software.amazon.awssdk.services.s3.model.ListBucketsResponse;
-import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
