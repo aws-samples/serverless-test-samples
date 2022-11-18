@@ -11,7 +11,6 @@ import com.amazonaws.services.lambda.runtime.tests.annotations.Event;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
@@ -21,7 +20,6 @@ import uk.org.webcompere.systemstubs.jupiter.SystemStub;
 import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SystemStubsExtension.class)
 public class AppTest {
@@ -37,7 +35,6 @@ public class AppTest {
     environmentVariables.set("AWS_SECRET_ACCESS_KEY", awsCredentials.secretAccessKey());
   }
 
-//  @Test
   @ParameterizedTest
   @Event(value = "events/apigw_req_s3_buckets_get.json", type = APIGatewayProxyRequestEvent.class)
   public void successfulGetResponse(APIGatewayProxyRequestEvent event, EnvironmentVariables environmentVariables) {
