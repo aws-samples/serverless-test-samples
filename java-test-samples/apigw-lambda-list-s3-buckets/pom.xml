@@ -145,6 +145,12 @@
       <artifactId>slf4j-simple</artifactId>
       <version>2.0.1</version>
     </dependency>
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-lambda-java-tests</artifactId>
+      <version>1.1.1</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
