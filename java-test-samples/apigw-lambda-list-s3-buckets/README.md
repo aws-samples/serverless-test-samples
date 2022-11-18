@@ -131,7 +131,7 @@ HelloWorld:
 
 [[top]](#api-gateway-to-lambda-to-list-s3-buckets)
 
-## Run unit test
+## Run unit tests
 
 Tests are defined in the `apigw-lambda-list-s3-buckets/src/test` folder in this project.
 
