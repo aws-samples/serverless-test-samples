@@ -54,7 +54,6 @@ public class App implements RequestHandler<APIGatewayProxyRequestEvent, APIGatew
         .withBody("Http Method Not Supported");
     }
 
-    logger.info("Http Method " + event.getHttpMethod());
     try {
       String output = s3client.listBuckets().buckets().stream()
         .map(Bucket::name)
@@ -64,7 +63,7 @@ public class App implements RequestHandler<APIGatewayProxyRequestEvent, APIGatew
         .withStatusCode(HttpStatus.SC_OK)
         .withBody(output);
     } catch (AwsServiceException e) {
-      e.printStackTrace();
+      logger.error("AWS Service Exception occurred: ", e);
       return response
         .withBody("{}")
         .withStatusCode(HttpStatus.SC_INTERNAL_SERVER_ERROR);
