@@ -38,7 +38,6 @@ def lambda_handler(event: APIGatewayProxyEvent, context: LambdaContext) -> dict:
 
     # Retrieve the person's name from an id, and construct the message.
     dynamodb_response = dynamodb_table.get_item(Key={"PK": f"{id}", "SK": "NAME#"})
-    print(dynamodb_response)
 
     # Does the person exist for this id?
     if "Item" in dynamodb_response and "data" in dynamodb_response["Item"]:
@@ -46,8 +45,8 @@ def lambda_handler(event: APIGatewayProxyEvent, context: LambdaContext) -> dict:
         hello_message = f"Hello {person_name}!"
         status_code = 200
     else:
-        hello_message = f"ERROR: Name Not Found for ID {id}"
-        status_code = 500
+        hello_message = f"NOTFOUND: Name Not Found for ID {id}"
+        status_code = 404
 
     # Create a timestamp and log the message back to DynamoDB
     datetime_stamp = "DT#" + datetime.now().strftime("%Y%m%dT%H%M%S.%f")
