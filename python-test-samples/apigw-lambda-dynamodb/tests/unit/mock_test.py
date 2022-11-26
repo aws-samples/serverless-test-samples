@@ -6,10 +6,12 @@ import json
 from datetime import datetime
 from unittest import TestCase
 from typing import Any, Dict
+from uuid import uuid4
 import yaml
 import boto3
 from boto3.dynamodb.conditions import Key
 import moto
+
 
 # Import the handler under test
 from src import app
@@ -22,32 +24,13 @@ class TestSampleLambdaWithDynamoDB(TestCase):
     Unit Test class for src/app.py
     """
     
-    def read_sam_template(self, sam_template_fn : str = "template.yaml" ) -> dict:
-        """
-        Utility Function to read the SAM template for the current project
-        """
-        with open(sam_template_fn, "r") as fp:
-            template =fp.read().replace("!","")   # Ignoring tags
-            try:
-                return yaml.safe_load(template)
-            except yaml.YAMLError as exc:
-                    print(exc)
-
-    def load_test_event(self, test_event_file_name: str) ->  Dict[str, Any]:
-        """
-        Load a sample event from a file
-        """
-        with open(f"tests/events/{test_event_file_name}.json") as f:
-            event = json.load(f)
-            # validate(event=event, schema=schemas.INPUT)
-            return event
-
     def setUp(self) -> None:
         """
         Test Set up:
            1. Create the lambda environment variale DYNAMODB_TABLE_NAME
            2. Build a DynamoDB Table according to the SAM template
-           3. Populate DynamoDB Data into the Table for test
+           3. Create a random postfix for this test instance to prevent data collisions
+           4. Populate DynamoDB Data into the Table for test
         """
 
         # Create a name for a test table, and set the environment
@@ -55,6 +38,8 @@ class TestSampleLambdaWithDynamoDB(TestCase):
         environ["DYNAMODB_TABLE_NAME"] = self.test_ddb_table_name 
 
         # Create a mock table using the definition from the SAM YAML template
+        # This simple technique works if there are no intrinsics (like !If or !Ref) in the
+        # resource properties for KeySchema, AttributeDefinitions, & BillingMode.
         sam_template_table_properties = self.read_sam_template()["Resources"]["DynamoDBTable"]["Properties"]
         self.mock_dynamodb = boto3.resource("dynamodb", region_name="us-east-1")
         self.mock_dynamodb_table = self.mock_dynamodb.create_table(
@@ -64,8 +49,12 @@ class TestSampleLambdaWithDynamoDB(TestCase):
                 BillingMode = sam_template_table_properties["BillingMode"]
                 )
 
+        # Create a random postfix for the id's to prevent data collions between tests
+        # Using unique id's per unit test will isolate test data
+        self.id_postfix = "_" + str(uuid4())
+   
         # Populate data for the tests
-        self.mock_dynamodb_table.put_item(Item={"PK": "TEST001", 
+        self.mock_dynamodb_table.put_item(Item={"PK": "TEST001" + self.id_postfix, 
                                                 "SK": "NAME#",
                                                 "data": "Unit Test Name Data"})
         
@@ -75,6 +64,24 @@ class TestSampleLambdaWithDynamoDB(TestCase):
         """
         self.mock_dynamodb_table.delete()
         del environ['DYNAMODB_TABLE_NAME']
+
+    def read_sam_template(self, sam_template_fn : str = "template.yaml" ) -> dict:
+        """
+        Utility Function to read the SAM template for the current project
+        """
+        with open(sam_template_fn, "r") as fp:
+            template =fp.read().replace("!","")   # Ignoring intrinsic tags
+            return yaml.safe_load(template)
+
+    def load_test_event(self, test_event_file_name: str) ->  Dict[str, Any]:
+        """
+        Load a sample event from a file
+        Add the test isolation postfix to the path parameter {id}
+        """
+        with open(f"tests/events/{test_event_file_name}.json","r") as f:
+            event = json.load(f)
+            event["pathParameters"]["id"] = event["pathParameters"]["id"] + self.id_postfix
+            return event
 
     
     def test_lambda_handler_happy_path(self):
@@ -94,7 +101,7 @@ class TestSampleLambdaWithDynamoDB(TestCase):
         # Verify the log entries
 
         id_items = self.mock_dynamodb_table.query(
-            KeyConditionExpression=Key('PK').eq('TEST001')
+            KeyConditionExpression=Key('PK').eq('TEST001' + self.id_postfix)
         )
     
         # Log entry item to the original name item
@@ -115,12 +122,12 @@ class TestSampleLambdaWithDynamoDB(TestCase):
         test_event = self.load_test_event("sampleEvent_NotFound_TEST002")
         test_return = app.lambda_handler(event=test_event,context=None)
         self.assertEqual( test_return["statusCode"] , 404)
-        self.assertEqual( test_return["body"] , "NOTFOUND: Name Not Found for ID TEST002")
+        self.assertEqual( test_return["body"] , "NOTFOUND: Name Not Found for ID TEST002" + self.id_postfix)
 
         # Verify the log entries
 
         id_items = self.mock_dynamodb_table.query(
-            KeyConditionExpression=Key('PK').eq('TEST002')
+            KeyConditionExpression=Key('PK').eq('TEST002' + self.id_postfix)
         )
     
         # Log entry item to the original name item
@@ -128,7 +135,7 @@ class TestSampleLambdaWithDynamoDB(TestCase):
 
         # Check the log entry item
         for item in id_items["Items"]:
-            self.assertEqual(item["data"], "NOTFOUND: Name Not Found for ID TEST002")
+            self.assertEqual(item["data"], "NOTFOUND: Name Not Found for ID TEST002" + self.id_postfix)
             self.assertEqual(item["SK"][0:11], "DT#" + datetime.now().strftime("%Y%m%d"))
         
 

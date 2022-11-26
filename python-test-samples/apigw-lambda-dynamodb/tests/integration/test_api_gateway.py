@@ -3,6 +3,7 @@
 
 import os
 from unittest import TestCase
+from uuid import uuid4
 from boto3.dynamodb.conditions import Key
 import boto3
 import requests
@@ -56,23 +57,28 @@ class TestApiGateway(TestCase):
         self.assertTrue(dynamodb_outputs, f"Cannot find output DynamoDBTableName in stack {stack_name}")
         self.dynamodb_table_name = dynamodb_outputs[0]["OutputValue"] 
 
+        # Create a random postfix for the id's to prevent data collions between tests
+        # Using unique id's per unit test will isolate test data
+        self.id_postfix = "_" + str(uuid4())
+
+
         # Seed the DynamoDB Table with Test Data
         dynamodb_resource = boto3.resource("dynamodb", region_name="us-east-1")
         dynamodb_table = dynamodb_resource.Table(name=self.dynamodb_table_name)
-        dynamodb_table.put_item(Item={"PK": "TEST001", 
-                                            "SK": "NAME#",
-                                            "data": "Unit Test Name Data"})
+        dynamodb_table.put_item(Item={"PK": "TEST001" + self.id_postfix, 
+                                      "SK": "NAME#",
+                                      "data": "Unit Test Name Data"})
 
 
     def tearDown(self) -> None:
         """
         # For tear-down, remove any data injected for the tests
-        # Table particular care to ensure these values are unique and identifiable as TEST data.
+        # Take particular care to ensure these values are unique and identifiable as TEST data.
         """
         dynamodb_resource = boto3.resource("dynamodb", region_name="us-east-1")
         dynamodb_table = dynamodb_resource.Table(name=self.dynamodb_table_name)
 
-        for id in ["TEST001","TEST002"]:
+        for id in ["TEST001" + self.id_postfix,"TEST002" + self.id_postfix]:
             id_items = dynamodb_table.query(
                 KeyConditionExpression=Key('PK').eq(id)
             )
@@ -84,12 +90,12 @@ class TestApiGateway(TestCase):
         """
         Call the API Gateway endpoint and check the response for a 200
         """
-        response = requests.get(self.api_endpoint.replace("{id}","TEST001"))
+        response = requests.get(self.api_endpoint.replace("{id}","TEST001" + self.id_postfix))
         self.assertEqual(response.status_code, requests.codes.ok)
 
     def test_api_gateway_404(self):
         """
         Call the API Gateway endpoint and check the response for a 404 (id not found)
         """    
-        response = requests.get(self.api_endpoint.replace("{id}","TEST002"))
+        response = requests.get(self.api_endpoint.replace("{id}","TEST002" + self.id_postfix))
         self.assertEqual(response.status_code, requests.codes.not_found)

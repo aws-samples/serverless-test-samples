@@ -58,7 +58,11 @@ Data persistence brings additional testing considerations.
 
 First, the data store must be pre-populated with data to test certain functionality.  In our example, we need a valid `id` to retrieve a name to test our function.  Therefore, we will add data to the data stores prior to running the tests.  This data seeding operation is performed in the test setup.  
 
-Second, the data store will be populated as a side-effect of our testing.  In our example, items of recorded "Hello" messages will be populated in our DynamoDB table.  To prevent unintended side-effects, we will clean-up data generated during the test execution.  This data cleaning operation is performed in the test tear-down.  
+Second, the data store will be populated as a side-effect of our testing.  In our example, items of recorded "Hello" messages will be populated in our DynamoDB table.  To prevent unintended side-effects, we will clean-up data generated during the test execution.  This data cleaning operation is performed in the test tear-down. 
+
+Third, any identifying values should be unique to the specific test.  This will prevent 
+collisions between tests should there be an issue with tear-down.  Each test can define
+a unique postfix to prevent the issues.
 
 [Top](#contents)
 
@@ -67,17 +71,17 @@ Second, the data store will be populated as a side-effect of our testing.  In ou
 ## Run the Unit Test
 [mock_test.py](tests/unit/mock_test.py) 
 
-In the [unit test](tests/unit/mock_test.py), all references and calls to the DynamoDB service [are mocked on line 18](tests/unit/mock_test.py#L18).
+In the [unit test](tests/unit/mock_test.py), all references and calls to the DynamoDB service [are mocked on line 18](tests/unit/mock_test.py#L20).
 
 The unit test establishes the DYNAMODB_TABLE_NAME environment
-variable that the Lambda function uses to reference the DynamoDB table.  DYNAMODB_TABLE_NAME is definied in the [setUp method of test class in mock_test.py](tests/unit/mock_test.py#L54-55).   
+variable that the Lambda function uses to reference the DynamoDB table.  DYNAMODB_TABLE_NAME is definied in the [setUp method of test class in mock_test.py](tests/unit/mock_test.py#L37-38).   
 
 
-In a unit test, you must create a mocked version of the DynamoDB table.  The example approach in the [setUp method of test class in mock_test.py](tests/unit/mock_test.py#L57-69) reads in the DynamoDB table schema directly the [SAM Template](template.yaml) so that the definition is maintained in one place.  Once the mocked table is created, test data is populated.
+In a unit test, you must create a mocked version of the DynamoDB table.  The example approach in the [setUp method of test class in mock_test.py](tests/unit/mock_test.py#L43-50) reads in the DynamoDB table schema directly the [SAM Template](template.yaml) so that the definition is maintained in one place.  This simple technique works if there are no intrinsics (like !If or !Ref) in the resource properties for KeySchema, AttributeDefinitions, & BillingMode.  Once the mocked table is created, test data is populated.
 
 With the mocked DynamoDB table created and the DYNAMODB_TABLE_NAME set to the mocked table name, the Lambda function will use the mocked DynamoDB table when executing.
 
-The [unit test tear-down](tests/unit/mock_test.py#L72-77) removes the mocked DynamoDB table and clears the DYNAMODB_TABLE_NAME environment variable.
+The [unit test tear-down](tests/unit/mock_test.py#L61-66) removes the mocked DynamoDB table and clears the DYNAMODB_TABLE_NAME environment variable.
 
 To run the unit test, execute the following
 ```shell
@@ -107,11 +111,11 @@ apigw-lambda-dynamodb$ sam build
 apigw-lambda-dynamodb$ sam deploy --guided
 ```
  
-The [integration test](tests/integration/test_api_gateway.py) setup determins both the [API endpoint](tests/integration/test_api_gateway.py#L48-52) and the name of the [DynamoDB table]tests/integration/test_api_gateway.py#L48-52) and the name of the [DynamoDB table](tests/integration/test_api_gateway.py#L55-58) in the stack.  
+The [integration test](tests/integration/test_api_gateway.py) setup determines both the [API endpoint](tests/integration/test_api_gateway.py#L50-53) and the name of the [DynamoDB table](tests/integration/test_api_gateway.py#L56-58) in the stack.  
 
-The integration test then [populates data into the DyanamoDB table](tests/integration/test_api_gateway.py#L59-64).
+The integration test then [populates data into the DyanamoDB table](tests/integration/test_api_gateway.py#L66-70).
 
-The [integration test tear-down](tests/integration/test_api_gateway.py#L67-81) removes the seed data, as well as data generated during the test.
+The [integration test tear-down](tests/integration/test_api_gateway.py#L73-87) removes the seed data, as well as data generated during the test.
 
 To run the integration test, create the environment variable "AWS_SAM_STACK_NAME" with the name of the test stack, and execute the test.
 
