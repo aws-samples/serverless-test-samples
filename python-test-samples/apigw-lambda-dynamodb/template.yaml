@@ -1,0 +1,91 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: SAM Template for apigw-lambda-dynamodb
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 30
+
+Resources:
+
+  # DynamoDB Resource https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html
+  
+  # This single-table DynamoDB design has a generic Partition Key (PK) and Sort Key (RK), and the item fields
+  # are dependent on the item type:
+  #  "Person Name Items"  :  PK = {id}, SK = "NAME#", data = "Person's Name"
+  #  "Hello Message Items" :  PK = {id}, SK = "DT#{datetime}", data = "Hello Message"
+
+  DynamoDBTable:
+    Type: AWS::DynamoDB::Table
+    UpdateReplacePolicy: Delete
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: PK
+        AttributeType: S
+      - AttributeName: SK
+        AttributeType: S
+      KeySchema:
+      - AttributeName: PK
+        KeyType: HASH
+      - AttributeName: SK
+        KeyType: RANGE
+      BillingMode: PAY_PER_REQUEST
+      SSESpecification:
+        SSEEnabled: true
+    Metadata:
+      SamResourceId: DynamoDBTable
+
+ # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+ # The Lambda function supports the /hello/{id} endpoint
+ # The function looks up the name of the person based on id, records the message to DynamoDB, 
+ # and returns a customized hello message.
+
+  PythonTestDemo:
+    Type: AWS::Serverless::Function 
+    Properties:
+      Tracing: Active
+      # Available policies: 
+      # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-template-list.html
+      Policies:
+        - AWSXrayWriteOnlyAccess
+        - DynamoDBCrudPolicy:
+            TableName: !Ref DynamoDBTable
+      CodeUri: src/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          DYNAMODB_TABLE_NAME:
+            Ref: DynamoDBTable
+      Events:
+        HelloPerson:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /hello/{id}
+            Method: get
+
+
+    
+Outputs:
+  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+  # Find out more about other implicit resources you can reference within SAM
+  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+  HelloPersonApi:
+    Description: "API Gateway endpoint URL for Prod stage for Hello Person function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/{id}"
+  PythonTestDemo:
+    Description: "Hello Person Lambda Function ARN"
+    Value: !GetAtt PythonTestDemo.Arn
+  DynamoDBTableName:
+    Description: "Hello Person DynamoDB table name"
+    Value: !Ref DynamoDBTable
+  PythonTestDemoIamRole:
+    Description: "Implicit IAM Role created for Hello World function"
+    Value: !GetAtt PythonTestDemoRole.Arn
+
