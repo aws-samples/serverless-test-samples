@@ -1,6 +1,6 @@
 ## Serverless Test Samples
 
-This repo is designed to provide developers with guidance for implementing comprehensive test suites for their serverless applications.
+This repository is designed to provide guidance for implementing comprehensive test suites for serverless applications.
 
 ### Runtime Guides:
 
@@ -12,7 +12,7 @@ This repo is designed to provide developers with guidance for implementing compr
 ![Run Unit Tests](READMEIntro.gif)
 
 ## Getting Started
-How do you use this repo? 
+How do you use this repository? 
 
 - If you would like to understand the guidance behind the test samples, please read [Serverless Testing Principles](Serverless%20Testing%20Principles.md). 
 - If you would like to implement the test samples in your own project, check out the sample code.
@@ -26,7 +26,6 @@ The sample code in this project will illustrate techniques for creating automate
 - [TypeScript Samples](./typescript-test-samples/)
 - [.NET Samples](./dotnet-test-samples/)
 - [Java Samples](./java-test-samples/)
-- Go (coming soon)
 
 Each runtime sample covers the following topics:
 - Unit, Integration and Load Tests
