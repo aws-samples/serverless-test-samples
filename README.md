@@ -7,7 +7,7 @@ This repository is designed to provide guidance for implementing comprehensive t
 [Python](./python-test-samples/) ·
 [TypeScript](./typescript-test-samples/) ·
 [.NET](./dotnet-test-samples/) ·
-[Java](./java-test-samples/)
+[Java](./java-test-samples/) (coming soon)
 
 ![Run Unit Tests](READMEIntro.gif)
 
@@ -25,7 +25,7 @@ The sample code in this project will illustrate techniques for creating automate
 - [Python Samples](./python-test-samples/)
 - [TypeScript Samples](./typescript-test-samples/)
 - [.NET Samples](./dotnet-test-samples/)
-- [Java Samples](./java-test-samples/)
+- [Java Samples](./java-test-samples/) (coming soon)
 
 Each runtime sample covers the following topics:
 - Unit, Integration and Load Tests
@@ -35,7 +35,4 @@ Each runtime sample covers the following topics:
 - Application Tracing
 
 ### Event-Driven Architecture / Async System Test Samples
-- SAM (coming soon)
-- CDK (coming soon)
-- Terraform (coming soon)
-- Serverless Framework (coming soon)
+(coming soon)
