@@ -1,20 +1,42 @@
-## Introduction
-This repository contains sample code demonstrating a variety of test patterns for serverless applications.
+## Serverless Test Samples
 
-## Testing in the Cloud
-Well-designed serverless applications may employ a variety of testing techniques to satisfy a range of requirements and conditions. However, based on current tooling, we recommend customers **focus on testing in the cloud** as much as possible. While testing in the cloud may create additional developer latency, increase costs, and require some customers to invest in additional dev-ops controls, this technique provides the most reliable, accurate, and complete test coverage. Performing tests in the context of the cloud allows you to test IAM policies, service configurations, quotas, and the most up to date API signatures and return values. Tests run in the cloud are most likely to produce consistent results as your code is promoted from environment to environment.
+This repository is designed to provide guidance for implementing comprehensive test suites for serverless applications.
 
-## Accelerate Feedback Loops
-When testing in the cloud we encourage developers to explore options for accelerating feedback loops and also to consider cost optimization techniques. The samples in this guide explore some of these techniques including [AWS Serverless Application Model (SAM) Accelerate](https://aws.amazon.com/blogs/compute/accelerating-serverless-development-with-aws-sam-accelerate/) and [AWS Cloud Development Kit (CDK) Watch](https://aws.amazon.com/blogs/developer/increasing-development-speed-with-cdk-watch/).
+### Runtime Guides:
 
-## Mocks and Emulators
-Mock frameworks can be useful for writing fast unit tests, especially for testing complex internal business logic or mathematical operations. Emulators may be convenient for some use cases but we encourage developers to use them sparingly, due to lack of feature parity with actual cloud services, configuration costs, and limited emulator service coverage. Mocks and emulators can be valuable testing tools, but they cannot provide the complete test coverage that testing in the cloud provides.  
+[Python](./python-test-samples/) ·
+[TypeScript](./typescript-test-samples/) ·
+[.NET](./dotnet-test-samples/) ·
+[Java](./java-test-samples/)
+
+![Run Unit Tests](READMEIntro.gif)
+
+## Getting Started
+How do you use this repository? 
+
+- If you would like to understand the guidance behind the test samples, please read [Serverless Testing Principles](Serverless%20Testing%20Principles.md). 
+- If you would like to implement the test samples in your own project, check out the sample code.
 
 ## Sample Code
 The sample code in this project will illustrate techniques for creating automated tests in several languages. The samples demonstrate a variety of approaches including testing in the cloud, mocking and emulation. 
+
+### Sample Content
 
 - [Python Samples](./python-test-samples/)
 - [Java Samples](./java-test-samples/)
 - [TypeScript Samples](./typescript-test-samples/)
 - [.NET Samples](./dotnet-test-samples/)
 - Go Samples (coming soon)
+
+Each runtime sample covers the following topics:
+- Unit, Integration and Load Tests
+- Mocks and Emulators
+- Using AWS SAM during testing
+- Testing in the Cloud
+- Application Tracing
+
+### Event-Driven Architecture / Async System Test Samples
+- SAM (coming soon)
+- CDK (coming soon)
+- Terraform (coming soon)
+- Serverless Framework (coming soon)
