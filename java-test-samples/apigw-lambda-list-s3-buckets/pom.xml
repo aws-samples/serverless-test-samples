@@ -173,6 +173,16 @@
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.22.2</version>
+        <configuration>
+          <!-- These tests are excluded from sure fire plugin to avoid failures due to external dependencies.
+               You can run these tests individually if you have the relevant pre-requisites in place.
+               Please see README for more information on each test class file.
+           -->
+          <excludes>
+            <exclude>AppTest.java</exclude>
+            <exclude>AppIntegrationTest.java</exclude>
+          </excludes>
+        </configuration>
       </plugin>
     </plugins>
   </build>
