@@ -44,13 +44,13 @@ To use the SAM CLI, you need the following tools.
 Use the following command to build your application locally:
 
 ```bash
-# build your application locally using a container
-apigw-lambda-list-s3-buckets$ sam build --use-container
+# build your application locally using a sam
+apigw-lambda-list-s3-buckets$ sam build
 ```
 The SAM CLI installs dependencies defined in `apigw-lambda-list-s3-buckets/pom.xml`, creates a deployment package, and saves it in the `.aws-sam/build` folder. [Read the documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-building.html).
 
 > Note:
-> If you witness error `Could not find public.ecr.aws/sam/build-java11:latest-x86_64 image locally and failed to pull it from docker` then run `docker logout public.ecr.aws` and rerun `sam build --use-container`
+> If you witness error `Could not find public.ecr.aws/sam/build-java11:latest-x86_64 image locally and failed to pull it from docker` then run `docker logout public.ecr.aws` and rerun `sam build`
 
 Use the following commend to deploy your application package to AWS:
 ``` bash
