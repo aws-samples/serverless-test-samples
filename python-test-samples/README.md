@@ -1,3 +1,5 @@
+[![python: 3.9](https://img.shields.io/badge/Python-3.9-green)](https://img.shields.io/badge/Python-3.9-green)
+
 # Python Test Samples
 
 This project contains code samples for testing serverless applications using Python. 
