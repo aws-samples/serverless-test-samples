@@ -175,41 +175,6 @@ public class AppWithMockTest {
 
 [[top]](#api-gateway-to-lambda-to-list-s3-buckets)
 
-## Run integration tests against cloud resources
-In order to run integration tests, you can use [Testcontainers and Localstack](https://www.testcontainers.org/modules/localstack/) which needs Docker engine running.
-
-[`AppIntegrationTest.java`](./src/test/java/com/example/AppIntegrationTest.java) shows the exact implementation. Important sections to look at are:
-
-
-```java
-private static final DockerImageName localStackImage =
-  DockerImageName.parse("localstack/localstack:1.2.0");
-
-@Rule
-public static final LocalStackContainer localstack = 
-  new LocalStackContainer(localStackImage).withServices(S3);
-
-@BeforeAll
-static void setup() {
-  localstack.start();
-
-  s3Client = S3Client
-    .builder()
-    .endpointOverride(localstack.getEndpointOverride(LocalStackContainer.Service.S3))
-    .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(
-      localstack.getAccessKey(), localstack.getSecretKey()
-    )))
-    .region(Region.of(localstack.getRegion()))
-    .build();
-
-  s3Client.createBucket(b -> b.bucket("foo"));
-  s3Client.createBucket(b -> b.bucket("bar"));
-}
-```
-
-
-[[top]](#api-gateway-to-lambda-to-list-s3-buckets)
-
 ## Invoke a Lambda function in the cloud
 The `AWS CLI` enables you to invoke a Lambda function in the cloud.
 
@@ -251,9 +216,11 @@ apigw-lambda-list-s3-buckets$ sam sync --watch --stack-name <stack-name>
 [[top]](#api-gateway-to-lambda-to-list-s3-buckets)
 
 ## Perform a load test
-Load tests should be executed in the cloud prior to any initial deployment to production environments. Load tests can be useful to discover performance bottlenecks and quota limits. Load tests should be scripted and repeatable. Load tests should simulate your application's expected peak load.
+Load tests should be executed in the cloud prior to any initial deployment to production environments. Load tests can be useful to discover performance bottlenecks and quota limits.  Load tests should simulate your application's expected peak load + 10% or more.
 
-This project uses an open source performance testing tool called `Locust`.
+There are several tools available for serverless developers to perform load testing. One of the most popular is `Artillery Community Edition`, which is an open-source tool for testing serverless APIs. You configure the number of requests per second and overall test duration, and it uses a headless Chromium browser to run its test flows.
+
+This project uses an open source performance testing tool called `Serverless Artillery`.
 
 TODO
 
@@ -288,7 +255,7 @@ Local emulation of AWS services offers a simple way to build and test cloud nati
 
 Local emulation has several limitations. Cloud services evolve rapidly, so local emulators are unlikely to have feature parity with their counterpart services in the cloud. Local emulators may not be able to provide an accurate representation of IAM permissions or service quotas. Local emulators do not exist for every AWS service.
 
-SAM provides local emulation features for [AWS Lambda](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-using-invoke.html) and [Amazon API Gateway](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-using-start-api.html). AWS provides [Amazon DynamoDB Local](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.html) as well as [AWS Step Functions Local](https://docs.aws.amazon.com/step-functions/latest/dg/sfn-local.html). Third party vendors like [LocalStack](https://docs.localstack.cloud/overview/) may provide emulation for additional AWS services.
+SAM provides local emulation features for [AWS Lambda](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-using-invoke.html) and [Amazon API Gateway](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-using-start-api.html). AWS provides [Amazon DynamoDB Local](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.html) as well as [AWS Step Functions Local](https://docs.aws.amazon.com/step-functions/latest/dg/sfn-local.html).
 
 This project demonstrates local emulation of Lambda and API Gateway with SAM.
 
