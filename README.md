@@ -26,8 +26,6 @@ The sample code in this project will illustrate techniques for creating automate
 - [Java Samples](./java-test-samples/)
 - [TypeScript Samples](./typescript-test-samples/)
 - [.NET Samples](./dotnet-test-samples/)
-- Go Samples (coming soon)
-- [Java Samples](./java-test-samples/)
 
 Each runtime sample covers the following topics:
 - Unit, Integration and Load Tests
