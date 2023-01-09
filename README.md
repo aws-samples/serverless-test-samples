@@ -7,7 +7,7 @@ This repository is designed to provide guidance for implementing comprehensive t
 [Python](./python-test-samples/) ·
 [TypeScript](./typescript-test-samples/) ·
 [.NET](./dotnet-test-samples/) ·
-[Java](./java-test-samples/) (coming soon)
+[Java](./java-test-samples/)
 
 ![Run Unit Tests](READMEIntro.gif)
 
