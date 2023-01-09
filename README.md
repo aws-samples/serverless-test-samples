@@ -25,7 +25,6 @@ The sample code in this project will illustrate techniques for creating automate
 - [Python Samples](./python-test-samples/)
 - [TypeScript Samples](./typescript-test-samples/)
 - [.NET Samples](./dotnet-test-samples/)
-- [Java Samples](./java-test-samples/) (coming soon)
 
 Each runtime sample covers the following topics:
 - Unit, Integration and Load Tests
