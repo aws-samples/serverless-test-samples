@@ -23,9 +23,11 @@ The sample code in this project will illustrate techniques for creating automate
 ### Sample Content
 
 - [Python Samples](./python-test-samples/)
+- [Java Samples](./java-test-samples/)
 - [TypeScript Samples](./typescript-test-samples/)
 - [.NET Samples](./dotnet-test-samples/)
-- [Java Samples](./java-test-samples/) (coming soon)
+- Go Samples (coming soon)
+- [Java Samples](./java-test-samples/)
 
 Each runtime sample covers the following topics:
 - Unit, Integration and Load Tests
@@ -35,4 +37,7 @@ Each runtime sample covers the following topics:
 - Application Tracing
 
 ### Event-Driven Architecture / Async System Test Samples
-(coming soon)
+- SAM (coming soon)
+- CDK (coming soon)
+- Terraform (coming soon)
+- Serverless Framework (coming soon)
