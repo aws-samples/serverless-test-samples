@@ -4,7 +4,7 @@
 [![test: integration](https://img.shields.io/badge/Test-Integration-yellow)](https://img.shields.io/badge/Test-Integration-yellow)
 [![test: local](https://img.shields.io/badge/Test-Local-red)](https://img.shields.io/badge/Test-Local-red)
 
-# Python Test Samples Project
+# Python Test Samples Starter Project
 This project contains automated test sample code samples for serverless applications written in Python. The project demonstrates several techniques for executing tests including mocking, emulation and testing in the cloud. Based on current tooling, we recommend customers **focus on testing in the cloud** as much as possible. 
 
 ## Testing in the Cloud
