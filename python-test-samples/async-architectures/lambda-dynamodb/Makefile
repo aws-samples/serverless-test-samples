@@ -44,8 +44,16 @@ deploy.prod: ##=> Deploy app to a production environment
 invoke: ##=> Run SAM Local function with a given event payload
 	@sam local invoke TextTransformer --event events/putObject.json
 
-test: ##=> Run pytest
+unit-test: ##=> Run pytest
 	POWERTOOLS_METRICS_NAMESPACE="MyServerlessApplication" $(PIPENV) run python -m pytest --cov . --cov-report term-missing --cov-fail-under $(CODE_COVERAGE) tests/ -vv
+
+integration-test: check-stack-name
+	AWS_SAM_STACK_NAME=$(AWS_SAM_STACK_NAME) python -m pytest -s tests/integration -v
+
+check-stack-name:
+ifndef AWS_SAM_STACK_NAME
+	$(error usage: make AWS_SAM_STACK_NAME=<your-aws-stack-name> integration-test)
+endif
 
 ci: ##=> Run full workflow - Install deps, build deps, and deploy
 	$(MAKE) dev
@@ -83,7 +91,10 @@ define HELP_MESSAGE
 	$ make deploy
 
 	...::: Run Pytest under tests/ with pipenv :::...
-	$ make test
+	$ make unit-test
+
+	...::: Run integration test against cloud resources :::...
+	$ make AWS_SAM_STACK_NAME=<your-aws-stack-name> integration-test
 
 	...::: Spawn a virtual environment shell :::...
 	$ make shell
