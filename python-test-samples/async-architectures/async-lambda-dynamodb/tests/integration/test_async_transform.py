@@ -132,7 +132,7 @@ def test_retrieve_object_from_dynamodb(unmodified_message, modified_message, sou
         if put_file_yet == False:
             put_object_into_source_bucket(unmodified_message, source_bucket_name, file_name)
             put_file_yet = True
-            
+
         # query dynamodb for the output
         dynamodb = boto3.client("dynamodb")
         response = dynamodb.get_item(
@@ -160,3 +160,5 @@ def test_retrieve_object_from_dynamodb(unmodified_message, modified_message, sou
         
         if (loop_max_time < datetime.now()):
             assert False, ("Could not retrieve object from DynamoDB before timeout. Async process failed.")
+
+# TODO cleanup, README
