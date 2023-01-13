@@ -2,6 +2,16 @@ from aws_lambda_powertools import Logger, Tracer
 from aws_lambda_powertools.utilities.data_classes import event_source, S3Event
 import boto3
 import os
+
+'''
+This Lambda function's purpose is to support integration tests. It is meant 
+to be deployed in pre-production environments only. The function is configured 
+to be an event listener that is notified when an object is put into the destination 
+S3 bucket at the end of the production asynchronous process. 
+
+The function retrieves the object from S3 and then puts it into DynamoDB where the 
+integration test can examine it to determine if it has been modified correctly. 
+'''
   
 destination_bucket = os.environ['DESTINATION_BUCKET']
 results_table = os.environ['RESULTS_TABLE']
