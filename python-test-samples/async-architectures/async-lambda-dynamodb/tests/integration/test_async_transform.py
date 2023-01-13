@@ -4,7 +4,6 @@
 import os
 import uuid
 import boto3
-import requests
 from datetime import datetime, timedelta
 import pytest
 
@@ -33,7 +32,7 @@ def poll_timeout_duration_secs():
 
 # generate a random filename
 file_name = ""
-@pytest.fixture(autouse=True)
+@pytest.fixture()
 def test_filename():
     global file_name
     if file_name == "":
@@ -105,20 +104,19 @@ def getStacks() -> str:
 Put a lowercase string into the source bucket. 
 This the is beginning of the production async process. 
 '''
-def test_put_object_into_source_bucket(unmodified_message, source_bucket_name):
+def put_object_into_source_bucket(unmodified_message, source_bucket_name, file_name):
 
     print()
     print("Putting object into S3...")
-    global file_name
     client = boto3.client('s3')
     response = client.put_object(Body=unmodified_message, Bucket=source_bucket_name, Key=file_name)
-    
-    assert response['ResponseMetadata']['HTTPStatusCode'] == requests.codes.ok, f"Cannot put object into Source Bucket {source_bucket}"
+    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
+        raise f"Cannot put object into Source Bucket {source_bucket_name}"
 
 '''
 Poll to retrieve the modified string from a DynamoDB Table. This is the end of the async process.
 '''    
-def test_retrieve_object_from_dynamodb(modified_message, test_results_table, poll_timeout_duration_secs):
+def test_retrieve_object_from_dynamodb(unmodified_message, modified_message, source_bucket_name, test_results_table, poll_timeout_duration_secs, test_filename):
 
     print()
     # set the maximum amount of time to poll before the test fails
@@ -127,8 +125,14 @@ def test_retrieve_object_from_dynamodb(modified_message, test_results_table, pol
     loop_max_time = loop_start_time + timedelta(seconds=poll_timeout_duration_secs)
     global file_name
 
+    put_file_yet = False
+
     while True:
 
+        if put_file_yet == False:
+            put_object_into_source_bucket(unmodified_message, source_bucket_name, file_name)
+            put_file_yet = True
+            
         # query dynamodb for the output
         dynamodb = boto3.client("dynamodb")
         response = dynamodb.get_item(

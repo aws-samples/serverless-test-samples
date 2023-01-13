@@ -1,5 +1,4 @@
 BASE := $(shell /bin/pwd)
-CODE_COVERAGE = 72
 PIPENV ?= pipenv
 
 #############
@@ -41,18 +40,12 @@ deploy: ##=> Deploy app using previously saved SAM CLI configuration
 deploy.prod: ##=> Deploy app to a production environment
 	sam deploy --parameter-overrides EnvType=prod
 
-invoke: ##=> Run SAM Local function with a given event payload
-	@sam local invoke TextTransformer --event events/putObject.json
-
-unit-test: ##=> Run pytest
-	POWERTOOLS_METRICS_NAMESPACE="MyServerlessApplication" $(PIPENV) run python -m pytest --cov . --cov-report term-missing --cov-fail-under $(CODE_COVERAGE) tests/ -vv
-
-integration-test: check-stack-name
+test: check-stack-name
 	AWS_SAM_STACK_NAME=$(AWS_SAM_STACK_NAME) python -m pytest -s tests/integration -v
 
 check-stack-name:
 ifndef AWS_SAM_STACK_NAME
-	$(error usage: make AWS_SAM_STACK_NAME=<your-aws-stack-name> integration-test)
+	$(error usage: make AWS_SAM_STACK_NAME=<your-aws-stack-name> test)
 endif
 
 ci: ##=> Run full workflow - Install deps, build deps, and deploy
