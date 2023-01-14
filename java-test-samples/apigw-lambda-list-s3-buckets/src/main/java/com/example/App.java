@@ -9,10 +9,12 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.amazonaws.xray.interceptors.TracingInterceptor;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.awscore.exception.AwsServiceException;
+import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
 import software.amazon.awssdk.http.SdkHttpMethod;
 import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
@@ -36,6 +38,9 @@ public class App implements RequestHandler<APIGatewayProxyRequestEvent, APIGatew
   public App(S3Client s3Client) {
     s3client = s3Client != null ? s3Client : S3Client.builder()
       .region(Region.of(System.getenv("AWS_REGION")))
+      .overrideConfiguration(ClientOverrideConfiguration.builder()
+        .addExecutionInterceptor(new TracingInterceptor())
+        .build())
       .httpClient(ApacheHttpClient.create())
       .build();
   }

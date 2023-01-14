@@ -8,6 +8,7 @@ package com.example;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.amazonaws.services.lambda.runtime.tests.annotations.Event;
+import com.amazonaws.xray.AWSXRay;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +39,8 @@ public class AppTest {
   @ParameterizedTest
   @Event(value = "events/apigw_req_s3_buckets_get.json", type = APIGatewayProxyRequestEvent.class)
   public void successfulGetResponse(APIGatewayProxyRequestEvent event, EnvironmentVariables environmentVariables) {
+    //This line manually adds the X-ray segment
+    AWSXRay.beginSegment("S3");
     App app = new App();
     APIGatewayProxyResponseEvent response = app.handleRequest(event, null);
     Assertions.assertNotNull(response);

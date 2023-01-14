@@ -5,8 +5,11 @@
 
 package com.example.utils;
 
+import com.amazonaws.xray.interceptors.TracingInterceptor;
 import com.example.model.Ticket;
 import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
+import software.amazon.awssdk.core.SdkSystemSetting;
+import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
@@ -21,17 +24,25 @@ public class DDBUtils {
 
   public DDBUtils(DynamoDbEnhancedClient enhancedClient) {
     if (enhancedClient == null) {
-      DynamoDbClient ddb = DynamoDbClient.builder()
-        .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
-        .region(Region.US_EAST_1)
-        .build();
-      this.enhancedClient = enhancedClient = DynamoDbEnhancedClient.builder()
+      DynamoDbClient ddb = getDynamoDbClient();
+      this.enhancedClient = DynamoDbEnhancedClient.builder()
         .dynamoDbClient(ddb)
         .build();
     } else {
       this.enhancedClient = enhancedClient;
     }
 
+  }
+
+  public static DynamoDbClient getDynamoDbClient() {
+    DynamoDbClient ddb = DynamoDbClient.builder()
+      .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
+      .region(Region.of(System.getenv(SdkSystemSetting.AWS_REGION.environmentVariable())))
+      .overrideConfiguration(ClientOverrideConfiguration.builder()
+        .addExecutionInterceptor(new TracingInterceptor())
+        .build())
+      .build();
+    return ddb;
   }
 
 

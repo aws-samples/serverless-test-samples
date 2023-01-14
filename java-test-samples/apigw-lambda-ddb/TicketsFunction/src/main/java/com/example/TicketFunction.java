@@ -15,10 +15,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.http.HttpStatusCode;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 public class TicketFunction implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
@@ -29,10 +27,7 @@ public class TicketFunction implements RequestHandler<APIGatewayProxyRequestEven
 
   public TicketFunction(DDBUtils ddbUtils) {
     if (ddbUtils == null) {
-      DynamoDbClient ddb = DynamoDbClient.builder()
-        .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
-        .region(Region.US_EAST_1)
-        .build();
+      DynamoDbClient ddb = DDBUtils.getDynamoDbClient();
       DynamoDbEnhancedClient enhancedClient = DynamoDbEnhancedClient.builder()
         .dynamoDbClient(ddb)
         .build();
