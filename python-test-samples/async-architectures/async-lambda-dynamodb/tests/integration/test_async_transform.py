@@ -27,7 +27,7 @@ the process.
 '''
 @pytest.fixture
 def poll_timeout_duration_secs():
-    # set timeout duration to your SLA guarantee
+    # set timeout duration to be your SLA 
     return 10
 
 # generate a random filename
@@ -55,11 +55,39 @@ def source_bucket_name() -> str:
     try: 
         stack_outputs = stacks[0]["Outputs"]
         source_bucket_output = [output for output in stack_outputs if output["OutputKey"] == "SourceBucketName"]
-        return source_bucket_output[0]["OutputValue"]
+        src_bucket_name = source_bucket_output[0]["OutputValue"]
+        yield src_bucket_name
     except KeyError as e:
         raise Exception(
             f"Cannot find output SourceBucketName in stack {source_bucket_output}"
         ) from e
+
+    try: 
+        stack_outputs = stacks[0]["Outputs"]
+        source_bucket_output = [output for output in stack_outputs if output["OutputKey"] == "DestinationBucketName"]
+        destination_bucket_name = source_bucket_output[0]["OutputValue"]
+    except KeyError as e:
+        raise Exception(
+            f"Cannot find output DestinationBucketName in stack {destination_bucket_name}"
+        ) from e
+
+    # cleanup source bucket
+    print("*** Cleanup - removing object from S3 source table... ")
+    client = boto3.client('s3')
+    
+    response = client.delete_object(Bucket=src_bucket_name, Key=file_name)
+    if response['ResponseMetadata']['HTTPStatusCode'] != 204:
+        raise Exception(
+            f"Cannot delete {file_name} from {src_bucket_name}. Response: " + str(response)
+        )
+
+    # cleanup destination bucket
+    print("*** Cleanup - removing object from S3 destination table... ")
+    response = client.delete_object(Bucket=destination_bucket_name, Key=file_name)
+    if response['ResponseMetadata']['HTTPStatusCode'] != 204:
+        raise Exception(
+            f"Cannot delete {file_name} from {destination_bucket_name}. Response: " + str(response)
+        )
 
 # get the name of the destination dynamodb table where the results should be
 @pytest.fixture
@@ -68,11 +96,26 @@ def test_results_table() -> str:
     try: 
         stack_outputs = stacks[0]["Outputs"]
         async_test_results_output = [output for output in stack_outputs if output["OutputKey"] == "AsyncTransformTestResultsTable"]
-        return async_test_results_output[0]["OutputValue"]
+        table_name = async_test_results_output[0]["OutputValue"]
+        yield table_name
     except KeyError as e:
         raise Exception(
             f"Cannot find output AsyncTransformTestResultsTable in stack {async_test_results_output}"
         ) from e
+
+    # cleanup from results table
+    print("\n*** Cleanup - removing item from DynamoDB results table... ")
+    global file_name
+    dynamodb = boto3.client('dynamodb')
+    response = dynamodb.delete_item(TableName=table_name, Key={'id':{'S':file_name}}, ReturnValues="ALL_OLD")
+    
+    try:
+        # if this attribute is not present, the delete_item command did not find the row to delete 
+        response['Attributes']['message']
+    except KeyError as e:
+        raise Exception(
+            f"Cannot delete {file_name} from {table_name}. Response: " + str(response)
+        )
 
 '''
 Based on the provided AWS_SAM_STACK_NAME, we can use CloudFormation API 
@@ -102,19 +145,20 @@ def getStacks() -> str:
 
 '''
 Put a lowercase string into the source bucket. 
-This the is beginning of the production async process. 
+This the is beginning of the async process. 
 '''
 def put_object_into_source_bucket(unmodified_message, source_bucket_name, file_name):
 
     print()
-    print("Putting object into S3...")
+
+    print("*** Putting object into S3... ")
     client = boto3.client('s3')
     response = client.put_object(Body=unmodified_message, Bucket=source_bucket_name, Key=file_name)
     if response['ResponseMetadata']['HTTPStatusCode'] != 200:
         raise f"Cannot put object into Source Bucket {source_bucket_name}"
 
 '''
-Poll to retrieve the modified string from a DynamoDB Table. This is the end of the async process.
+Poll to retrieve the modified string from a DynamoDB table at the end of the async process.
 '''    
 def test_retrieve_object_from_dynamodb(unmodified_message, modified_message, source_bucket_name, test_results_table, poll_timeout_duration_secs, test_filename):
 
@@ -145,20 +189,20 @@ def test_retrieve_object_from_dynamodb(unmodified_message, modified_message, sou
         # did we get the object?
         try: 
             x = response['Item']['message']
-            print("*** Object found in DynamoDB. Success! ***")
+            print("*** Properly transformed object found in DynamoDB. Success!")
 
             # is the object formed correctly?
             assert x['S'] == modified_message, f"Object malformed. Found {x}. Should be: {modified_message}"
             
-            # we found the object and it's well formed, let's get out of here
+            # we found the object and it's well formed, the test passed! let's exit the loop
             break
 
         except KeyError:
             pass
         
-        print("Querying DynamoDB for modified object. Not found yet...")
+        print("*** Querying DynamoDB for the object. Not found yet...")
         
         if (loop_max_time < datetime.now()):
-            assert False, ("Could not retrieve object from DynamoDB before timeout. Async process failed.")
+            assert False, ("*** Could not retrieve object from DynamoDB before timeout. Async process failed.")
 
 # TODO cleanup, README
