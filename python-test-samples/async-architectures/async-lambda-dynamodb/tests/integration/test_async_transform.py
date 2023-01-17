@@ -6,6 +6,7 @@ import uuid
 import boto3
 from datetime import datetime, timedelta
 import pytest
+from http import HTTPStatus
 
 '''
 usage:
@@ -76,7 +77,7 @@ def source_bucket_name() -> str:
     client = boto3.client('s3')
     
     response = client.delete_object(Bucket=src_bucket_name, Key=file_name)
-    if response['ResponseMetadata']['HTTPStatusCode'] != 204:
+    if response['ResponseMetadata']['HTTPStatusCode'] != HTTPStatus.NO_CONTENT:
         raise Exception(
             f"Cannot delete {file_name} from {src_bucket_name}. Response: " + str(response)
         )
@@ -84,7 +85,7 @@ def source_bucket_name() -> str:
     # cleanup destination bucket
     print("*** Cleanup - removing object from S3 destination table... ")
     response = client.delete_object(Bucket=destination_bucket_name, Key=file_name)
-    if response['ResponseMetadata']['HTTPStatusCode'] != 204:
+    if response['ResponseMetadata']['HTTPStatusCode'] != HTTPStatus.NO_CONTENT:
         raise Exception(
             f"Cannot delete {file_name} from {destination_bucket_name}. Response: " + str(response)
         )
@@ -154,7 +155,7 @@ def put_object_into_source_bucket(unmodified_message, source_bucket_name, file_n
     print("*** Putting object into S3... ")
     client = boto3.client('s3')
     response = client.put_object(Body=unmodified_message, Bucket=source_bucket_name, Key=file_name)
-    if response['ResponseMetadata']['HTTPStatusCode'] != 200:
+    if response['ResponseMetadata']['HTTPStatusCode'] != HTTPStatus.OK:
         raise f"Cannot put object into Source Bucket {source_bucket_name}"
 
 '''
@@ -205,4 +206,4 @@ def test_retrieve_object_from_dynamodb(unmodified_message, modified_message, sou
         if (loop_max_time < datetime.now()):
             assert False, ("*** Could not retrieve object from DynamoDB before timeout. Async process failed.")
 
-# TODO cleanup, README
+# TODO README, test prod deploy

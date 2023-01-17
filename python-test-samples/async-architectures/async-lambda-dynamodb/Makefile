@@ -18,26 +18,26 @@ all: clean build
 install:
 	$(info [*] Installing pipenv)
 	@pip install pipenv --upgrade
-	$(MAKE) dev
 
-dev:
+shell:
+	$(info [*] Type the 'deactivate' command to exit this shell)
+	@$(PIPENV) shell
+
+deps:
 	$(info [*] Installing pipenv project dependencies)
 	@$(PIPENV) install
 	@$(PIPENV) install -d
 
-shell:
-	@$(PIPENV) shell
-
 build: ##=> Same as package except that we don't create a ZIP
 	sam build --use-container
 
-deploy.guided: ##=> Guided deploy that is typically run for the first time only
+deploy.g: ##=> Guided deploy that is typically run for the first time only
 	sam deploy --guided
 
 deploy: ##=> Deploy app using previously saved SAM CLI configuration
 	sam deploy
 
-deploy.prod: ##=> Deploy app to a production environment
+deploy.p: ##=> Deploy app to a production environment
 	sam deploy --parameter-overrides EnvType=prod
 
 test: check-stack-name
@@ -48,56 +48,29 @@ ifndef AWS_SAM_STACK_NAME
 	$(error usage: make AWS_SAM_STACK_NAME=<your-aws-stack-name> test)
 endif
 
-ci: ##=> Run full workflow - Install deps, build deps, and deploy
-	$(MAKE) dev
-	$(MAKE) build
-	$(MAKE) deploy
-
-hurry: ##=> Run full workflow for the first time
-	$(MAKE) install
-	$(MAKE) build
-	$(MAKE) deploy.guided
+delete: 
+	sam delete
 
 #############
 #  Helpers  #
 #############
 
 define HELP_MESSAGE
-	Environment variables to be aware of or to hardcode depending on your use case:
 
-	NETWORK
-		Default: ""
-		Info: Docker Network to connect to when running Lambda function locally
+	Usage: make <command>
 
-	Common usage:
+	Commands:
 
-	...::: Installs Pipenv, application and dev dependencies defined in Pipfile :::...
-	$ make install
+	build     Build Lambda function dependencies
+	deploy.g  Deploy for the first time
+	deploy    Deploy subsequent changes
 
-	...::: Builds Lambda function dependencies:::...
-	$ make build
+	install   Install Pipenv, application and dev dependencies defined in Pipfile
+	shell     Spawn a virtual environment shell
+	deps      Install project dependencies locally
+	test      Run integration test against cloud environment (requires AWS_SAM_STACK_NAME variable) 
 
-	...::: Deploy for the first time :::...
-	$ make deploy.guided
-
-	...::: Deploy subsequent changes :::...
-	$ make deploy
-
-	...::: Run Pytest under tests/ with pipenv :::...
-	$ make unit-test
-
-	...::: Run integration test against cloud resources :::...
-	$ make AWS_SAM_STACK_NAME=<your-aws-stack-name> integration-test
-
-	...::: Spawn a virtual environment shell :::...
-	$ make shell
-
-	...::: Cleans up the environment - Deletes Virtualenv, ZIP builds and Dev env :::...
-	$ make clean
-
-	...::: Run full workflow from installing Pipenv, dev and app deps, build, and deploy :::...
-	$ make ci
-
-	Advanced usage:
+	clean     Cleans up local build artifacts including zip files
+	delete    Delete stack from AWS cloud
 
 endef
