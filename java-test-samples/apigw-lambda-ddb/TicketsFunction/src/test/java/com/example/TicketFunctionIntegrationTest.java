@@ -8,13 +8,18 @@ package com.example;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.amazonaws.services.lambda.runtime.tests.annotations.Event;
+import com.amazonaws.xray.AWSXRay;
+import com.amazonaws.xray.interceptors.TracingInterceptor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
+import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.core.SdkSystemSetting;
+import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
 import software.amazon.awssdk.http.HttpStatusCode;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -26,15 +31,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 // This is an integration test as it requires an actual AWS account.
-// It assumes that a DynamoDB table with name "tickets" exists on AWS in US-EAST-1
+// It assumes that a DynamoDB table with name "tickets" exists on AWS in US-EAST-2
 // and reads AWS Credentials from ~/.aws/credentials with default profile
 @ExtendWith(SystemStubsExtension.class)
 public class TicketFunctionIntegrationTest {
 
+  private static final Region TEST_REGION = Region.US_EAST_2;
   @SystemStub
   private static EnvironmentVariables environmentVariables;
   private final DynamoDbClient ddbClient = DynamoDbClient.builder()
-    .region(Region.US_EAST_1)
+    .region(TEST_REGION)
     .build();
   private List<String> ticketList = new ArrayList<>();
 
@@ -44,6 +50,7 @@ public class TicketFunctionIntegrationTest {
     AwsCredentials awsCredentials = credentialsProvider.resolveCredentials();
     environmentVariables.set("AWS_ACCESS_KEY_ID", awsCredentials.accessKeyId());
     environmentVariables.set("AWS_SECRET_ACCESS_KEY", awsCredentials.secretAccessKey());
+    environmentVariables.set("AWS_REGION", TEST_REGION.id());
   }
 
   @AfterEach
@@ -55,6 +62,8 @@ public class TicketFunctionIntegrationTest {
   @ParameterizedTest
   @Event(value = "events/apigw_request_1.json", type = APIGatewayProxyRequestEvent.class)
   public void testPutTicket(APIGatewayProxyRequestEvent event, EnvironmentVariables environmentVariables) {
+    //This line manually adds the X-ray segment
+    AWSXRay.beginSegment("DynamoDb");
     TicketFunction function = new TicketFunction();
     APIGatewayProxyResponseEvent response = function.handleRequest(event, null);
     Assertions.assertNotNull(response);

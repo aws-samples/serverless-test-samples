@@ -27,9 +27,9 @@
         <scope>import</scope>
       </dependency>
       <dependency>
-        <groupId>org.testcontainers</groupId>
-        <artifactId>testcontainers-bom</artifactId>
-        <version>${testcontainers.version}</version>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>aws-xray-recorder-sdk-bom</artifactId>
+        <version>2.11.0</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -72,6 +72,25 @@
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>cloudformation</artifactId>
     </dependency>
+
+    <!-- X-Ray Tracing Dependencies -->
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-xray-recorder-sdk-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-xray-recorder-sdk-aws-sdk</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-xray-recorder-sdk-aws-sdk-instrumentor</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-xray-recorder-sdk-aws-sdk-v2</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>dynamodb-enhanced</artifactId>
@@ -147,29 +166,6 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- Test Containers dependencies -->
-    <dependency>
-      <groupId>org.testcontainers</groupId>
-      <artifactId>testcontainers</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.testcontainers</groupId>
-      <artifactId>localstack</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.testcontainers</groupId>
-      <artifactId>junit-jupiter</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <!-- AWS SDK v1 needed by Testcontainers, therefore test scope -->
-    <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-java-sdk-dynamodb</artifactId>
-      <version>1.12.339</version>
-      <scope>test</scope>
-    </dependency>
     <!-- Rest Assured dependency for End2End Test -->
     <dependency>
       <groupId>io.rest-assured</groupId>
@@ -209,7 +205,6 @@
           <excludes>
             <exclude>TicketFunctionIntegrationTest.java</exclude>
             <exclude>TicketEnd2EndTest.java</exclude>
-            <exclude>TicketFunctionContainerTest.java</exclude>
           </excludes>
         </configuration>
       </plugin>

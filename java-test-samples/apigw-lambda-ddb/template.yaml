@@ -19,6 +19,7 @@ Resources:
     Properties:
       StageName: dev
       Name: ticket-api-gateway
+      TracingEnabled: true
 
   #Ticket Lambda Function
   ticketLambdaPublisher:
@@ -27,6 +28,10 @@ Resources:
       FunctionName: ticketPublisher
       Handler: com.example.TicketFunction::handleRequest
       CodeUri: TicketsFunction
+      Tracing: Active
+      Environment:
+        Variables:
+          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref ticketDDBTable
