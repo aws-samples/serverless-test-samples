@@ -9,6 +9,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.amazonaws.services.lambda.runtime.tests.annotations.Event;
 import com.amazonaws.xray.AWSXRay;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +20,9 @@ import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import uk.org.webcompere.systemstubs.environment.EnvironmentVariables;
 import uk.org.webcompere.systemstubs.jupiter.SystemStub;
 import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
+
+import java.io.IOException;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -38,18 +42,17 @@ public class AppTest {
 
   @ParameterizedTest
   @Event(value = "events/apigw_req_s3_buckets_get.json", type = APIGatewayProxyRequestEvent.class)
-  public void successfulGetResponse(APIGatewayProxyRequestEvent event, EnvironmentVariables environmentVariables) {
+  public void successfulGetResponse(APIGatewayProxyRequestEvent event, EnvironmentVariables environmentVariables) throws IOException {
     //This line manually adds the X-ray segment
     AWSXRay.beginSegment("S3");
     App app = new App();
     APIGatewayProxyResponseEvent response = app.handleRequest(event, null);
     Assertions.assertNotNull(response);
     assertEquals(HttpStatus.SC_OK, response.getStatusCode().intValue());
-    assertEquals("text/plain", response.getHeaders().get("Content-Type"));
-    String content = response.getBody();
+    assertEquals("application/json", response.getHeaders().get("Content-Type"));
+    List content = new ObjectMapper().readValue(response.getBody(), List.class);
     assertNotNull(content);
-    assertTrue(content.length() > 0);
-    assertTrue(content.contains("|"));
+    assertTrue(content.size() > 0);
   }
 
   @ParameterizedTest

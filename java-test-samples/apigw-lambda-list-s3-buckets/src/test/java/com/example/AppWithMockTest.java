@@ -8,6 +8,7 @@ package com.example;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.amazonaws.services.lambda.runtime.tests.annotations.Event;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +18,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.Bucket;
 import software.amazon.awssdk.services.s3.model.ListBucketsResponse;
+
+import java.io.IOException;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -35,15 +39,14 @@ public class AppWithMockTest {
 
   @ParameterizedTest
   @Event(value = "events/apigw_req_s3_buckets_get.json", type = APIGatewayProxyRequestEvent.class)
-  public void successfulGetResponse(APIGatewayProxyRequestEvent event) {
+  public void successfulGetResponse(APIGatewayProxyRequestEvent event) throws IOException {
     App app = new App(s3Client);
     APIGatewayProxyResponseEvent response = app.handleRequest(event, null);
     Assertions.assertNotNull(response);
     assertEquals(HttpStatus.SC_OK, response.getStatusCode().intValue());
-    assertEquals("text/plain", response.getHeaders().get("Content-Type"));
-    String content = response.getBody();
+    assertEquals("application/json", response.getHeaders().get("Content-Type"));
+    List content = new ObjectMapper().readValue(response.getBody(), List.class);
     assertNotNull(content);
-    assertTrue(content.length() > 0);
-    assertEquals("foo", content);
+    assertTrue(content.size() > 0);
   }
 }
