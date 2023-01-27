@@ -42,7 +42,7 @@ const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPro
       body: JSON.stringify({ message: "Product deleted" }),
     };
   } catch (error) {
-    logger.error('Unexpected error occurred while trying to delete product with ID '+ id, error);
+    logger.error('Unexpected error occurred while trying to delete product with ID '+ id, error as Error);
 
     return {
       statusCode: 500,

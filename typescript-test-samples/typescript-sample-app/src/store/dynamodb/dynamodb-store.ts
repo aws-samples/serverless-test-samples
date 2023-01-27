@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
-import { Product } from "../../model/product";
+import { Product } from "../../model/Product";
 import { ProductStore } from "../product-store";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
