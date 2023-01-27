@@ -215,17 +215,6 @@ apigw-lambda-list-s3-buckets$ sam sync --watch --stack-name <stack-name>
 
 [[top]](#api-gateway-to-lambda-to-list-s3-buckets)
 
-## Perform a load test
-Load tests should be executed in the cloud prior to any initial deployment to production environments. Load tests can be useful to discover performance bottlenecks and quota limits.  Load tests should simulate your application's expected peak load + 10% or more.
-
-There are several tools available for serverless developers to perform load testing. One of the most popular is `Artillery Community Edition`, which is an open-source tool for testing serverless APIs. You configure the number of requests per second and overall test duration, and it uses a headless Chromium browser to run its test flows.
-
-This project uses an open source performance testing tool called `Serverless Artillery`.
-
-TODO
-
-[[top]](#java-test-samples)
-
 ## Implement application tracing
 You can use AWS X-Ray to track user requests as they travel through your entire application. With X-Ray, you can understand how your application and its underlying services are performing to identify and troubleshoot the root cause of performance issues and errors.
 

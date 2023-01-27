@@ -91,6 +91,26 @@ private static final String STACK_NAME = "APIGW-Lambda-DDB-Sample";
 Please make sure to replace the above with your stack name. This test submits an HTTP request to the API Gateway endpoint and verifies that the results are reflected in the DynamoDB database table.
 
 
+#### Load Test (using [Artillery](https://www.artillery.io/))
+Load tests should be executed in the cloud prior to any initial deployment to production environments. Load tests can be useful to discover performance bottlenecks and quota limits.  Load tests should simulate your application's expected peak load + 10% or more.
+
+There are several tools available for serverless developers to perform load testing. One of the most popular is `Artillery Community Edition`, which is an open-source tool for testing serverless APIs. You configure the number of requests per second and overall test duration, and it uses a headless Chromium browser to run its test flows.
+
+This project uses an open source performance testing tool called `Serverless Artillery`. 
+
+The load test in this repo assumes the application stack provided in this sample is deployed on AWS as we need deployed api gateway endpoint details to run our load test against.
+
+Steps:
+1. #### Install Artillery library
+``` npm install artillery@latest ```
+2. #### Install Faker library (_Optional. Only required to run sample load tests in this repo. Not a requirement to use Artillery library_)
+``` npm install faker ```
+3. #### Replace APIGW endpoint details in ```load-test-file.yaml``` and ```load-test-dynamic.yaml``` files
+4. #### ```load-test-file.yaml``` is the config file which shows how to use pre-defined test data from a csv file, whereas ```load-test-dynamic.yaml``` shows how you can have your own custom logic to generate random test data everytime.
+5. #### Run the load test using commands ````artillery run load-test-file.yml```` OR ``` artillery run load-test-dynamic.yml```
+
+For more information, please refer to the artillery [documentation](https://www.artillery.io/docs/)
+
 ## Cleanup
 
 Run the given command to delete the resources that were created. It might take some time for the CloudFormation stack to get deleted.

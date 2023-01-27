@@ -1,0 +1,20 @@
+config:
+  ## Target will be your api endpoint base url
+  target: "<<APIGW ENDPOINT>>/<<STAGE>>"
+  phases:
+    - duration: 10
+      arrivalRate: 2
+  payload:
+    path: "tickets-static-data.csv"
+    fields:
+      - "userId"
+      - "description"
+
+scenarios:
+  - name: "Create Products"
+    flow:
+      - post:
+          url: "/ticket"
+          json:
+            userId: "{{ userId }}"
+            description: "{{ description }}"
