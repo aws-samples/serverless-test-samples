@@ -11,7 +11,7 @@ scenarios:
     flow:
       - post:
           url: "/ticket"
-          beforeRequest: generateRandomProductData
+          beforeRequest: generateRandomTicketData
           json:
             userId: "{{ userId }}"
             description: "{{ description }}"

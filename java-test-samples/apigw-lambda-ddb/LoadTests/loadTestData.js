@@ -2,10 +2,10 @@
 var Faker = require('faker');
 
 module.exports = {
-  generateRandomProductData,
+  generateRandomTicketData,
 };
 
-function generateRandomProductData(requestParams, ctx, ee, next) {
+function generateRandomTicketData(requestParams, ctx, ee, next) {
   ctx.vars["userId"] = Faker.name.firstName();
   ctx.vars["description"] = Faker.lorem.sentence();
 
