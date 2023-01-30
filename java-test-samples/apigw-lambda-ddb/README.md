@@ -98,7 +98,7 @@ There are several tools available for serverless developers to perform load test
 
 This project uses an open source performance testing tool called `Serverless Artillery`. 
 
-The load test in this repo assumes the application stack provided in this sample is deployed on AWS as we need deployed api gateway endpoint details to run our load test against.
+The load test in this repo assumes the application stack provided in this sample is deployed using [sam build and deploy](#deployment-commands) on AWS as we need the endpoint details form the deployed api to run our load test against.
 
 Steps:
 1. #### Install Artillery library
@@ -108,6 +108,11 @@ Steps:
 3. #### Replace APIGW endpoint details in ```load-test-file.yaml``` and ```load-test-dynamic.yaml``` files
 4. #### ```load-test-file.yaml``` is the config file which shows how to use pre-defined test data from a csv file, whereas ```load-test-dynamic.yaml``` shows how you can have your own custom logic to generate random test data everytime.
 5. #### Run the load test using commands ````artillery run load-test-file.yml```` OR ``` artillery run load-test-dynamic.yml```
+6. #### Generating an HTML report
+   6.1 First, run a test and create a JSON report with the --output flag ```artillery run --output test-run-report.json load-test-dynamic-data.yaml``` <br><br>
+   6.2 You can then use the generated JSON report to create an HTML report: ```artillery report test-run-report.json```. This will create a test-run-report.json.html file in the current directory which you can open in a browser.
+
+
 
 For more information, please refer to the artillery [documentation](https://www.artillery.io/docs/)
 
