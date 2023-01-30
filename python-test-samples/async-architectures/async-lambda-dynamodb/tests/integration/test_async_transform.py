@@ -4,7 +4,6 @@
 import os
 import uuid
 import boto3
-from datetime import datetime, timedelta
 import pytest
 import backoff
 
@@ -30,16 +29,10 @@ the process.
 dynamodb = boto3.client('dynamodb')
 s3 = boto3.client('s3')
 cloudformation = boto3.client("cloudformation")
-poll_timeout_duration_secs = 15
-
-'''@pytest.fixture
-def poll_timeout_duration_secs():
-    # set timeout duration to be your SLA 
-    return 10'''
+poll_timeout_duration_secs = 3
 
 # generate a random filename
 class SingletonFilename(object):
-    file_name = ""
     def __new__(cls):
         if not hasattr(cls, 'instance'):
             cls.instance = super(SingletonFilename, cls).__new__(cls)
@@ -89,7 +82,6 @@ def source_bucket_name() -> str:
 
     # cleanup source bucket
     print("*** Cleanup - removing object from S3 source table... ")
-    
     response = s3.delete_object(Bucket=src_bucket_name, Key=file_name.value)
     if response['ResponseMetadata']['HTTPStatusCode'] != 204:
         raise Exception(
@@ -211,7 +203,7 @@ def test_retrieve_object_from_dynamodb(unmodified_message, modified_message, sou
     put_object_into_source_bucket(unmodified_message, source_bucket_name, test_filename)
     
     try:
-        poll_for_file(test_results_table, test_filename, modified_message), f"DynamoDB poller timed out."
+        poll_for_file(test_results_table, test_filename, modified_message)
     except:
         raise Exception("DynamoDB poller timed out.")
 
