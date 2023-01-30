@@ -1,0 +1,216 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+    asynchronous-test-sample
+
+Parameters:
+  EnvType:
+    Description: Environment type.
+    Default: test
+    Type: String
+    AllowedValues: [prod, test]
+    ConstraintDescription: must specify prod or test.
+
+Conditions:
+  CreateTestResources: !Equals [!Ref EnvType, "test"]    
+
+Globals: # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-specification-template-anatomy-globals.html
+    Function:
+        Timeout: 15
+        MemorySize: 256
+        Runtime: python3.9
+        Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
+        # Embed Lambda Powertools as a shared Layer
+        # See: https://awslabs.github.io/aws-lambda-powertools-python/latest/#lambda-layer
+        Layers: # 
+            - !Sub arn:aws:lambda:${AWS::Region}:017000801446:layer:AWSLambdaPowertoolsPython:9
+        Environment:
+            Variables:
+                DESTINATION_BUCKET: !Join
+                  - "-"
+                  - - "async-test-pattern-destination-bucket"
+                    - !Select
+                      - 0
+                      - !Split
+                        - "-"
+                        - !Select
+                          - 2
+                          - !Split
+                            - "/"
+                            - !Ref "AWS::StackId"
+                RESULTS_TABLE: !Join
+                  - "-"
+                  - - "async-transform-test-results"
+                    - !Select
+                      - 0
+                      - !Split
+                        - "-"
+                        - !Select
+                          - 2
+                          - !Split
+                            - "/"
+                            - !Ref "AWS::StackId"
+                # Powertools env vars: https://awslabs.github.io/aws-lambda-powertools-python/#environment-variables
+                LOG_LEVEL: INFO
+                POWERTOOLS_LOGGER_SAMPLE_RATE: 0.1
+                POWERTOOLS_LOGGER_LOG_EVENT: true
+                POWERTOOLS_METRICS_NAMESPACE: MyServerlessApplication
+                POWERTOOLS_SERVICE_NAME: hello
+
+Resources:
+  SourceBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !Join
+        - "-"
+        - - "async-test-pattern-source-bucket"
+          - !Select
+            - 0
+            - !Split
+              - "-"
+              - !Select
+                - 2
+                - !Split
+                  - "/"
+                  - !Ref "AWS::StackId"
+
+  DestinationBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !Join
+        - "-"
+        - - "async-test-pattern-destination-bucket"
+          - !Select
+            - 0
+            - !Split
+              - "-"
+              - !Select
+                - 2
+                - !Split
+                  - "/"
+                  - !Ref "AWS::StackId"
+
+  TextTransformer:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: TextTransformer
+      CodeUri: src/
+      Handler: app.handler
+      Policies:
+        - S3ReadPolicy:
+            BucketName: !Join
+              - "-"
+              - - "async-test-pattern-source-bucket"
+                - !Select
+                  - 0
+                  - !Split
+                    - "-"
+                    - !Select
+                      - 2
+                      - !Split
+                        - "/"
+                        - !Ref "AWS::StackId"
+        - S3CrudPolicy:
+            BucketName: !Join
+              - "-"
+              - - "async-test-pattern-destination-bucket"
+                - !Select
+                  - 0
+                  - !Split
+                    - "-"
+                    - !Select
+                      - 2
+                      - !Split
+                        - "/"
+                        - !Ref "AWS::StackId"
+      Events:
+        FileUpload:
+          Type: S3
+          Properties:
+            Bucket: !Ref SourceBucket
+            Events: s3:ObjectCreated:*
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: suffix
+                    Value: '.txt'
+
+  AsyncTransformTestResultsTable:
+    Type: AWS::DynamoDB::Table
+    Condition: CreateTestResources
+    Properties: 
+      TableName: !Join
+          - "-"
+          - - "async-transform-test-results"
+            - !Select
+              - 0
+              - !Split
+                - "-"
+                - !Select
+                  - 2
+                  - !Split
+                    - "/"
+                    - !Ref "AWS::StackId"
+      AttributeDefinitions: 
+        - AttributeName: id
+          AttributeType: S
+      KeySchema: 
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput: 
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
+
+  DestinationBucketListener:
+    Type: AWS::Serverless::Function
+    Condition: CreateTestResources
+    Properties:
+      FunctionName: DestinationBucketListener
+      CodeUri: tests/integration
+      Handler: event_listener_lambda.handler
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref AsyncTransformTestResultsTable
+        - S3ReadPolicy:
+            BucketName: !Join
+              - "-"
+              - - "async-test-pattern-destination-bucket"
+                - !Select
+                  - 0
+                  - !Split
+                    - "-"
+                    - !Select
+                      - 2
+                      - !Split
+                        - "/"
+                        - !Ref "AWS::StackId"      
+      Events:
+        FileUpload:
+          Type: S3
+          Properties:
+            Bucket: !Ref DestinationBucket
+            Events: s3:ObjectCreated:*
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: suffix
+                    Value: '.txt'
+
+
+Outputs:
+
+    SourceBucketName:
+      Description: "Source bucket for asynchronous testing sample"
+      Value: !Ref SourceBucket
+
+    DestinationBucketName:
+      Description: "Destination bucket for asynchronous testing sample"
+      Value: !Ref DestinationBucket
+
+    AsyncTransformTestResultsTable:
+      Condition: CreateTestResources
+      Description: "DynamoDB table to persist test results"
+      Value: !Ref AsyncTransformTestResultsTable
+
+
+
