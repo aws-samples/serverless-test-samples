@@ -31,7 +31,7 @@ deps:
 build: ##=> Same as package except that we don't create a ZIP
 	sam build --use-container
 
-deploy.guided: ##=> Guided deploy that is typically run for the first time only
+deploy.g: ##=> Guided deploy that is typically run for the first time only
 	sam deploy --guided
 
 deploy: ##=> Deploy app using previously saved SAM CLI configuration
@@ -61,16 +61,16 @@ define HELP_MESSAGE
 
 	Commands:
 
-	build		Build Lambda function dependencies
-	deploy.guided	Deploy for the first time
-	deploy    	Deploy subsequent changes
+	build     Build Lambda function dependencies
+	deploy.g  Deploy guided (for initial deployment)
+	deploy    Deploy subsequent changes
 
-	install   	Install Pipenv, application and dev dependencies defined in Pipfile
-	shell     	Spawn a virtual environment shell
-	deps      	Install project dependencies locally
-	test      	Run integration test against cloud environment (requires AWS_SAM_STACK_NAME variable) 
+	install   Install Pipenv, application and dev dependencies defined in Pipfile
+	shell     Spawn a virtual environment shell
+	deps      Install project dependencies locally
+	test      Run integration test against cloud environment (requires AWS_SAM_STACK_NAME variable) 
 
-	clean     	Cleans up local build artifacts including zip files
-	delete    	Delete stack from AWS
+	clean     Cleans up local build artifacts including zip files
+	delete    Delete stack from AWS
 
 endef
