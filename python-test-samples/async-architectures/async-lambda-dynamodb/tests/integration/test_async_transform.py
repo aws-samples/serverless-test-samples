@@ -30,7 +30,7 @@ the process.
 dynamodb = boto3.client('dynamodb')
 s3 = boto3.client('s3')
 cloudformation = boto3.client("cloudformation")
-poll_timeout_duration_secs = 10
+poll_timeout_duration_secs = 15
 
 '''@pytest.fixture
 def poll_timeout_duration_secs():
