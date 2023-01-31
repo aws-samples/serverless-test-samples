@@ -29,7 +29,7 @@ the process.
 dynamodb = boto3.client('dynamodb')
 s3 = boto3.client('s3')
 cloudformation = boto3.client("cloudformation")
-poll_timeout_duration_secs = 3
+poll_timeout_duration_secs = 15
 
 # generate a random filename
 class SingletonFilename(object):
@@ -203,10 +203,9 @@ def test_retrieve_object_from_dynamodb(unmodified_message, modified_message, sou
     put_object_into_source_bucket(unmodified_message, source_bucket_name, test_filename)
     
     try:
-        poll_for_file(test_results_table, test_filename, modified_message)
+        assert poll_for_file(test_results_table, test_filename, modified_message)
     except:
         raise Exception("DynamoDB poller timed out.")
 
-    return True
 
 # TODO README, test prod deploy
