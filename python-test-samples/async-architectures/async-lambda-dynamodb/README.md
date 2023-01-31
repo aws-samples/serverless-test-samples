@@ -66,5 +66,6 @@ Run these four commands in sequence.
 ## Cleanup
 - `make clean`  - Cleans up local build artifacts including zip files
 - `make delete` - Delete stack from AWS cloud
+- `exit`        - Close the virtual environment shell
 
 [[top]](#asynchronous-integration-test-with-lambda-event-listener-and-dynamodb)
