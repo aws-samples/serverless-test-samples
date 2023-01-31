@@ -1,18 +1,20 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-    asynchronous-test-sample
+    This template deploys a code sample for testing an asynchronous architecture using Python.
 
 Parameters:
-  EnvType:
-    Description: Environment type.
-    Default: test
+  DeployTestResources:
+    Description: The parameter instructs the template whether or not to deploy test resources to your environment.
+    Default: "True"
     Type: String
-    AllowedValues: [prod, test]
-    ConstraintDescription: must specify prod or test.
+    AllowedValues:
+      - "True"
+      - "False"
+    ConstraintDescription: Allowed values are True and False
 
 Conditions:
-  CreateTestResources: !Equals [!Ref EnvType, "test"]    
+  CreateTestResources: !Equals [!Ref DeployTestResources, "True"]
 
 Globals: # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-specification-template-anatomy-globals.html
     Function:
@@ -206,6 +208,11 @@ Outputs:
     DestinationBucketName:
       Description: "Destination bucket for asynchronous testing sample"
       Value: !Ref DestinationBucket
+
+    DestinationBucketListenerName:
+      Condition: CreateTestResources
+      Description: "Lambda Function to listen for test results"
+      Value: !Ref DestinationBucketListener
 
     AsyncTransformTestResultsTable:
       Condition: CreateTestResources

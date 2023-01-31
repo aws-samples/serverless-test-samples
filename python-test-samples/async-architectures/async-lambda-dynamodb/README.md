@@ -49,6 +49,10 @@ This project uses the `make` build automation tool to provide convenient command
 - `make deploy.g` -  Deploy the project to the AWS cloud for the first time.
 - `make deploy`   -  Deploy subsequent changes to the AWS cloud. This command uses a saved configuration file for configurations.
 
+The deploy process accepts a parameter named `DeployTestResources`. The allowed values for this parameter are `true` and `false`. 
+If you pass `true` as this parameter's value CloudFormation will attempt to deploy the test event listener and storage resources
+(Lambda and DynamoDB) to your account. If you pass `false` these resources will not be deployed.    
+
 [[top]](#asynchronous-integration-test-with-lambda-event-listener-and-dynamodb)
 
 ## Run the tests
