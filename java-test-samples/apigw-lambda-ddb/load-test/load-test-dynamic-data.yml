@@ -1,0 +1,15 @@
+config:
+  phases:
+    - duration: 60
+      arrivalRate: 100
+  processor: "./loadTestData.js"
+
+scenarios:
+  - name: "Create Products"
+    flow:
+      - post:
+          url: "/ticket"
+          beforeRequest: generateRandomTicketData
+          json:
+            userId: "{{ userId }}"
+            description: "{{ description }}"

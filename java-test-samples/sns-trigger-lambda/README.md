@@ -1,1 +1,0 @@
-## SNS Triggering Lambda Function Sample
