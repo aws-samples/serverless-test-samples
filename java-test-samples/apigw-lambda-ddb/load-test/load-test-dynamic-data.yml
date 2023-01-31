@@ -1,6 +1,4 @@
 config:
-  ## Target will be your api endpoint base url. You can specify it here in the config file or can be passed in as a parameter from artillery cli.
-  # target: "<<APIGW ENDPOINT>>/<<STAGE>>"
   phases:
     - duration: 60
       arrivalRate: 100

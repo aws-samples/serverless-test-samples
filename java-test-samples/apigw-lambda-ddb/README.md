@@ -15,7 +15,7 @@ The framework used to deploy the infrastructure is [SAM](https://aws.amazon.com/
 ## Services used
 The AWS services used in this pattern are
 
-#### API Gateway - AWS Lambda - DynamoDB
+### API Gateway - AWS Lambda - DynamoDB
 
 Topology
 
@@ -100,16 +100,33 @@ This project uses an open source performance testing tool called `Serverless Art
 
 The load test in this repo assumes the application stack provided in this sample is deployed using [sam build and deploy](#deployment-commands) on AWS as we need the endpoint details form the deployed api to run our load test against.
 
-Steps:
-1. #### Install Artillery library
-``` npm install artillery@latest ```
-2. #### Install Faker library (_Optional. Only required to run sample load tests in this repo. Not a requirement to use Artillery library_)
-``` npm install faker ```
-3. #### Review ```load-test-static-data.yml```, which is the config file to show how to use pre-defined test data from a csv file to run your tests against, whereas ```load-test-dynamic-data.yml``` shows how you can have your own custom logic to generate random test data everytime.
-4. #### Run the load test using bash script ````./run-load-tests-static-data.sh```` OR ```./run-load-tests-dynamic-data.sh``` respectively, which gets the deployed api endpoint details from the cloudformation stack and passes it over to the artillery run command. Make sure the STACK_NAME in the bash script matches with the one deployed using ```sam deploy``` command earlier. You can also find the stack name from ```samconfig.toml``` file.
-5. #### Generating an HTML report
-   6.1 First, run a test and create a JSON report with the --output flag ```artillery run --output test-run-report.json load-test-dynamic-data.yaml``` <br><br>
-   6.2 You can then use the generated JSON report to create an HTML report: ```artillery report test-run-report.json```. This will create a test-run-report.json.html file in the current directory which you can open in a browser.
+**Steps:**
+- Install Artillery library  
+`npm install artillery@latest`  
+
+
+- Install Faker library (_Optional. Only required to run sample load tests in this repo. Not a requirement to use Artillery library_)  
+`npm install faker`
+
+
+- Review `load-test/load-test-static-data.yml`, which is the config file to show how to use pre-defined test data from a csv file to run your tests against, whereas `load-test/load-test-dynamic-data.yml` shows how you can have your own custom logic to generate random test data everytime.
+
+- Run the load test using bash scripts under `load-test` directory:
+  - `./run-load-tests-static-data.sh` 
+  - `./run-load-tests-dynamic-data.sh`
+
+> Make sure the STACK_NAME in the bash script matches with the one deployed using `sam deploy` command earlier. You can also find the stack name from `samconfig.toml` file.
+
+- Generating an HTML report:  
+  - First, run a test and create a JSON report with the --output flag in above script.   
+  `artillery run load-test-static-data.yml --target $API_URL --output test-run-report.json`
+  
+
+  - You can then use the generated JSON report to create an HTML report:   
+  `artillery report test-run-report.json`.  
+
+
+  - This will create a `test-run-report.json.html` file in the current directory which you can open in a browser.
 
 For more information, please refer to the artillery [documentation](https://www.artillery.io/docs/)
 

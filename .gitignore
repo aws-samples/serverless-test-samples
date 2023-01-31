@@ -256,6 +256,8 @@ samconfig.toml
 **/*.iml
 /java-test-samples/apigw-lambda-list-s3-buckets/target/
 /java-test-samples/apigw-lambda-ddb/TicketsFunction/apigw-lambda-ddb.ipr
+/java-test-samples/apigw-lambda-ddb/load-test/node_modules/
+/java-test-samples/apigw-lambda-ddb/load-test/package-lock.json
 
 # End of https://www.gitignore.io/api/osx,linux,python,windows,pycharm,visualstudiocode
 
