@@ -92,10 +92,21 @@ Resources:
                   - "/"
                   - !Ref "AWS::StackId"
 
-  TextTransformer:
+  ToUppercaseTextTransformer:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: TextTransformer
+      FunctionName: !Join
+        - "-"
+        - - "ToUppercaseTextTransformer"
+          - !Select
+            - 0
+            - !Split
+              - "-"
+              - !Select
+                - 2
+                - !Split
+                  - "/"
+                  - !Ref "AWS::StackId"
       CodeUri: src/
       Handler: app.handler
       Policies:
@@ -167,7 +178,18 @@ Resources:
     Type: AWS::Serverless::Function
     Condition: CreateTestResources
     Properties:
-      FunctionName: DestinationBucketListener
+      FunctionName: !Join
+        - "-"
+        - - "DestinationBucketListener"
+          - !Select
+            - 0
+            - !Split
+              - "-"
+              - !Select
+                - 2
+                - !Split
+                  - "/"
+                  - !Ref "AWS::StackId"
       CodeUri: tests/integration
       Handler: event_listener_lambda.handler
       Policies:
