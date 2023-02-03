@@ -1,0 +1,19 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+"aws-lambda-powertools[tracer]" = "*"
+backoff = "*"
+aws-lambda-powertools = "*"
+
+[dev-packages]
+boto3 = "*"
+boto3-stubs = "*"
+pytest = "*"
+pytest-cov = "*"
+backoff = "*"
+
+[requires]
+python_version = "3.9"
