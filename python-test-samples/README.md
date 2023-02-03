@@ -7,7 +7,7 @@ This portion of the repository contains code samples for testing serverless appl
 ## Test Basic Patterns
 |Project|Description|
 ---|---
-|[Python Starter project](./apigw-lambda)|This project contains introductory examples of Python tests written for AWS Lambda. This is the best place to start!|
+|[Python Starter Project](./apigw-lambda)|This project contains introductory examples of Python tests written for AWS Lambda. This is the best place to start!|
 |[Lambda Layers with Mocks](./apigw-lambda-layer)|This project contains unit tests for Lambda layers using mocks.|
 |[API Gateway with Lambda and DynamoDB](./apigw-lambda-dynamodb)|This project contains unit and integration tests for a pattern using API Gateway, AWS Lambda and Amazon DynamoDB.|
 
