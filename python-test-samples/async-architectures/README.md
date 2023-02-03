@@ -15,5 +15,7 @@ Your tests will establish a connection to the event listeners, and then perform 
 
 ![Generic Asynchronous System Test](./img/generic-async-test.png)
 
-## Asynchronous Test Samples
-* [Lambda with DynamoDB](./async-lambda-dynamodb/): You may use a variety of resource types to create the event listener for your asynchronous system under test. We recommend starting with AWS Lambda and Amazon DynamoDB. DynamoDB creates a persistent storage resource that can enable long running tests or an aggregate a set of results.
+### Asynchronous Test Samples
+|Project|Description|
+---|---
+|[Lambda with DynamoDB](./async-lambda-dynamodb/)|You may use a variety of resource types to create the event listener for your asynchronous system under test. We recommend starting with AWS Lambda and Amazon DynamoDB. DynamoDB creates a persistent storage resource that can enable long running tests or an aggregate a set of results.|
