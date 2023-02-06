@@ -1,4 +1,4 @@
-## Microservice: API Gateway, Lambda Function and Dynamodb Table
+## Microservice: API Gateway, Lambda Function and DynamoDB Table
 
 ### Description
 

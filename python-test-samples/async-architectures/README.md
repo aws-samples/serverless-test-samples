@@ -7,8 +7,8 @@ Asynchronous systems typically receive messages or events and immediately store 
 
 ![Generic Asynchronous System](./img/generic.png)
 
-## Create Event Listeners in Test Environments
-When testing asynchronous systems, you will establish event listeners that are only used for testing purposes. These event listeners will be configured to receive the output of your system under test (SUT). Because the listeners are only used for testing purposes, you should configure them to be deployed in pre-production environments only.
+## Create Event Listeners as Test Resources
+When testing asynchronous systems, you will establish event listeners that are only used for testing purposes. These event listeners will be configured to receive the output of your system under test (SUT). These test resources will be deployed to pre-production environments. If your production environment can tolerate the introduction of test data, you may decide to deploy these resources to production as well.
 
 ## Execute Tests and Poll for Results
 Your tests will establish a connection to the event listeners, and then perform a long polling actions against them with some reasonable timeout. The tests will send input data to the SUT. The SUT will process the data and send output to the event listener. The long polling action will eventually retrieve the output data and examine it for the expected result. 
