@@ -68,7 +68,7 @@ describe( 'get-products', () => {
       expect(handler).toBeTruthy();
     });
 
-    it('returns 200 when finding products', async () => {
+    it('returns HTTP status code 200 when no errors from store', async () => {
       mockedStore.prototype.getProducts.mockImplementationOnce(() => Promise.resolve([]));
       
       const result = await handler(inputEvent, inputContext);
@@ -77,7 +77,36 @@ describe( 'get-products', () => {
       expect(result.statusCode).toBe(200);
     });
 
-    it('returns 500 when getting an error from the store', async () => {
+    it('returns zero Products when product store is empty', async () => {
+      mockedStore.prototype.getProducts.mockImplementationOnce(() => Promise.resolve([]));
+      
+      const result = await handler(inputEvent, inputContext);
+      expect(mockedStore).toHaveBeenCalled();
+      expect(mockedStore.prototype.getProducts).toHaveBeenCalled();
+
+      const body = JSON.parse(result.body);
+      expect(body.products).toBeDefined();
+      expect(body.products.length).toBe(0);
+    });
+
+    it('returns Products when product store has products', async () => {
+      const product1 = {id:'1', name:'one', price: 1.00} as Product;
+      const product2 = {id:'2', name:'two', price: 2.00} as Product;
+      const storeProducts = [product1,product2];
+      mockedStore.prototype.getProducts.mockImplementationOnce(() => Promise.resolve(storeProducts));
+      
+      const result = await handler(inputEvent, inputContext);
+      expect(mockedStore).toHaveBeenCalled();
+      expect(mockedStore.prototype.getProducts).toHaveBeenCalled();
+
+      const parsedBody = JSON.parse(result.body);
+      expect(parsedBody.products).toBeDefined();
+      expect(parsedBody.products.length).toBe(storeProducts.length);
+      expect(parsedBody.products).toContainEqual(product1);
+      expect(parsedBody.products).toContainEqual(product2);
+    });
+
+    it('returns HTTP status code 500 when getting an error from the store', async () => {
       mockedStore.prototype.getProducts.mockImplementationOnce(() => {
         throw new Error('Test Error');
       });
