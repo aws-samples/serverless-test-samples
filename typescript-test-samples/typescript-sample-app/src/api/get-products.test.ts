@@ -25,11 +25,11 @@ import { beforeEach, describe, it, expect, jest } from '@jest/globals';
 import { APIGatewayProxyEvent, Context } from 'aws-lambda';
 import apiGWProxyEventStub from '../../events/unit-test-event.json';
 
-import { DynamoDbStore } from "../../../src/store/dynamodb/dynamodb-store";
-import { Product } from '../../../src/model/Product';
-import { handler } from '../../../src/api/get-products';
+import { DynamoDbStore } from "../store/dynamodb/dynamodb-store";
+import { Product } from '../model/Product';
+import { handler } from '../api/get-products';
 
-jest.mock('../../../src/store/dynamodb/dynamodb-store');
+jest.mock('../store/dynamodb/dynamodb-store');
 
 const mockedStore = jest.mocked(DynamoDbStore);
 
