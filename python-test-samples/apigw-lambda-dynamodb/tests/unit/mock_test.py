@@ -41,7 +41,7 @@ class TestSampleLambdaWithDynamoDB(TestCase):
         # This simple technique works if there are no intrinsics (like !If or !Ref) in the
         # resource properties for KeySchema, AttributeDefinitions, & BillingMode.
         sam_template_table_properties = self.read_sam_template()["Resources"]["DynamoDBTable"]["Properties"]
-        self.mock_dynamodb = boto3.resource("dynamodb", region_name="us-east-1")
+        self.mock_dynamodb = boto3.resource("dynamodb")
         self.mock_dynamodb_table = self.mock_dynamodb.create_table(
                 TableName = self.test_ddb_table_name,
                 KeySchema = sam_template_table_properties["KeySchema"],

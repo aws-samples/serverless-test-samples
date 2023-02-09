@@ -18,6 +18,8 @@ AWS_SAM_STACK_NAME=<stack-name> python -m pytest -s tests/integration -v
 class TestApiGateway(TestCase):
     api_endpoint: str
 
+    aws_region = os.environ.get("AWS_DEFAULT_REGION") or "us-east-1"
+
     @classmethod
     def get_stack_name(cls) -> str:
         stack_name = os.environ.get("AWS_SAM_STACK_NAME")
@@ -63,7 +65,7 @@ class TestApiGateway(TestCase):
 
 
         # Seed the DynamoDB Table with Test Data
-        dynamodb_resource = boto3.resource("dynamodb", region_name="us-east-1")
+        dynamodb_resource = boto3.resource("dynamodb", region_name = self.aws_region)
         dynamodb_table = dynamodb_resource.Table(name=self.dynamodb_table_name)
         dynamodb_table.put_item(Item={"PK": "TEST001" + self.id_postfix, 
                                       "SK": "NAME#",
@@ -75,7 +77,7 @@ class TestApiGateway(TestCase):
         # For tear-down, remove any data injected for the tests
         # Take particular care to ensure these values are unique and identifiable as TEST data.
         """
-        dynamodb_resource = boto3.resource("dynamodb", region_name="us-east-1")
+        dynamodb_resource = boto3.resource("dynamodb", region_name = self.aws_region)
         dynamodb_table = dynamodb_resource.Table(name=self.dynamodb_table_name)
 
         for id in ["TEST001" + self.id_postfix,"TEST002" + self.id_postfix]:

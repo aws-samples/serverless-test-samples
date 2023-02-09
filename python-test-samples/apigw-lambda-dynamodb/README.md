@@ -120,10 +120,10 @@ The [integration test tear-down](tests/integration/test_api_gateway.py#L73-87) r
 To run the integration test, create the environment variable "AWS_SAM_STACK_NAME" with the name of the test stack, and execute the test.
 
 ```shell
-# Set the environment variable AWS_SAM_STACK_NAME 
-# to match the name of the stack you will test
+# Set the environment variables AWS_SAM_STACK_NAME and (optionally)AWS_DEFAULT_REGION 
+# to match the name of the stack and the region where you will test
 
-apigw-lambda-dynamodb$  AWS_SAM_STACK_NAME=<stack-name> python -m pytest -s tests/integration -v
+apigw-lambda-dynamodb$  AWS_SAM_STACK_NAME=<stack-name> AWS_DEFAULT_REGION=<region_name> python -m pytest -s tests/integration -v
 ```
 
 [Top](#contents)
