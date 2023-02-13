@@ -1,62 +1,70 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
+using Microsoft.Extensions.Options;
 using ServerlessTestApi.Core.DataAccess;
 using ServerlessTestApi.Core.Models;
 
-namespace ServerlessTestApi.Infrastructure.DataAccess
+namespace ServerlessTestApi.Infrastructure.DataAccess;
+
+public class DynamoDbProducts : IProductsDAO
 {
-    public class DynamoDbProducts : IProductsDAO
+    private readonly IAmazonDynamoDB _dynamoDbClient;
+    private readonly IOptions<DynamoDbOptions> _options;
+
+    public DynamoDbProducts(IAmazonDynamoDB dynamoDbClient, IOptions<DynamoDbOptions> options)
     {
-        private static string PRODUCT_TABLE_NAME = Environment.GetEnvironmentVariable("PRODUCT_TABLE_NAME") ?? throw new ArgumentException("PRODUCT_TABLE_NAME environment variable is null");
-        private readonly IAmazonDynamoDB _dynamoDbClient;
+        _dynamoDbClient = dynamoDbClient;
+        _options = options;
+    }
 
-        public DynamoDbProducts(IAmazonDynamoDB dynamoDbClient)
-        {
-            this._dynamoDbClient = dynamoDbClient;
-        }
-        
-        public async Task<ProductDTO?> GetProduct(string id)
-        {
-            var getItemResponse = await this._dynamoDbClient.GetItemAsync(new GetItemRequest(PRODUCT_TABLE_NAME,
-                new Dictionary<string, AttributeValue>(1)
-                {
-                    {ProductMapper.PK, new AttributeValue(id)}
-                }));
-            
-            var product = getItemResponse.IsItemSet ? ProductMapper.ProductFromDynamoDB(getItemResponse.Item): null;
+    public async Task<ProductDTO?> GetProduct(string id, CancellationToken cancellationToken)
+    {
+        var response = await _dynamoDbClient.GetItemAsync(
+            _options.Value.ProductTableName,
+            new(capacity: 1) { [ProductMapper.PK] = new(id) },
+            cancellationToken);
 
-            return product?.AsDTO();
-        }
+        return response.IsItemSet
+               ? ProductMapper.ProductFromDynamoDB(response.Item).AsDTO()
+               : null;
+    }
 
-        public async Task PutProduct(Product product)
+    public async Task<UpsertResult> PutProduct(Product product, CancellationToken cancellationToken)
+    {
+        var request = new PutItemRequest()
         {
-            await this._dynamoDbClient.PutItemAsync(PRODUCT_TABLE_NAME, ProductMapper.ProductToDynamoDb(product));
-        }
+            TableName = _options.Value.ProductTableName,
+            Item = ProductMapper.ProductToDynamoDb(product),
+            ReturnValues = ReturnValue.ALL_OLD,
+        };
+        var response = await _dynamoDbClient.PutItemAsync(request, cancellationToken);
+        var hadOldValues = response.Attributes is not null && response.Attributes.Count > 0;
 
-        public async Task DeleteProduct(string id)
-        {
-            await this._dynamoDbClient.DeleteItemAsync(PRODUCT_TABLE_NAME, new Dictionary<string, AttributeValue>(1)
+        return hadOldValues ? UpsertResult.Updated : UpsertResult.Inserted;
+    }
+
+    public async Task DeleteProduct(string id, CancellationToken cancellationToken)
+    {
+        await _dynamoDbClient.DeleteItemAsync(
+            _options.Value.ProductTableName,
+            new(capacity: 1) { [ProductMapper.PK] = new(id) },
+            cancellationToken);
+    }
+
+    public async Task<ProductWrapper> GetAllProducts(CancellationToken cancellationToken)
+    {
+        var data = await _dynamoDbClient.ScanAsync(
+            new ScanRequest()
             {
-                {ProductMapper.PK, new AttributeValue(id)}
-            });
-        }
+                TableName = _options.Value.ProductTableName,
+                Limit = 20,
+            },
+            cancellationToken);
+        var products = data.Items
+                           .Select(ProductMapper.ProductFromDynamoDB)
+                           .Select(static product => product.AsDTO())
+                           .ToList();
 
-        public async Task<ProductWrapper> GetAllProducts()
-        {
-            var data = await this._dynamoDbClient.ScanAsync(new ScanRequest()
-            {
-                TableName = PRODUCT_TABLE_NAME,
-                Limit = 20
-            });
-
-            var products = new List<ProductDTO>();
-
-            foreach (var item in data.Items)
-            {
-                products.Add(ProductMapper.ProductFromDynamoDB(item).AsDTO());
-            }
-
-            return new ProductWrapper(products);
-        }
+        return new(products);
     }
 }

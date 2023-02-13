@@ -1,9 +1,13 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+﻿using Amazon.DynamoDBv2;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using Serilog;
 using Serilog.Formatting.Compact;
 using ServerlessTestApi.Core.DataAccess;
 using ServerlessTestApi.Infrastructure.DataAccess;
+using System.Text.Json;
 
 namespace ServerlessTestApi.Infrastructure;
 
@@ -11,46 +15,37 @@ public static class Startup
 {
     private static ServiceProvider? _serviceProvider;
 
-    public static ServiceProvider ServiceProvider
-    {
-        get
-        {
-            if (_serviceProvider == null)
-            {
-                _serviceProvider = InitializeServiceProvider();
-            }
+    public static ServiceProvider ServiceProvider => _serviceProvider ??= InitializeServiceProvider();
 
-            return _serviceProvider;
-        }
-        private set => _serviceProvider = value;
+    public static void AddDefaultServices(IServiceCollection services)
+    {
+        var builder = new ConfigurationBuilder()
+            .AddInMemoryCollection(
+                new Dictionary<string, string?>()
+                {
+                    ["PRODUCT_TABLE_NAME"] = "Products",
+                })
+            .AddEnvironmentVariables();
+
+        var logger = new LoggerConfiguration()
+            .WriteTo.Console(new RenderedCompactJsonFormatter())
+            .CreateLogger();
+
+        IConfiguration configuration = builder.Build();
+
+        services.Configure<DynamoDbOptions>(configuration);
+        services.TryAddSingleton(configuration);
+        services.TryAddSingleton(static sp => Options.Create(new JsonSerializerOptions(JsonSerializerDefaults.Web)));
+        services.TryAddTransient<IValidateOptions<DynamoDbOptions>, DynamoDbOptionsValidator>();
+        services.AddLogging(builder => builder.AddSerilog(logger));
+        services.TryAddSingleton<IAmazonDynamoDB>(new AmazonDynamoDBClient());
+        services.TryAddSingleton<IProductsDAO, DynamoDbProducts>();
     }
 
     private static ServiceProvider InitializeServiceProvider()
     {
         var services = new ServiceCollection();
-        
-        var logger = new LoggerConfiguration()
-            .WriteTo.Console(new RenderedCompactJsonFormatter())
-            .CreateLogger();
-        
-        services.AddLogging(builder =>
-        {
-            builder.AddSerilog(logger);
-        });
-
-        if (Environment.GetEnvironmentVariable("USE_MOCKS") == "true")
-        {
-            logger.Warning("WARNING! Application is running using mock implementations");
-
-            services.AddMockServices();
-        }
-        else
-        {
-            services.AddInfrastructureServices();
-        }
-        
-        services.AddSingleton<IProductsDAO, DynamoDbProducts>();
-
+        AddDefaultServices(services);
         return services.BuildServiceProvider();
     }
 }
