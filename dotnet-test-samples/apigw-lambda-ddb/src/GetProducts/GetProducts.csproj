@@ -15,7 +15,7 @@
     <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.3.0" />
     <PackageReference Include="AWSXRayRecorder.Core" Version="2.13.0" />
     <PackageReference Include="AWSXRayRecorder.Handlers.AwsSdk" Version="2.11.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>
