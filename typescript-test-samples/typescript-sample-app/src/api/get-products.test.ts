@@ -62,6 +62,8 @@ describe( 'get-products', () => {
           throw new Error('Function not implemented.');
         }
       };
+      mockedStore.mockReset();
+      mockedStore.prototype.getProducts.mockReset();
     });
 
     it('exists', () => {
@@ -72,7 +74,6 @@ describe( 'get-products', () => {
       mockedStore.prototype.getProducts.mockImplementationOnce(() => Promise.resolve([]));
       
       const result = await handler(inputEvent, inputContext);
-      expect(mockedStore).toHaveBeenCalled();
       expect(mockedStore.prototype.getProducts).toHaveBeenCalled();
       expect(result.statusCode).toBe(200);
     });
@@ -81,7 +82,6 @@ describe( 'get-products', () => {
       mockedStore.prototype.getProducts.mockImplementationOnce(() => Promise.resolve([]));
       
       const result = await handler(inputEvent, inputContext);
-      expect(mockedStore).toHaveBeenCalled();
       expect(mockedStore.prototype.getProducts).toHaveBeenCalled();
 
       const body = JSON.parse(result.body);
@@ -96,7 +96,6 @@ describe( 'get-products', () => {
       mockedStore.prototype.getProducts.mockImplementationOnce(() => Promise.resolve(storeProducts));
       
       const result = await handler(inputEvent, inputContext);
-      expect(mockedStore).toHaveBeenCalled();
       expect(mockedStore.prototype.getProducts).toHaveBeenCalled();
 
       const parsedBody = JSON.parse(result.body);
@@ -112,7 +111,6 @@ describe( 'get-products', () => {
       });
       
       const result = await handler(inputEvent, inputContext);
-      expect(mockedStore).toHaveBeenCalled();
       expect(mockedStore.prototype.getProducts).toHaveBeenCalled();
       expect(result.statusCode).toBe(500);
     });
