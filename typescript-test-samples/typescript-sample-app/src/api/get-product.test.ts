@@ -62,6 +62,9 @@ describe( 'get-products', () => {
           throw new Error('Function not implemented.');
         }
       };
+
+      mockedStore.mockReset();
+      mockedStore.prototype.getProduct.mockReset();
     });
 
     it('exists', () => {
