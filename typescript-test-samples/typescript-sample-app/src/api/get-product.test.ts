@@ -82,6 +82,21 @@ describe( 'get-products', () => {
       expect(result.statusCode).toBe(200);
     });
 
+    it('returns HTTP status code 400 when input product id is undefined', async () => {
+      if(inputEvent.pathParameters === null)
+        fail('inputEvent.pathParameters is null');
+      inputEvent.pathParameters.id = undefined;
+
+      mockedStore.prototype.getProduct.mockImplementationOnce(() => {
+        throw new Error('Test Error from 400');
+      });
+
+      const result = await handler(inputEvent, inputContext);
+      expect(inputEvent.pathParameters.id).toBeUndefined();
+      expect(mockedStore.prototype.getProduct).toHaveBeenCalledTimes(0);
+      expect(result.statusCode).toBe(400);
+    });
+
     it('returns HTTP status code 404 when product store does not have a match', async () => {
       if(inputEvent.pathParameters === null)
         fail('inputEvent.pathParameters is null');
