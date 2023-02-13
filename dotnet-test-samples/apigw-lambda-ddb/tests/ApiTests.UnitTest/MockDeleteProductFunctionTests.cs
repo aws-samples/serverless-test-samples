@@ -1,45 +1,36 @@
-using System.Text.Json;
 using Amazon.Lambda.TestUtilities;
-using Amazon.XRay.Recorder.Core;
-using FluentAssertions;
 using DeleteProduct;
-using Microsoft.Extensions.Logging;
+using FluentAssertions;
 using Moq;
 using ServerlessTestApi.Core.DataAccess;
 using ServerlessTestApi.Core.Models;
 
 namespace ApiTests.UnitTest;
 
-public class MockDeleteProductFunctionTests
-{
-    private bool _runningLocally = string.IsNullOrEmpty(System.Environment.GetEnvironmentVariable("LOCAL_RUN")) ? true : bool.Parse(System.Environment.GetEnvironmentVariable("LOCAL_RUN"));
-    private Mock<ILogger<Function>> _mockLogger = new Mock<ILogger<Function>>();
-
-    public MockDeleteProductFunctionTests()
-    {
-        // Required for the XRay tracing sub-segment code in the Lambda function handler.
-        AWSXRayRecorder.InitializeInstance();    
-        AWSXRayRecorder.Instance.BeginSegment("UnitTests");
-    }
-    
+public class MockDeleteProductFunctionTests : FunctionTest<Function>
+{   
     [Fact]
     public async Task DeleteProduct_ShouldReturnSuccess()
     {
-        var apiRequest = new ApiRequestBuilder()
+        // arrange
+        var request = new ApiRequestBuilder()
             .WithPathParameter("id", "123456")
-            .WithHttpMethod("DELETE")
+            .WithHttpMethod(HttpMethod.Delete)
             .Build();
         
-        var mockDataAccessLayer = new Mock<IProductsDAO>();
-        mockDataAccessLayer.Setup(p => p.DeleteProduct(It.IsAny<string>())).Verifiable();
-        mockDataAccessLayer.Setup(p => p.GetProduct(It.IsAny<string>())).ReturnsAsync(new ProductDTO("123456", "Test Product", 10)).Verifiable();
+        var data = new Mock<IProductsDAO>();
+
+        data.Setup(d => d.GetProduct(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new ProductDTO("123456", "Test Product", 10));
         
-        var function = new Function(mockDataAccessLayer.Object, _mockLogger.Object);
+        var function = new Function(data.Object, Logger);
 
-        var result = await function.FunctionHandler(apiRequest, new TestLambdaContext());
+        // act
+        var response = await function.FunctionHandler(request, new TestLambdaContext());
 
-        result.StatusCode.Should().Be(200);
-        mockDataAccessLayer.Verify(p => p.DeleteProduct(It.IsAny<string>()), Times.Once);
+        // assert
+        response.StatusCode.Should().Be(200);
+        data.Verify(d => d.DeleteProduct("123456", It.IsAny<CancellationToken>()), Times.Once);
     }
     
     [Theory]
@@ -48,79 +39,65 @@ public class MockDeleteProductFunctionTests
     [InlineData("GET")]
     public async Task TestLambdaHandler_ForNonDeleteRequests_ShouldReturn405(string httpMethod)
     {
-        var apiRequest = new ApiRequestBuilder()
+        // arrange
+        var request = new ApiRequestBuilder()
             .WithPathParameter("id", "123456")
             .WithHttpMethod(httpMethod)
             .Build();
         
-        var mockDataAccessLayer = new Mock<IProductsDAO>();
-        mockDataAccessLayer.Setup(p => p.DeleteProduct(It.IsAny<string>())).Verifiable();
-        mockDataAccessLayer.Setup(p => p.GetProduct(It.IsAny<string>())).ReturnsAsync(new ProductDTO("123456", "Test Product", 10)).Verifiable();
-        
-        var function = new Function(mockDataAccessLayer.Object, _mockLogger.Object);
+        var data = new Mock<IProductsDAO>();
+        var function = new Function(data.Object, Logger);
 
-        var result = await function.FunctionHandler(apiRequest, new TestLambdaContext());
+        // act
+        var response = await function.FunctionHandler(request, new TestLambdaContext());
 
-        result.StatusCode.Should().Be(405);
+        // assert
+        response.StatusCode.Should().Be(405);
     }
     
     [Fact]
     public async Task DeleteProduct_ErrorInDeleteDataAccess_ShouldReturn500()
     {
-        var apiRequest = new ApiRequestBuilder()
+        // arrange
+        var request = new ApiRequestBuilder()
             .WithPathParameter("id", "123456")
-            .WithHttpMethod("DELETE")
+            .WithHttpMethod(HttpMethod.Delete)
             .Build();
         
-        var mockDataAccessLayer = new Mock<IProductsDAO>();
-        mockDataAccessLayer.Setup(p => p.DeleteProduct(It.IsAny<string>()))
+        var data = new Mock<IProductsDAO>();
+
+        data.Setup(d => d.DeleteProduct(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new NullReferenceException());
-        mockDataAccessLayer.Setup(p => p.GetProduct(It.IsAny<string>())).ReturnsAsync(new ProductDTO("123456", "Test Product", 10)).Verifiable();
         
-        var function = new Function(mockDataAccessLayer.Object, _mockLogger.Object);
+        var function = new Function(data.Object, Logger);
 
-        var result = await function.FunctionHandler(apiRequest, new TestLambdaContext());
+        // act
+        var response = await function.FunctionHandler(request, new TestLambdaContext());
 
-        result.StatusCode.Should().Be(500);
+        // assert
+        response.StatusCode.Should().Be(500);
     }
     
     [Fact]
-    public async Task DeleteProduct_ErrorInGet_ShouldReturn500()
+    public async Task DeleteProduct_TimeOut_ShouldReturn503()
     {
-        var apiRequest = new ApiRequestBuilder()
+        // arrange
+        var request = new ApiRequestBuilder()
             .WithPathParameter("id", "123456")
-            .WithHttpMethod("DELETE")
+            .WithHttpMethod(HttpMethod.Delete)
             .Build();
         
-        var mockDataAccessLayer = new Mock<IProductsDAO>();
-        mockDataAccessLayer.Setup(p => p.DeleteProduct(It.IsAny<string>()))
-            .ThrowsAsync(new NullReferenceException());
-        mockDataAccessLayer.Setup(p => p.GetProduct(It.IsAny<string>())).ThrowsAsync(new NullReferenceException());
-        
-        var function = new Function(mockDataAccessLayer.Object, _mockLogger.Object);
+        var data = new Mock<IProductsDAO>();
 
-        var result = await function.FunctionHandler(apiRequest, new TestLambdaContext());
+        data.Setup(d => d.DeleteProduct(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new TaskCanceledException());
 
-        result.StatusCode.Should().Be(500);
-    }
-    
-    [Fact]
-    public async Task DeleteProduct_ProductNotFound_ShouldReturn400()
-    {
-        var apiRequest = new ApiRequestBuilder()
-            .WithHttpMethod("DELETE")
-            .WithPathParameter("id", "123456")
-            .Build();
-        
-        var mockDataAccessLayer = new Mock<IProductsDAO>();
-        mockDataAccessLayer.Setup(p => p.DeleteProduct(It.IsAny<string>())).Verifiable();
-        mockDataAccessLayer.Setup(p => p.GetProduct(It.IsAny<string>())).ReturnsAsync(() => null).Verifiable();
-        
-        var function = new Function(mockDataAccessLayer.Object, _mockLogger.Object);
+        var function = new Function(data.Object, Logger);
 
-        var result = await function.FunctionHandler(apiRequest, new TestLambdaContext());
+        // act
+        var response = await function.FunctionHandler(request, new TestLambdaContext());
 
-        result.StatusCode.Should().Be(400);
-        mockDataAccessLayer.Verify(p => p.DeleteProduct(It.IsAny<string>()), Times.Never);
+        // assert
+        response.StatusCode.Should().Be(503);
     }
 }

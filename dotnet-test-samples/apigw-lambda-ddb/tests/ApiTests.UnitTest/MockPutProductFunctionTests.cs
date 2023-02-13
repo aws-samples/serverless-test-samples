@@ -1,90 +1,114 @@
-using System.Text.Json;
 using Amazon.Lambda.TestUtilities;
-using Amazon.XRay.Recorder.Core;
 using FluentAssertions;
-using PutProduct;
-using Microsoft.Extensions.Logging;
 using Moq;
+using PutProduct;
 using ServerlessTestApi.Core.DataAccess;
 using ServerlessTestApi.Core.Models;
 
 namespace ApiTests.UnitTest;
 
-public class MockPutProductFunctionTests
-{
-    private bool _runningLocally = string.IsNullOrEmpty(System.Environment.GetEnvironmentVariable("LOCAL_RUN")) ? true : bool.Parse(System.Environment.GetEnvironmentVariable("LOCAL_RUN"));
-    private Mock<ILogger<Function>> _mockLogger = new Mock<ILogger<Function>>();
-
-    public MockPutProductFunctionTests()
-    {
-        // Required for the XRay tracing sub-segment code in the Lambda function handler.
-        AWSXRayRecorder.InitializeInstance();    
-        AWSXRayRecorder.Instance.BeginSegment("UnitTests");
-    }
-    
+public class MockPutProductFunctionTests : FunctionTest<Function>
+{   
     [Fact]
-    public async Task PutProduct_WithValidBody_ShouldReturnSuccess()
+    public async Task PutProduct_WhenInserted_ShouldReturn201()
     {
-        var testProduct = new ProductDTO("testid", "test product", 10);
-        
-        var apiRequest = new ApiRequestBuilder()
-            .WithHttpMethod("PUT")
-            .WithBody(testProduct)
-            .WithPathParameter("id", testProduct.Id)
+        // arrange
+        var product = default(Product);
+        var dto = new ProductDTO("testid", "test product", 10);
+        var request = new ApiRequestBuilder()
+            .WithHttpMethod(HttpMethod.Put)
+            .WithBody(dto)
+            .WithPathParameter("id", dto.Id)
             .Build();
         
-        var mockDataAccessLayer = new Mock<IProductsDAO>();
-        mockDataAccessLayer.Setup(p => p.PutProduct(It.IsAny<Product>())).Verifiable();
+        var data = new Mock<IProductsDAO>();
+
+        data.Setup(d => d.PutProduct(It.IsAny<Product>(), It.IsAny<CancellationToken>()))
+            .Callback((Product p, CancellationToken ct) => product = p)
+            .ReturnsAsync(UpsertResult.Inserted);
         
-        var function = new Function(mockDataAccessLayer.Object, _mockLogger.Object);
+        var function = new Function(data.Object, Logger, JsonOptions);
 
-        var result = await function.FunctionHandler(apiRequest, new TestLambdaContext());
+        // act
+        var response = await function.FunctionHandler(request, new TestLambdaContext());
 
-        result.StatusCode.Should().Be(201);
-        mockDataAccessLayer.Verify(p => p.PutProduct(It.IsAny<Product>()), Times.Once);
+        // assert
+        response.StatusCode.Should().Be(201);
+        response.Headers["Location"].Should().Be("https://localhost/dev/testid");
+        product.Should().BeEquivalentTo(dto);
     }
-    
+
+    [Fact]
+    public async Task PutProduct_WhenUpdated_ShouldReturn200()
+    {
+        // arrange
+        var product = default(Product);
+        var dto = new ProductDTO("testid", "test product", 10);
+        var request = new ApiRequestBuilder()
+            .WithHttpMethod(HttpMethod.Put)
+            .WithBody(dto)
+            .WithPathParameter("id", dto.Id)
+            .Build();
+
+        var data = new Mock<IProductsDAO>();
+
+        data.Setup(d => d.PutProduct(It.IsAny<Product>(), It.IsAny<CancellationToken>()))
+            .Callback((Product p, CancellationToken ct) => product = p)
+            .ReturnsAsync(UpsertResult.Updated);
+
+        var function = new Function(data.Object, Logger, JsonOptions);
+
+        // act
+        var response = await function.FunctionHandler(request, new TestLambdaContext());
+
+        // assert
+        response.StatusCode.Should().Be(200);
+        response.Headers.Should().BeNull();
+        product.Should().BeEquivalentTo(dto);
+    }
+
     [Fact]
     public async Task PutProduct_WithEmptyBody_ShouldReturnBadRequest()
     {
-        var testProduct = new ProductDTO("testid", "test product", 10);
-        
-        var apiRequest = new ApiRequestBuilder()
-            .WithHttpMethod("PUT")
-            .WithPathParameter("id", testProduct.Id)
+        // arrange
+        var product = new ProductDTO("testid", "test product", 10);
+        var request = new ApiRequestBuilder()
+            .WithHttpMethod(HttpMethod.Put)
+            .WithPathParameter("id", product.Id)
             .Build();
         
-        var mockDataAccessLayer = new Mock<IProductsDAO>();
-        mockDataAccessLayer.Setup(p => p.PutProduct(It.IsAny<Product>())).Verifiable();
-        
-        var function = new Function(mockDataAccessLayer.Object, _mockLogger.Object);
+        var data = new Mock<IProductsDAO>();
+        var function = new Function(data.Object, Logger, JsonOptions);
 
-        var result = await function.FunctionHandler(apiRequest, new TestLambdaContext());
+        // act
+        var response = await function.FunctionHandler(request, new TestLambdaContext());
 
-        result.StatusCode.Should().Be(400);
-        mockDataAccessLayer.Verify(p => p.PutProduct(It.IsAny<Product>()), Times.Never);
+        // assert
+        response.StatusCode.Should().Be(400);
+        data.Verify(d => d.PutProduct(It.IsAny<Product>(), It.IsAny<CancellationToken>()), Times.Never);
     }
         
     [Fact]
     public async Task PutProduct_WithMismatchingIds_ShouldReturnBadRequest()
     {
-        var testProduct = new ProductDTO("testid", "test product", 10);
-        
-        var apiRequest = new ApiRequestBuilder()
-            .WithHttpMethod("PUT")
+        // arrange
+        var product = new ProductDTO("testid", "test product", 10);
+        var request = new ApiRequestBuilder()
+            .WithHttpMethod(HttpMethod.Put)
             .WithPathParameter("id", "adifferentid")
-            .WithBody(testProduct)
+            .WithBody(product)
             .Build();
         
-        var mockDataAccessLayer = new Mock<IProductsDAO>();
-        mockDataAccessLayer.Setup(p => p.PutProduct(It.IsAny<Product>())).Verifiable();
-        
-        var function = new Function(mockDataAccessLayer.Object, _mockLogger.Object);
+        var data = new Mock<IProductsDAO>();
+        var function = new Function(data.Object, Logger, JsonOptions);
 
-        var result = await function.FunctionHandler(apiRequest, new TestLambdaContext());
+        // act
+        var response = await function.FunctionHandler(request, new TestLambdaContext());
 
-        result.StatusCode.Should().Be(400);
-        result.Body.Should().Be("Product ID in the body does not match path parameter");
+        // assert
+        response.StatusCode.Should().Be(400);
+        response.Body.Should().Be("Product ID in the body does not match path parameter");
+        data.Verify(d => d.PutProduct(It.IsAny<Product>(), It.IsAny<CancellationToken>()), Times.Never);
     }
     
     [Theory]
@@ -93,39 +117,70 @@ public class MockPutProductFunctionTests
     [InlineData("DELETE")]
     public async Task TestLambdaHandler_ForNonPutRequests_ShouldReturn405(string httpMethod)
     {
-        var apiRequest = new ApiRequestBuilder()
+        // arrange
+        var request = new ApiRequestBuilder()
             .WithHttpMethod(httpMethod)
             .Build();
         
-        var mockDataAccessLayer = new Mock<IProductsDAO>();
-        mockDataAccessLayer.Setup(p => p.PutProduct(It.IsAny<Product>())).Verifiable();
-        
-        var function = new Function(mockDataAccessLayer.Object, _mockLogger.Object);
+        var data = new Mock<IProductsDAO>();
+        var function = new Function(data.Object, Logger, JsonOptions);
 
-        var result = await function.FunctionHandler(apiRequest, new TestLambdaContext());
+        // act
+        var response = await function.FunctionHandler(request, new TestLambdaContext());
 
-        result.StatusCode.Should().Be(405);
+        // assert
+        response.StatusCode.Should().Be(405);
     }
     
     [Fact]
     public async Task PutProduct_ErrorInDataAccess_ShouldReturn500()
     {
-        var testProduct = new ProductDTO("testid", "test product", 10);
+        // arrange
+        var product = new ProductDTO("testid", "test product", 10);
         
-        var apiRequest = new ApiRequestBuilder()
-            .WithHttpMethod("PUT")
-            .WithPathParameter("id", testProduct.Id)
-            .WithBody(testProduct)
+        var request = new ApiRequestBuilder()
+            .WithHttpMethod(HttpMethod.Put)
+            .WithPathParameter("id", product.Id)
+            .WithBody(product)
             .Build();
         
-        var mockDataAccessLayer = new Mock<IProductsDAO>();
-        mockDataAccessLayer.Setup(p => p.PutProduct(It.IsAny<Product>()))
+        var data = new Mock<IProductsDAO>();
+
+        data.Setup(d => d.PutProduct(It.IsAny<Product>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new NullReferenceException());
-        
-        var function = new Function(mockDataAccessLayer.Object, _mockLogger.Object);
 
-        var result = await function.FunctionHandler(apiRequest, new TestLambdaContext());
+        var function = new Function(data.Object, Logger, JsonOptions);
 
-        result.StatusCode.Should().Be(500);
+        // act
+        var response = await function.FunctionHandler(request, new TestLambdaContext());
+
+        // assert
+        response.StatusCode.Should().Be(500);
+    }
+
+    [Fact]
+    public async Task PutProduct_TimeOut_ShouldReturn503()
+    {
+        // arrange
+        var product = new ProductDTO("testid", "test product", 10);
+
+        var request = new ApiRequestBuilder()
+            .WithHttpMethod(HttpMethod.Put)
+            .WithPathParameter("id", product.Id)
+            .WithBody(product)
+            .Build();
+
+        var data = new Mock<IProductsDAO>();
+
+        data.Setup(d => d.PutProduct(It.IsAny<Product>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new TaskCanceledException());
+
+        var function = new Function(data.Object, Logger, JsonOptions);
+
+        // act
+        var response = await function.FunctionHandler(request, new TestLambdaContext());
+
+        // assert
+        response.StatusCode.Should().Be(503);
     }
 }

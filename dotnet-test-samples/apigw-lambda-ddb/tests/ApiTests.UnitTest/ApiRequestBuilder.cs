@@ -1,69 +1,66 @@
-﻿using System.Text.Json;
-using Amazon.Lambda.APIGatewayEvents;
+﻿using Amazon.Lambda.APIGatewayEvents;
+using System.Text.Json;
 
 namespace ApiTests.UnitTest;
 
 public class ApiRequestBuilder
 {
-    private APIGatewayHttpApiV2ProxyRequest _request;
-    private string httpMethod;
-    private string body;
-    private Dictionary<string, string> headers;
-    private Dictionary<string, string> pathParams;
+    private readonly List<string> _path = new() { "dev" };
+    private string? _body;
+    private HttpMethod? _httpMethod;
+    private Dictionary<string, string>? _pathParams;
+    private Dictionary<string, string>? _headers;
 
-    public ApiRequestBuilder()
+    public ApiRequestBuilder WithPathParameter(string name, string value)
     {
-        this._request = new APIGatewayHttpApiV2ProxyRequest();
-        this.pathParams = new Dictionary<string, string>();
-        this.headers = new Dictionary<string, string>();
-    }
-
-    public ApiRequestBuilder WithPathParameter(string paramName, string value)
-    {
-        this.pathParams.Add(paramName, value);
+        _pathParams ??= new(StringComparer.OrdinalIgnoreCase);
+        _pathParams.Add(name, value);
+        _path.Add(value);
         return this;
     }
 
-    public ApiRequestBuilder WithHttpMethod(string methodName)
+    public ApiRequestBuilder WithHttpMethod(string httpMethod) =>
+        WithHttpMethod(new HttpMethod(httpMethod));
+
+    public ApiRequestBuilder WithHttpMethod(HttpMethod httpMethod)
     {
-        this.httpMethod = methodName;
+        _httpMethod = httpMethod;
         return this;
     }
 
     public ApiRequestBuilder WithBody(string body)
     {
-        this.body = body;
+        _body = body;
         return this;
     }
 
-    public ApiRequestBuilder WithBody(object body)
+    public ApiRequestBuilder WithBody<T>(T body, JsonSerializerOptions? jsonOptions = default)
     {
-        this.body = JsonSerializer.Serialize(body);
+        _body = JsonSerializer.Serialize(body, jsonOptions);
         return this;
     }
 
-    public ApiRequestBuilder WithHeaders(Dictionary<string, string> headers)
+    public ApiRequestBuilder WithHeader(string name, string value)
     {
-        this.headers = headers;
+        _headers ??= new(StringComparer.OrdinalIgnoreCase);
+        _headers[name] = value;
         return this;
     }
 
-    public APIGatewayHttpApiV2ProxyRequest Build()
-    {
-        this._request = new APIGatewayHttpApiV2ProxyRequest()
+    public APIGatewayHttpApiV2ProxyRequest Build() =>
+        new()
         {
             RequestContext = new APIGatewayHttpApiV2ProxyRequest.ProxyRequestContext()
             {
+                DomainName = "localhost",
                 Http = new APIGatewayHttpApiV2ProxyRequest.HttpDescription()
                 {
-                    Method = httpMethod
+                    Method = (_httpMethod ?? HttpMethod.Get).Method,
+                    Path = string.Join('/', _path),
                 }
             },
-            PathParameters = pathParams,
-            Body = body,
-            Headers = headers
+            PathParameters = _pathParams,
+            Body = _body,
+            Headers = _headers,
         };
-
-        return this._request;
-    }
 }
