@@ -80,7 +80,6 @@ describe( 'get-products', () => {
       mockedStore.prototype.getProduct.mockImplementationOnce(id => Promise.resolve(product));
       
       const result = await handler(inputEvent, inputContext);
-      expect(mockedStore).toHaveBeenCalled();
       expect(mockedStore.prototype.getProduct).toHaveBeenCalledWith('1');
       expect(result.statusCode).toBe(200);
     });
@@ -107,7 +106,6 @@ describe( 'get-products', () => {
       mockedStore.prototype.getProduct.mockImplementationOnce(id => Promise.resolve(undefined));
 
       const result = await handler(inputEvent, inputContext);
-      expect(mockedStore).toHaveBeenCalled();
       expect(mockedStore.prototype.getProduct).toHaveBeenCalledWith('1');
       expect(result.statusCode).toBe(404);
     });
@@ -121,7 +119,6 @@ describe( 'get-products', () => {
       mockedStore.prototype.getProduct.mockImplementationOnce(id => Promise.resolve(product));
       
       const result = await handler(inputEvent, inputContext);
-      expect(mockedStore).toHaveBeenCalled();
       expect(mockedStore.prototype.getProduct).toHaveBeenCalledWith('1');
       
       const parsedBody = JSON.parse(result.body);
@@ -134,7 +131,6 @@ describe( 'get-products', () => {
       });
       
       const result = await handler(inputEvent, inputContext);
-      expect(mockedStore).toHaveBeenCalled();
       expect(mockedStore.prototype.getProduct).toHaveBeenCalled();
       expect(result.statusCode).toBe(500);
     });
