@@ -22,12 +22,13 @@
  */
 import { beforeEach, describe, it, expect, jest } from '@jest/globals';
 
-import { APIGatewayProxyEvent, Context } from 'aws-lambda';
+import { APIGatewayProxyEvent } from 'aws-lambda';
 import apiGWProxyEventStub from '../../events/unit-test-event.json';
 
 import { Product } from "../model/Product";
 import { DynamoDbStore } from "../store/dynamodb/dynamodb-store";
 import { handler } from '../api/put-product';
+import { inputContext } from '../../test/stubs/api-gateway-input-context';
 
 jest.mock('../store/dynamodb/dynamodb-store');
 
@@ -38,31 +39,9 @@ describe( 'get-products', () => {
   describe( 'lambdaHandler()', () => {
 
     let inputEvent: APIGatewayProxyEvent;
-    let inputContext: Context;
 
     beforeEach(() => {
       inputEvent = apiGWProxyEventStub;
-      inputContext = {
-        callbackWaitsForEmptyEventLoop: false,
-        functionName: '',
-        functionVersion: '',
-        invokedFunctionArn: '',
-        memoryLimitInMB: '',
-        awsRequestId: '',
-        logGroupName: '',
-        logStreamName: '',
-        getRemainingTimeInMillis: () => 1000,
-        done: function (error?: Error | undefined, result?: any): void {
-          throw new Error('Function not implemented.');
-        },
-        fail: function (error: string | Error): void {
-          throw new Error('Function not implemented.');
-        },
-        succeed: function (messageOrObject: any): void {
-          throw new Error('Function not implemented.');
-        }
-      };
-
       mockedStore.mockReset();
       mockedStore.prototype.putProduct.mockReset();
     });
