@@ -13,9 +13,9 @@ namespace ServerlessTestApi.Infrastructure;
 
 public static class Startup
 {
-    private static ServiceProvider? _serviceProvider;
+    private static IServiceProvider? _serviceProvider;
 
-    public static ServiceProvider ServiceProvider => _serviceProvider ??= InitializeServiceProvider();
+    public static IServiceProvider ServiceProvider => _serviceProvider ??= InitializeServiceProvider();
 
     public static void AddDefaultServices(IServiceCollection services)
     {
@@ -42,7 +42,7 @@ public static class Startup
         services.TryAddSingleton<IProductsDAO, DynamoDbProducts>();
     }
 
-    private static ServiceProvider InitializeServiceProvider()
+    private static IServiceProvider InitializeServiceProvider()
     {
         var services = new ServiceCollection();
         AddDefaultServices(services);
