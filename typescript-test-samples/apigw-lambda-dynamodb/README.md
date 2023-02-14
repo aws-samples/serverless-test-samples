@@ -99,16 +99,17 @@ apigw-lambda-dynamodb$ sam deploy --guided
 The [integration tests](src/tests/integration/integ-handler.test.ts) need to be provided 2 environment variables. 
 
 1. The `DYNAMODB_TABLE_NAME` is the name of the DynamoDB table providing persistence. 
-The integration tests [seed data into the DynamoDB table, and clean it up afterwards](src/tests/integration/integ-handler.test.ts#L24-28).
+    * The integration tests [seed data into the DynamoDB table](src/tests/integration/integ-handler.test.ts#L24-28).
+    * The [integration test tear-down](src/tests/integration/integ-handler.test.ts#L30-49) removes the seed data, as well as data generated during the test.
 2. The `API_URL` is the base URL of the API Gateway deployment stage, which should end with `/Prod/` in this case.
 
+Set up the environment variables:
 ```shell
-src $ export DYNAMODB_TABLE_NAME=<<DYNAMODB_TABLE_NAME>>
-src $ export API_URL=<<APIGATEWAY_URL>>
+src $ export DYNAMODB_TABLE_NAME=<DYNAMODB_TABLE_NAME>
+src $ export API_URL=<APIGATEWAY_URL>
 ```
 
-The [integration test tear-down](src/tests/integration/integ-handler.test.ts#L30-49) removes the seed data, as well as data generated during the test.
-
+Then run the test suite.
 ```shell
 apigw-lambda-dynamodb$ cd src
 src $ npm install
@@ -119,7 +120,7 @@ Alternatively, you can set the environment variables and run the test suite all 
 ```shell
 apigw-lambda-dynamodb$ cd src
 src $ npm install
-src $ DYNAMODB_TABLE_NAME=<<DYNAMODB_TABLE_NAME>> API_URL=<<APIGATEWAY_URL>> npm run test:integration
+src $ DYNAMODB_TABLE_NAME=<DYNAMODB_TABLE_NAME> API_URL=<APIGATEWAY_URL> npm run test:integration
 ```
 
 [Top](#contents)
