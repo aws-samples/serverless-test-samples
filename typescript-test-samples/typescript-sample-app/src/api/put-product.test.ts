@@ -34,7 +34,7 @@ jest.mock('../store/dynamodb/dynamodb-store');
 
 const mockedStore = jest.mocked(DynamoDbStore);
 
-describe( 'get-products', () => {
+describe( 'put-product', () => {
 
   describe( 'lambdaHandler()', () => {
 
