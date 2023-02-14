@@ -103,10 +103,10 @@ The [integration tests](src/tests/integration/integ-handler.test.ts) need to be 
     * The [integration test tear-down](src/tests/integration/integ-handler.test.ts#L30-49) removes the seed data, as well as data generated during the test.
 2. The `API_URL` is the base URL of the API Gateway deployment stage, which should end with `/Prod/` in this case.
 
-Set up the environment variables:
+Set up the environment variables, replacing the `<PLACEHOLDERS>` with your values:
 ```shell
-src $ export DYNAMODB_TABLE_NAME=<DYNAMODB_TABLE_NAME>
-src $ export API_URL=<APIGATEWAY_URL>
+src $ export DYNAMODB_TABLE_NAME=<YOUR_DYNAMODB_TABLE_NAME>
+src $ export API_URL=<YOUR_APIGATEWAY_BASE_URL>
 ```
 
 Then run the test suite.
@@ -120,7 +120,7 @@ Alternatively, you can set the environment variables and run the test suite all 
 ```shell
 apigw-lambda-dynamodb$ cd src
 src $ npm install
-src $ DYNAMODB_TABLE_NAME=<DYNAMODB_TABLE_NAME> API_URL=<APIGATEWAY_URL> npm run test:integration
+src $ DYNAMODB_TABLE_NAME=<YOUR_DYNAMODB_TABLE_NAME> API_URL=<YOUR_APIGATEWAY_BASE_URL> npm run test:integration
 ```
 
 [Top](#contents)
