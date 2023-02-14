@@ -55,7 +55,11 @@ public class Function
             {
                 Body = "Only DELETE allowed",
                 StatusCode = (int)HttpStatusCode.MethodNotAllowed,
-                Headers = new Dictionary<string, string> { ["Allow"] = HttpMethod.Delete.Method },
+                Headers = new Dictionary<string, string>()
+                {
+                    ["Allow"] = HttpMethod.Delete.Method,
+                    ["Content-Type"] = "text/plain",
+                },
             };
         }
 
@@ -74,14 +78,14 @@ public class Function
             return new()
             {
                 StatusCode = (int)HttpStatusCode.OK,
-                Body = $"Product with id {id} deleted"
+                Body = $"Product with id {id} deleted",
+                Headers = new Dictionary<string, string>() { ["Content-Type"] = "text/plain" },
             };
         }
         catch (OperationCanceledException)
         {
             return new()
             {
-                Body = "Timed Out",
                 StatusCode = (int)HttpStatusCode.ServiceUnavailable,
             };
         }

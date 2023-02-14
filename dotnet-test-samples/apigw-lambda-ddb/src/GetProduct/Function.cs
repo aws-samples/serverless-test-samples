@@ -64,7 +64,11 @@ public class Function
             {
                 Body = "Only GET allowed",
                 StatusCode = (int)HttpStatusCode.MethodNotAllowed,
-                Headers = new Dictionary<string, string> { ["Allow"] = HttpMethod.Get.Method },
+                Headers = new Dictionary<string, string>()
+                {
+                    ["Allow"] = HttpMethod.Get.Method,
+                    ["Content-Type"] = "text/plain",
+                },
             };
         }
 
@@ -74,6 +78,7 @@ public class Function
             {
                 Body = "Product not found",
                 StatusCode = (int)HttpStatusCode.NotFound,
+                Headers = new Dictionary<string, string>() { ["Content-Type"] = "text/plain" },
             };
         }
 
@@ -111,6 +116,7 @@ public class Function
             {
                 Body = "Product not found",
                 StatusCode = (int)HttpStatusCode.NotFound,
+                Headers = new Dictionary<string, string>() { ["Content-Type"] = "text/plain" },
             };
         }
 
@@ -118,7 +124,7 @@ public class Function
         {
             StatusCode = (int)HttpStatusCode.OK,
             Body = JsonSerializer.Serialize(product, _jsonOptions.Value),
-            Headers = new Dictionary<string, string> { ["Content-Type"] = "application/json" },
+            Headers = new Dictionary<string, string>() { ["Content-Type"] = "application/json" },
         };
     }
 }

@@ -64,7 +64,11 @@ namespace PutProduct
                 {
                     Body = "Only PUT allowed",
                     StatusCode = (int)HttpStatusCode.MethodNotAllowed,
-                    Headers = new Dictionary<string, string> { ["Allow"] = HttpMethod.Put.Method },
+                    Headers = new Dictionary<string, string> ()
+                    {
+                        ["Allow"] = HttpMethod.Put.Method,
+                        ["Content-Type"] = "text/plain",
+                    },
                 };
             }
 
@@ -74,6 +78,7 @@ namespace PutProduct
                 {
                     Body = "No body contents",
                     StatusCode = (int)HttpStatusCode.BadRequest,
+                    Headers = new Dictionary<string, string>() { ["Content-Type"] = "text/plain" },
                 };
             }
 
@@ -99,6 +104,7 @@ namespace PutProduct
                         {
                             Body = "Product ID in the body does not match path parameter",
                             StatusCode = (int)HttpStatusCode.BadRequest,
+                            Headers = new Dictionary<string, string>() { ["Content-Type"] = "text/plain" },
                         };
                     }
 
@@ -138,7 +144,11 @@ namespace PutProduct
                 {
                     StatusCode = (int)HttpStatusCode.Created,
                     Body = $"Created product with id {id}",
-                    Headers = new Dictionary<string, string> { ["Location"] = location.Uri.ToString() },
+                    Headers = new Dictionary<string, string>()
+                    {
+                        ["Content-Type"] = "text/plain",
+                        ["Location"] = location.Uri.ToString(),
+                    },
                 };
             }
 
@@ -146,6 +156,7 @@ namespace PutProduct
             {
                 StatusCode = (int)HttpStatusCode.OK,
                 Body = $"Updated product with id {id}",
+                Headers = new Dictionary<string, string>() { ["Content-Type"] = "text/plain" },
             };
         }
     }
