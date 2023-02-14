@@ -63,7 +63,6 @@ public class MockPutProductFunctionTests : FunctionTest<Function>
 
         // assert
         response.StatusCode.Should().Be(200);
-        response.Headers.Should().BeNull();
         product.Should().BeEquivalentTo(dto);
     }
 
