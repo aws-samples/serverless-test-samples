@@ -38,7 +38,7 @@ public static class Startup
         services.TryAddSingleton(static sp => Options.Create(new JsonSerializerOptions(JsonSerializerDefaults.Web)));
         services.TryAddTransient<IValidateOptions<DynamoDbOptions>, DynamoDbOptionsValidator>();
         services.AddLogging(builder => builder.AddSerilog(logger));
-        services.TryAddSingleton<IAmazonDynamoDB>(new AmazonDynamoDBClient());
+        services.TryAddSingleton<IAmazonDynamoDB>(static sp => new AmazonDynamoDBClient());
         services.TryAddSingleton<IProductsDAO, DynamoDbProducts>();
     }
 
