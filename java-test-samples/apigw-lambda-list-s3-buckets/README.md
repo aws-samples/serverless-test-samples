@@ -1,4 +1,4 @@
-# API Gateway to Lambda to List S3 Buckets
+# Java Test Samples Starter Project
 This project contains automated test code samples for serverless applications. The project uses the [AWS Serverless Application Model](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) (SAM) CLI for configuration, testing and deployment.
 
 - [Project contents](#project-contents)
