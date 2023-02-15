@@ -1,4 +1,4 @@
-# Typescript Test Intro
+# Typescript Test Test Samples Starter Project
 
 This project contains automated test samples for serverless applications written in TypeScript. The project includes techniques for executing tests including mocking and testing in the cloud. Based on current tooling, we recommend customers **focus on testing in the cloud** as much as possible. 
 
