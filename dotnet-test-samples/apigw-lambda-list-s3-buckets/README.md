@@ -1,4 +1,4 @@
-# .NET Test Samples
+# .NET Test Samples Starter Project
 
 This project contains automated test sample code samples for serverless applications. The project uses the [AWS Serverless Application Model](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) (SAM) CLI for configuration, testing and deployment. 
 
