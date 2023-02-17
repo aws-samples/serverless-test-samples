@@ -9,7 +9,7 @@ This repository is designed to provide guidance for implementing comprehensive t
 [.NET](./dotnet-test-samples/) ·
 [Java](./java-test-samples/)
 
-![Run Unit Tests](READMEIntro.gif)
+![Run Unit Tests](_img/READMEIntro.gif)
 
 ## Getting Started
 How do you use this repository? 
