@@ -14,9 +14,9 @@
     "lint": "eslint '*.ts' --quiet --fix",
     "compile": "tsc",
 
-    "test": "npm run compile && jest",
-    "test:unit": "npm run compile && jest --selectProjects unit",
-    "test:integration": "npm run compile && jest --selectProjects integration"
+    "test": "jest",
+    "test:unit": "jest --selectProjects unit",
+    "test:integration": "jest --selectProjects integration"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.92",
