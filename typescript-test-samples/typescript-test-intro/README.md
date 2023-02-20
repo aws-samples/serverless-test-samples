@@ -113,7 +113,7 @@ typescript-test-intro$ cd list-buckets
 list-buckets$ npm install
 
 # run unit tests with mocks
-list-buckets$ npm test unit
+list-buckets$ npm run test:unit
 ```
 
 [[top]](#typescript-test-intro)
@@ -129,7 +129,7 @@ typescript-test-intro$ cd list-buckets
 # Set the environment variable API_URL to the base of the ListBucketsApi CloudFormation output from the deploy step above
 # E.g. https://aaaaaaaaaaa.execute-api.us-east-2.amazonaws.com/Prod
 # You can do this as a separate step if you prefer
-list-buckets$ API_URL=https://YOUR_API_URL npm test integration
+list-buckets$ API_URL=https://YOUR_API_URL npm run test:integration
 ```
 
 [[top]](#typescript-test-intro)
