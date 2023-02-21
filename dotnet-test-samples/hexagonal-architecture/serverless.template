@@ -1,0 +1,56 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Transform": "AWS::Serverless-2016-10-31",
+  "Description": "An AWS Serverless Application.",
+  
+  "Resources": {
+    "StocksConverterFunction": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "Architectures": [
+          "x86_64"
+        ],
+        "Handler": "HexagonalArchitecture::HexagonalArchitecture.Functions::GetStockById",
+        "Runtime": "dotnet6",
+        "CodeUri": "",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Role": null,
+        "Policies": [
+          "AWSLambdaBasicExecutionRole",
+          "DynamoDBReadPolicy"
+        ],
+        "Environment": {
+            "Variables": {
+                "DB_TABLE": { "Ref" : "StocksTable" },
+                "API_KEY": "<API_KEY_FOR_CURRENCIES_API>",
+                "BASE_API": "<API_BASE_ADDRESS>"              
+            }
+        },
+        "Events": {
+          "StocksConverter": {
+            "Type": "Api",
+            "Properties": {              
+              "Path": "/stock/{StockID}",
+              "Method": "GET"
+            }
+          }
+        }
+      }
+    },
+    "StocksTable" : {
+        "Type": "AWS::Serverless::SimpleTable",
+        "Properties": {
+            "PrimaryKey": "STOCK_ID"          
+        }
+    }
+  }, 
+  "Outputs": {
+    "ApiURL": {
+      "Description": "API endpoint URL for Prod environment",
+      "Value": {
+        "Fn::Sub": "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+      }
+    }
+  }
+}
