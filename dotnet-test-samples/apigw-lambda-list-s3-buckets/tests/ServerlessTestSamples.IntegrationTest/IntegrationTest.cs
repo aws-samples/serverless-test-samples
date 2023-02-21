@@ -1,33 +1,57 @@
-using System.Net;
-using System.Text.Json;
 using FluentAssertions;
+using Microsoft.Extensions.Options;
 using ServerlessTestSamples.IntegrationTest.Drivers;
+using System.Net;
+using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace ServerlessTestSamples.IntegrationTest;
 
-public class IntegrationTest : IClassFixture<Setup>
+public class IntegrationTest : IClassFixture<Setup>, IDisposable
 {
-    private HttpClient _httpClient;
+    private readonly HttpClient _client;
+    private bool disposed;
 
-    public IntegrationTest()
+    public IntegrationTest(Setup setup)
     {
-        _httpClient = new HttpClient();
-        _httpClient.DefaultRequestHeaders.Add("INTEGRATION_TEST", "true");
+        _client = new HttpClient()
+        {
+            BaseAddress = new Uri(setup.ApiUrl),
+            DefaultRequestHeaders =
+            {
+                { "INTEGRATION_TEST", "true" },
+            },
+        };
+    }
+
+    private IOptions<JsonSerializerOptions> JsonOptions { get; } =
+        Options.Create(new JsonSerializerOptions(JsonSerializerDefaults.Web));
+
+    public void Dispose()
+    {
+        if (disposed)
+        {
+            return;
+        }
+
+        disposed = true;
+        _client.Dispose();
     }
 
     [Fact]
     public async Task ListStorageAreas_ShouldReturnSuccess()
     {
-        var result = await _httpClient.GetAsync($"{Setup.ApiUrl}storage");
+        // arrange
 
-        result.StatusCode.Should().Be(HttpStatusCode.OK);
+        // act
+        var response = await _client.GetAsync("storage");
 
-        var responseBody = await result.Content.ReadAsStringAsync();
+        // assert
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var storageAreasResult = JsonSerializer.Deserialize<ListStorageAreasResult>(responseBody);
+        var result = await response.Content.ReadFromJsonAsync<ListStorageAreasResult>();
 
-        storageAreasResult.Should().NotBeNull();
-        storageAreasResult.StorageAreas.Should().NotBeNull();
-        storageAreasResult.IsSuccess.Should().BeTrue();
+        result!.StorageAreas.Should().NotBeNull();
+        result.IsSuccess.Should().BeTrue();
     }
 }

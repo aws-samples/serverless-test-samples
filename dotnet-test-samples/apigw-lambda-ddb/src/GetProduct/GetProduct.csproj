@@ -4,9 +4,9 @@
     <TargetFramework>net6.0</TargetFramework>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <PublishReadyToRun>true</PublishReadyToRun>
-	<GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
-	<AWSProjectType>Lambda</AWSProjectType>
-	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+    <AWSProjectType>Lambda</AWSProjectType>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,7 +17,7 @@
     <PackageReference Include="AWS.Lambda.Powertools.Metrics" Version="0.0.1-preview.1" />
     <PackageReference Include="AWSXRayRecorder.Core" Version="2.13.0" />
     <PackageReference Include="AWSXRayRecorder.Handlers.AwsSdk" Version="2.11.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>

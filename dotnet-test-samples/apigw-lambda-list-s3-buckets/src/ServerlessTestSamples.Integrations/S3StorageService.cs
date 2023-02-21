@@ -1,27 +1,24 @@
-﻿using System.Net;
-using Amazon.S3;
+﻿using Amazon.S3;
 using ServerlessTestSamples.Core.Services;
+using System.Net;
 
 namespace ServerlessTestSamples.Integrations;
 
 public class S3StorageService : IStorageService
 {
-    private readonly IAmazonS3 _s3Client;
+    private readonly IAmazonS3 _client;
 
-    public S3StorageService(IAmazonS3 client)
-    {
-        _s3Client = client ?? new AmazonS3Client();
-    }
+    public S3StorageService(IAmazonS3 client) => _client = client;
 
-    public async Task<ListStorageAreasResult> ListStorageAreas(string? filterPrefix)
+    public async Task<ListStorageAreasResult> ListStorageAreas(string? filterPrefix, CancellationToken cancellationToken)
     {
-        var buckets = await _s3Client.ListBucketsAsync();
+        var buckets = await _client.ListBucketsAsync(cancellationToken);
 
         if (buckets.HttpStatusCode != HttpStatusCode.OK)
         {
-            return new ListStorageAreasResult(Enumerable.Empty<string>(), false, "Failure retrieving services from Amazon S3");
+            return new(Enumerable.Empty<string>(), false, "Failure retrieving services from Amazon S3");
         }
 
-        return new ListStorageAreasResult(buckets.Buckets.Select(p => p.BucketName));
+        return new(buckets.Buckets.Select(p => p.BucketName));
     }
 }

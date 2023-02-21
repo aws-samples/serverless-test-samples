@@ -1,112 +1,134 @@
-using System.Text.Json;
 using Amazon.Lambda.TestUtilities;
-using Amazon.XRay.Recorder.Core;
 using FluentAssertions;
 using GetProducts;
-using Microsoft.Extensions.Logging;
 using Moq;
 using ServerlessTestApi.Core.DataAccess;
 using ServerlessTestApi.Core.Models;
+using System.Text.Json;
 
 namespace ApiTests.UnitTest;
 
-public class MockGetProductsFunctionTests
+public class MockGetProductsFunctionTests : FunctionTest<Function>
 {
-    private bool _runningLocally = string.IsNullOrEmpty(System.Environment.GetEnvironmentVariable("LOCAL_RUN")) ? true : bool.Parse(System.Environment.GetEnvironmentVariable("LOCAL_RUN"));
-    private Mock<ILogger<Function>> _mockLogger = new Mock<ILogger<Function>>();
-
-    public MockGetProductsFunctionTests()
-    {
-        // Required for the XRay tracing sub-segment code in the Lambda function handler.
-        AWSXRayRecorder.InitializeInstance();    
-        AWSXRayRecorder.Instance.BeginSegment("UnitTests");
-    }
-    
     [Fact]
     public async Task GetProducts_ShouldReturnSuccess()
     {
-        var apiRequest = new ApiRequestBuilder()
-            .WithHttpMethod("GET")
+        // arrange
+        var request = new ApiRequestBuilder()
+            .WithHttpMethod(HttpMethod.Get)
             .Build();
-        
-        var mockDataAccessLayer = new Mock<IProductsDAO>();
-        mockDataAccessLayer.Setup(p => p.GetAllProducts()).ReturnsAsync(new ProductWrapper());
-        
-        var function = new Function(mockDataAccessLayer.Object, _mockLogger.Object);
+        var data = new Mock<IProductsDAO>();
 
-        var result = await function.FunctionHandler(apiRequest, new TestLambdaContext());
+        data.Setup(d => d.GetAllProducts(It.IsAny<CancellationToken>())).ReturnsAsync(new ProductWrapper(new()));
 
-        result.StatusCode.Should().Be(200);
+        var function = new Function(data.Object, Logger, JsonOptions);
 
-        var responseBody = JsonSerializer.Deserialize<ProductWrapper>(result.Body);
+        // act
+        var response = await function.FunctionHandler(request, new TestLambdaContext());
 
-        responseBody.Should().NotBeNull();
-        responseBody.Products.Count.Should().Be(0);
+        // arrange
+        response.StatusCode.Should().Be(200);
+
+        var body = JsonSerializer.Deserialize<ProductWrapper>(response.Body, JsonOptions.Value);
+
+        body!.Products.Should().HaveCount(0);
     }
-    
+
     [Fact]
-    public async Task GetProducts__WhenDataAccessReturnsProducts_ShouldReturnInBody()
+    public async Task GetProducts_WhenDataAccessReturnsProducts_ShouldReturnInBody()
     {
-        var apiRequest = new ApiRequestBuilder()
-            .WithHttpMethod("GET")
+        // arrange
+        var request = new ApiRequestBuilder()
+            .WithHttpMethod(HttpMethod.Get)
             .Build();
-        
-        var mockDataAccessLayer = new Mock<IProductsDAO>();
-        mockDataAccessLayer.Setup(p => p.GetAllProducts()).ReturnsAsync(new ProductWrapper(new List<ProductDTO>(1)
-        {
-            new ProductDTO("testid", "test product", 10)
-        }));
-        
-        var function = new Function(mockDataAccessLayer.Object, _mockLogger.Object);
 
-        var result = await function.FunctionHandler(apiRequest, new TestLambdaContext());
+        var expected = new ProductWrapper(
+            new(capacity: 1)
+            {
+                new("testid", "test product", 10),
+            });
+        var data = new Mock<IProductsDAO>();
 
-        result.StatusCode.Should().Be(200);
+        data.Setup(d => d.GetAllProducts(It.IsAny<CancellationToken>())).ReturnsAsync(expected);
 
-        var responseBody = JsonSerializer.Deserialize<ProductWrapper>(result.Body);
+        var function = new Function(data.Object, Logger, JsonOptions);
 
-        responseBody.Should().NotBeNull();
-        responseBody.Products.Count.Should().Be(1);
-        responseBody.Products[0].Name.Should().Be("test product");
-        responseBody.Products[0].Id.Should().Be("testid");
-        responseBody.Products[0].Price.Should().Be(10);
+        // act
+        var response = await function.FunctionHandler(request, new TestLambdaContext());
+
+        // assert
+        response.StatusCode.Should().Be(200);
+
+        var body = JsonSerializer.Deserialize<ProductWrapper>(response.Body, JsonOptions.Value);
+
+        body.Should().BeEquivalentTo(expected);
     }
-    
+
     [Theory]
     [InlineData("POST")]
     [InlineData("PUT")]
     [InlineData("DELETE")]
     public async Task TestLambdaHandler_ForNonGetRequests_ShouldReturn405(string httpMethod)
     {
-        var apiRequest = new ApiRequestBuilder()
+        // arrange
+        var request = new ApiRequestBuilder()
             .WithHttpMethod(httpMethod)
             .Build();
-        
-        var mockDataAccessLayer = new Mock<IProductsDAO>();
-        mockDataAccessLayer.Setup(p => p.GetAllProducts()).ReturnsAsync(new ProductWrapper());
-        
-        var function = new Function(mockDataAccessLayer.Object, _mockLogger.Object);
 
-        var result = await function.FunctionHandler(apiRequest, new TestLambdaContext());
+        var data = new Mock<IProductsDAO>();
 
+        data.Setup(d => d.GetAllProducts(It.IsAny<CancellationToken>())).ReturnsAsync(new ProductWrapper(new()));
+
+        var function = new Function(data.Object, Logger, JsonOptions);
+
+        // act
+        var result = await function.FunctionHandler(request, new TestLambdaContext());
+
+        // assert
         result.StatusCode.Should().Be(405);
     }
-    
+
     [Fact]
     public async Task GetProducts_ErrorInDataAccess_ShouldReturn500()
     {
-        var apiRequest = new ApiRequestBuilder()
-            .WithHttpMethod("GET")
+        // arrange
+        var request = new ApiRequestBuilder()
+            .WithHttpMethod(HttpMethod.Get)
             .Build();
-        
-        var mockDataAccessLayer = new Mock<IProductsDAO>();
-        mockDataAccessLayer.Setup(p => p.GetAllProducts())
+
+        var data = new Mock<IProductsDAO>();
+
+        data.Setup(d => d.GetAllProducts(It.IsAny<CancellationToken>()))
             .ThrowsAsync(new NullReferenceException());
-        
-        var function = new Function(mockDataAccessLayer.Object, _mockLogger.Object);
 
-        var result = await function.FunctionHandler(apiRequest, new TestLambdaContext());
+        var function = new Function(data.Object, Logger, JsonOptions);
 
-        result.StatusCode.Should().Be(500);
+        // act
+        var response = await function.FunctionHandler(request, new TestLambdaContext());
+
+        // assert
+        response.StatusCode.Should().Be(500);
+    }
+
+    [Fact]
+    public async Task GetProducts_TimeOut_ShouldReturn503()
+    {
+        // arrange
+        var request = new ApiRequestBuilder()
+            .WithHttpMethod(HttpMethod.Get)
+            .Build();
+
+        var data = new Mock<IProductsDAO>();
+
+        data.Setup(d => d.GetAllProducts(It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new TaskCanceledException());
+
+        var function = new Function(data.Object, Logger, JsonOptions);
+
+        // act
+        var response = await function.FunctionHandler(request, new TestLambdaContext());
+
+        // assert
+        response.StatusCode.Should().Be(503);
     }
 }
