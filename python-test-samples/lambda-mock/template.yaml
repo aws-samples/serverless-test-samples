@@ -1,0 +1,104 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+
+Metadata:
+  AWS::ServerlessRepo::Application:
+    Name: aws-lambda-unit-test-example
+    Description: AWS Serverless - AWS Lambda Test Demonstration
+    Author: W. Thomas Romano & Kevin Hakanson
+    Labels: ['lambda', 'dynamodb', 's3', 'test', 'apigw']
+
+Resources:
+  SampleBucket:
+    Type: AWS::S3::Bucket
+    UpdateReplacePolicy: Delete
+    Properties:
+      BucketName:
+        !Sub "${AWS::StackName}-${AWS::AccountId}"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+        - ServerSideEncryptionByDefault:
+            SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
+    Metadata:
+      SamResourceId: SampleBucket
+
+  SampleTable:
+    Type: AWS::DynamoDB::Table
+    UpdateReplacePolicy: Delete
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: PK
+        AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+      - AttributeName: PK
+        KeyType: HASH
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      SSESpecification:
+        SSEEnabled: true
+    Metadata:
+      SamResourceId: SampleTable
+
+  SampleLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/sample_lambda/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      MemorySize: 256
+      Architectures:
+      - arm64
+      Environment:
+        Variables:
+          DYNAMODB_TABLE_NAME:
+            Ref: SampleTable
+          S3_BUCKET_NAME:
+            Ref: SampleBucket
+      ReservedConcurrentExecutions: 1
+      Policies:
+      - S3WritePolicy:
+          BucketName: !Ref SampleBucket
+      - DynamoDBReadPolicy:
+          TableName: !Ref SampleTable
+      Events:
+        HttpPost:
+          Type: Api
+          Properties:
+            Path: '/SampleLambda/{docType}/{customerId}'
+            Method: post
+    Metadata:
+      SamResourceId: SampleLambda
+
+Outputs:
+  oLambdaFunction:
+    Description: Lambda Function
+    Value:
+      Ref: SampleLambda
+  oS3Bucket:
+    Description: S3 Bucket
+    Value:
+      Ref: SampleBucket
+  oDDBTable:
+    Description: DDB Table
+    Value:
+      Ref: SampleTable
+  oAPIEndpoint:
+    Value:
+      Fn::Sub:
+      - https://${ServerlessRestApi}.execute-api.${Region}.amazonaws.com/Prod/SampleLambda/{docType}/{customerId}
+      - Region:
+          Ref: AWS::Region
+        ServerlessRestApi:
+          Ref: ServerlessRestApi
