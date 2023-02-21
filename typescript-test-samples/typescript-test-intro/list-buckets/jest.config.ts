@@ -4,6 +4,7 @@
  */
 
 export default {
+    projects: ['<rootDir>/jest.integration.config.ts', '<rootDir>/jest.unit.config.ts'],
     transform: {
         '^.+\\.ts?$': 'esbuild-jest',
     },
