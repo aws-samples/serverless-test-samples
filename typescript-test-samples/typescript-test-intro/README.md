@@ -122,15 +122,13 @@ list-buckets$ npm run test:unit
 
 [Integration tests](./list-buckets/tests/integration/api.test.ts) run against deployed cloud resources. Since local unit tests cannot adequately test IAM permissions or other policy configurations, our integration tests confirm that permissions are properly configured. 
 
-Integration tests pull values from their environment to find deployed cloud resources. For this example, the tests are looking for the API Gateway URL in the `API_BASE_URL` environment variable. This value is one of the Outputs of our SAM template. Outputs are listed in the output of the `sam deploy` command. You can also use the `sam list --stack-outputs` command to find the API URL, like this:
+Integration tests pull values from their environment to find deployed cloud resources. For this example, the tests are looking for the API Gateway URL in the `API_BASE_URL` environment variable. This value is one of the [Outputs of our SAM template](./template.yaml#L50). Outputs are listed in the output of the `sam deploy` command. You can also use the `sam list --stack-outputs` command to find the API URL, like this:
 
 ```bash
 typescript-test-intro$ sam list stack-outputs --stack-name YOUR_STACK_NAME
 ```
 
-The value should look like this: `https://aaaaaaaaaaa.execute-api.us-east-2.amazonaws.com/Prod`
-
-You could also write your integration tests to take a stack name as a parameter, and query the CloudFormation API for details specific to the environment under test. For a CI/CD process you could use the `--output json` parameter with the `sam list` command to return machine-parseable values.
+The value needed looks like this: `https://aaaaaaaaaaa.execute-api.us-east-2.amazonaws.com/Prod`
 
 Run integration tests against your deployed cloud resources with the following command:
 
