@@ -96,11 +96,11 @@ The DynamoDB table schema is comprised of a Partition Key (PK) for looking up a 
 ## Make commands for test and deployment
 
 The project Makefile contains helper commands for working with the project:
-* ```make createEnv```: Create a Python Virtual Envionment and install dependencies
-* ```make unittest```: Run a unit test, guarding for socket connections
+* ```make install```: Create a Python Virtual Envionment and install dependencies
+* ```make test```: Run a unit test, guarding for socket connections
 * ```make coverage```: Run unit tests and provide a coverage report
 * ```make deploy```: Deploy the stack to an AWS Account
-* ```make deploy.guided```: Deploy the stack to an AWS Account, prompting for stack parameters
+* ```make deploy.g```: Deploy the stack to an AWS Account, prompting for stack parameters
 
 [Top](#contents)
 
