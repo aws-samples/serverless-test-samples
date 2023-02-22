@@ -120,16 +120,25 @@ list-buckets$ npm run test:unit
 
 ## Run integration tests against cloud resources
 
-[Integration tests](./list-buckets/tests/integration/api.test.ts) run against deployed cloud resources. Since local unit tests cannot adequately test IAM permissions or other policy configurations, our integration tests confirm that permissions are properly configured. Run integration tests against your deployed cloud resources with the following command:
+[Integration tests](./list-buckets/tests/integration/api.test.ts) run against deployed cloud resources. Since local unit tests cannot adequately test IAM permissions or other policy configurations, our integration tests confirm that permissions are properly configured. 
+
+Integration tests pull values from their environment to find deployed cloud resources. For this example, the tests are looking for the API Gateway URL in the `API_BASE_URL` environment variable. This value is one of the [Outputs of our SAM template](./template.yaml#L50). Outputs are listed in the output of the `sam deploy` command. You can also use the `sam list --stack-outputs` command to find the API URL, like this:
+
+```bash
+typescript-test-intro$ sam list stack-outputs --stack-name YOUR_STACK_NAME
+```
+
+The value needed looks like this: `https://aaaaaaaaaaa.execute-api.us-east-2.amazonaws.com/Prod`
+
+Run integration tests against your deployed cloud resources with the following command:
 
 ```bash
 # move to lambda-specific directory
 typescript-test-intro$ cd list-buckets
 
-# Set the environment variable API_URL to the base of the ListBucketsApi CloudFormation output from the deploy step above
-# E.g. https://aaaaaaaaaaa.execute-api.us-east-2.amazonaws.com/Prod
-# You can do this as a separate step if you prefer
-list-buckets$ API_URL=https://YOUR_API_URL npm run test:integration
+# This command sets the environment variable API_BASE_URL to the ApiBaseUrl CloudFormation output from the deploy step then runs the integration tests
+# You can do this as separate steps if you prefer
+list-buckets$ API_BASE_URL=https://YOUR_API_BASE_URL npm run test:integration
 ```
 
 [[top]](#typescript-test-intro)
