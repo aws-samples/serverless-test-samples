@@ -3,7 +3,7 @@
 [![AWS: S#](https://img.shields.io/badge/AWS-S3-green)](https://img.shields.io/badge/AWS-AWS-S3-green)
 [![test: unit](https://img.shields.io/badge/Test-Unit-blue)](https://img.shields.io/badge/Test-Unit-blue)
 
-# Test AWS Lambda function handlers locally using mocks (Python)
+# Test AWS Lambda function handlers locally using mocks
 
 ## Introduction
 
@@ -12,7 +12,7 @@ The project consists of an Amazon API Gateway, an AWS Lambda function, a DynamoD
 ---
 
 ## Contents
-- [Test AWS Lambda function handlers locally using mocks (Python)](#test-aws-lambda-function-handlers-locally-using-mocks-python)
+- [Test AWS Lambda function handlers locally using mocks](#test-aws-lambda-function-handlers-locally-using-mocks-python)
   - [Introduction](#introduction)
   - [Contents](#contents)
   - [System Under Test (SUT)](#system-under-test-sut)
