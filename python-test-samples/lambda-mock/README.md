@@ -7,7 +7,7 @@
 
 ## Introduction
 
-The project consists of an Amazon API Gateway, an AWS Lambda function, a DynamoDB Table, and an S3 bucket.  Although this project can be deployed, the focus of the code is to demonstrate local unit testing approaches using Python and mocking.  This project demonstrates testing locally an AWS Lambda function handler replacing remote API calls with mocks.  The Lambda function has optimizations for cold starts with global initializations, which are accomodated in the unit test.  
+The project consists of an [Amazon API Gateway](https://aws.amazon.com/api-gateway/), an [AWS Lambda function](https://aws.amazon.com/lambda/), an [Amazon DynamoDB](https://aws.amazon.com/dynamodb/) table, and an [Amazon Simple Storage Service (S3)](https://aws.amazon.com/s3/) bucket. Although this project can be deployed, the focus of the code is to demonstrate local unit testing approaches using Python and mocking. This project demonstrates testing locally an AWS Lambda function handler replacing remote API calls with mocks. The Lambda function has optimizations for cold starts with global initializations, which are accomodated in the unit test. 
 
 ---
 
@@ -23,7 +23,6 @@ The project consists of an Amazon API Gateway, an AWS Lambda function, a DynamoD
   - [Prerequisites](#prerequisites)
   - [Make commands for test and deployment](#make-commands-for-test-and-deployment)
   - [Running the project](#running-the-project)
-  - [License](#license)
 ---
 
 ## System Under Test (SUT)
@@ -38,7 +37,7 @@ The SUT in this pattern is a Lambda function that makes calls to other AWS cloud
 
 ## Goal
 
-This pattern is intended to enable rapid development and testing of a Lambda function that makes calls to other AWS services. Testing occurs on a local desktop environment and does not affect cloud resources. This pattern speeds development by eliminating the need to perform a build and deploy of the Lambda function to the cloud between modifications of test or function code.  This pattern eliminates the need to access cloud resources to conduct tests. Mock tests are also useful for testing failure conditions within your code, especially when mocking third party services beyond your control.
+This pattern is intended to enable rapid development and testing of a Lambda function that makes calls to other AWS services. Testing occurs on a local desktop environment and does not affect cloud resources. This pattern speeds development by eliminating the need to perform a build and deploy of the Lambda function to the cloud between modifications of test or function code. This pattern eliminates the need to access cloud resources to conduct tests. Mock tests are also useful for testing failure conditions within your code, especially when mocking third party services beyond your control.
 
 [Top](#contents)
 
@@ -46,9 +45,9 @@ This pattern is intended to enable rapid development and testing of a Lambda fun
 
 ## Description
 
-In this pattern, you develop a Lambda function that makes calls to other AWS cloud services using an AWS SDK.  The test first sets up mocked versions of the AWS services accessed by the Lambda function.  Your tests then invoke the handler function on your local desktop, passing a synthetic event as a parameter. During the test the calls to external cloud services are handled instead by the mocked objects, returning the pre-configured results set up by the test code. 
+In this pattern, you develop a Lambda function that makes calls to other AWS cloud services using an AWS SDK. The test first sets up mocked versions of the AWS services accessed by the Lambda function. Your tests then invoke the handler function on your local desktop, passing a synthetic event as a parameter. During the test the calls to external cloud services are handled instead by the mocked objects, returning the pre-configured results set up by the test code. 
 
-This pattern can be used with a variety of infrastructure as code systems including SAM, Serverless Framework, CDK, CloudFormation and Terraform. This pattern uses a simple test framework, with the test harness directly calling the Lambda function handlers.  No cloud resources or full ** stack emulation are required.
+This pattern can be used with a variety of infrastructure as code systems including SAM, Serverless Framework, CDK, CloudFormation and Terraform. This pattern uses a simple test framework, with the test harness directly calling the Lambda function handlers. No cloud resources or full ** stack emulation are required.
 
 ![Test Pattern](/_img/pattern_04_lambda_mock_test.png)
 
@@ -62,20 +61,20 @@ For this example, we demonstrate a system that generates a document, written to 
 
 ![Architecture](doc/architecture.png)
 
-An API Gatway path [1] triggers an AWS Lambda function [2] that retrieves a data from a DynamoDB [3] table and writes data to a object on Amazon S3 [4].  The API path contains a Document Type and a Customer ID.  The Lambda function retrieves both the Document Type data and Customer ID data and combines them, writing the data to S3 and returning the object key [1].  The DynamoDB table name and the S3 bucket name are provided to the Lambda function via environment variables.  
+An API Gatway path [1] triggers an AWS Lambda function [2] that retrieves a data from a DynamoDB [3] table and writes data to a object on Amazon S3 [4]. The API path contains a Document Type and a Customer ID. The Lambda function retrieves both the Document Type data and Customer ID data and combines them, writing the data to S3 and returning the object key [1]. The DynamoDB table name and the S3 bucket name are provided to the Lambda function via environment variables. 
 
-The DynamoDB table schema is comprised of a Partition Key (PK) for looking up a given item, and a “data” field containing string contents.  Document Type Items are prefixed with D#, and Customer items have a PK prefixed with C#.
+The DynamoDB table schema is comprised of a Partition Key (PK) for looking up a given item, and a “data” field containing string contents. Document Type Items are prefixed with D#, and Customer items have a PK prefixed with C#.
 
 [Top](#contents)
 
 ---
 
 ## Key Files in the Project
-  - [app.py](src/sample_lambda/app.py) - Lambda handler code to test
-  - [test_sample_lambda.py](tests/unit/src/test_sample_lambda.py) - Unit test using mocks
-  - [template.yaml](template.yaml) - SAM script for deployment
-  - [Makefile](Makefile) - Commands for setup, test, and deployment
-  
+ - [app.py](src/sample_lambda/app.py) - Lambda handler code to test
+ - [test_sample_lambda.py](tests/unit/src/test_sample_lambda.py) - Unit test using mocks
+ - [template.yaml](template.yaml) - SAM script for deployment
+ - [Makefile](Makefile) - Commands for setup, test, and deployment
+ 
 
 > The code in this project is simplified - we’ve opted for concise snippets over fully completed or PEP8 compliant production code.
 
@@ -108,34 +107,12 @@ The project Makefile contains helper commands for working with the project:
 
 ## Running the project
 
-* First, create the Python Virtual Environment by using the ```make createEnv``` command.
-* Run the unit tests with the ```make unittest``` command.
-* To deploy the project, deploy the project using the ```make deploy.guided``` command.
-* Once deployed, locate the DynamoDB Table created and add two records:
+* First, create the Python Virtual Environment by using the ```make install``` command.
+* Run the unit tests with the ```make test``` command.
+* To (optionally) deploy the project, use the ```make deploy.g``` command.
+* Once deployed, the DynamoDB table name will be in the "Outputs" section of the CloudFormation script.  Open the table in the AWS console, and manually add two records:
   * ```{ "PK" : "C#TestCustomer", "data" : "Testing Customer"}```
   * ```{ "PK" : "D#Welcome", "data" : "\nHello and Welcome!\n"}```
-* As authentication is not configured, you can test the endpoint using the API Gateway service in the AWs Console:
-*  ```https://{region}.console.aws.amazon.com/apigateway```  
-
-[Top](#contents)
-
----
-
-## License
-
-Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this
-software and associated documentation files (the "Software"), to deal in the Software
-without restriction, including without limitation the rights to use, copy, modify,
-merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+* To try the endpoint, the API URL for the endpoint will be listed in the "Outputs" section of the CloudFormation script.  Use ```"D#Welcome"``` for the ```{docType}``` parameter and ```"C#TestCustomer"``` for the ```{customerId}``` parameter. 
 
 [Top](#contents)

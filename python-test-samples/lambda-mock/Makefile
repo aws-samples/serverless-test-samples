@@ -57,16 +57,16 @@ define HELP_MESSAGE
 
 	Commands:
 
-	build     Build Lambda function dependencies
+	build     Build Lambda function and dependencies
 	deploy.g  Deploy guided (for initial deployment)
 	deploy    Deploy subsequent changes
 
-	install   Install Pipenv, application and dev dependencies defined in Pipfile
+	install   Install application and dev dependencies defined in requirements.txt
 	shell     Spawn a virtual environment shell
 	deps      Install project dependencies locally
-	test      Run unit test locally using mockets
+	test      Run unit test locally using mocks
 	coverage  Run unit test coverage reports
-	scan	  Run cose scanning tools
+	scan	  Run code scanning tools
 
 	clean     Cleans up local build artifacts and environment
 	delete    Delete stack from AWS

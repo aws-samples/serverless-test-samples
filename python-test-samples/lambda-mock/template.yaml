@@ -83,22 +83,18 @@ Resources:
 
 Outputs:
   oLambdaFunction:
-    Description: Lambda Function
+    Description: AWS Lambda Function
     Value:
       Ref: SampleLambda
   oS3Bucket:
-    Description: S3 Bucket
+    Description: Amazon S3 Bucket, destination for document files created by the AWS Lambda Function.
     Value:
       Ref: SampleBucket
   oDDBTable:
-    Description: DDB Table
+    Description: Amazon DynamoDB Table, manually add data to this table as needed.
     Value:
       Ref: SampleTable
   oAPIEndpoint:
-    Value:
-      Fn::Sub:
-      - https://${ServerlessRestApi}.execute-api.${Region}.amazonaws.com/Prod/SampleLambda/{docType}/{customerId}
-      - Region:
-          Ref: AWS::Region
-        ServerlessRestApi:
-          Ref: ServerlessRestApi
+    Description: API URL endpoint for triggering the sample document creation service.
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/SampleLambda/{docType}/{customerId}"
+
