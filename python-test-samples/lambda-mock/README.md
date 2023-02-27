@@ -3,7 +3,7 @@
 [![AWS: S#](https://img.shields.io/badge/AWS-S3-green)](https://img.shields.io/badge/AWS-AWS-S3-green)
 [![test: unit](https://img.shields.io/badge/Test-Unit-blue)](https://img.shields.io/badge/Test-Unit-blue)
 
-# Test AWS Lambda function handlers locally using mocks (Python)
+# Test AWS Lambda function handlers locally using mocks
 
 ## Introduction
 
@@ -12,7 +12,7 @@ The project consists of an [Amazon API Gateway](https://aws.amazon.com/api-gatew
 ---
 
 ## Contents
-- [Test AWS Lambda function handlers locally using mocks (Python)](#test-aws-lambda-function-handlers-locally-using-mocks-python)
+- [Test AWS Lambda function handlers locally using mocks](#test-aws-lambda-function-handlers-locally-using-mocks-python)
   - [Introduction](#introduction)
   - [Contents](#contents)
   - [System Under Test (SUT)](#system-under-test-sut)
@@ -76,7 +76,7 @@ The DynamoDB table schema is comprised of a Partition Key (PK) for looking up a 
  - [Makefile](Makefile) - Commands for setup, test, and deployment
  
 
-> The code in this project is simplified - we’ve opted for concise snippets over fully completed or PEP8 compliant production code.
+The code in this project is simplified - we’ve opted for concise snippets over fully completed or PEP8 compliant production code.
 
 [Top](#contents)
 
