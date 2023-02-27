@@ -77,7 +77,7 @@ The DynamoDB table schema is comprised of a Partition Key (PK) for looking up a 
   - [Makefile](Makefile) - Commands for setup, test, and deployment
   
 
-> The code in this project is simplified - we’ve opted for concise snippets over fully completed or PEP8 compliant production code.
+The code in this project is simplified - we’ve opted for concise snippets over fully completed or PEP8 compliant production code.
 
 [Top](#contents)
 
