@@ -4,7 +4,7 @@ This project contains code samples for testing serverless applications using .NE
 
 ## Getting Started
 
-- [API Gateway to Lambda that lists S3 buckets](./apigw-lambda-list-s3-buckets/): An introduction to serverless .NET testing using, the best place to start!
+- [.NET Starter Project](./apigw-lambda-list-s3-buckets/): This project contains introductory examples of .NET tests written for AWS Lambda. This is the best place to start!
 
 ## Patterns
 
