@@ -1,4 +1,4 @@
-# Java Test Demonstrations
+# Java Test Samples
 
 This portion of the repository contains test samples for Java based serverless projects.
 |Project|Description|
