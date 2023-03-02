@@ -6,7 +6,7 @@ This project contains code samples for testing serverless applications using Typ
 
 ## Basic Examples
 
-* [TypeScript Starter Project](./typescript-test-intro) : This project contains an introductory example of TypeScript tests written for AWS Lambda and Amazon API Gateway. This is the best place to start!
+* [TypeScript Starter Project](./typescript-test-intro): This project contains an introductory example of TypeScript tests written for AWS Lambda and Amazon API Gateway. This is the best place to start!
 
 ## API Tests
 
