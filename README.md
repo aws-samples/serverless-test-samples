@@ -34,8 +34,5 @@ Each runtime sample covers the following topics:
 - Testing in the Cloud
 - Application Tracing
 
-### Event-Driven Architecture / Async System Test Samples
-- SAM (coming soon)
-- CDK (coming soon)
-- Terraform (coming soon)
-- Serverless Framework (coming soon)
+### Event-Driven Architecture / Asynchronous System Test Samples
+- [Testing async in Python](https://github.com/aws-samples/serverless-test-samples/tree/main/python-test-samples/async-architectures)
