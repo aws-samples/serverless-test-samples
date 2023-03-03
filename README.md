@@ -14,7 +14,7 @@ This repository is designed to provide guidance for implementing comprehensive t
 ## Getting Started
 How do you use this repository? 
 
-- If you would like to understand the guidance behind the test samples, please read [Serverless Testing Principles](Serverless%20Testing%20Principles.md). 
+- If you would like to understand the guidance behind the test samples, please read [Serverless Testing Principles](Serverless-Testing-Principles.md). 
 - If you would like to implement the test samples in your own project, check out the sample code.
 
 ## Sample Code

@@ -28,6 +28,10 @@ Globals: # https://docs.aws.amazon.com/serverless-application-model/latest/devel
             - !Sub arn:aws:lambda:${AWS::Region}:017000801446:layer:AWSLambdaPowertoolsPython:9
         Environment:
             Variables:
+                # You can see that we use the Select-Split-Select-Split-Ref pattern below and throughout this template.
+                # This pattern appends the CloudFormation stack id to the end of the name of the deployed resource. This
+                # can be useful to identify a group of resources and also to prevent name collisions for some resource
+                # types especially in shared accounts that may contain multiple development environments.
                 DESTINATION_BUCKET: !Join
                   - "-"
                   - - "async-test-pattern-destination-bucket"
