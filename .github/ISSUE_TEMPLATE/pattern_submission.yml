@@ -37,7 +37,7 @@ body:
     validations:
       required: true
   - type: dropdown
-    id: language
+    id: iac-framework
     attributes:
       label: Language
       description: What IaC Framework does this sample use?
