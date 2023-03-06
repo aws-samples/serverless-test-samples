@@ -52,39 +52,15 @@ body:
     attributes:
       label: AWS Services
       description: Which AWS Services does this sample use?
-      options:
-        - "AWS Amplify"
-        - "AWS AppSync"
-        - "Amazon API Gateway"
-        - "Amazon Athena"
-        - "Amazon Cognito"
-        - "AWS CodeCommit"
-        - "AWS CodePipeline"
-        - "Amazon Comprehend"
-        - "Amazon CloudFront"
-        - "Amazon CloudWatch"
-        - "Amazon DynamoDB"
-        - "Amazon EventBridge"
-        - "Amazon EventBridge Pipes"
-        - "Amazon EventBridge API Destinations"
-        - "Amazon EventBridge Scheduler"
-        - "AWS Glue"
-        - "Amazon Kinesis Data Streams"
-        - "Amazon Kinesis Video Streams"
-        - "Amazon Kinesis Firehose"
-        - "Amazon RDS"
-        - "Amazon S3"
-        - "Amazon SNS"
-        - "Amazon SQS"
-        - "AWS Systems Manager"
-        - "Amazon Transcribe"
-        - "AWS Lambda"
-        - "Amazon Pinpoint"
-        - "AWS Secrets Manager"
-        - "Amazon Textract"
-        - "AWS Step Functions"
-        - "AWS CloudTrail"
-        - "Amazon Translate"
+      options: ["AWS Amplify", "AWS AppSync", "Amazon API Gateway", "Amazon Athena",
+                "Amazon Cognito","AWS CodeCommit", "AWS CodePipeline", "Amazon Comprehend",
+                "Amazon CloudFront", "Amazon CloudWatch", "Amazon DynamoDB", "Amazon EventBridge",
+                "Amazon EventBridge Pipes", "Amazon EventBridge API Destinations", "Amazon EventBridge Scheduler",
+                "AWS Glue", "Amazon Kinesis Data Streams", "Amazon Kinesis Video Streams"
+                "Amazon Kinesis Firehose", "Amazon RDS", "Amazon S3", "Amazon SNS", "Amazon SQS",
+                "AWS Systems Manager", "Amazon Transcribe", "AWS Lambda", "Amazon Pinpoint",
+                "AWS Secrets Manager", "Amazon Textract", "AWS Step Functions", "AWS CloudTrail",
+                "Amazon Translate"]
     validations:
       required: true
   - type: input
