@@ -13,11 +13,11 @@
             "filepath": "/src/app.py"
         },
         {
-            "title": "Unit Test Code",
+            "title": "Unit Tests",
             "filepath": "/tests/unit/mock_test.py"
         },
         {
-            "title": "Integration Test Code",
+            "title": "Integration Test",
             "filepath": "/tests/integration/test_api_gateway.py"
         }
     ],
