@@ -27,9 +27,13 @@ The project consists of an [Amazon API Gateway](https://aws.amazon.com/api-gatew
 
 ## System Under Test (SUT)
 
-The SUT in this pattern is a Lambda function that makes calls to other AWS cloud services using an AWS SDK.
+The SUT in this pattern is a Lambda function that makes calls to other AWS cloud services using an AWS SDK. For this example, we demonstrate a system that generates a document, written to Amazon S3, based on contents from a key-value lookup in DynamoDB.
 
-![System Under Test](/_img/pattern_04_lambda_mock_sut.png)
+![Architecture](doc/architecture.png)
+
+An API Gatway path [1] triggers an AWS Lambda function [2] that retrieves a data from a DynamoDB [3] table and writes data to a object on Amazon S3 [4]. The API path contains a Document Type and a Customer ID. The Lambda function retrieves both the Document Type data and Customer ID data and combines them, writing the data to S3 and returning the object key [1]. The DynamoDB table name and the S3 bucket name are provided to the Lambda function via environment variables. 
+
+The DynamoDB table schema is comprised of a Partition Key (PK) for looking up a given item, and a “data” field containing string contents. Document Type Items are prefixed with D#, and Customer items have a PK prefixed with C#.
 
 [Top](#contents)
 
@@ -50,20 +54,6 @@ In this pattern, you develop a Lambda function that makes calls to other AWS clo
 This pattern can be used with a variety of infrastructure as code systems including SAM, Serverless Framework, CDK, CloudFormation and Terraform. This pattern uses a simple test framework, with the test harness directly calling the Lambda function handlers. No cloud resources or full ** stack emulation are required.
 
 ![Test Pattern](/_img/pattern_04_lambda_mock_test.png)
-
-[Top](#contents)
-
----
-
-## Sample Project
-
-For this example, we demonstrate a system that generates a document, written to Amazon S3, based on contents from a key-value lookup in DynamoDB.
-
-![Architecture](doc/architecture.png)
-
-An API Gatway path [1] triggers an AWS Lambda function [2] that retrieves a data from a DynamoDB [3] table and writes data to a object on Amazon S3 [4]. The API path contains a Document Type and a Customer ID. The Lambda function retrieves both the Document Type data and Customer ID data and combines them, writing the data to S3 and returning the object key [1]. The DynamoDB table name and the S3 bucket name are provided to the Lambda function via environment variables. 
-
-The DynamoDB table schema is comprised of a Partition Key (PK) for looking up a given item, and a “data” field containing string contents. Document Type Items are prefixed with D#, and Customer items have a PK prefixed with C#.
 
 [Top](#contents)
 
