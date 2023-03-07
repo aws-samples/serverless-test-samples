@@ -40,9 +40,10 @@ This project uses the `make` build automation tool to provide convenient command
 
 ## Build the project
 
+- `make install` - Install virtual environment
 - `make build` - Build the project locally.
 
-[[top]](#asynchronous-integration-test-with-lambda-event-listener-and-dynamodb)
+[[top]](#asynchronous-integration-test-with-lambda-event-listener-and-dynamodb)ma
 
 ## Deploy project resources to the cloud
 
@@ -59,8 +60,6 @@ If you pass `true` as this parameter's value CloudFormation will attempt to depl
 Install a virtual environment to install the development dependencies and execute your tests.
 Run these four commands in sequence.   
 
-- `make install` - Install Pipenv
-- `make shell`   - Spawn a virtual environment shell
 - `make deps`    - Install project dependencies locally
 - `make test`    - Run integration test against cloud environment (requires AWS_SAM_STACK_NAME variable)
     -  usage: `make AWS_SAM_STACK_NAME=<your-aws-stack-name> test`                 

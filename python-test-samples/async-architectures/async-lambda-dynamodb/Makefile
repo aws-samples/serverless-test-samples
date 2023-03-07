@@ -1,11 +1,4 @@
-BASE := $(shell /bin/pwd)
 PIP ?= pip3
-
-#############
-#  SAM vars	#
-#############
-
-# ---
 
 target:
 	$(info ${HELP_MESSAGE})
@@ -16,17 +9,13 @@ clean: ##=> Deletes current build environment and latest build
 	rm -rf ./.aws-sam/ ./venv/
 
 checkOSDependencies:
-	python3 --version | grep -q 3\.9 || (echo "Error: Requires Python 3.9" && exit 1)
+	python3 --version || grep "3.9" || (echo "Error: Requires Python 3.9" && exit 1)
 
 all: clean build
 
 install: checkOSDependencies
-	$(info [*] Installing pipenv and creating venv)
 	${PIP} install virtualenv
 	python3 -m venv venv
-	
-shell:
-	source ./venv/bin/activate
 
 deps:
 	source ./venv/bin/activate && ${PIP} install -r tests/integration/requirements.txt
@@ -35,10 +24,12 @@ build: ##=> Same as package except that we don't create a ZIP
 	source ./venv/bin/activate && sam build --use-container
 
 deploy.g: ##=> Guided deploy that is typically run for the first time only
-	source ./venv/bin/activate && sam deploy --guided
+	source ./venv/bin/activate &&  sam build --use-container
+	source ./venv/bin/activate &&  sam deploy --guided
 
 deploy: ##=> Deploy app using previously saved SAM CLI configuration
-	source ./venv/bin/activate && sam deploy
+	source ./venv/bin/activate &&  sam build --use-container
+	source ./venv/bin/activate &&  sam deploy
 
 deploy.p: ##=> Deploy app to a production environment
 	source ./venv/bin/activate && sam deploy --parameter-overrides EnvType=prod
