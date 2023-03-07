@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using System.Text.Json;
 
+[assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
+
 public class Functions
 {
     private readonly HttpHandler _handler;
@@ -23,7 +25,6 @@ public class Functions
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
         _handler = serviceProvider.GetService<HttpHandler>();
-
     }
 
     public APIGatewayProxyResponse GetStockById(APIGatewayProxyRequest request, ILambdaContext context)
