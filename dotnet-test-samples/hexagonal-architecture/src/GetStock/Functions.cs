@@ -4,6 +4,7 @@ using Amazon.DynamoDBv2;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using HexagonalArchitecture.Adapters;
+using HexagonalArchitecture.Domains;
 using HexagonalArchitecture.Ports;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -21,7 +22,9 @@ public class Functions
         serviceCollection.AddSingleton<IHttpClient, HttpClientWrapper>();
         serviceCollection.AddSingleton<IStockDB, StockDynamoDb>();
         serviceCollection.AddSingleton<ICurrencyConverter, CurrencyConverterHttpClient>();
-        
+        serviceCollection.AddSingleton<IStockLogic, StockLogic>();
+
+
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
         _handler = serviceProvider.GetService<HttpHandler>();

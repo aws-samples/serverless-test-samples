@@ -9,9 +9,9 @@ namespace HexagonalArchitecture.Ports
 
     internal class HttpHandler : IHttpHandler
     {
-        private readonly StockLogic _stockLogic;
+        private readonly IStockLogic _stockLogic;
 
-        public HttpHandler(StockLogic stockLogic)
+        public HttpHandler(IStockLogic stockLogic)
         {
             _stockLogic = stockLogic;
         }
