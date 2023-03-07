@@ -3,7 +3,7 @@ using static GetStock.Utilities.CollectionUtils;
 
 namespace HexagonalArchitecture.Domains
 {
-    internal struct StockWithCurrencies
+    public readonly struct StockWithCurrencies
     {
         public string StockId { get; }
 
@@ -50,11 +50,7 @@ namespace HexagonalArchitecture.Domains
             {
                 ToPair(BaseCurrency, stockValue)
             };
-
-            foreach (var currency in currencyList)
-            {
-                currencyValues.Add(ToPair(currency.Key, stockValue * currency.Value));
-            }
+            currencyValues.AddRange(currencyList.Select(currency => ToPair(currency.Key, stockValue * currency.Value)));
 
             return new StockWithCurrencies(stockId, currencyValues);            
         }

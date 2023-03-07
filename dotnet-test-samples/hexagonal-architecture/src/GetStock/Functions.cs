@@ -1,15 +1,17 @@
+using System.Net;
+using System.Text.Json;
 using Amazon.DynamoDBv2;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using HexagonalArchitecture.Adapters;
 using HexagonalArchitecture.Ports;
 using Microsoft.Extensions.DependencyInjection;
-using System.Net;
-using System.Text.Json;
+
+namespace GetStock;
 
 public class Functions
 {
-    private readonly HttpHandler _handler;
+    private readonly IHttpHandler _handler;
 
     public Functions()
     {
@@ -19,10 +21,15 @@ public class Functions
         serviceCollection.AddSingleton<IHttpClient, HttpClientWrapper>();
         serviceCollection.AddSingleton<IStockDB, StockDynamoDb>();
         serviceCollection.AddSingleton<ICurrencyConverter, CurrencyConverterHttpClient>();
-
+        
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
         _handler = serviceProvider.GetService<HttpHandler>();
+    }
+
+    public Functions(IHttpHandler handler)
+    {
+        _handler = handler;
     }
 
     public APIGatewayProxyResponse GetStockById(APIGatewayProxyRequest request, ILambdaContext context)

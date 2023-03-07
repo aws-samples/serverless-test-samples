@@ -2,7 +2,12 @@
 
 namespace HexagonalArchitecture.Ports
 {
-    internal class HttpHandler
+    public interface IHttpHandler
+    {
+        Task<StockWithCurrencies> RetrieveStockValues(string stockId);
+    }
+
+    internal class HttpHandler : IHttpHandler
     {
         private readonly StockLogic _stockLogic;
 
