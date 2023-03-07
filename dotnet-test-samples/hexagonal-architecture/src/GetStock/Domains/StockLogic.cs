@@ -1,10 +1,31 @@
 ﻿using HexagonalArchitecture.Ports;
+using static GetStock.Utilities.CollectionUtils;
 
 namespace HexagonalArchitecture.Domains
 {
-    internal record StockWithCurrencies(string StockId)
+    internal struct StockWithCurrencies
     {
-        public IDictionary<string, double> Values { get; } = new Dictionary<string, double>();
+        public string StockId { get; }
+
+        public IEnumerable<KeyValuePair<string, double>> Values { get; }
+
+        public StockWithCurrencies(string stockId, IEnumerable<KeyValuePair<string, double>> values)
+        {
+            StockId = stockId;
+            Values = values;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is StockWithCurrencies currencies &&
+                   StockId == currencies.StockId &&
+                   Values.Count() == currencies.Values.Count() && (!Values.Except(currencies.Values).Any() || !currencies.Values.Except(Values).Any());
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(StockId, Values);
+        }
     }
 
     internal class StockLogic
@@ -25,15 +46,17 @@ namespace HexagonalArchitecture.Domains
         {
             var stockValue = await _repository.GetStockValue(stockId);
             var currencyList = await _currency.GetCurrencyData(BaseCurrency, Currencies);
-
-            var stockWithCurrencies = new StockWithCurrencies(stockId);
-            stockWithCurrencies.Values.Add(BaseCurrency, stockValue);
-            foreach (var pair in currencyList)
+            var currencyValues = new List<KeyValuePair<string, double>>(currencyList.Count + 1)
             {
-                stockWithCurrencies.Values[pair.Key] = stockValue * pair.Value;
+                ToPair(BaseCurrency, stockValue)
+            };
+
+            foreach (var currency in currencyList)
+            {
+                currencyValues.Add(ToPair(currency.Key, stockValue * currency.Value));
             }
 
-            return stockWithCurrencies;
+            return new StockWithCurrencies(stockId, currencyValues);            
         }
     }
 }

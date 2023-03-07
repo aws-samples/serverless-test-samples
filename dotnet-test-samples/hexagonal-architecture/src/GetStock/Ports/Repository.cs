@@ -4,9 +4,9 @@ namespace HexagonalArchitecture.Ports;
 
 internal class Repository
 {
-    private readonly StockDynamoDb _stockDb;
+    private readonly IStockDB _stockDb;
 
-    public Repository(StockDynamoDb stockDb)
+    public Repository(IStockDB stockDb)
     {
         _stockDb = stockDb;
     }

@@ -7,8 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using System.Text.Json;
 
-[assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
-
 public class Functions
 {
     private readonly HttpHandler _handler;
