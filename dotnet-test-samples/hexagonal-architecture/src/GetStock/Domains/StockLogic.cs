@@ -22,17 +22,19 @@ namespace HexagonalArchitecture.Domains
                    Values.Count() == currencies.Values.Count() && (!Values.Except(currencies.Values).Any() || !currencies.Values.Except(Values).Any());
         }
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(StockId, Values);
-        }
+        public override int GetHashCode() => HashCode.Combine(StockId, Values);
     }
 
-    internal class StockLogic
+    public interface IStockLogic
+    {
+        Task<StockWithCurrencies> RetrieveStockValues(string stockId);
+    }
+
+    internal class StockLogic : IStockLogic
     {
         private const string BaseCurrency = "EUR";
         private static readonly string[] Currencies = new[] { "USD", "CAD", "AUD" };
-
+        
         private readonly Repository _repository;
         private readonly CurrenciesService _currency;
 
