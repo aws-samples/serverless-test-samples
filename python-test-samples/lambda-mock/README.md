@@ -12,7 +12,7 @@ The project consists of an [Amazon API Gateway](https://aws.amazon.com/api-gatew
 ---
 
 ## Contents
-- [Test AWS Lambda function handlers locally using mocks](#test-aws-lambda-function-handlers-locally-using-mocks-python)
+- [Test AWS Lambda function handlers locally using mocks](#test-aws-lambda-function-handlers-locally-using-mocks)
   - [Introduction](#introduction)
   - [Contents](#contents)
   - [System Under Test (SUT)](#system-under-test-sut)
@@ -95,7 +95,7 @@ The code in this project is simplified - we’ve opted for concise snippets over
 ## Make commands for test and deployment
 
 The project Makefile contains helper commands for working with the project:
-* ```make install```: Create a Python Virtual Envionment and install dependencies
+* ```make install```: Create a Pydthon Virtual Envionment and install dependencies
 * ```make test```: Run a unit test, guarding for socket connections
 * ```make coverage```: Run unit tests and provide a coverage report
 * ```make deploy```: Deploy the stack to an AWS Account
@@ -113,6 +113,11 @@ The project Makefile contains helper commands for working with the project:
 * Once deployed, the DynamoDB table name will be in the "Outputs" section of the CloudFormation script.  Open the table in the AWS console, and manually add two records:
   * ```{ "PK" : "C#TestCustomer", "data" : "Testing Customer"}```
   * ```{ "PK" : "D#Welcome", "data" : "\nHello and Welcome!\n"}```
-* To try the endpoint, the API URL for the endpoint will be listed in the "Outputs" section of the CloudFormation script.  Use ```"D#Welcome"``` for the ```{docType}``` parameter and ```"C#TestCustomer"``` for the ```{customerId}``` parameter. 
+
+* To try the endpoint, the API URL for the POST endpoint is listed in the "Outputs" section of the CloudFormation script.  
+  * Use ```"Welcome"``` for the ```{docType}``` parameter,
+  * Use ```"TestCustomer"``` for the ```{customerId}``` parameter.  
+  * For example, you can test with a curl command, such as:  
+  ```curl -X POST https://xxxxxxxx.execute-api.us-east-1.amazonaws.com/Prod/SampleLambda/Welcome/TestCustomer```
 
 [Top](#contents)
