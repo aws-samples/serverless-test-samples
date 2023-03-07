@@ -107,7 +107,7 @@ The project Makefile contains helper commands for working with the project:
 * To try the endpoint, the API URL for the POST endpoint is listed in the "Outputs" section of the CloudFormation script.  
   * Use ```"Welcome"``` for the ```{docType}``` parameter,
   * Use ```"TestCustomer"``` for the ```{customerId}``` parameter.  
-  * For example, you can test with a curl command, such as:  
-  ```curl -X POST https://xxxxxxxx.execute-api.us-east-1.amazonaws.com/Prod/SampleLambda/Welcome/TestCustomer```
+  * You can test with a `curl` command, replacing the API Gateway endpoint in the curl request below:  
+  ```curl -X POST https://{API Gateway endpoint}/Prod/SampleLambda/Welcome/TestCustomer```
 
 [Top](#contents)
