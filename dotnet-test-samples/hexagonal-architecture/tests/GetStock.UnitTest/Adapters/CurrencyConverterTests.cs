@@ -1,4 +1,4 @@
-using HexagonalArchitecture.Adapters;
+using GetStock.Adapters;
 
 namespace GetStock.UnitTest
 {

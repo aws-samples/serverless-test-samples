@@ -1,9 +1,9 @@
 ﻿using System.Text.Json;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
-using GetStock.Adapters;
+using GetStock.Adapters.Exceptions;
 
-namespace HexagonalArchitecture.Adapters
+namespace GetStock.Adapters
 {
     internal class StockDynamoDb : IStockDB
     {
@@ -16,12 +16,15 @@ namespace HexagonalArchitecture.Adapters
             _dynamoDbClient = dynamoDbClient;
         }
 
-        public async Task<StockData> GetStockValue(string stockId)
+        public async Task<StockData> GetStockValueAsync(string stockId)
         {
             var table = Table.LoadTable(_dynamoDbClient, _tableName);
 
             var document = await table.GetItemAsync(stockId);
-
+            if(document == null)
+            {
+                throw new StockNotFoundException(stockId);
+            }
             var jsonString = document.ToJson();
 
             return JsonSerializer.Deserialize<StockData>(jsonString);

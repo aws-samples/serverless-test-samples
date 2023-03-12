@@ -1,6 +1,6 @@
-﻿using HexagonalArchitecture.Adapters;
+﻿using GetStock.Adapters;
 
-namespace HexagonalArchitecture.Ports
+namespace GetStock.Ports
 {
     internal class CurrenciesService
     {

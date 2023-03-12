@@ -1,4 +1,4 @@
-﻿namespace HexagonalArchitecture.Adapters
+﻿namespace GetStock.Adapters
 {
     public interface ICurrencyConverter
     {

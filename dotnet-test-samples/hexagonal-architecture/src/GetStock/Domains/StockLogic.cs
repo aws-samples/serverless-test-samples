@@ -1,7 +1,7 @@
-﻿using HexagonalArchitecture.Ports;
+﻿using GetStock.Ports;
 using static GetStock.Utilities.CollectionUtils;
 
-namespace HexagonalArchitecture.Domains
+namespace GetStock.Domains
 {
     public readonly struct StockWithCurrencies
     {
