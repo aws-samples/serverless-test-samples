@@ -1,7 +1,7 @@
 ﻿using Amazon.Lambda.TestUtilities;
+using GetStock.Domains;
+using GetStock.Ports;
 using GetStock.UnitTest.Builder;
-using HexagonalArchitecture.Domains;
-using HexagonalArchitecture.Ports;
 
 namespace GetStock.UnitTest;
 

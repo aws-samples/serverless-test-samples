@@ -1,6 +1,6 @@
-﻿using HexagonalArchitecture.Adapters;
+﻿using GetStock.Adapters;
 
-namespace HexagonalArchitecture.Ports;
+namespace GetStock.Ports;
 
 internal class Repository
 {
@@ -13,7 +13,7 @@ internal class Repository
 
     public async Task<double> GetStockValue(string stockId)
     {
-        var stockData = await _stockDb.GetStockValue(stockId);
+        var stockData = await _stockDb.GetStockValueAsync(stockId);
 
         return stockData.Value;
     }

@@ -1,4 +1,4 @@
-﻿namespace HexagonalArchitecture.Adapters
+﻿namespace GetStock.Adapters
 {
     public record StockData
     {
@@ -7,6 +7,6 @@
     }
     public interface IStockDB
     {
-        Task<StockData> GetStockValue(string stockId);
+        Task<StockData> GetStockValueAsync(string stockId);
     }
 }

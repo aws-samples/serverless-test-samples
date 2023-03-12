@@ -1,6 +1,6 @@
-﻿using HexagonalArchitecture.Domains;
+﻿using GetStock.Domains;
 
-namespace HexagonalArchitecture.Ports
+namespace GetStock.Ports
 {
     public interface IHttpHandler
     {

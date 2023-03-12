@@ -31,6 +31,12 @@
 
   <ItemGroup>
     <Folder Include="Builder\" />
+    <Folder Include="Adapters\" />
+    <Folder Include="Domains\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Adapters\" />
+    <None Remove="Domains\" />
+  </ItemGroup>
 </Project>
