@@ -8,9 +8,9 @@ namespace GetStock.Adapters
     internal class StockDynamoDb : IStockDB
     {
         private readonly string _tableName;
-        private readonly AmazonDynamoDBClient _dynamoDbClient;
+        private readonly IAmazonDynamoDB _dynamoDbClient;
 
-        public StockDynamoDb(AmazonDynamoDBClient dynamoDbClient, IServiceConfiguration configuration)
+        public StockDynamoDb(IAmazonDynamoDB dynamoDbClient, IServiceConfiguration configuration)
         {
             _tableName = configuration.DynamoDbTableName;
             _dynamoDbClient = dynamoDbClient;

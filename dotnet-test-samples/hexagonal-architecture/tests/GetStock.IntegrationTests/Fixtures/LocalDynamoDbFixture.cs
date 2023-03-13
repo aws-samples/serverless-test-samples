@@ -5,12 +5,12 @@ namespace GetStock.IntegrationTest.Fixtures
 {
     public class LocalDynamoDbFixture : IDisposable
     {
-        private const string DockerExec = "docker";
+        private const string DockerExec = "finch";
         private const string ImageName = "dynamoDbLocal_test";
-
+        
         private const int ExtenralPort = 8000;
         private Process? _process;
-        public AmazonDynamoDBClient Client { get; }
+        public IAmazonDynamoDB Client { get; }
 
         public LocalDynamoDbFixture()
         {
