@@ -7,25 +7,18 @@ namespace GetStock.IntegrationTest.Adapters
 {
     public class HttpClientTests : IClassFixture<HttpClientFixture>
     {
-        static HttpClientTests()
-        {
-            Environment.SetEnvironmentVariable("");
-        }
+        private readonly HttpClientFixture _fixture;
 
-        public HttpClientTests() : base(
-            new TestServiceConfiguration
-            {
-                CurrencyApiKey = "", //TODO: insert API key from https://fixer.io/
-                CurrencyBaseAddress = "https://api.apilayer.com/fixer/latest"
-            }
-            )
+
+        public HttpClientTests(HttpClientFixture fixture)
         {
+            _fixture = fixture;
         }
 
         [Fact]
         public async Task GetCurrencies_passCurrenciesToConvert_ReturnRates()
         {
-            var target = new CurrencyConverterHttpClient(Client);
+            var target = new CurrencyConverterHttpClient(_fixture.Client);
 
             var result = await target.GetCurrencies("USD", new[] { "EUR", "CAD", "GBP" });
 
