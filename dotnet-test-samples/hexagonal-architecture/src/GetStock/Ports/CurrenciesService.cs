@@ -11,7 +11,7 @@ namespace GetStock.Ports
             _currencyConverter = currencyConverter;
         }
 
-        public async Task<IDictionary<string, double>> GetCurrencyData(string baseCurrency, IEnumerable<string> currencies)
+        public async Task<IDictionary<string, double>> GetCurrencyDataAsync(string baseCurrency, IEnumerable<string> currencies)
         {
             return await _currencyConverter.GetCurrencies(baseCurrency, currencies);
         }

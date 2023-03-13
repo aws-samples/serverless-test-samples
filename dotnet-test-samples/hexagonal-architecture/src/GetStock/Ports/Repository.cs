@@ -11,7 +11,7 @@ internal class Repository
         _stockDb = stockDb;
     }
 
-    public async Task<double> GetStockValue(string stockId)
+    public async Task<double> GetStockValueAsync(string stockId)
     {
         var stockData = await _stockDb.GetStockValueAsync(stockId);
 

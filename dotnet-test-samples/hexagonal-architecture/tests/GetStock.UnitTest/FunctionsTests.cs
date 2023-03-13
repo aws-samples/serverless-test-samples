@@ -44,7 +44,7 @@ public class FunctionsTests
 
         Assert.Multiple(
                 () => result.StatusCode.Should().Be(200),
-                () => A.CallTo(() => fakeLogic.RetrieveStockValues("stock-1")).MustHaveHappened()
+                () => A.CallTo(() => fakeLogic.RetrieveStockValuesAsync("stock-1")).MustHaveHappened()
             );
     }
 }

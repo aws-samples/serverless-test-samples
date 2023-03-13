@@ -1,8 +1,10 @@
-﻿using GetStock.Adapters;
+﻿using FakeItEasy;
+using GetStock.Adapters;
+using GetStock.Adapters.Exceptions;
 using GetStock.Domains;
 using static GetStock.Utilities.CollectionUtils;
 
-namespace GetStock.UnitTest
+namespace GetStock.UnitTest.Domains
 {
     public class StockLogicTests
     {
@@ -26,7 +28,7 @@ namespace GetStock.UnitTest
 
             var target = fake.Resolve<StockLogic>();
 
-            var result = await target.RetrieveStockValues("stock-1");
+            var result = await target.RetrieveStockValuesAsync("stock-1");
 
             var expected = new StockWithCurrencies("stock-1", new[] { ToPair("EUR", 100.0) });
 
@@ -57,13 +59,31 @@ namespace GetStock.UnitTest
 
             var target = fake.Resolve<StockLogic>();
 
-            var result = await target.RetrieveStockValues("stock-1");
+            var result = await target.RetrieveStockValuesAsync("stock-1");
 
             var expected = new StockWithCurrencies("stock-1", new[]
             {
                 ToPair("EUR", 100.0),
                 ToPair("USD", 200.0)
             });
+
+            result.Should().BeEquivalentTo(expected);
+        }
+
+        [Fact]
+        public async Task RetrieveStockValuesAsync_StockNotFound_ReturnEmptyList()
+        {
+            using var fake = new AutoFake();
+
+            var fakeStockDb = fake.Resolve<IStockDB>();
+            A.CallTo(() => fakeStockDb.GetStockValueAsync(A<string>._))
+                .Throws<StockNotFoundException>();
+
+            var target = fake.Resolve<StockLogic>();
+
+            var result = await target.RetrieveStockValuesAsync("stock-1");
+
+            var expected = new StockWithCurrencies("stock-1", Array.Empty<KeyValuePair<string, double>>());
 
             result.Should().BeEquivalentTo(expected);
         }
