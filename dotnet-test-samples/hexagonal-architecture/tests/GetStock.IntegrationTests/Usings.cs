@@ -1,4 +1,4 @@
-﻿#define RUN_LOCAL_DB
+﻿//#define RUN_LOCAL_DB
 
 #if RUN_LOCAL_DB
 global using DynamoDbFixture = GetStock.IntegrationTest.Fixtures.LocalDynamoDbFixture;
