@@ -18,7 +18,7 @@ namespace GetStock.Ports
 
         public async Task<StockWithCurrencies> RetrieveStockValues(string stockId)
         {
-            var stockValue = await _stockLogic.RetrieveStockValues(stockId);
+            var stockValue = await _stockLogic.RetrieveStockValuesAsync(stockId);
 
             return stockValue;
         }
