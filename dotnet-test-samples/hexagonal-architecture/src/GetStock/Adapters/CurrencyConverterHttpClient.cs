@@ -56,15 +56,15 @@ namespace GetStock.Adapters
         {
             _httpClient?.Dispose();
         }
-    }    
+    }
 
     public class CurrencyConverterHttpClient : ICurrencyConverter, IDisposable
-    {      
+    {
         private readonly IHttpClient _httpHandler;
 
         public CurrencyConverterHttpClient(IHttpClient httpHandler)
         {
-            _httpHandler = httpHandler;  
+            _httpHandler = httpHandler;
         }
 
         public void Dispose()
@@ -72,11 +72,13 @@ namespace GetStock.Adapters
             _httpHandler.Dispose();
         }
 
-        public async Task<IDictionary<string, double>> GetCurrencies( string baseCurrency, IEnumerable<string> currencies)
+        public async Task<IDictionary<string, double>> GetCurrencies(string baseCurrency, IEnumerable<string> currencies)
         {
-            var requestUrl = $"latest?symbols={currencies}&base={baseCurrency}";
-            var responseJson = await _httpHandler.GetAsync(requestUrl);           
-                        
+            var currencyList = string.Join(",", currencies);
+
+            var requestUrl = $"latest?symbols={currencyList}&base={baseCurrency}";
+            var responseJson = await _httpHandler.GetAsync(requestUrl);
+
             var result = JsonSerializer.Deserialize<CurrencyRates>(responseJson);
             if (result == null || !result.Success)
             {

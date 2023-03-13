@@ -1,5 +1,4 @@
-﻿using System;
-using Amazon;
+﻿using Amazon;
 using Amazon.DynamoDBv2;
 
 namespace GetStock.IntegrationTest.Fixtures
