@@ -12,13 +12,12 @@ The project consists of an [Amazon API Gateway](https://aws.amazon.com/api-gatew
 ---
 
 ## Contents
-- [Test AWS Lambda function handlers locally using mocks](#test-aws-lambda-function-handlers-locally-using-mocks-python)
+- [Test AWS Lambda function handlers locally using mocks](#test-aws-lambda-function-handlers-locally-using-mocks)
   - [Introduction](#introduction)
   - [Contents](#contents)
   - [System Under Test (SUT)](#system-under-test-sut)
   - [Goal](#goal)
   - [Description](#description)
-  - [Sample Project](#sample-project)
   - [Key Files in the Project](#key-files-in-the-project)
   - [Prerequisites](#prerequisites)
   - [Make commands for test and deployment](#make-commands-for-test-and-deployment)
@@ -101,8 +100,15 @@ The project Makefile contains helper commands for working with the project:
 * Run the unit tests with the ```make test``` command.
 * To (optionally) deploy the project, use the ```make deploy.g``` command.
 * Once deployed, the DynamoDB table name will be in the "Outputs" section of the CloudFormation script.  Open the table in the AWS console, and manually add two records:
-  * ```{ "PK" : "C#TestCustomer", "data" : "Testing Customer"}```
-  * ```{ "PK" : "D#Welcome", "data" : "\nHello and Welcome!\n"}```
-* To try the endpoint, the API URL for the endpoint will be listed in the "Outputs" section of the CloudFormation script.  Use ```"D#Welcome"``` for the ```{docType}``` parameter and ```"C#TestCustomer"``` for the ```{customerId}``` parameter. 
+
+  * ```{ "PK": {"S": "C#TestCustomer"}, "data": {"S": "Testing Customer"}}```
+  * ```{ "PK": {"S": "D#Welcome"}, "data": {"S": "\nHello and Welcome!\n"}}```
+
+* To try the endpoint:
+  * Find the API URL for the POST endpoint is listed as "oAPIEndpoint" the "Outputs" section of the CloudFormation script.  
+  * Use ```"Welcome"``` for the ```{docType}``` parameter,
+  * Use ```"TestCustomer"``` for the ```{customerId}``` parameter.  
+  * You can test with a `curl` command, replacing the API Gateway endpoint in the curl request below:  
+  ```curl -X POST https://{API Gateway endpoint}/Prod/SampleLambda/Welcome/TestCustomer```
 
 [Top](#contents)
