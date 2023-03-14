@@ -1,5 +1,4 @@
-﻿using System;
-using Amazon.DynamoDBv2;
+﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 
 namespace GetStock.IntegrationTest.Fixtures
@@ -10,7 +9,7 @@ namespace GetStock.IntegrationTest.Fixtures
         protected string TableName { get; }
         protected IAmazonDynamoDB Client { get; }
 
-        public DynamoDbTestBase(string tableNamePrefix, LocalDynamoDbFixture fixture)
+        public DynamoDbTestBase(string tableNamePrefix, DynamoDbFixture fixture)
         {
             TableName = $"{_tableNamePrefix}{Guid.NewGuid().ToString()}";
             Client = fixture.Client;

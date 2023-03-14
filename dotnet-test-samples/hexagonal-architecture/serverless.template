@@ -23,8 +23,8 @@
         "Environment": {
             "Variables": {
                 "DB_TABLE": { "Ref" : "StocksTable" },
-                "API_KEY": "<API_KEY_FOR_CURRENCIES_API>",
-                "BASE_API": "<API_BASE_ADDRESS>"              
+                "API_KEY": "9AnsmZwncVDZP30u7aU3cPYZFUuqd9YU",
+                "BASE_API": "https://api.apilayer.com/fixer"              
             }
         },
         "Events": {
@@ -41,7 +41,7 @@
     "StocksTable" : {
         "Type": "AWS::Serverless::SimpleTable",
         "Properties": {
-            "PrimaryKey": "STOCK_ID"          
+            "PrimaryKey": "StockId"          
         }
     }
   }, 

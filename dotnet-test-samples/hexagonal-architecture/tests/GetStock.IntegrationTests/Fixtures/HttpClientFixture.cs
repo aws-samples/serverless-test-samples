@@ -10,7 +10,8 @@ public class HttpClientFixture : IDisposable
     {
         var configuration = new TestServiceConfiguration
         {
-            CurrencyApiKey = "", //TODO: insert API key from https://fixer.io/
+            //TODO: insert API key from https://fixer.io/
+            CurrencyApiKey = "", 
             CurrencyBaseAddress = "https://api.apilayer.com/fixer/latest"
         };
 

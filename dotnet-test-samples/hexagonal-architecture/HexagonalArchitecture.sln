@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GetStock", "src\GetStock\Ge
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B28160F6-BE8B-4FEA-B151-164C7CCCFEB4}"
 	ProjectSection(SolutionItems) = preProject
-		serverless.template = serverless.template
+		template.yaml = template.yaml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GetStock.UnitTest", "tests\GetStock.UnitTest\GetStock.UnitTest.csproj", "{0BDF8ECA-9BAF-428C-8862-2E239EC7F15F}"
