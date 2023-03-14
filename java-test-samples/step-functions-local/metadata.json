@@ -1,0 +1,33 @@
+{
+    "title": "Step Functions Local Testing",
+    "description": "This project shows a technique for testing an AWS Step Functions workflow in a local desktop environment",
+    "content_language": "English",
+    "language": "Java",
+    "type": ["Unit", "Integration"],
+    "diagram": "/images/stepfunctions_local_test.png",
+    "framework": "SAM",
+    "services": ["stepfunctions", "lambda", "dynamodb", "eventbridge"],
+    "pattern_detail_tabs": [
+        {
+            "title": "Application Code",
+            "filepath": "/aws-stepfunctions-examples/sam/demo-local-testing-using-java/statemachine/local_testing.asl.json"
+        },
+        {
+            "title": "Unit Tests",
+            "filepath": "/aws-stepfunctions-examples/sam/demo-local-testing-using-java/src/test/java/com/example/sfn/StepFunctionsLocalJUnitTest.java"
+        },
+        {
+            "title": "Integration Test",
+            "filepath": "aws-stepfunctions-examples/sam/demo-local-testing-using-java/src/test/groovy/com/example/sfn/StepFunctionsLocalSpockSpec.groovy"
+        }
+    ],
+    "authors": [
+        {
+          "name": "Dhiraj Mahapatro",
+          "image": "https://media.licdn.com/dms/image/C5603AQEhBOOL_3ZtNQ/profile-displayphoto-shrink_400_400/0/1517684416967?e=1684368000&v=beta&t=9YKYj2QypL7Pm_LiVlWtTo_RBejVZt9U0aQSt1GIRys",
+          "bio": "Principal Specialist Solutions Architect at AWS",
+          "linkedin": "https://www.linkedin.com/in/dmahapatro",
+          "twitter": "https://twitter.com/dhirajmahapatro"
+        }
+    ]
+}
