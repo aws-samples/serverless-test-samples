@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+using Amazon.Lambda.Core;
 
 namespace GetStock.Adapters
 {
@@ -46,6 +47,8 @@ namespace GetStock.Adapters
             var response = await _httpClient.GetAsync(url);
             if (!response.IsSuccessStatusCode)
             {
+                LambdaLogger.Log("HTTP call failed: " + response);
+                LambdaLogger.Log("URL: " + url);
                 return string.Empty;// TODO: exception?
             }
 
@@ -76,8 +79,10 @@ namespace GetStock.Adapters
         {
             var currencyList = string.Join(",", currencies);
 
-            var requestUrl = $"latest?symbols={currencyList}&base={baseCurrency}";
+            var requestUrl = $"?symbols={currencyList}&base={baseCurrency}";
             var responseJson = await _httpHandler.GetAsync(requestUrl);
+            //TODO: chgeck for empty result
+            LambdaLogger.Log("response: " + responseJson);
 
             var result = JsonSerializer.Deserialize<CurrencyRates>(responseJson);
             if (result == null || !result.Success)

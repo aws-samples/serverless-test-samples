@@ -1,4 +1,5 @@
 using System.Net;
+using System.Reflection.Metadata;
 using System.Text.Json;
 using Amazon.DynamoDBv2;
 using Amazon.Lambda.APIGatewayEvents;
@@ -10,24 +11,48 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace GetStock;
 
+public static class DI
+{
+    private static ServiceProvider? _serviceProvider;
+
+    public static ServiceProvider ServiceProvider
+    {
+        get
+        {
+            if (_serviceProvider == null)
+            {
+                _serviceProvider = InitializeServiceProvider();
+            }
+
+            return _serviceProvider;
+        }
+        private set => _serviceProvider = value;
+    }
+
+    private static ServiceProvider InitializeServiceProvider()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<Repository>();
+        services.AddSingleton<CurrenciesService>();
+        services.AddSingleton<IStockLogic, StockLogic>();
+        services.AddSingleton<IAmazonDynamoDB, AmazonDynamoDBClient>();
+        services.AddSingleton<IStockDB, StockDynamoDb>();
+        services.AddSingleton<IHttpHandler, HttpHandler>();
+        services.AddSingleton<ICurrencyConverter, CurrencyConverterHttpClient>();
+        services.AddSingleton<IServiceConfiguration, ServiceEnvironmentConfiguration>();
+        services.AddSingleton<IHttpClient, HttpClientWrapper>();
+
+        return services.BuildServiceProvider();
+    }
+}
+
 public class Functions
 {
-    private readonly IHttpHandler _handler;
+    private readonly IHttpHandler? _handler;
 
     public Functions()
     {
-        var serviceCollection = new ServiceCollection();
-
-        serviceCollection.AddSingleton<IAmazonDynamoDB, AmazonDynamoDBClient>();
-        serviceCollection.AddSingleton<IHttpClient, HttpClientWrapper>();
-        serviceCollection.AddSingleton<IStockDB, StockDynamoDb>();
-        serviceCollection.AddSingleton<ICurrencyConverter, CurrencyConverterHttpClient>();
-        serviceCollection.AddSingleton<IStockLogic, StockLogic>();
-
-
-        var serviceProvider = serviceCollection.BuildServiceProvider();
-
-        _handler = serviceProvider.GetService<HttpHandler>();
+        _handler = DI.ServiceProvider.GetRequiredService<IHttpHandler>();
     }
 
     public Functions(IHttpHandler handler)
@@ -48,7 +73,12 @@ public class Functions
             };
         }
 
+        context.Logger.LogInformation($"StockId:{stockId}");
+
         var result = _handler.RetrieveStockValues(stockId).Result;
+
+        context.Logger.LogInformation($"result:{result}");
+
         var response = new APIGatewayProxyResponse
         {
             StatusCode = (int)HttpStatusCode.OK,

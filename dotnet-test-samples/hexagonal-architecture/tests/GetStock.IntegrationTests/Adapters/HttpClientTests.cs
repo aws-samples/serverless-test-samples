@@ -14,7 +14,7 @@ namespace GetStock.IntegrationTest.Adapters
         {
             _fixture = fixture;
         }
-
+       
         [Fact]
         public async Task GetCurrencies_passCurrenciesToConvert_ReturnRates()
         {
