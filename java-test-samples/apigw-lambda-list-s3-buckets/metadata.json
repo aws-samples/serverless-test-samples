@@ -1,5 +1,5 @@
 {
-    "title": "API Gateway with Lambda and S3",
+    "title": "Java Starter Project",
     "description": "This project contains unit, and integration tests for a pattern using API Gateway, AWS Lambda and Amazon S3.",
     "content_language": "English",
     "language": "Java",
