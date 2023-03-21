@@ -1,12 +1,12 @@
 {
-    "title": "API Gateway with Lambda and DynamoDB",
+    "title": "API Gateway with Lambda and S3",
     "description": "This project contains unit and integration tests for a pattern using API Gateway, AWS Lambda and Amazon DynamoDB.",
     "content_language": "English",
     "language": "CSharp",
     "type": ["Unit", "Integration"],
-    "diagram": "../docs/apigw-lambda-ddb.jpg",
+    "diagram": "../docs/apigw-lambda-list-s3-buckets.png",
     "framework": "SAM",
-    "services": ["apigw", "lambda", "dynamodb"],
+    "services": ["apigw", "lambda", "s3"],
     "pattern_detail_tabs": [
         {
             "title": "Application Code",
@@ -14,11 +14,11 @@
         },
         {
             "title": "Unit Tests",
-            "filepath": "/tests/ApiTests.UnitTest/ApiTests.UnitTest"
+            "filepath": "/tests/ServerlessTestSamples.UnitTest/ApiTests.UnitTest"
         },
         {
             "title": "Integration Test",
-            "filepath": "/tests/ApiTests.IntegrationTest"
+            "filepath": "/tests/ServerlessTestSamples.IntegrationTest"
         }        
     ],
     "authors": [
