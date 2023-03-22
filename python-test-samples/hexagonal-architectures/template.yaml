@@ -1,0 +1,61 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: hexagonal-arch-sample
+  
+Globals:
+  Function:
+    Timeout: 20
+
+Resources:
+  StocksConverterFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      MemorySize: 256
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref StocksTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref CurrenciesTable
+      Environment:
+        Variables:
+          STOCKS_DB_TABLE: !Ref StocksTable
+          CURRENCIES_DB_TABLE: !Ref CurrenciesTable
+      Events:
+        StocksConverter:
+          Type: HttpApi 
+          Properties:
+            ApiId: !Ref StocksGateway
+            Path: /stock/{StockID}
+            Method: get
+  StocksTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: STOCK_ID
+        AttributeType: S
+      KeySchema:
+      - AttributeName: STOCK_ID
+        KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+  CurrenciesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: CURRENCY
+        AttributeType: S
+      KeySchema:
+      - AttributeName: CURRENCY
+        KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+  StocksGateway:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowMethods:
+          - GET
+          - POST
+        AllowOrigins:
+          - "*"
