@@ -8,7 +8,7 @@
   "dependencies": {
     "esbuild": "^0.17.12",
     "fs": "^0.0.1-security",
-    "openapi-diff": "^0.23.6",
+    "json-schema-diff": "^0.18.0",
     "ts-jest": "^29.0.5"
   },
   "scripts": {
