@@ -7,6 +7,7 @@ import jsonSchemaDiff from 'json-schema-diff';
 import schema_v1_0_0 from '../schemas/Json/CustomerCreated-v1.0.0.json';
 import schema_v1_1_0 from '../schemas/Json/CustomerCreated-v1.1.0.json';
 import schema_v1_2_0 from '../schemas/Json/CustomerCreated-v1.2.0.json';
+import schema_v1_3_0 from '../schemas/Json/CustomerCreated-v1.3.0.json';
 
 test('adding new optional elements is backward compatible', async () => {    
   const initialSchema = schema_v1_0_0;
@@ -34,4 +35,18 @@ test('removing elements is a breaking change', async () => {
   const isBreakingChange = result.removalsFound;
 
   expect(isBreakingChange).toBeTruthy();
+});
+
+test('adding new optional elements is considered backward compatible in spite of the logic change', async () => {    
+  const initialSchema = schema_v1_0_0;
+  const updatedSchema = schema_v1_3_0;
+
+  const result = await jsonSchemaDiff.diffSchemas({
+      sourceSchema: updatedSchema, 
+      destinationSchema: initialSchema
+  });
+
+  const isBreakingChange = result.removalsFound;
+
+  expect(isBreakingChange).toBeFalsy();
 });
