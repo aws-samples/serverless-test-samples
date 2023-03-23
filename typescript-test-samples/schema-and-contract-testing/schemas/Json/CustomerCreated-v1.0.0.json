@@ -1,0 +1,51 @@
+{
+	"definitions": {},
+	"$schema": "http://json-schema.org/draft-07/schema#", 
+	"$id": "https://example.com/object1679479133.json", 
+	"title": "Root", 
+	"type": "object",
+	"required": [
+		"customerId",
+		"firstName",
+		"lastName",
+		"address"
+	],
+	"properties": {
+		"customerId": {
+			"$id": "#root/customerId", 
+			"title": "Customerid", 
+			"type": "string",
+			"default": "",
+			"examples": [
+				"577af109-1f19-4d0a-9c56-359f44ca0034"
+			]
+		},
+		"firstName": {
+			"$id": "#root/firstName", 
+			"title": "Firstname", 
+			"type": "string",
+			"default": "",
+			"examples": [
+				"Jane"
+			]
+		},
+		"lastName": {
+			"$id": "#root/lastName", 
+			"title": "Lastname", 
+			"type": "string",
+			"default": "",
+			"examples": [
+				"Doe"
+			]
+		},
+		"address": {
+			"$id": "#root/address", 
+			"title": "Address", 
+			"type": "string",
+			"default": "",
+			"examples": [
+				"2 Park St, Sydney, NSW 2000, Australia"
+			]
+		}
+	}
+}
