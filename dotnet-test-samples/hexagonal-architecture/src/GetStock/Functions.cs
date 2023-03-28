@@ -1,5 +1,4 @@
 using System.Net;
-using System.Reflection.Metadata;
 using System.Text.Json;
 using Amazon.DynamoDBv2;
 using Amazon.Lambda.APIGatewayEvents;
@@ -32,16 +31,13 @@ public static class DI
     private static ServiceProvider InitializeServiceProvider()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<Repository>();
-        services.AddSingleton<CurrenciesService>();
-        services.AddSingleton<IStockLogic, StockLogic>();
+        
+        services.AddPortsServices();
+        services.AddDomainServices();
+        services.AddAdapters();
+        
         services.AddSingleton<IAmazonDynamoDB, AmazonDynamoDBClient>();
-        services.AddSingleton<IStockDB, StockDynamoDb>();
-        services.AddSingleton<IHttpHandler, HttpHandler>();
-        services.AddSingleton<ICurrencyConverter, CurrencyConverterHttpClient>();
-        services.AddSingleton<IServiceConfiguration, ServiceEnvironmentConfiguration>();
-        services.AddSingleton<IHttpClient, HttpClientWrapper>();
-
+        
         return services.BuildServiceProvider();
     }
 }
