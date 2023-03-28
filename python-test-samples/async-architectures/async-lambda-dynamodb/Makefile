@@ -1,9 +1,4 @@
-BASE := $(shell /bin/pwd)
-PIPENV ?= pipenv
-
-#############
-#  SAM vars	#
-#############
+PIP ?= pip3
 
 target:
 	$(info ${HELP_MESSAGE})
@@ -11,37 +6,36 @@ target:
 
 clean: ##=> Deletes current build environment and latest build
 	$(info [*] Who needs all that anyway? Destroying environment....)
-	rm -rf ./.aws-sam/
+	rm -rf ./.aws-sam/ ./venv/
+
+checkOSDependencies:
+	python3 --version || grep "3.9" || (echo "Error: Requires Python 3.9" && exit 1)
 
 all: clean build
 
-install:
-	$(info [*] Installing pipenv)
-	@pip install pipenv --upgrade
-
-shell:
-	$(info [*] Type the 'deactivate' command to exit this shell)
-	@$(PIPENV) shell
+install: checkOSDependencies
+	${PIP} install virtualenv
+	python3 -m venv venv
 
 deps:
-	$(info [*] Installing pipenv project dependencies)
-	@$(PIPENV) install
-	@$(PIPENV) install -d
+	source ./venv/bin/activate && ${PIP} install -r tests/integration/requirements.txt
 
 build: ##=> Same as package except that we don't create a ZIP
-	sam build --use-container
+	source ./venv/bin/activate && sam build --use-container
 
 deploy.g: ##=> Guided deploy that is typically run for the first time only
-	sam deploy --guided
+	source ./venv/bin/activate &&  sam build --use-container
+	source ./venv/bin/activate &&  sam deploy --guided
 
 deploy: ##=> Deploy app using previously saved SAM CLI configuration
-	sam deploy
+	source ./venv/bin/activate &&  sam build --use-container
+	source ./venv/bin/activate &&  sam deploy
 
 deploy.p: ##=> Deploy app to a production environment
-	sam deploy --parameter-overrides EnvType=prod
+	source ./venv/bin/activate && sam deploy --parameter-overrides EnvType=prod
 
 test: check-stack-name
-	AWS_SAM_STACK_NAME=$(AWS_SAM_STACK_NAME) python -m pytest -s tests/integration -v
+	source ./venv/bin/activate && AWS_SAM_STACK_NAME=$(AWS_SAM_STACK_NAME) && python3 -m pytest -s tests/integration -v
 
 check-stack-name:
 ifndef AWS_SAM_STACK_NAME

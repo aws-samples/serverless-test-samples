@@ -80,18 +80,18 @@ dotnet-test-samples$ sam local generate-event
 
 ## Project Structure
 
-The project splits out the Lambda function, core business logic and integrations into seperate libraries. This allows for a clear seperation of concerns between parts of the application and keeps it maintainable, portable and testable.
+The project splits out the Lambda function, core business logic and integrations into separate libraries. This allows for a clear separation of concerns between parts of the application and keeps it maintainable, portable and testable.
 
 ### ServerlessTestSamples.Core
 
-This library contains the business logic with *no external dependencies*. All integrations are abstracted away behind clearly defined interfaces. For example, the interaction with the storage layer uses an IStorageService interface:
+This library contains the business logic with *no external dependencies*. All integrations are abstracted away behind clearly defined interfaces. For example, the interaction with the storage layer uses an `IStorageService` interface:
 
 ```c#
 namespace ServerlessTestSamples.Core.Services;
 
 public interface IStorageService
 {
-    Task<ListStorageAreasResult> ListStorageAreas(string? filterPrefix);
+    Task<ListStorageAreasResult> ListStorageAreas(string? filterPrefix, CancellationToken cancellationToken);
 }
 ```
 
@@ -103,31 +103,37 @@ public class ListStorageAreasQueryHandler
     private readonly IStorageService _storageService;
     private readonly ILogger<ListStorageAreasQueryHandler> _logger;
     
-    public ListStorageAreasQueryHandler(IStorageService storageService, ILogger<ListStorageAreasQueryHandler> logger)
+    public ListStorageAreasQueryHandler(
+        IStorageService storageService,
+        ILogger<ListStorageAreasQueryHandler> logger)
     {
         _storageService = storageService;
         _logger = logger;
     }
 
-    public async Task<ListStorageAreasQueryResult> Handle(ListStorageAreasQuery query)
+    public async Task<ListStorageAreasQueryResult> Handle(
+        ListStorageAreasQuery query,
+        CancellationToken cancellationToken)
     {
+        ListStorageAreasResult result;
+
         try
         {
-            var storageAreas = await _storageService.ListStorageAreas(query.FilterPrefix);
-
-            if (!storageAreas.IsSuccess)
-            {
-                this._logger.LogWarning(storageAreas.Message);
-            }
-
-            return new ListStorageAreasQueryResult(storageAreas.StorageAreas);
+            result = await _storageService.ListStorageAreas(query.FilterPrefix, cancellationToken);
         }
         catch (Exception ex)
         {
             this._logger.LogError(ex, "Failure querying storage areas");
             
-            return new ListStorageAreasQueryResult(new List<string>(0));
+            return new ListStorageAreasQueryResult(new List<string>(capacity: 0));
         }
+
+        if (!result.IsSuccess)
+        {
+            this._logger.LogWarning(result.Message);
+        }
+
+        return new ListStorageAreasQueryResult(result.StorageAreas);
     }
 }
 ```
@@ -141,23 +147,22 @@ In this case, the implementation of our storage service to interact with Amazon 
 ```c#
 public class S3StorageService : IStorageService
 {
-    private readonly IAmazonS3 _s3Client;
+    private readonly IAmazonS3 _client;
 
-    public S3StorageService(IAmazonS3 client)
-    {
-        _s3Client = client ?? new AmazonS3Client();
-    }
+    public S3StorageService(IAmazonS3 client) => _client = client;
 
-    public async Task<ListStorageAreasResult> ListStorageAreas(string? filterPrefix)
+    public async Task<ListStorageAreasResult> ListStorageAreas(
+        string? filterPrefix,
+        CancellationToken cancellationToken)
     {
-        var buckets = await _s3Client.ListBucketsAsync();
+        var buckets = await _client.ListBucketsAsync(cancellationToken);
 
         if (buckets.HttpStatusCode != HttpStatusCode.OK)
         {
-            return new ListStorageAreasResult(Enumerable.Empty<string>(), false, "Failure retrieving services from Amazon S3");
+            return new(Enumerable.Empty<string>(), false, "Failure retrieving services from Amazon S3");
         }
 
-        return new ListStorageAreasResult(buckets.Buckets.Select(p => p.BucketName));
+        return new(buckets.Buckets.Select(p => p.BucketName));
     }
 }
 ```
@@ -171,28 +176,41 @@ The way we initialize our Lambda function is important for testing. The Lambda s
 ```c#
 public class Function
 {
-    private static ListStorageAreasQueryHandler _queryHandler;
-    private static ILogger<Function> _logger;
+    private readonly ListStorageAreasQueryHandler _queryHandler;
+    private readonly ILogger<Function> _logger;
+    private readonly IOptions<JsonSerializerOptions> _jsonOptions;
 
-    public Function() : this(null, null)
+    public Function() : this(Startup.ServiceProvider) { }
+
+    public Function(
+        ListStorageAreasQueryHandler handler,
+        ILogger<Function> logger,
+        IOptions<JsonSerializerOptions> jsonOptions)
+        : this(NewServiceProvider(handler, logger, jsonOptions)) { }
+
+    private Function(IServiceProvider serviceProvider)
     {
+        _queryHandler = serviceProvider.GetRequiredService<ListStorageAreasQueryHandler>();
+        _logger = serviceProvider.GetRequiredService<ILogger<Function>>();
+        _jsonOptions = serviceProvider.GetRequiredService<IOptions<JsonSerializerOptions>>();
+        AWSSDKHandler.RegisterXRayForAllServices();
     }
 
-    internal Function(ListStorageAreasQueryHandler handler, ILogger<Function> logger)
+    private static IServiceProvider NewServiceProvider(
+        ListStorageAreasQueryHandler handler,
+        ILogger<Function> logger,
+        IOptions<JsonSerializerOptions> jsonOptions)
     {
-        AWSSDKHandler.RegisterXRayForAllServices();
-        
-        _queryHandler = handler ?? Startup.ServiceProvider.GetRequiredService<ListStorageAreasQueryHandler>();
-        _logger = logger ?? Startup.ServiceProvider.GetRequiredService<ILogger<Function>>();
+        var container = new System.ComponentModel.Design.ServiceContainer();
+
+        container.AddService(typeof(ListStorageAreasQueryHandler), handler);
+        container.AddService(typeof(ILogger<Function>), logger);
+        container.AddService(typeof(IOptions<JsonSerializerOptions>), jsonOptions);
+
+        return container;
     }
     ...
 }
-```
-
-The [InternalsVisibleToAttribute](https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.internalsvisibletoattribute?view=net-6.0) then allows us to expose this internal constructor to out unit tests.
-
-```c#
-[assembly:InternalsVisibleTo("ServerlessTestSamples.UnitTest")]
 ```
 
 [[top]](#dotnet-test-samples)
@@ -214,22 +232,28 @@ public async Task TestCoreBusinessLogicWithSuccessfulResponse_ShouldReturnStorag
 {
     var mockStorageService = new Mock<IStorageService>();
     
-    mockStorageService.Setup(p => p.ListStorageAreas(It.IsAny<string>())).ReturnsAsync(new List<string>()
-    {
-        "bucket1",
-        "bucket2",
-        "bucket3"
-    });
+    mockStorageService.Setup(s => s.ListStorageAreas(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                      .ReturnsAsync(new List<string>()
+                       {
+                           "bucket1",
+                           "bucket2",
+                           "bucket3",
+                       });
     
     var queryHandler = new ListStorageAreasQueryHandler(mockStorageService.Object);
-
     var queryResult = await queryHandler.Handle(new ListStorageAreasQuery()
     {
-        FilterPrefix = string.Empty
+        FilterPrefix = string.Empty,
     });
 
-    queryResult.StorageAreas.Count().Should().Be(3);
-    queryResult.StorageAreas.FirstOrDefault().Should().Be("bucket1");
+    queryResult.Should().BeEquivalentTo(
+        new ListStorageAreasQueryResult(
+            new[]
+            {
+                "bucket1",
+                "bucket2",
+                "bucket3",
+            }));
 }
 ```
 
@@ -252,33 +276,42 @@ This is a useful approach, but can be brittle as the AWS API's change regularly.
 public async Task TestLambdaHandlerWithValidS3Response_ShouldReturnSuccess()
 {
     var mockedS3Client = new Mock<IAmazonS3>();
-    var mockHttpClient = new Mock<HttpClient>();
     
-    mockedS3Client.Setup(p => p.ListBucketsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new ListBucketsResponse()
-    {
-        Buckets = new List<S3Bucket>()
-        {
-            new S3Bucket(){BucketName = "bucket1"},
-            new S3Bucket(){BucketName = "bucket2"},
-            new S3Bucket(){BucketName = "bucket3"},
-        },
-        HttpStatusCode = HttpStatusCode.OK
-    });
+    mockedS3Client.Setup(p => p.ListBucketsAsync(It.IsAny<CancellationToken>()))
+                  .ReturnsAsync(new ListBucketsResponse()
+                   {
+                       Buckets = new List<S3Bucket>()
+                       {
+                           new S3Bucket(){ BucketName = "bucket1" },
+                           new S3Bucket(){ BucketName = "bucket2" },
+                           new S3Bucket(){ BucketName = "bucket3" },
+                       },
+                       HttpStatusCode = HttpStatusCode.OK,
+                   });
     
     var storageService = new S3StorageService(mockedS3Client.Object);
-    var handler = new ListStorageAreasQueryHandler(storageService, _mockHandlerLogger.Object);
-
-    var function = new Function(handler, _mockLogger.Object);
+    var jsonOptions = Options.Create(new JsonSerializerOptions(JsonSerializerDefaults.Web));
+    var handler = new ListStorageAreasQueryHandler(
+        storageService,
+        Mock.Of<ILogger<ListStorageAreasQueryHandler>());
+    var function = new Function(handler, Mock.Of<ILogger<Function>(), jsonOptions);
 
     var result = await function.Handler(new APIGatewayProxyRequest(), new TestLambdaContext());
 
     result.StatusCode.Should().Be(200);
 
-    var responseBody = JsonSerializer.Deserialize<ListStorageAreaResponseBody>(result.Body);
+    var body = JsonSerializer.Deserialize<ListStorageAreaResponseBody>(result.Body, jsonOptions.Value);
 
-    responseBody.Should().NotBeNull();
-    responseBody?.StorageAreas.Count().Should().Be(3);
-    responseBody?.StorageAreas.FirstOrDefault().Should().Be("bucket1");
+    body.Should().BeEquivalentTo(
+            new ListStorageAreaResponseBody()
+            {
+                StorageAreas = new[]
+                {
+                    "bucket1",
+                    "bucket2",
+                    "bucket3",
+                },
+            });
 }
 ```
 
@@ -289,24 +322,24 @@ Another useful feature of Moq is the ability to test exceptions. In the below ex
 public async Task TestLambdaHandlerWithS3Exception_ShouldReturnEmpty()
 {
     var mockedS3Client = new Mock<IAmazonS3>();
-    var mockHttpClient = new Mock<HttpClient>();
     
     mockedS3Client.Setup(p => p.ListBucketsAsync(It.IsAny<CancellationToken>()))
-        .ThrowsAsync(new AmazonS3Exception("Mock S3 failure"));
+                  .ThrowsAsync(new AmazonS3Exception("Mock S3 failure"));
     
     var storageService = new S3StorageService(mockedS3Client.Object);
-    var handler = new ListStorageAreasQueryHandler(storageService, _mockHandlerLogger.Object);
-
-    var function = new Function(handler, _mockLogger.Object);
+    var jsonOptions = Options.Create(new JsonSerializerOptions(JsonSerializerDefaults.Web));
+    var handler = new ListStorageAreasQueryHandler(
+        storageService,
+        Mock.Of<ILogger<ListStorageAreasQueryHandler>());
+    var function = new Function(handler, Mock.Of<ILogger<Function>(), jsonOptions);
 
     var result = await function.Handler(new APIGatewayProxyRequest(), new TestLambdaContext());
 
     result.StatusCode.Should().Be(200);
 
-    var responseBody = JsonSerializer.Deserialize<ListStorageAreaResponseBody>(result.Body);
+    var body = JsonSerializer.Deserialize<ListStorageAreaResponseBody>(result.Body, jsonOptions.Value);
 
-    responseBody.Should().NotBeNull();
-    responseBody?.StorageAreas.Count().Should().Be(0);
+    body.Should().BeEquivalentTo(new ListStorageAreaResponseBody());
 }
 ```
 
@@ -328,50 +361,51 @@ Integration tests run against deployed cloud resources. Since local unit tests c
 dotnet-test-samples$ AWS_SAM_STACK_NAME=<stack-name> dotnet test .\tests\ServerlessTestSamples.IntegrationTest\
 ```
 
-The sample integration test is straightforward. The [Setup.cs](./tests/ServerlessTestSamples.IntegrationTest/Setup.cs) is performed using the [class fixture feature of xUnit.](https://xunit.net/docs/shared-context) Class fixtures allow code to be executed once and then shared between all unit tests. In this example, we use the class fixture to retrive the API url and store that in a static variable. This class fixture could be used to create any hardcoded resources to use for testing. The Setup class also implements IDisposable, meaning any test cleanup can be executed in the Dispose() method.
+The sample integration test is straightforward. The [Setup.cs](./tests/ServerlessTestSamples.IntegrationTest/Setup.cs) is performed using the [class fixture feature of xUnit.](https://xunit.net/docs/shared-context) Class fixtures allow code to be executed once and then shared between all unit tests in a class. In this example, we use the class fixture to retrieve the API URL and store it for future reference. This class fixture could be used to create any hardcoded resources to use for testing. The `Setup` class also implements `IAsyncLifetime`, meaning that any test initialization or cleanup can be executed asynchronously.
 
 ```c#
-public Setup()
+public async Task InitializeAsync()
 {
     var stackName = System.Environment.GetEnvironmentVariable("AWS_SAM_STACK_NAME") ?? "dotnet-test-samples";
     var region = System.Environment.GetEnvironmentVariable("AWS_SAM_REGION_NAME") ?? "us-east-1";
-
-    if (string.IsNullOrEmpty(stackName))
-    {
-        throw new Exception("Cannot find env var AWS_SAM_STACK_NAME. Please setup this environment variable with the stack name where we are running integration tests.");
-    }
-
     var cloudFormationClient = new AmazonCloudFormationClient(new AmazonCloudFormationConfig()
     {
-        RegionEndpoint = RegionEndpoint.USEast1
+        RegionEndpoint = RegionEndpoint.USEast1,
     });
-
-    var response = cloudFormationClient.DescribeStacksAsync(new DescribeStacksRequest()
+    var response = await cloudFormationClient.DescribeStacksAsync(new DescribeStacksRequest()
     {
         StackName = stackName
-    }).Result;
-
+    });
     var output = response.Stacks[0].Outputs.FirstOrDefault(p => p.OutputKey == "ApiEndpoint");
 
-    Setup.ApiUrl = output.OutputValue;
+    ApiUrl = output.OutputValue;
 }
 ```
 
 Once the API Url has been set, we can then use that in an integration test to ensure the code works as expected.
 
 ```c#
+public IntegrationTest(Setup setup)
+{
+    _httpClient = new HttpClient()
+    {
+        BaseAddress = new Uri(setup.ApiUrl),
+        DefaultRequestHeaders =
+        {
+            { "INTEGRATION_TEST", "true" },
+        },
+    };
+}
+
 [Fact]
 public async Task ListStorageAreas_ShouldReturnSuccess()
 {
-    var result = await _httpClient.GetAsync($"{Setup.ApiUrl}storage");
+    var result = await _httpClient.GetAsync("storage");
 
     result.StatusCode.Should().Be(HttpStatusCode.OK);
 
-    var responseBody = await result.Content.ReadAsStringAsync();
+    var storageAreasResult = await response.Content.ReadFromJsonAsync<ListStorageAreasResult>();
 
-    var storageAreasResult = JsonSerializer.Deserialize<ListStorageAreasResult>(responseBody);
-
-    storageAreasResult.Should().NotBeNull();
     storageAreasResult.StorageAreas.Should().NotBeNull();
     storageAreasResult.IsSuccess.Should().BeTrue();
 }

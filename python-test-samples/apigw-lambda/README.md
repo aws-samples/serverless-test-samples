@@ -4,16 +4,16 @@
 [![test: integration](https://img.shields.io/badge/Test-Integration-yellow)](https://img.shields.io/badge/Test-Integration-yellow)
 [![test: local](https://img.shields.io/badge/Test-Local-red)](https://img.shields.io/badge/Test-Local-red)
 
-# Python Test Samples Starter Project
+# Python Starter Project
 This project contains automated test sample code samples for serverless applications written in Python. The project demonstrates several techniques for executing tests including mocking, emulation and testing in the cloud. Based on current tooling, we recommend customers **focus on testing in the cloud** as much as possible. 
 
 ## Testing in the Cloud
-While testing in the cloud may create additional developer latency, increase costs, and require some customers to invest in additional dev-ops controls, this technique provides the most reliable, accurate, and complete test coverage. Performing tests in the context of the cloud allows you to test IAM policies, service configurations, quotas, and the most up to date API signatures and return values. Tests run in the cloud are most likely to produce consistent results as your code is promoted from environment to environment.
+While testing in the cloud may create additional developer latency, increase costs, and require some customers to invest in additional dev-ops controls, this technique provides the most reliable, accurate, and complete test coverage. Performing tests in the cloud allows you to test IAM policies, service configurations, quotas, and the most up-to-date API signatures and return values. Tests run in the cloud are most likely to produce consistent results as you promote your code from environment to environment.
 
 ## Project contents
 The project uses the [AWS Serverless Application Model](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) (SAM) CLI for configuration, testing and deployment. 
 
-- [Python Test Samples Project](#python-test-samples-project)
+- [Python Starter Project](#python-starter-project)
   - [Testing in the Cloud](#testing-in-the-cloud)
   - [Project contents](#project-contents)
   - [Prerequisites](#prerequisites)
@@ -32,7 +32,7 @@ The project uses the [AWS Serverless Application Model](https://docs.aws.amazon.
   - [Cleanup](#cleanup)
   - [Additional Resources](#additional-resources)
 
-This application creates several AWS resources, including a Lambda function and an API Gateway. These resources are defined in the `template.yaml` file in this project. This project includes the following files and folders:
+This application creates several AWS resources, including a Lambda function and an API Gateway. We defined these resources in the `template.yaml` file in this project. This project includes the following files and folders:
 
 - src - Code for the application's Lambda function.
 - events - synthetic events that you can use to invoke the function.
@@ -40,7 +40,7 @@ This application creates several AWS resources, including a Lambda function and 
 - template.yaml - A template that defines the application's AWS resources.
 
 ## Prerequisites
-The SAM CLI is an extension of the AWS CLI that adds functionality for building and testing serverless applications. It contains features for building your appcation locally, deploying it to AWS, and emulating AWS services locally to support automated unit tests.  
+The SAM CLI extends the AWS CLI that adds functionality for building and testing serverless applications. It contains features for building your application locally, deploying it to AWS, and emulating AWS services locally to support automated unit tests.  
 
 To use the SAM CLI, you need the following tools.
 
@@ -70,18 +70,19 @@ After running this command you will receive a series of prompts:
 
 * **Stack Name**: The name of the stack to deploy to CloudFormation. This should be unique to your account and region, and a good starting point would be something matching your project name. Use `apigw-lambda` as the stack name for this project.
 * **AWS Region**: The AWS region you want to deploy your app to.
-* **Confirm changes before deploy**: If set to yes, any change sets will be shown to you before execution for manual review. If set to no, the AWS SAM CLI will automatically deploy application changes.
-* **Allow SAM CLI IAM role creation**: Many AWS SAM templates, including this example, create AWS IAM roles required for the AWS Lambda function(s) included to access AWS services. By default, these are scoped down to minimum required permissions. To deploy an AWS CloudFormation stack which creates or modifies IAM roles, the `CAPABILITY_IAM` value for `capabilities` must be provided. If permission isn't provided through this prompt, to deploy this example you must explicitly pass `--capabilities CAPABILITY_IAM` to the `sam deploy` command.
-* **Save arguments to samconfig.toml**: If set to yes, your choices will be saved to a configuration file inside the project, so that in the future you can just re-run `sam deploy` without parameters to deploy changes to your application.
+* **Confirm changes before deploy**: If set to yes, SAM CLI shows you any change sets for manual review before deployment. If set to no, the AWS SAM CLI will automatically deploy application changes.
+* **Allow SAM CLI IAM role creation**: Many AWS SAM templates, including this example, create AWS IAM roles required for the AWS Lambda function(s) included to access AWS services. By default, SAM CLI scopes these down to minimum required permissions. To deploy an AWS CloudFormation stack which creates or changes IAM roles, the `CAPABILITY_IAM` value for `capabilities` must be provided. If you don't provide permission through this prompt, you must explicitly pass `--capabilities CAPABILITY_IAM` to the `sam deploy` command.
+
+* **Save arguments to samconfig.toml**: If set to yes, SAM CLI saves your choices to a configuration file inside the project, so that in the future you can just re-run `sam deploy` without parameters to deploy changes to your application.
 
 You can find your API Gateway Endpoint URL in the output values displayed after deployment. Take note of this URL for use in the logging section below. On subsequent deploys you can run `sam deploy` without the `--guided` flag. [Read the documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-deploying.html).
 
 [[top]](#python-test-samples-project)
 
 ## Working with events
-Testing event driven architectures often requires working with synthetic events. Events are frequently defined as JSON documents. Synthetic events are test data that represent AWS events such as a requests from API Gateway or a messages from SQS. 
+Testing event driven architectures often requires working with synthetic events. Developers are often defining their Events as JSON documents. Synthetic events are test data that represent AWS events such as a requests from API Gateway or messages from SQS. 
 
-AWS Lambda always requires an event during invocation. A sample test event is included in the `events` folder in this project. SAM provides the capability of generating additional synthetic events for a variety of AWS services. [Read the documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-cli-command-reference-sam-local-generate-event.html).
+AWS Lambda always requires an event during invocation. This project includes a sample test event in the `events` folder. SAM provides the capability of generating additional synthetic events for a variety of AWS services. [Read the documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-cli-command-reference-sam-local-generate-event.html).
 
 Use the following command to learn more about generating synthetic events:
 ```bash
@@ -91,11 +92,11 @@ apigw-lambda$ sam local generate-event
 [[top]](#python-test-samples-project)
 
 ## Working with local emulators
-Local emulation of AWS services offers a simple way to build and test cloud native applications using local resources. Local emulation can speed up the build and deploy cycle creating faster feedback loops for application developers. 
+Local emulation of AWS services offers a simple way to build and test cloud native applications using local resources. Local emulation can speed up the build and deploy cycle, creating faster feedback loops for application developers. 
 
-Local emulation has several limitations. Cloud services evolve rapidly, so local emulators are unlikely to have feature parity with their counterpart services in the cloud. Local emulators may not be able to provide an accurate representation of IAM permissions or service quotas. Local emulators do not exist for every AWS service.
+Local emulation has several limitations. Cloud services evolve rapidly, so local emulators are unlikely to have feature parity with their counterpart services in the cloud. Local emulators may not provide an accurate representation of IAM permissions or service quotas. Local emulators do not exist for every AWS service.
 
-SAM provides local emulation features for [AWS Lambda](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-using-invoke.html) and [Amazon API Gateway](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-using-start-api.html). AWS provides [Amazon DynamoDB Local](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.html) as well as [AWS Step Functions Local](https://docs.aws.amazon.com/step-functions/latest/dg/sfn-local.html). Third party vendors like [LocalStack](https://docs.localstack.cloud/overview/) may provide emulation for additional AWS services. 
+SAM provides local emulation features for [AWS Lambda](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-using-invoke.html) and [Amazon API Gateway](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-using-start-api.html). AWS provides [Amazon DynamoDB Local](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.html) and [AWS Step Functions Local](https://docs.aws.amazon.com/step-functions/latest/dg/sfn-local.html). Third-party vendors like [LocalStack](https://docs.localstack.cloud/overview/) may provide emulation for additional AWS services. 
 
 This project demonstrates local emulation of Lambda and API Gateway with SAM.
 
@@ -148,10 +149,10 @@ The SAM CLI reads the application template to determine the API's routes and the
 [[top]](#python-test-samples-project)
 
 ## Run a unit test using a mock framework
-Lambda functions frequently call other AWS or 3rd party services. Mock frameworks are useful to simulate service responses. Mock frameworks can speed the development process by enabling rapid feedback iterations. Mocks can be particularly useful for testing failure cases when testing these branches of logic are difficult to do in the cloud.
+Lambda functions frequently call other AWS or 3rd party services. Mock frameworks are useful in simulating service responses. Mock frameworks can speed the development process by enabling rapid feedback iterations. Mocks can be useful for testing failure cases when testing these branches of logic is difficult to do in the cloud.
 
 This project uses mocks to test the internal logic of a Lambda function. 
-The project uses the [moto](http://docs.getmoto.org/en/latest/) dependency library to mock an external service call to Amazon S3. The `moto` library can simulate responses from a variety of [AWS services](http://docs.getmoto.org/en/latest/docs/services/index.html). Tests with mocks are defined in the `tests/unit` folder. Use `pip` to install test dependencies and `pytest` to run the unit test.
+The project uses the [moto](http://docs.getmoto.org/en/latest/) dependency library to mock an external service call to Amazon S3. The `moto` library can simulate responses from a variety of [AWS services](http://docs.getmoto.org/en/latest/docs/services/index.html). We defined tests with mocks in the `tests/unit` folder. Use `pip` to install test dependencies and `pytest` to run the unit test.
 
 ```bash
 # Create and Activate a Python Virtual Environment
@@ -220,7 +221,7 @@ AWS Cloud Development Kit (CDK) has a similar synchronization feature, `cdk watc
 ## Implement application tracing
 You can use AWS X-Ray to track user requests as they travel through your entire application. With X-Ray, you can understand how your application and its underlying services are performing to identify and troubleshoot the root cause of performance issues and errors.
 
-This [Lambda function](./src/app.py) handler has been instrumented using AWS X-Ray. Find to your Lambda function in the console. Then navigate to `Monitor` -> `Traces` and you should see a graph of your X-Ray trace.
+We instrumented the [Lambda function](./src/app.py) handler using AWS X-Ray. Find to your Lambda function in the console. Then navigate to `Monitor` -> `Traces` and you should see a graph of your X-Ray trace.
 
 You may also navigate to the [X-Ray service](https://console.aws.amazon.com/xray/home) in the console to examine your traces in greater detail. In the console you should be able to find a service map that looks similar to the one below. 
 
@@ -229,9 +230,9 @@ You may also navigate to the [X-Ray service](https://console.aws.amazon.com/xray
 [[top]](#python-test-samples-project)
 
 ## Perform a load test
-Load tests should be executed in the cloud prior to any initial deployment to production environments. Load tests can be useful to discover performance bottlenecks and quota limits. Load tests should be scripted and repeatable. Load tests should simulate your application's expected peak load + 10% or more.
+You should perform load tests in the cloud prior to any initial deployment to production environments. Load tests can be useful to discover performance bottlenecks and quota limits. You should create scripted and repeatable load tests. Load tests should simulate your application's expected peak load + 10% or more.
 
-[Locust](https://locust.io/) is a Python-based open source load testing tool. To learn more about how to use Locust to load test your application see this [sample project](https://github.com/aws-samples/cdk-deployment-of-locust).
+[Locust](https://locust.io/) is a Python-based open source load testing tool. To learn more about how to use Locust to load test your application, see this [sample project](https://github.com/aws-samples/cdk-deployment-of-locust).
 
 [[top]](#python-test-samples-project)
 

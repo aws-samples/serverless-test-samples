@@ -1,0 +1,10 @@
+moto>=3.0.7
+pytest
+pytest-socket
+coverage
+validators
+boto3
+aws_lambda_powertools
+fastjsonschema
+pylint
+bandit

@@ -1,0 +1,84 @@
+name: Pattern Submission
+description: Submit a new test pattern
+title: "[Pattern]: "
+labels: ["pattern"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to submit this pattern!
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Details
+      description: How can we get in touch with you if we need more info?
+      placeholder: ex. email@example.com
+    validations:
+      required: false
+  - type: dropdown
+    id: runtime
+    attributes:
+      label: Runtime
+      description: What runtime is used in this sample?
+      options:
+        - Java
+        - Typescript
+        - Python
+        - .NET
+    validations:
+      required: true
+  - type: dropdown
+    id: language
+    attributes:
+      label: Language
+      description: What language is this sample written in?
+      options:
+        - English
+    validations:
+      required: true
+  - type: dropdown
+    id: iac-framework
+    attributes:
+      label: Language
+      description: What IaC Framework does this sample use?
+      options:
+        - SAM
+        - CDK
+        - Terraform
+    validations:
+      required: true
+  # - type: checkboxes
+  #   id: aws-services
+  #   attributes:
+  #     label: AWS Services
+  #     description: Which AWS Services does this sample use?
+  #     options: ["AWS Amplify", "AWS AppSync", "Amazon API Gateway", "Amazon Athena", "Amazon Cognito","AWS CodeCommit", "AWS CodePipeline", "Amazon Comprehend", "Amazon CloudFront", "Amazon CloudWatch", "Amazon DynamoDB", "Amazon EventBridge","Amazon EventBridge Pipes", "Amazon EventBridge API Destinations", "Amazon EventBridge Scheduler","AWS Glue", "Amazon Kinesis Data Streams", "Amazon Kinesis Video Streams", "Amazon Kinesis Firehose", "Amazon RDS", "Amazon S3", "Amazon SNS", "Amazon SQS","AWS Systems Manager", "Amazon Transcribe", "AWS Lambda", "Amazon Pinpoint", "AWS Secrets Manager", "Amazon Textract", "AWS Step Functions", "AWS CloudTrail", "Amazon Translate"]
+  #   validations:
+  #     required: true
+  - type: input
+    id: application-code
+    attributes:
+      label: Application Code
+      description: Which file has the application code/business logic? This file will be displayed on the ServerlessLand Pattern Details page.
+      placeholder: /src/app.py
+      value: /src/app.py
+    validations:
+      required: true
+  - type: input
+    id: unit-test-code
+    attributes:
+      label: Unit Test Code
+      description: Which file has the unit test code? This file will be displayed on the ServerlessLand Pattern Details page.
+      placeholder: /tests/unit/test.py
+      value: /src/app.py
+    validations:
+      required: true
+  - type: input
+    id: integration-test-code
+    attributes:
+      label: Integration Test Code
+      description: Which file has the integration test code? This file will be displayed on the ServerlessLand Pattern Details page.
+      placeholder: /tests/integration/test.py
+      value: /src/app.py
+    validations:
+      required: true

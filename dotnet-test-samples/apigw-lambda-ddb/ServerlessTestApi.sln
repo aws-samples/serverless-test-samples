@@ -1,30 +1,30 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30114.105
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeleteProduct", "src\DeleteProduct\DeleteProduct.csproj", "{3B2A0435-A583-4EC5-8D31-6F828B054FCC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeleteProduct", "src\DeleteProduct\DeleteProduct.csproj", "{3B2A0435-A583-4EC5-8D31-6F828B054FCC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetProduct", "src\GetProduct\GetProduct.csproj", "{F823F114-972C-4F26-94CB-FA092E8EEC21}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GetProduct", "src\GetProduct\GetProduct.csproj", "{F823F114-972C-4F26-94CB-FA092E8EEC21}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetProducts", "src\GetProducts\GetProducts.csproj", "{A9B9CE97-FE28-4F04-978B-E8E2A6581979}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GetProducts", "src\GetProducts\GetProducts.csproj", "{A9B9CE97-FE28-4F04-978B-E8E2A6581979}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PutProduct", "src\PutProduct\PutProduct.csproj", "{695CFFBD-ED9A-4BB3-A87B-B5910F750D0C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PutProduct", "src\PutProduct\PutProduct.csproj", "{695CFFBD-ED9A-4BB3-A87B-B5910F750D0C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerlessTestApi.Core", "src\ServerlessTestApi.Core\ServerlessTestApi.Core.csproj", "{69BC342F-3C16-41EB-A4EE-8421B6BEF748}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerlessTestApi.Core", "src\ServerlessTestApi.Core\ServerlessTestApi.Core.csproj", "{69BC342F-3C16-41EB-A4EE-8421B6BEF748}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{E02638DF-C5C2-4389-8AF8-97BF2A0666ED}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{E02638DF-C5C2-4389-8AF8-97BF2A0666ED}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{34C302B9-9379-45E5-B648-22DFC7396F01}"
 	ProjectSection(SolutionItems) = preProject
 		template.yaml = template.yaml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiTests.IntegrationTest", "tests\ApiTests.IntegrationTest\ApiTests.IntegrationTest.csproj", "{98CD0930-4F51-4245-AB46-3781CA0D7054}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiTests.IntegrationTest", "tests\ApiTests.IntegrationTest\ApiTests.IntegrationTest.csproj", "{98CD0930-4F51-4245-AB46-3781CA0D7054}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiTests.UnitTest", "tests\ApiTests.UnitTest\ApiTests.UnitTest.csproj", "{2B3CD15C-5E66-41F9-AFC7-B49C48F47718}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiTests.UnitTest", "tests\ApiTests.UnitTest\ApiTests.UnitTest.csproj", "{2B3CD15C-5E66-41F9-AFC7-B49C48F47718}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerlessTestApi.Infrastructure", "src\ServerlessTestApi.Infrastructure\ServerlessTestApi.Infrastructure.csproj", "{207932BC-077A-49F3-90B4-DA7C3E48CBA5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerlessTestApi.Infrastructure", "src\ServerlessTestApi.Infrastructure\ServerlessTestApi.Infrastructure.csproj", "{207932BC-077A-49F3-90B4-DA7C3E48CBA5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{146E5D4A-B1D3-4CDF-BB2E-66A91A1ECF17}"
 	ProjectSection(SolutionItems) = preProject
@@ -35,9 +35,6 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{3B2A0435-A583-4EC5-8D31-6F828B054FCC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -73,6 +70,9 @@ Global
 		{207932BC-077A-49F3-90B4-DA7C3E48CBA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{207932BC-077A-49F3-90B4-DA7C3E48CBA5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3B2A0435-A583-4EC5-8D31-6F828B054FCC} = {34C302B9-9379-45E5-B648-22DFC7396F01}
 		{F823F114-972C-4F26-94CB-FA092E8EEC21} = {34C302B9-9379-45E5-B648-22DFC7396F01}
@@ -82,5 +82,8 @@ Global
 		{98CD0930-4F51-4245-AB46-3781CA0D7054} = {E02638DF-C5C2-4389-8AF8-97BF2A0666ED}
 		{2B3CD15C-5E66-41F9-AFC7-B49C48F47718} = {E02638DF-C5C2-4389-8AF8-97BF2A0666ED}
 		{207932BC-077A-49F3-90B4-DA7C3E48CBA5} = {34C302B9-9379-45E5-B648-22DFC7396F01}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {20CD382D-F5A7-404C-9D33-486026D99E76}
 	EndGlobalSection
 EndGlobal

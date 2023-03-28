@@ -1,3 +1,11 @@
+using Amazon.Lambda.APIGatewayEvents;
+using Amazon.Lambda.Core;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using ServerlessTestApi.Core.DataAccess;
+using ServerlessTestApi.Core.Models;
+using ServerlessTestApi.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -5,70 +13,102 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-using Amazon.Lambda.APIGatewayEvents;
-using Amazon.Lambda.Core;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using ServerlessTestApi.Core.DataAccess;
-using ServerlessTestApi.Infrastructure;
-
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
 
-namespace GetProducts
+namespace GetProducts;
+
+public class Function
 {
-    public class Function
+    private readonly IProductsDAO _dataAccess;
+    private readonly IOptions<JsonSerializerOptions> _jsonOptions;
+    private readonly ILogger<Function> _logger;
+
+    public Function() : this(Startup.ServiceProvider) { }
+
+    public Function(
+        IProductsDAO dataAccess,
+        ILogger<Function> logger,
+        IOptions<JsonSerializerOptions> jsonOptions)
+        : this(NewServiceProvider(dataAccess, logger, jsonOptions)) { }
+
+    private Function(IServiceProvider serviceProvider)
     {
-        private readonly IProductsDAO _dataAccess;
-        private readonly ILogger<Function> _logger;
-        public Function()
-        {
-            this._dataAccess = Startup.ServiceProvider.GetRequiredService<IProductsDAO>();
-            this._logger = Startup.ServiceProvider.GetRequiredService<ILogger<Function>>();
-        }
+        _dataAccess = serviceProvider.GetRequiredService<IProductsDAO>();
+        _jsonOptions = serviceProvider.GetRequiredService<IOptions<JsonSerializerOptions>>();
+        _logger = serviceProvider.GetRequiredService<ILogger<Function>>();
+    }
 
-        internal Function(IProductsDAO dataAccess = null, ILogger<Function> logger = null)
-        {
-            this._dataAccess = dataAccess;
-            this._logger = logger;
-        }
+    private static IServiceProvider NewServiceProvider(
+        IProductsDAO dataAccess,
+        ILogger<Function> logger,
+        IOptions<JsonSerializerOptions> jsonOptions)
+    {
+        var container = new System.ComponentModel.Design.ServiceContainer();
 
-        public async Task<APIGatewayHttpApiV2ProxyResponse> FunctionHandler(APIGatewayHttpApiV2ProxyRequest apigProxyEvent,
-            ILambdaContext context)
+        container.AddService(typeof(IProductsDAO), dataAccess);
+        container.AddService(typeof(IOptions<JsonSerializerOptions>), jsonOptions);
+        container.AddService(typeof(ILogger<Function>), logger);
+
+        return container;
+    }
+
+    public async Task<APIGatewayHttpApiV2ProxyResponse> FunctionHandler(
+        APIGatewayHttpApiV2ProxyRequest apigProxyEvent,
+        ILambdaContext context)
+    {
+        var method = new HttpMethod(apigProxyEvent.RequestContext.Http.Method);
+
+        if (!method.Equals(HttpMethod.Get))
         {
-            if (!apigProxyEvent.RequestContext.Http.Method.Equals(HttpMethod.Get.Method))
+            return new()
             {
-                return new APIGatewayHttpApiV2ProxyResponse
+                Body = "Only GET allowed",
+                StatusCode = (int)HttpStatusCode.MethodNotAllowed,
+                Headers = new Dictionary<string, string>()
                 {
-                    Body = "Only GET allowed",
-                    StatusCode = (int)HttpStatusCode.MethodNotAllowed,
-                };
-            }
+                    ["Allow"] = HttpMethod.Get.Method,
+                    ["Content-Type"] = "text/plain",
+                },
+            };
+        }
 
+        _logger.LogInformation($"Received {apigProxyEvent}");
+
+        ProductWrapper products;
+
+        using (var cts = context.GetCancellationTokenSource())
+        {
             try
             {
-                this._logger.LogInformation($"Received {apigProxyEvent}");
+                products = await _dataAccess.GetAllProducts(cts.Token);
+            }
+            catch (OperationCanceledException e)
+            {
+                _logger.LogError(e, "Retrieving products timed out");
 
-                var products = await _dataAccess.GetAllProducts();
-    
-                context.Logger.LogLine($"Found {products.Products.Count} product(s)");
-    
-                return new APIGatewayHttpApiV2ProxyResponse
+                return new()
                 {
-                    Body = JsonSerializer.Serialize(products),
-                    StatusCode = 200,
-                    Headers = new Dictionary<string, string> {{"Content-Type", "application/json"}}
+                    StatusCode = (int)HttpStatusCode.ServiceUnavailable,
                 };
             }
             catch (Exception e)
             {
-                this._logger.LogError(e, "Failure retrieving products");
-                
-                return new APIGatewayHttpApiV2ProxyResponse
+                _logger.LogError(e, "Failure retrieving products");
+
+                return new()
                 {
-                    StatusCode = 500,
-                    Headers = new Dictionary<string, string> {{"Content-Type", "application/json"}}
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
                 };
             }
         }
+
+        context.Logger.LogLine($"Found {products.Products.Count} product(s)");
+
+        return new()
+        {
+            Body = JsonSerializer.Serialize(products, _jsonOptions.Value),
+            StatusCode = (int)HttpStatusCode.OK,
+            Headers = new Dictionary<string, string>() { ["Content-Type"] = "application/json" },
+        };
     }
 }

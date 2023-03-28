@@ -31,10 +31,11 @@ describe('API Integration tests', () => {
      */
     let baseApiUrl: string;
     beforeAll(() => {
-        if (process.env.API_URL) {
-            baseApiUrl = process.env.API_URL;
+        if (process.env.API_BASE_URL) {
+            baseApiUrl = process.env.API_BASE_URL;
+            if (!baseApiUrl.endsWith('/')) baseApiUrl += '/';
         } else {
-            throw new Error('API_URL environment variable is not set');
+            throw new Error('API_BASE_URL environment variable is not set');
         }
     });
 
@@ -51,7 +52,7 @@ describe('API Integration tests', () => {
          * S3 API.
          */
         it('should return success code for http get', async () => {
-            const response = await axios.get(`${baseApiUrl}/buckets`);
+            const response = await axios.get(`${baseApiUrl}buckets`);
             expect(response.status).toBe(200);
         });
     });

@@ -4,6 +4,7 @@
  */
 
 export default {
+    projects: ['<rootDir>/jest.integration.config.ts', '<rootDir>/jest.unit.config.ts'],
     transform: {
         '^.+\\.ts?$': 'esbuild-jest',
     },
@@ -11,5 +12,6 @@ export default {
     collectCoverage: true,
     coverageDirectory: 'coverage',
     coverageProvider: 'v8',
+    silent: true,
     testMatch: ['**/tests/unit/*.test.ts', '**/tests/integration/*.test.ts'],
 };

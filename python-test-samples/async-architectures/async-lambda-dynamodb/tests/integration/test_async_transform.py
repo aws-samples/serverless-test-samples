@@ -190,7 +190,7 @@ def poll_for_file(test_results_table, test_filename, modified_message):
         # did we get the object?
         x = response['Item']['message']
     except KeyError:
-        print(msg + "Could not find result...")
+        print(msg + "Could not find result yet...")
         raise KeyError
 
     # is the object formed correctly?

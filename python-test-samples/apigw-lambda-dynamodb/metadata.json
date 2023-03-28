@@ -1,0 +1,41 @@
+{
+    "title": "API Gateway with Lambda and DynamoDB",
+    "description": "This project contains unit and integration tests for a pattern using API Gateway, AWS Lambda and Amazon DynamoDB.",
+    "content_language": "English",
+    "language": "Python",
+    "type": ["Unit", "Integration"],
+    "diagram": "/img/diagram.png",
+    "framework": "SAM",
+    "services": ["apigw", "lambda", "dynamodb"],
+    "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
+    "pattern_source": "AWS",
+    "pattern_detail_tabs": [
+        {
+            "title": "Application Code",
+            "filepath": "/src/app.py"
+        },
+        {
+            "title": "Unit Tests",
+            "filepath": "/tests/unit/mock_test.py"
+        },
+        {
+            "title": "Integration Test",
+            "filepath": "/tests/integration/test_api_gateway.py"
+        }
+    ],
+    "authors": [
+        {
+          "name": "Dan Fox",
+          "image": "https://media.licdn.com/dms/image/C4D03AQEeuHEjdXHy-A/profile-displayphoto-shrink_800_800/0/1516244567344?e=1683763200&v=beta&t=EolMYTa0v-c4Mo2wTMKrL2R5oE9-amE2EmtEMgldwLE",
+          "bio": "Principal Solutions Architect at AWS",
+          "linkedin": "https://www.linkedin.com/in/danfoxprofile/",
+          "twitter": "https://twitter.com/danfox"
+        },
+        {
+            "name": "Tom Romano",
+            "image": "https://media.licdn.com/dms/image/C4E03AQFWNGT9Tkov8g/profile-displayphoto-shrink_800_800/0/1614031821710?e=1684368000&v=beta&t=-b90PMeTFMcE3tkk_X9MXcS2ZkctE3A7iRvRTnOtCwQ",
+            "bio": "Solutions Architect at AWS",
+            "linkedin": "https://https://www.linkedin.com/in/wtromano/"
+        }
+    ]
+}

@@ -11,10 +11,12 @@
     "esbuild": "^0.14.14"
   },
   "scripts": {
-    "unit": "jest",
     "lint": "eslint '*.ts' --quiet --fix",
     "compile": "tsc",
-    "test": "npm run compile && npm run unit"
+
+    "test": "jest",
+    "test:unit": "jest --selectProjects unit",
+    "test:integration": "jest --selectProjects integration"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.92",

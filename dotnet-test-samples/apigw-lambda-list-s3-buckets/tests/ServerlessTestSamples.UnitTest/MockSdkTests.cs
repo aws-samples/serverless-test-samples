@@ -1,146 +1,155 @@
-using System.Net;
-using System.Text.Json;
-using Amazon;
-using Amazon.Lambda;
 using Amazon.Lambda.APIGatewayEvents;
-using Amazon.Lambda.Core;
-using Amazon.Lambda.Model;
 using Amazon.Lambda.TestUtilities;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.XRay.Recorder.Core;
 using FluentAssertions;
-using Moq;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Moq;
 using ServerlessTestSamples.Core.Queries;
-using ServerlessTestSamples.Core.Services;
 using ServerlessTestSamples.Integrations;
 using ServerlessTestSamples.UnitTest.Models;
+using System.Net;
+using System.Text.Json;
 
 namespace ServerlessTestSamples.UnitTest;
 
 public class MockSdkTests
 {
-    private bool _runningLocally = string.IsNullOrEmpty(System.Environment.GetEnvironmentVariable("LOCAL_RUN")) ? true : bool.Parse(System.Environment.GetEnvironmentVariable("LOCAL_RUN"));
-    private Mock<ILogger<Function>> _mockLogger = new Mock<ILogger<Function>>();
-    private Mock<ILogger<ListStorageAreasQueryHandler>> _mockHandlerLogger = new Mock<ILogger<ListStorageAreasQueryHandler>>();
-
     public MockSdkTests()
     {
         // Required for the XRay tracing sub-segment code in the Lambda function handler.
-        AWSXRayRecorder.InitializeInstance();    
+        AWSXRayRecorder.InitializeInstance();
         AWSXRayRecorder.Instance.BeginSegment("UnitTests");
     }
-    
+
+    private ILogger<Function> Logger { get; } = Mock.Of<ILogger<Function>>();
+
+    private ILogger<ListStorageAreasQueryHandler> HandlerLogger { get; } = Mock.Of<ILogger<ListStorageAreasQueryHandler>>();
+
+    private IOptions<JsonSerializerOptions> JsonOptions { get; } =
+        Options.Create(new JsonSerializerOptions(JsonSerializerDefaults.Web));
+
     [Fact]
     public async Task TestLambdaHandlerWithValidS3Response_ShouldReturnSuccess()
     {
-        var mockedS3Client = new Mock<IAmazonS3>();
-        var mockHttpClient = new Mock<HttpClient>();
-        
-        mockedS3Client.Setup(p => p.ListBucketsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new ListBucketsResponse()
-        {
-            Buckets = new List<S3Bucket>()
+        // arrange
+        var s3 = new Mock<IAmazonS3>();
+
+        s3.Setup(p => p.ListBucketsAsync(It.IsAny<CancellationToken>()))
+          .ReturnsAsync(new ListBucketsResponse()
+          {
+              Buckets = new()
+              {
+                  new(){ BucketName = "bucket1" },
+                  new(){ BucketName = "bucket2" },
+                  new(){ BucketName = "bucket3" },
+              },
+              HttpStatusCode = HttpStatusCode.OK,
+          });
+
+        var storageService = new S3StorageService(s3.Object);
+        var handler = new ListStorageAreasQueryHandler(storageService, HandlerLogger);
+        var function = new Function(handler, Logger, JsonOptions);
+
+        // act
+        var response = await function.Handler(new APIGatewayProxyRequest(), new TestLambdaContext());
+
+        // assert
+        response.StatusCode.Should().Be(200);
+
+        var body = JsonSerializer.Deserialize<ListStorageAreaResponseBody>(response.Body, JsonOptions.Value);
+
+        body.Should().BeEquivalentTo(
+            new ListStorageAreaResponseBody()
             {
-                new S3Bucket(){BucketName = "bucket1"},
-                new S3Bucket(){BucketName = "bucket2"},
-                new S3Bucket(){BucketName = "bucket3"},
-            },
-            HttpStatusCode = HttpStatusCode.OK
-        });
-        
-        var storageService = new S3StorageService(mockedS3Client.Object);
-        var handler = new ListStorageAreasQueryHandler(storageService, _mockHandlerLogger.Object);
-
-        var function = new Function(handler, _mockLogger.Object);
-
-        var result = await function.Handler(new APIGatewayProxyRequest(), new TestLambdaContext());
-
-        result.StatusCode.Should().Be(200);
-
-        var responseBody = JsonSerializer.Deserialize<ListStorageAreaResponseBody>(result.Body);
-
-        responseBody.Should().NotBeNull();
-        responseBody?.StorageAreas.Count().Should().Be(3);
-        responseBody?.StorageAreas.FirstOrDefault().Should().Be("bucket1");
+                StorageAreas = new[]
+                {
+                    "bucket1",
+                    "bucket2",
+                    "bucket3",
+                },
+            });
     }
 
     [Fact]
     public async Task TestLambdaHandlerWithEmptyS3Response_ShouldReturnEmpty()
     {
-        var mockedS3Client = new Mock<IAmazonS3>();
-        var mockHttpClient = new Mock<HttpClient>();
-        mockedS3Client.Setup(p => p.ListBucketsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new ListBucketsResponse()
-        {
-            Buckets = new List<S3Bucket>()
-            {
-            },
-            HttpStatusCode = HttpStatusCode.OK
-        });
-        
-        var storageService = new S3StorageService(mockedS3Client.Object);
-        var handler = new ListStorageAreasQueryHandler(storageService, _mockHandlerLogger.Object);
+        // arrange
+        var s3 = new Mock<IAmazonS3>();
 
-        var function = new Function(handler, _mockLogger.Object);
+        s3.Setup(p => p.ListBucketsAsync(It.IsAny<CancellationToken>()))
+          .ReturnsAsync(new ListBucketsResponse()
+          {
+              Buckets = new(),
+              HttpStatusCode = HttpStatusCode.OK,
+          });
 
-        var result = await function.Handler(new APIGatewayProxyRequest(), new TestLambdaContext());
+        var storageService = new S3StorageService(s3.Object);
+        var handler = new ListStorageAreasQueryHandler(storageService, HandlerLogger);
+        var function = new Function(handler, Logger, JsonOptions);
 
-        result.StatusCode.Should().Be(200);
+        // act
+        var response = await function.Handler(new APIGatewayProxyRequest(), new TestLambdaContext());
 
-        var responseBody = JsonSerializer.Deserialize<ListStorageAreaResponseBody>(result.Body);
+        // assert
+        response.StatusCode.Should().Be(200);
 
-        responseBody.Should().NotBeNull();
-        responseBody?.StorageAreas.Count().Should().Be(0);
+        var body = JsonSerializer.Deserialize<ListStorageAreaResponseBody>(response.Body, JsonOptions.Value);
+
+        body.Should().BeEquivalentTo(new ListStorageAreaResponseBody());
     }
 
     [Fact]
     public async Task TestLambdaHandlerWithS3NullResponse_ShouldReturnEmpty()
     {
-        var mockedS3Client = new Mock<IAmazonS3>();
-        var mockHttpClient = new Mock<HttpClient>();
-        
-        mockedS3Client.Setup(p => p.ListBucketsAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new ListBucketsResponse()
-        {
-            Buckets = null,
-            HttpStatusCode = HttpStatusCode.BadRequest
-        });
-        
-        var storageService = new S3StorageService(mockedS3Client.Object);
-        var handler = new ListStorageAreasQueryHandler(storageService, _mockHandlerLogger.Object);
+        // arrange
+        var s3 = new Mock<IAmazonS3>();
 
-        var function = new Function(handler, _mockLogger.Object);
+        s3.Setup(p => p.ListBucketsAsync(It.IsAny<CancellationToken>()))
+          .ReturnsAsync(new ListBucketsResponse()
+          {
+              Buckets = null,
+              HttpStatusCode = HttpStatusCode.BadRequest,
+          });
 
-        var result = await function.Handler(new APIGatewayProxyRequest(), new TestLambdaContext());
+        var storageService = new S3StorageService(s3.Object);
+        var handler = new ListStorageAreasQueryHandler(storageService, HandlerLogger);
+        var function = new Function(handler, Logger, JsonOptions);
 
-        result.StatusCode.Should().Be(200);
+        // act
+        var response = await function.Handler(new APIGatewayProxyRequest(), new TestLambdaContext());
 
-        var responseBody = JsonSerializer.Deserialize<ListStorageAreaResponseBody>(result.Body);
+        // assert
+        response.StatusCode.Should().Be(200);
 
-        responseBody.Should().NotBeNull();
-        responseBody?.StorageAreas.Count().Should().Be(0);
+        var body = JsonSerializer.Deserialize<ListStorageAreaResponseBody>(response.Body, JsonOptions.Value);
+
+        body.Should().BeEquivalentTo(new ListStorageAreaResponseBody());
     }
 
     [Fact]
     public async Task TestLambdaHandlerWithS3Exception_ShouldReturnEmpty()
     {
-        var mockedS3Client = new Mock<IAmazonS3>();
-        var mockHttpClient = new Mock<HttpClient>();
-        
-        mockedS3Client.Setup(p => p.ListBucketsAsync(It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new AmazonS3Exception("Mock S3 failure"));
-        
-        var storageService = new S3StorageService(mockedS3Client.Object);
-        var handler = new ListStorageAreasQueryHandler(storageService, _mockHandlerLogger.Object);
+        // arrange
+        var s3 = new Mock<IAmazonS3>();
 
-        var function = new Function(handler, _mockLogger.Object);
+        s3.Setup(p => p.ListBucketsAsync(It.IsAny<CancellationToken>()))
+          .ThrowsAsync(new AmazonS3Exception("Mock S3 failure"));
 
-        var result = await function.Handler(new APIGatewayProxyRequest(), new TestLambdaContext());
+        var storageService = new S3StorageService(s3.Object);
+        var handler = new ListStorageAreasQueryHandler(storageService, HandlerLogger);
+        var function = new Function(handler, Logger, JsonOptions);
 
-        result.StatusCode.Should().Be(200);
+        // act
+        var response = await function.Handler(new APIGatewayProxyRequest(), new TestLambdaContext());
 
-        var responseBody = JsonSerializer.Deserialize<ListStorageAreaResponseBody>(result.Body);
+        // assert
+        response.StatusCode.Should().Be(200);
 
-        responseBody.Should().NotBeNull();
-        responseBody?.StorageAreas.Count().Should().Be(0);
+        var body = JsonSerializer.Deserialize<ListStorageAreaResponseBody>(response.Body, JsonOptions.Value);
+
+        body.Should().BeEquivalentTo(new ListStorageAreaResponseBody());
     }
 }

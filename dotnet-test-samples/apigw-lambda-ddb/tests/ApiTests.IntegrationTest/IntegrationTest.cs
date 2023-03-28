@@ -1,93 +1,129 @@
-using System.Net;
 using ApiTests.IntegrationTest.Drivers;
 using FluentAssertions;
+using System.ComponentModel.DataAnnotations;
+using System.Net;
+using System.Net.Http.Json;
 
 namespace ApiTests.IntegrationTest;
 
-public class IntegrationTest : IClassFixture<Setup>
+// use xunit extensions to control dependent test order
+
+// REF: https://github.com/xunit/samples.xunit/blob/main/TestOrderExamples/TestCaseOrdering/PriorityOrderExamples.cs
+[TestCaseOrderer("ApiTests.IntegrationTest.TestOrderer", "ApiTests.IntegrationTest")]
+public class IntegrationTest : IClassFixture<Setup>, IDisposable
 {
-    private ApiDriver _apiDriver;
+    private readonly Setup _setup;
+    private readonly HttpClient _client;
+    private bool disposed;
 
-    public IntegrationTest()
+    public IntegrationTest(Setup setup)
     {
-        _apiDriver = new ApiDriver();
+        _setup = setup;
+        _client = new HttpClient()
+        {
+            BaseAddress = new(setup.ApiUrl),
+            DefaultRequestHeaders = { { "INTEGRATION_TEST", "true" } },
+        };
     }
 
-    [Fact]
-    public async Task GetProducts_ShouldReturnSuccess()
+    public void Dispose()
     {
-        var createOrderResult = await _apiDriver.GetProducts();
+        if (disposed)
+        {
+            return;
+        }
 
-        createOrderResult.Products.Should().NotBeNull();
+        disposed = true;
+        _client.Dispose();
     }
 
-    [Fact]
+    [Fact, TestOrder(1)]
     public async Task CreateProduct_ShouldReturnSuccess()
     {
-        var testProductId = Guid.NewGuid().ToString();
-        
-        var createOrderResult = await _apiDriver.CreateProduct(new Product(testProductId, "TestProduct", 10));
+        // arrange
+        var product = new Product(Guid.NewGuid().ToString(), "TestProduct", 10);
 
-        createOrderResult.Should().Be($"Created product with id {testProductId}");
+        // act
+        var response = await _client.PutAsJsonAsync(product.Id, product);
+
+        // assert
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        _setup.CreatedProductIds.Add(product.Id);
+
+        var content = await response.Content.ReadAsStringAsync();
+
+        content.Should().Be($"Created product with id {product.Id}");
+        response.Headers.Location.Should().NotBeNull();
     }
 
-    [Fact]
-    public async Task GetAllProducts_CreatedProductShouldAppearInList()
-    {
-        var testProductId = Guid.NewGuid().ToString();
-        
-        var createOrderResult = await _apiDriver.CreateProduct(new Product(testProductId, "TestProduct", 10));
-
-        var allProducts = await this._apiDriver.GetProducts();
-
-        var createdProduct = allProducts.Products.FirstOrDefault(p => p.Id == testProductId);
-
-        createdProduct.Should().NotBeNull();
-    }
-
-    [Fact]
-    public async Task UpdateProduct_CanUpdateProductData_ShouldReturnSuccess()
-    {
-        var testProductId = Guid.NewGuid().ToString();
-        
-        // Initial creation
-        await _apiDriver.CreateProduct(new Product(testProductId, "TestProduct", 10));
-        
-        // Then update the product
-        await _apiDriver.CreateProduct(new Product(testProductId, "Update name", 20));
-
-        var product = await _apiDriver.GetProduct(testProductId);
-
-        product.Name.Should().Be("Update name");
-        product.Price.Should().Be(20);
-    }
-
-    [Fact]
+    [Fact, TestOrder(2)]
     public async Task RetrieveACreatedProduct_ShouldReturnProduct()
     {
-        var testProductId = Guid.NewGuid().ToString();
-        
-        var createOrderResult = await _apiDriver.CreateProduct(new Product(testProductId, "TestProduct", 10));
+        // arrange
+        var id = _setup.CreatedProductIds[0];
 
-        var createdProduct = await _apiDriver.GetProduct(testProductId);
+        // act
+        var response = await _client.GetAsync(id);
 
-        createdProduct.Should().NotBeNull();
-        createdProduct.Name.Should().Be("TestProduct");
+        // assert
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var product = await response.Content.ReadFromJsonAsync<Product>();
+        product.Should().BeEquivalentTo(new Product(id, "TestProduct", 10));
     }
 
-    [Fact]
+    [Fact, TestOrder(2)]
+    public async Task GetProducts_ShouldReturnSuccess()
+    {
+        // arrange
+        var id = _setup.CreatedProductIds[0];
+
+        // act
+        var response = await _client.GetAsync("/");
+
+        // assert
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var products = await response.Content.ReadFromJsonAsync<ProductWrapper>();
+        products.Should().BeEquivalentTo(new ProductWrapper(new() { new Product(id, "TestProduct", 10) }));
+    }
+
+    [Fact, TestOrder(3)]
+    public async Task UpdateProduct_CanUpdateProductData_ShouldReturnSuccess()
+    {
+        // arrange
+        var id = _setup.CreatedProductIds[0];
+        var expected = new Product(id, "Update name", 20);
+
+        // act
+        var response = await _client.PutAsJsonAsync(expected.Id, expected);
+
+        // assert
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        
+        var content = await response.Content.ReadAsStringAsync();
+        content.Should().Be($"Updated product with id {expected.Id}");
+
+        response = await _client.GetAsync(id);
+        
+        var product = await response.EnsureSuccessStatusCode().Content.ReadFromJsonAsync<Product>();
+        product.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact, TestOrder(4)]
     public async Task DeleteACreatedProduct_ShouldReturnSuccess()
     {
-        var testProductId = Guid.NewGuid().ToString();
-        
-        var createOrderResult = await _apiDriver.CreateProduct(new Product(testProductId, "TestProduct", 10));
+        // arrange
+        var id = _setup.CreatedProductIds[0];
 
-        var deleteResult = await _apiDriver.DeleteProduct(testProductId);
+        // act
+        var response = await _client.DeleteAsync(id);
 
-        deleteResult.Should().Be($"Product with id {testProductId} deleted");
+        // assert
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var createdProduct = await _apiDriver.GetProduct(testProductId, HttpStatusCode.BadRequest);
+        var content = await response.Content.ReadAsStringAsync();
 
-        createdProduct.Should().BeNull();
+        content.Should().Be($"Product with id {id} deleted");
+        (await _client.GetAsync(id)).StatusCode.Should().Be(HttpStatusCode.NotFound);
+        _setup.CreatedProductIds.Remove(id);
     }
 }

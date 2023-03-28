@@ -28,114 +28,64 @@ Globals: # https://docs.aws.amazon.com/serverless-application-model/latest/devel
             - !Sub arn:aws:lambda:${AWS::Region}:017000801446:layer:AWSLambdaPowertoolsPython:9
         Environment:
             Variables:
-                DESTINATION_BUCKET: !Join
-                  - "-"
-                  - - "async-test-pattern-destination-bucket"
-                    - !Select
-                      - 0
-                      - !Split
-                        - "-"
-                        - !Select
-                          - 2
-                          - !Split
-                            - "/"
-                            - !Ref "AWS::StackId"
-                RESULTS_TABLE: !Join
-                  - "-"
-                  - - "async-transform-test-results"
-                    - !Select
-                      - 0
-                      - !Split
-                        - "-"
-                        - !Select
-                          - 2
-                          - !Split
-                            - "/"
-                            - !Ref "AWS::StackId"
+                DESTINATION_BUCKET: 
+                  !Sub "async-destination-${AWS::StackName}-${AWS::AccountId}"
+                RESULTS_TABLE: 
+                  !Sub "async-results-${AWS::StackName}-${AWS::AccountId}"                
                 # Powertools env vars: https://awslabs.github.io/aws-lambda-powertools-python/#environment-variables
                 LOG_LEVEL: INFO
                 POWERTOOLS_LOGGER_SAMPLE_RATE: 0.1
                 POWERTOOLS_LOGGER_LOG_EVENT: true
                 POWERTOOLS_METRICS_NAMESPACE: MyServerlessApplication
-                POWERTOOLS_SERVICE_NAME: hello
+                POWERTOOLS_SERVICE_NAME: async
 
 Resources:
   SourceBucket:
-    Type: "AWS::S3::Bucket"
+    Type: AWS::S3::Bucket
+    UpdateReplacePolicy: Delete
     Properties:
-      BucketName: !Join
-        - "-"
-        - - "async-test-pattern-source-bucket"
-          - !Select
-            - 0
-            - !Split
-              - "-"
-              - !Select
-                - 2
-                - !Split
-                  - "/"
-                  - !Ref "AWS::StackId"
+      BucketName: 
+        !Sub "async-source-${AWS::StackName}-${AWS::AccountId}"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+        - ServerSideEncryptionByDefault:
+            SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
 
   DestinationBucket:
-    Type: "AWS::S3::Bucket"
+    Type: AWS::S3::Bucket
+    UpdateReplacePolicy: Delete
     Properties:
-      BucketName: !Join
-        - "-"
-        - - "async-test-pattern-destination-bucket"
-          - !Select
-            - 0
-            - !Split
-              - "-"
-              - !Select
-                - 2
-                - !Split
-                  - "/"
-                  - !Ref "AWS::StackId"
+      BucketName:
+        !Sub "async-destination-${AWS::StackName}-${AWS::AccountId}"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+        - ServerSideEncryptionByDefault:
+            SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
 
   ToUppercaseTextTransformer:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Join
-        - "-"
-        - - "ToUppercaseTextTransformer"
-          - !Select
-            - 0
-            - !Split
-              - "-"
-              - !Select
-                - 2
-                - !Split
-                  - "/"
-                  - !Ref "AWS::StackId"
+      FunctionName: 
+        !Sub "ToUppercaseTextTransformer-${AWS::StackName}-${AWS::AccountId}"
       CodeUri: src/
       Handler: app.handler
       Policies:
         - S3ReadPolicy:
-            BucketName: !Join
-              - "-"
-              - - "async-test-pattern-source-bucket"
-                - !Select
-                  - 0
-                  - !Split
-                    - "-"
-                    - !Select
-                      - 2
-                      - !Split
-                        - "/"
-                        - !Ref "AWS::StackId"
+            BucketName: 
+              !Sub "async-source-${AWS::StackName}-${AWS::AccountId}"
         - S3CrudPolicy:
-            BucketName: !Join
-              - "-"
-              - - "async-test-pattern-destination-bucket"
-                - !Select
-                  - 0
-                  - !Split
-                    - "-"
-                    - !Select
-                      - 2
-                      - !Split
-                        - "/"
-                        - !Ref "AWS::StackId"
+            BucketName: 
+              !Sub "async-destination-${AWS::StackName}-${AWS::AccountId}"
       Events:
         FileUpload:
           Type: S3
@@ -152,18 +102,8 @@ Resources:
     Type: AWS::DynamoDB::Table
     Condition: CreateTestResources
     Properties: 
-      TableName: !Join
-          - "-"
-          - - "async-transform-test-results"
-            - !Select
-              - 0
-              - !Split
-                - "-"
-                - !Select
-                  - 2
-                  - !Split
-                    - "/"
-                    - !Ref "AWS::StackId"
+      TableName: 
+        !Sub "async-results-${AWS::StackName}-${AWS::AccountId}"
       AttributeDefinitions: 
         - AttributeName: id
           AttributeType: S
@@ -178,36 +118,16 @@ Resources:
     Type: AWS::Serverless::Function
     Condition: CreateTestResources
     Properties:
-      FunctionName: !Join
-        - "-"
-        - - "DestinationBucketListener"
-          - !Select
-            - 0
-            - !Split
-              - "-"
-              - !Select
-                - 2
-                - !Split
-                  - "/"
-                  - !Ref "AWS::StackId"
+      FunctionName: 
+        !Sub "DestinationBucketListener-${AWS::StackName}-${AWS::AccountId}"
       CodeUri: tests/integration
       Handler: event_listener_lambda.handler
       Policies:
         - DynamoDBWritePolicy:
             TableName: !Ref AsyncTransformTestResultsTable
         - S3ReadPolicy:
-            BucketName: !Join
-              - "-"
-              - - "async-test-pattern-destination-bucket"
-                - !Select
-                  - 0
-                  - !Split
-                    - "-"
-                    - !Select
-                      - 2
-                      - !Split
-                        - "/"
-                        - !Ref "AWS::StackId"      
+            BucketName: 
+              !Sub "async-destination-${AWS::StackName}-${AWS::AccountId}"
       Events:
         FileUpload:
           Type: S3
