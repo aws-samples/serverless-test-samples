@@ -1,4 +1,5 @@
 ﻿using GetStock.Domains;
+using GetStock.Domains.Models;
 
 namespace GetStock.Ports
 {
