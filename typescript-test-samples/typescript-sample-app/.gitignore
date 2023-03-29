@@ -4,6 +4,7 @@
 *.d.ts
 node_modules
 .idea
+coverage
 
 # CDK asset staging directory
 .cdk.staging
