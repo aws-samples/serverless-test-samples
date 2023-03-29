@@ -38,8 +38,10 @@ const mockDynamoDBClient = mockClient(DynamoDBDocumentClient);
  * In this case, we're testing a class, so we'll be exercising the 
  * public methods on the class.
  */
-describe.only( 'dynamodb-store', () => {
-  process.env.TABLE_NAME = 'table';
+describe( 'dynamodb-store', () => {
+
+  // The dynamo store needs this environment variable set to work properly
+  expect(process.env.TABLE_NAME).toBeDefined();
 
   beforeEach(() => {
     mockDynamoDBClient.reset();
@@ -51,9 +53,9 @@ describe.only( 'dynamodb-store', () => {
       let store = new DynamoDbStore();
 
       mockDynamoDBClient
-        .on(GetCommand, { TableName: 'table', Key: { id: '1' } })
+        .on(GetCommand, { TableName: process.env.TABLE_NAME, Key: { id: '1' } })
         .resolves({ Item: { id: '1', name: 'product1', price: 123.45 }, })
-        .on(GetCommand, { TableName: 'table', Key: { id: '2' } })
+        .on(GetCommand, { TableName: process.env.TABLE_NAME, Key: { id: '2' } })
         .resolves({ Item: { id: '2', name: 'product2', price: 123.45 }, });
 
         const p = await store.getProduct('1');
@@ -120,7 +122,7 @@ describe.only( 'dynamodb-store', () => {
 
       mockDynamoDBClient
         .on(DeleteCommand,{
-          TableName: 'table',
+          TableName: process.env.TABLE_NAME,
           Key: { id: '1' }
         })
         .resolves({ });
