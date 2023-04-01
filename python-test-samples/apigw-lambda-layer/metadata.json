@@ -7,6 +7,8 @@
     "diagram": "/img/pattern_05_lambda_layer_sut.png",
     "framework": "SAM",
     "services": ["apigw", "lambda", "s3"],
+    "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
+    "pattern_source": "AWS",
     "pattern_detail_tabs": [
         {
             "title": "Application Code",

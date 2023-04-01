@@ -7,6 +7,8 @@
     "diagram": "/docs/TicketTopology.png",
     "framework": "SAM",
     "services": ["apigw", "lambda", "dynamodb"],
+    "git_repo_url": "https://github.com/aws-samples/aws-stepfunctions-examples/tree/main/sam/demo-local-testing-using-java",
+    "pattern_source": "AWS",
     "pattern_detail_tabs": [
         {
             "title": "Application Code",
