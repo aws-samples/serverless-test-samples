@@ -23,7 +23,7 @@
         "Environment": {
             "Variables": {
                 "DB_TABLE": { "Ref" : "StocksTable" },
-                "API_KEY": "9AnsmZwncVDZP30u7aU3cPYZFUuqd9YU",
+                "API_KEY": "<INSERT API KEY>",
                 "BASE_API": "https://api.apilayer.com/fixer"              
             }
         },

@@ -1,0 +1,33 @@
+{
+    "title": "Hexagonal architecture",
+    "description": "Hexagonal architecture is also known as the ports and adapters architecture. It is an architectural pattern used for encapsulating domain logic and decoupling it from other implementation details, such as infrastructure or client requests. In Lambda functions, hexagonal architecture can help you implement new business requirements and improve the agility of a workload. This approach can help create separation of concerns and separate the domain logic from the infrastructure. For development teams, it can also simplify the implementation of new features and parallelize the work across different developers.",
+    "content_language": "English",
+    "language": "CSharp",
+    "type": ["Unit", "Integration"],
+    "diagram": "../docs/hexagonal-architecture.png.png",
+    "framework": "SAM",
+    "services": ["apigw", "lambda", "dynamoDB"],
+    "pattern_detail_tabs": [
+        {
+            "title": "Application Code",
+            "filepath": "/src/"
+        },
+        {
+            "title": "Unit Tests",
+            "filepath": "/tests/GetStock.UnitTest"
+        },
+        {
+            "title": "Integration Test",
+            "filepath": "/tests/GetStock.IntegrationTests"
+        }        
+    ],
+    "authors": [
+        {
+          "name": "Dror Helper",          
+          "image": "https://media.licdn.com/dms/image/C4D03AQGbBwfXtx0Zmg/profile-displayphoto-shrink_200_200/0/1638988504464?e=1686182400&v=beta&t=5G7912InrYUbzHXPah-84eIDnh1j1UYQKIRFEENKmBs",
+          "bio": "Senior Microsoft Specialist Soloution Architect at AWS",
+          "linkedin": "https://www.linkedin.com/in/drorhelper/",
+          "twitter": "https://twitter.com/dhelper"
+        }        
+    ]
+}

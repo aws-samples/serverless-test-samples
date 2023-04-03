@@ -2,6 +2,7 @@
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
 using GetStock.Adapters.Exceptions;
+using GetStock.Adapters.Model;
 
 namespace GetStock.Adapters
 {

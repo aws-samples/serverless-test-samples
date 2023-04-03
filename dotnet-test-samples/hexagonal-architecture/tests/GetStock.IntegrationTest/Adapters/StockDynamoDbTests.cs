@@ -1,6 +1,7 @@
 ﻿using Amazon.DynamoDBv2.DocumentModel;
 using GetStock.Adapters;
 using GetStock.Adapters.Exceptions;
+using GetStock.Adapters.Model;
 using GetStock.IntegrationTest.Fixtures;
 using GetStock.IntegrationTest.TestUtilities;
 
