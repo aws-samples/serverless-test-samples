@@ -1,5 +1,6 @@
 ﻿using GetStock.Adapters;
 using GetStock.Adapters.Exceptions;
+using GetStock.Adapters.Model;
 using GetStock.Domains;
 using GetStock.Domains.Models;
 using static GetStock.Utilities.CollectionUtils;

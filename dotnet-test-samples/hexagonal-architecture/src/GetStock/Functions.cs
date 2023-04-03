@@ -25,7 +25,6 @@ public static class DI
 
             return _serviceProvider;
         }
-        private set => _serviceProvider = value;
     }
 
     private static ServiceProvider InitializeServiceProvider()
