@@ -88,45 +88,45 @@ Resources:
         EntryPoints:
         - app.ts
 
-    AsyncProcessingTestResultsTable:
-      Type: AWS::DynamoDB::Table
-      Condition: CreateTestResources
-      Properties:
-        AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
-        KeySchema:
-          - AttributeName: id
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 2
-          WriteCapacityUnits: 2
+    # AsyncProcessingTestResultsTable:
+    #   Type: AWS::DynamoDB::Table
+    #   Condition: CreateTestResources
+    #   Properties:
+    #     AttributeDefinitions:
+    #       - AttributeName: id
+    #         AttributeType: S
+    #     KeySchema:
+    #       - AttributeName: id
+    #         KeyType: HASH
+    #     ProvisionedThroughput:
+    #       ReadCapacityUnits: 2
+    #       WriteCapacityUnits: 2
 
-    DestinationBucketListener:
-      Type: AWS::Serverless::Function
-      Condition: CreateTestResources
-      Properties:
-        FunctionName:
-          !Sub "DestinationBucketListener-${AWS::StackName}-${AWS::AccountId}"
-        CodeUri: tests/integration
-        Handler: event_listener_lambda.handler
-        Policies:
-          - DynamoDBWritePolicy:
-              TableName: !Ref AsyncProcessingTestResultsTable
-          - S3ReadPolicy:
-              BucketName:
-                !Sub "async-destination-${AWS::StackName}-${AWS::AccountId}"
-        Events:
-          FileUpload:
-            Type: S3
-            Properties:
-              Bucket: !Ref DestinationBucket
-              Events: s3:ObjectCreated:*
-              Filter:
-                S3Key:
-                  Rules:
-                    - Name: suffix
-                      Value: '.txt'
+    # DestinationBucketListener:
+    #   Type: AWS::Serverless::Function
+    #   Condition: CreateTestResources
+    #   Properties:
+    #     FunctionName:
+    #       !Sub "DestinationBucketListener-${AWS::StackName}-${AWS::AccountId}"
+    #     CodeUri: tests/integration
+    #     Handler: event_listener_lambda.handler
+    #     Policies:
+    #       - DynamoDBWritePolicy:
+    #           TableName: !Ref AsyncProcessingTestResultsTable
+    #       - S3ReadPolicy:
+    #           BucketName:
+    #             !Sub "async-destination-${AWS::StackName}-${AWS::AccountId}"
+    #     Events:
+    #       FileUpload:
+    #         Type: S3
+    #         Properties:
+    #           Bucket: !Ref DestinationBucket
+    #           Events: s3:ObjectCreated:*
+    #           Filter:
+    #             S3Key:
+    #               Rules:
+    #                 - Name: suffix
+    #                   Value: '.txt'
 
 Outputs:
 
