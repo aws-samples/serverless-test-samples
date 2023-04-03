@@ -1,0 +1,34 @@
+{
+  "title": "Typescript: Amazon Kinesis Data Streams, AWS Lambda, Amazon DynamoDB Example",
+  "description": "This project contains examples of TypeScript tests written for AWS Lambda interacting with Amazon Kinesis Data Streams and Amazon DynamoDB.",
+  "content_language": "English",
+  "language": "TypeScript",
+  "type": ["Unit","Integration"],
+  "diagram": "/img/system-under-test.png",
+  "framework": "SAM",
+  "services": ["kinesis", "lambda","dynamodb"],
+  "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
+  "pattern_source": "AWS",
+  "pattern_detail_tabs": [
+      {
+          "title": "Application Code",
+          "filepath": "/src/app.ts"
+      },
+      {
+          "title": "Unit Tests - Mock",
+          "filepath": "/tests/unit/test-handler.test.ts"
+      },
+      {
+          "title": "Integration Tests",
+          "filepath": "/tests/integration/integ-handler.test.ts"
+      }
+  ],
+  "authors": [
+      {
+        "name": "Debasis Mitra",
+        "image": "https://media.licdn.com/dms/image/C4D03AQFuEDU2H80AJQ/profile-displayphoto-shrink_800_800/0/1549899125514?e=1685577600&v=beta&t=09MFSxC0k8rpNC7hWPdkKwbDdIerNX435uSframsPzw",
+        "bio": "Cloud Application Architect at AWS",
+        "linkedin": "https://www.linkedin.com/in/richard-vidis-9895a831/"
+      }
+  ]
+}

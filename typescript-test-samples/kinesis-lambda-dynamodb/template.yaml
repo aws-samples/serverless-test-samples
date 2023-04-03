@@ -1,0 +1,139 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  typescript-test-samples
+  Sample SAM Template for typescript-test-samples
+
+Parameters:
+  DeployTestResources:
+    Description: The parameter instructs the template whether or not to deploy test resources to your environment.
+    Default: "True"
+    Type: String
+    AllowedValues:
+      - "True"
+      - "False"
+    ConstraintDescription: Allowed values are True and False
+
+Conditions:
+  CreateTestResources: !Equals [!Ref DeployTestResources, "True"]
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 10
+    MemorySize: 512
+
+Resources:
+
+  RecordsStream:
+    Type: AWS::Kinesis::Stream
+    Properties:
+      Name: RecordsStream
+      RetentionPeriodHours: 48
+      ShardCount: 2
+
+  ProcessedRecordsTable:
+    Type: AWS::DynamoDB::Table
+    UpdateReplacePolicy: Delete
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: PK
+        AttributeType: S
+      - AttributeName: SK
+        AttributeType: S
+      KeySchema:
+      - AttributeName: PK
+        KeyType: HASH
+      - AttributeName: SK
+        KeyType: RANGE
+      BillingMode: PAY_PER_REQUEST
+      SSESpecification:
+        SSEEnabled: true
+    Metadata:
+      SamResourceId: ProcessedRecordsTable
+
+  RecordProcessorFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: src/
+      Handler: app.lambdaHandler
+      Runtime: nodejs16.x
+      Architectures:
+        - x86_64
+      Tracing: Active
+      # Available policies:
+      # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-template-list.html
+      Policies:
+        - AWSXrayWriteOnlyAccess
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ProcessedRecordsTable
+        - KinesisStreamReadPolicy:
+            StreamName: !Ref RecordsStream
+      Environment:
+        Variables:
+          PROCESSED_RECORDS_TABLE_NAME: !Ref ProcessedRecordsTable
+      Events:
+        KinesisRecords:
+          Type: Kinesis # More info about API Event Source: https://github.com/aws/serverless-application-model/blob/master/versions/2016-10-31.md#kinesis
+          Properties:
+            Stream: !GetAtt RecordsStream.Arn
+            BatchSize: 20
+            StartingPosition: LATEST
+    Metadata: # Manage esbuild properties
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        # Sourcemap: true # Enabling source maps will create the required NODE_OPTIONS environment variables on your lambda function during sam build
+        EntryPoints:
+        - app.ts
+
+    AsyncProcessingTestResultsTable:
+      Type: AWS::DynamoDB::Table
+      Condition: CreateTestResources
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 2
+          WriteCapacityUnits: 2
+
+    DestinationBucketListener:
+      Type: AWS::Serverless::Function
+      Condition: CreateTestResources
+      Properties:
+        FunctionName:
+          !Sub "DestinationBucketListener-${AWS::StackName}-${AWS::AccountId}"
+        CodeUri: tests/integration
+        Handler: event_listener_lambda.handler
+        Policies:
+          - DynamoDBWritePolicy:
+              TableName: !Ref AsyncProcessingTestResultsTable
+          - S3ReadPolicy:
+              BucketName:
+                !Sub "async-destination-${AWS::StackName}-${AWS::AccountId}"
+        Events:
+          FileUpload:
+            Type: S3
+            Properties:
+              Bucket: !Ref DestinationBucket
+              Events: s3:ObjectCreated:*
+              Filter:
+                S3Key:
+                  Rules:
+                    - Name: suffix
+                      Value: '.txt'
+
+Outputs:
+
+  RecordProcessorFunctionArn:
+    Description: "Kinesis records processor Lambda Function ARN"
+    Value: !GetAtt RecordProcessorFunction.Arn
+
+  ProcessedRecordsTableName:
+    Description: "Processed Records DynamoDB table name"
+    Value: !Ref ProcessedRecordsTable
