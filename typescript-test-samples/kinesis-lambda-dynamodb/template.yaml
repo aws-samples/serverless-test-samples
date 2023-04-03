@@ -49,6 +49,12 @@ Resources:
       BillingMode: PAY_PER_REQUEST
       SSESpecification:
         SSEEnabled: true
+      StreamSpecification:
+        !If
+        - CreateTestResources
+        -
+          StreamViewType: NEW_AND_OLD_IMAGES
+        - !Ref AWS::NoValue
     Metadata:
       SamResourceId: ProcessedRecordsTable
 
@@ -65,7 +71,7 @@ Resources:
       # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-template-list.html
       Policies:
         - AWSXrayWriteOnlyAccess
-        - DynamoDBCrudPolicy:
+        - DynamoDBWritePolicy:
             TableName: !Ref ProcessedRecordsTable
         - KinesisStreamReadPolicy:
             StreamName: !Ref RecordsStream
@@ -88,45 +94,45 @@ Resources:
         EntryPoints:
         - app.ts
 
-    # AsyncProcessingTestResultsTable:
-    #   Type: AWS::DynamoDB::Table
-    #   Condition: CreateTestResources
-    #   Properties:
-    #     AttributeDefinitions:
-    #       - AttributeName: id
-    #         AttributeType: S
-    #     KeySchema:
-    #       - AttributeName: id
-    #         KeyType: HASH
-    #     ProvisionedThroughput:
-    #       ReadCapacityUnits: 2
-    #       WriteCapacityUnits: 2
+  RecordProcessingTestResultsTable:
+    Type: AWS::DynamoDB::Table
+    Condition: CreateTestResources
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
 
-    # DestinationBucketListener:
-    #   Type: AWS::Serverless::Function
-    #   Condition: CreateTestResources
-    #   Properties:
-    #     FunctionName:
-    #       !Sub "DestinationBucketListener-${AWS::StackName}-${AWS::AccountId}"
-    #     CodeUri: tests/integration
-    #     Handler: event_listener_lambda.handler
-    #     Policies:
-    #       - DynamoDBWritePolicy:
-    #           TableName: !Ref AsyncProcessingTestResultsTable
-    #       - S3ReadPolicy:
-    #           BucketName:
-    #             !Sub "async-destination-${AWS::StackName}-${AWS::AccountId}"
-    #     Events:
-    #       FileUpload:
-    #         Type: S3
-    #         Properties:
-    #           Bucket: !Ref DestinationBucket
-    #           Events: s3:ObjectCreated:*
-    #           Filter:
-    #             S3Key:
-    #               Rules:
-    #                 - Name: suffix
-    #                   Value: '.txt'
+  ProcessedRecordsTableListener:
+    Type: AWS::Serverless::Function
+    Condition: CreateTestResources
+    Properties:
+      CodeUri: src/tests/integration/
+      Handler: appTest.lambdaHandler
+      Runtime: nodejs16.x
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref RecordProcessingTestResultsTable
+      Events:
+        ProcessedRecordsTableEvent:
+          Type: DynamoDB
+          Properties:
+            Stream:
+              !GetAtt ProcessedRecordsTable.StreamArn
+            StartingPosition: TRIM_HORIZON
+            BatchSize: 20
+            Enabled: true
+    Metadata: # Manage esbuild properties
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        # Sourcemap: true # Enabling source maps will create the required NODE_OPTIONS environment variables on your lambda function during sam build
+        EntryPoints:
+        - appTest.ts
 
 Outputs:
 
