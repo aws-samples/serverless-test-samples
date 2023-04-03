@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using GetStock.Adapters;
 using GetStock.IntegrationTest.Fixtures;
-using GetStock.IntegrationTest.TestUtilities;
 
 namespace GetStock.IntegrationTest.Adapters
 {
