@@ -3,7 +3,7 @@
     {
       "messageId": "19dd0b57-b21e-4ac1-bd88-01bbb068cb78",
       "receiptHandle": "MessageReceiptHandle",
-      "body": "Hello from SQS! Message 1",
+      "body": "{\"employee_id\":\"100\",\"dob\":\"12/12/2023\",\"hire_date\":\"01/01/2020\"}",
       "attributes": {
         "ApproximateReceiveCount": "1",
         "SentTimestamp": "1523232000000",
@@ -11,15 +11,15 @@
         "ApproximateFirstReceiveTimestamp": "1523232000001"
       },
       "messageAttributes": {},
-      "md5OfBody": "7b270e59b47ff90a553787216d55d91d",
+      "md5OfBody": "89074d263116f70bc5c0fa1b5dd48d4c",
       "eventSource": "aws:sqs",
       "eventSourceARN": "arn:aws:sqs:us-east-1:123456789012:MyQueue",
       "awsRegion": "us-east-1"
     },
     {
-      "messageId": "19dd0b57-b21e-4ac1-bd88-01bbb068cb78",
+      "messageId": "19dd0b57-b21e-4ac1-bd88-01bbb068cb79",
       "receiptHandle": "MessageReceiptHandle",
-      "body": "Hello from SQS! Message 2",
+      "body": "{\"employee_id\":\"100\",\"dob\":\"12/12/2023\"}",
       "attributes": {
         "ApproximateReceiveCount": "1",
         "SentTimestamp": "1523232000000",
@@ -27,7 +27,23 @@
         "ApproximateFirstReceiveTimestamp": "1523232000001"
       },
       "messageAttributes": {},
-      "md5OfBody": "7b270e59b47ff90a553787216d55d91d",
+      "md5OfBody": "89074d263116f70bc5c0fa1b5dd48d4c",
+      "eventSource": "aws:sqs",
+      "eventSourceARN": "arn:aws:sqs:us-east-1:123456789012:MyQueue",
+      "awsRegion": "us-east-1"
+    },
+    {
+      "messageId": "19dd0b57-b21e-4ac1-bd88-01bbb068cb80",
+      "receiptHandle": "MessageReceiptHandle",
+      "body": "null",
+      "attributes": {
+        "ApproximateReceiveCount": "1",
+        "SentTimestamp": "1523232000000",
+        "SenderId": "123456789012",
+        "ApproximateFirstReceiveTimestamp": "1523232000001"
+      },
+      "messageAttributes": {},
+      "md5OfBody": "89074d263116f70bc5c0fa1b5dd48d4c",
       "eventSource": "aws:sqs",
       "eventSourceARN": "arn:aws:sqs:us-east-1:123456789012:MyQueue",
       "awsRegion": "us-east-1"

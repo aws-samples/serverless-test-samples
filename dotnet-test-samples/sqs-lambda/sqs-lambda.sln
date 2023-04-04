@@ -1,17 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQSEventHandler", "src\SQSEventHandler\SQSEventHandler.csproj", "{DEE7AE1A-C428-4DFD-9331-D50667CDF744}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqsEventHandler", "src\SqsEventHandler\SqsEventHandler.csproj", "{0DA48489-31EC-4E4D-8365-C7B6140F18D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQSEventHandler.UnitTests", "tests\SQSEventHandler.Test\SQSEventHandler.UnitTests.csproj", "{401BCA96-971D-4F1E-BD90-C954DB428955}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3263E9D0-3F77-4135-A3C4-4DCD3F1782F4}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{88AEB66E-FA3E-4561-BABF-A2C3F4AC690C}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{5DE69C01-915D-4B94-BCA5-ADC62A2C5D2E}"
-	ProjectSection(SolutionItems) = preProject
-		docs\README.md = docs\README.md
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqsEventHandler.UnitTests", "tests\SqsEventHandler.Tests\SqsEventHandler.UnitTests.csproj", "{70EB2F02-CE96-4A99-B7D0-4DA06ACC4061}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,22 +10,13 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{DEE7AE1A-C428-4DFD-9331-D50667CDF744}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DEE7AE1A-C428-4DFD-9331-D50667CDF744}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DEE7AE1A-C428-4DFD-9331-D50667CDF744}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DEE7AE1A-C428-4DFD-9331-D50667CDF744}.Release|Any CPU.Build.0 = Release|Any CPU
-		{943A4E4B-BD8B-4A33-B58C-4D0EEE0EB8A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{943A4E4B-BD8B-4A33-B58C-4D0EEE0EB8A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{943A4E4B-BD8B-4A33-B58C-4D0EEE0EB8A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{943A4E4B-BD8B-4A33-B58C-4D0EEE0EB8A3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{401BCA96-971D-4F1E-BD90-C954DB428955}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{401BCA96-971D-4F1E-BD90-C954DB428955}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{401BCA96-971D-4F1E-BD90-C954DB428955}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{401BCA96-971D-4F1E-BD90-C954DB428955}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{DEE7AE1A-C428-4DFD-9331-D50667CDF744} = {3263E9D0-3F77-4135-A3C4-4DCD3F1782F4}
-		{943A4E4B-BD8B-4A33-B58C-4D0EEE0EB8A3} = {88AEB66E-FA3E-4561-BABF-A2C3F4AC690C}
-		{401BCA96-971D-4F1E-BD90-C954DB428955} = {88AEB66E-FA3E-4561-BABF-A2C3F4AC690C}
+		{0DA48489-31EC-4E4D-8365-C7B6140F18D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DA48489-31EC-4E4D-8365-C7B6140F18D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DA48489-31EC-4E4D-8365-C7B6140F18D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DA48489-31EC-4E4D-8365-C7B6140F18D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70EB2F02-CE96-4A99-B7D0-4DA06ACC4061}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70EB2F02-CE96-4A99-B7D0-4DA06ACC4061}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70EB2F02-CE96-4A99-B7D0-4DA06ACC4061}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70EB2F02-CE96-4A99-B7D0-4DA06ACC4061}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
