@@ -2,13 +2,11 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqsEventHandler", "src\SqsEventHandler\SqsEventHandler.csproj", "{0DA48489-31EC-4E4D-8365-C7B6140F18D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqsEventHandler.UnitTests", "tests\SqsEventHandler.Tests\SqsEventHandler.UnitTests.csproj", "{70EB2F02-CE96-4A99-B7D0-4DA06ACC4061}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqsEventHandler.UnitTests", "tests\SqsEventHandler.UnitTests\SqsEventHandler.UnitTests.csproj", "{70EB2F02-CE96-4A99-B7D0-4DA06ACC4061}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{00140B9F-D533-4F2C-85B4-ABAEA8529CE4}"
 	ProjectSection(SolutionItems) = preProject
 		docs\README.md = docs\README.md
-		docs\sqs-lambda.png = docs\sqs-lambda.png
-		docs\send-message.png = docs\send-message.png
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0CFC5F99-9F8B-4703-AC45-5536D7075C8D}"

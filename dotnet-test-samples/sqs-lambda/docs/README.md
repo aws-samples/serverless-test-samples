@@ -19,7 +19,7 @@ The AWS services used in this pattern are
 
 ## Topology
 
-<img src="./sqs-lambda.png" alt="topology" width="50%"/>
+<img src="./image.png" alt="topology" width="80%"/>
 
 ## Description
 The SAM template contains all the information to deploy AWS resources (An Amazon SQS queue and an AWS Lambda function) and also the permissions required by these services to communicate.
@@ -37,11 +37,11 @@ sam init -r dotnet6
 The solution is split down into two projects:
 
 - Function project(s):
-  - [SQSEventHandler](./src/SQSEventHandler/)
+  - [SqsEventHandler](../src/SqsEventHandler/SqsEventHandler.csproj)
 
 - Test project(s):
-  - [SQSEventHandler.UnitTests](./src/SQSEventHandler.UnitTests/)
-  - [SQSEventHandler.IntegrationTests](./src/SQSEventHandler.IntegrationTests/)
+  - [SqsEventHandler.UnitTests](../tests/SqsEventHandler.UnitTests/SqsEventHandler.UnitTests.csproj)
+  - [SqsEventHandler.IntegrationTests](../tests/SQSEventHandler.IntegrationTests/SQSEventHandler.IntegrationTests.csproj)
 
 ## Deployment commands
 
@@ -57,6 +57,12 @@ sam deploy --guided
 
 To test the application, you need to publish a message to the SQS Queue. This can be done in following ways:
 
+- SAM Local Invoke: A sample SQSEvent is added here [sqs-event.json](../src/SqsEventHandler/sqs-event.json)
+  ```
+  cd src
+  sam local invoke -e ./SQSEventHandler/sqs-event.json
+  ```
+  
 - AWS Console
   
   <img src="./send-message.png" alt="topology" width="80%"/>
@@ -73,16 +79,11 @@ To test the application, you need to publish a message to the SQS Queue. This ca
     &Version=2012-11-05
     &AUTHPARAMS
   ```
-- SAM Local Invoke: A sample SQSEvent is added here [sqs-event.json](../src/SqsEventHandler/sqs-event.json)
-  ```
-  cd src
-  sam local invoke -e ./SQSEventHandler/sqs-event.json
-  ```
 
 ## Automated Tests
 The source code for this sample includes automated unit and integration tests. [xUnit](https://xunit.net/) is the primary test framework used to write these tests. A few other libraries and frameworks are used depending on the test case pattern. Please see below.
 
-### Unit Tests [ProcessEmployeeFunctionTests.cs]()
+### Unit Tests [ProcessEmployeeFunctionTests.cs](../tests/SqsEventHandler.UnitTests/ProcessEmployeeFunctionTests.cs)
 The goal of these tests is to run a unit test on the handler method of the Lambda functions. It uses [Moq](https://github.com/moq/moq4) for the mocking framework. The `ProductsDAO` interface is mocked.
 
 ```c#
