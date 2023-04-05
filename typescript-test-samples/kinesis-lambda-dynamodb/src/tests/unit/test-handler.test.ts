@@ -26,6 +26,10 @@ import 'aws-sdk-client-mock-jest';
 
 const ddbMock = mockClient(DynamoDBDocumentClient);
 
+beforeEach(() => {
+    ddbMock.reset();
+});
+
 describe('Unit test for app handler', function () {
 
     it('verify that the kinesis records were stored in the Dynamo DB', async () => {

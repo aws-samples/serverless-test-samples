@@ -17,9 +17,14 @@ import {
 const ddbClient = new DynamoDBClient({});
 const ddbDocumentClient = DynamoDBDocumentClient.from(ddbClient);
 
-type ProcessedRecord = {
-  PK: string,
-  SK: string,
+export type ProcessedRecord = {
+    PK: string,
+    SK: string,
+}
+
+export type UnprocessedRecord = {
+    batch: string,
+    id: string,
 }
 
 export const lambdaHandler = async (event: KinesisStreamEvent): Promise<void> => {
@@ -46,11 +51,11 @@ export const lambdaHandler = async (event: KinesisStreamEvent): Promise<void> =>
 
 const createRecordItem = (record: KinesisStreamRecord): ProcessedRecord => {
     const payload = Buffer.from(record.kinesis.data, 'base64').toString('ascii');
-    const data = JSON.parse(payload);
+    const data = JSON.parse(payload) as UnprocessedRecord;
 
     return {
-        'PK': data.batch,
-        'SK': data.id,
+        PK: data.batch,
+        SK: data.id,
     };
 }
 
