@@ -103,7 +103,11 @@ dotnet test tests/SQSEventHandler.UnitTests/SQSEventHandler.UnitTests.csproj
 ```
 
 ### Integration Tests ([IntegrationTest.cs](./tests/SQSEventHandler.IntegrationTest/IntegrationTest.cs))
-The goal of this test is to demonstrate a test that runs the Lambda function's code against deployed resources. The tests interact with the API endpoints directly and tests the expected responses returned by the API. Before running these tests, resources will need to be deployed using the steps in the `Deployment Commands` section above. Tests are there for both happy and sad paths.
+The goal of this test is to demonstrate a test that runs the Lambda function's code against deployed resources.
+The tests interact with the SQS Queue directly using [AmazonSQSClient](https://docs.aws.amazon.com/sdkfornet1/latest/apidocs/html/T_Amazon_SQS_AmazonSQSClient.htm) 
+and tests the expected responses returned.
+
+> Before running these tests, resources will need to be deployed using the steps in the `Deployment Commands` section above. Tests are there for both happy and sad paths.
 
 To execute the tests:
 
@@ -118,7 +122,7 @@ dotnet test .\tests\ApiTests.IntegrationTest\ApiTests.IntegrationTest.csproj
 ```bash
 AWS_SAM_STACK_NAME=<STACK_NAME_USED_IN_SAM_DEPLOY>
 AWS_SAM_REGION_NAME=<REGION_NAME_USED_IN_SAM_DEPLOY>
-dotnet test ./tests/ApiTests.IntegrationTest/ApiTests.IntegrationTest.csproj
+dotnet test ./tests/SqsEventHandler.IntegrationTests/SqsEventHandler.IntegrationTests.csproj 
 ```
 
 ## Cleanup
