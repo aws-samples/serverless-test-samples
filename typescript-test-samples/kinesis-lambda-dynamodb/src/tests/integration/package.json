@@ -6,7 +6,9 @@
   "license": "MIT",
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.44.0",
+    "@aws-sdk/client-kinesis": "^3.306.0",
     "@aws-sdk/lib-dynamodb": "^3.44.0",
+    "@aws-sdk/util-dynamodb": "^3.306.0",
     "aws-lambda": "^1.0.7",
     "esbuild": "^0.14.14"
   },
