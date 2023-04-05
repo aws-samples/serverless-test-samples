@@ -99,11 +99,15 @@ Resources:
     Condition: CreateTestResources
     Properties:
       AttributeDefinitions:
-        - AttributeName: id
+        - AttributeName: PK
+          AttributeType: S
+        - AttributeName: SK
           AttributeType: S
       KeySchema:
-        - AttributeName: id
+        - AttributeName: PK
           KeyType: HASH
+        - AttributeName: SK
+          KeyType: RANGE
       BillingMode: PAY_PER_REQUEST
 
   ProcessedRecordsTableListener:
@@ -116,6 +120,9 @@ Resources:
       Policies:
         - DynamoDBWritePolicy:
             TableName: !Ref RecordProcessingTestResultsTable
+      Environment:
+        Variables:
+          TEST_RESULTS_TABLE_NAME: !Ref RecordProcessingTestResultsTable
       Events:
         ProcessedRecordsTableEvent:
           Type: DynamoDB
@@ -136,6 +143,10 @@ Resources:
 
 Outputs:
 
+  RecordsStreamArn:
+    Description: "Kinesis stream accepts records for processing"
+    Value: !GetAtt RecordsStream.Arn
+
   RecordProcessorFunctionArn:
     Description: "Kinesis records processor Lambda Function ARN"
     Value: !GetAtt RecordProcessorFunction.Arn
@@ -143,3 +154,8 @@ Outputs:
   ProcessedRecordsTableName:
     Description: "Processed Records DynamoDB table name"
     Value: !Ref ProcessedRecordsTable
+
+  RecordProcessingTestResultsTableName:
+    Condition: CreateTestResources
+    Description: "Test results table allows monitoring of processed test records"
+    Value: !Ref RecordProcessingTestResultsTable
