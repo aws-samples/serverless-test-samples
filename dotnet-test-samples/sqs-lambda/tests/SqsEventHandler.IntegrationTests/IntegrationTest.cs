@@ -47,7 +47,7 @@ public class IntegrationTest : IClassFixture<Setup>, IDisposable
             DateOfHire = new DateTime(2007, 11, 05)
         };
 
-        // act
+        //Act
         var response = await _setup.SendMessage(
             _client,
             _setup.SqsEventQueueUrl,
