@@ -4,7 +4,7 @@
   "content_language": "English",
   "language": "CSharp",
   "type": ["Unit", "Integration"],
-  "diagram": "../docs/sqs-lambda.png",
+  "diagram": "../docs/image.png",
   "framework": "SAM",
   "services": ["sqs", "lambda"],
   "pattern_detail_tabs": [
