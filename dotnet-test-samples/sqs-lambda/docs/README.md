@@ -41,7 +41,7 @@ The solution is split down into two projects:
 
 - Test project(s):
   - [SqsEventHandler.UnitTests](../tests/SqsEventHandler.UnitTests/SqsEventHandler.UnitTests.csproj)
-  - [SqsEventHandler.IntegrationTests](../tests/SQSEventHandler.IntegrationTests/SQSEventHandler.IntegrationTests.csproj)
+  - [SqsEventHandler.IntegrationTests](../tests/SqsEventHandler.IntegrationTests/SqsEventHandler.IntegrationTests.csproj)
 
 ## Deployment commands
 
@@ -60,7 +60,7 @@ To test the application, you need to publish a message to the SQS Queue. This ca
 - SAM Local Invoke: A sample SQSEvent is added here [sqs-event.json](../src/SqsEventHandler/sqs-event.json)
   ```
   cd src
-  sam local invoke -e ./SQSEventHandler/sqs-event.json
+  sam local invoke -e ./SqsEventHandler/sqs-event.json
   ```
   
 - AWS Console
@@ -83,12 +83,72 @@ To test the application, you need to publish a message to the SQS Queue. This ca
 ## Automated Tests
 The source code for this sample includes automated unit and integration tests. [xUnit](https://xunit.net/) is the primary test framework used to write these tests. A few other libraries and frameworks are used depending on the test case pattern. Please see below.
 
-### Unit Tests [ProcessEmployeeFunctionTests.cs](../tests/SqsEventHandler.UnitTests/ProcessEmployeeFunctionTests.cs)
-The goal of these tests is to run a unit test on the handler method of the Lambda functions. It uses [Moq](https://github.com/moq/moq4) for the mocking framework. The `ProductsDAO` interface is mocked.
+### Unit Tests
+
+#### [ProcessEmployeeFunctionTests.cs](../tests/SqsEventHandler.UnitTests/ProcessEmployeeFunctionTests.cs)
+The goal of these tests is to run a unit test on the ProcessSqsMessage method which is called by the handler method of the Lambda function.
+The system under test here is completely abstracted from any cloud resources.
 
 ```c#
-[Fact]
-//TBD
+    [Fact]
+    public async Task ProcessSqsMessage_with_Valid_SQSMessage_Should_not_Throw_ArgumentNullException()
+    {
+        //Arrange
+        var sut = new ProcessEmployeeFunction();
+        var employee = new Employee
+        {
+            EmployeeId = "100"
+        };
+        var context = new TestLambdaContext();
+
+        //Act & Assert
+        await sut.Invoking(x => sut.ProcessSqsMessage(employee, context))
+            .Should()
+            .NotThrowAsync<ArgumentNullException>();
+    }
+```
+
+#### [SqsEventTriggerTests.cs](../tests/SqsEventHandler.UnitTests/Triggers/SqsEventTriggerTests.cs)
+The goal of these tests is to run a unit test on the SqsEventTrigger which implements the handler method of the Lambda function.
+It uses [Moq](https://github.com/moq/moq4) for the mocking framework. The `ProcessSqsMessage` method is mocked.
+
+```c#
+    [Fact]
+    public async Task SqsEventTrigger_with_One_SQSMessage_Should_Call_ProcessSqsMessage_Once()
+    {
+        //Arrange
+        var expected = new Employee
+        {
+            EmployeeId = "100",
+            DateOfBirth = new DateTime(1990, 11, 05),
+            DateOfHire = new DateTime(2007, 11, 05)
+        };
+
+        var sqsEvent = new SQSEvent
+        {
+            Records = new List<SQSEvent.SQSMessage>
+            {
+                new()
+                {
+                    MessageId = Guid.NewGuid().ToString(),
+                    Body = @"{'employee_id':'100','dob':'11/05/1990','hire_date':'11/05/2007'}",
+                    EventSource = "aws:sqs"
+                }
+            }
+        };
+        var lambdaContext = new TestLambdaContext();
+
+        //Act
+        var result = await _mockSqsEventTrigger.Object.Handler(sqsEvent, lambdaContext);
+
+        //Assert
+        result.BatchItemFailures.Should().BeEmpty();
+        _mockSqsEventTrigger.Verify(x =>
+                x.ProcessSqsMessage(
+                    It.Is<Employee>(employee => employee.Equals(expected)),
+                    It.IsAny<ILambdaContext>()),
+            Times.Once);
+    }
 ```
 
 To execute the tests:
@@ -102,7 +162,10 @@ dotnet test tests\SQSEventHandler.UnitTests\SQSEventHandler.UnitTests.csproj
 dotnet test tests/SQSEventHandler.UnitTests/SQSEventHandler.UnitTests.csproj
 ```
 
-### Integration Tests ([IntegrationTest.cs](./tests/SQSEventHandler.IntegrationTest/IntegrationTest.cs))
+### Integration Tests 
+
+#### [IntegrationTest.cs](./tests/SQSEventHandler.IntegrationTest/IntegrationTest.cs)
+
 The goal of this test is to demonstrate a test that runs the Lambda function's code against deployed resources.
 The tests interact with the SQS Queue directly using [AmazonSQSClient](https://docs.aws.amazon.com/sdkfornet1/latest/apidocs/html/T_Amazon_SQS_AmazonSQSClient.htm) 
 and tests the expected responses returned.
