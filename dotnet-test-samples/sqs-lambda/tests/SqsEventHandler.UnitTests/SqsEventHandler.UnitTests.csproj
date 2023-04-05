@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <RootNamespace>SQSEventHandler.Tests</RootNamespace>
+    <RootNamespace>SqsEventHandler.UnitTests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\SQSEventHandler\SQSEventHandler.csproj" />
+    <ProjectReference Include="..\..\src\SqsEventHandler\SqsEventHandler.csproj" />
   </ItemGroup>
 
 </Project>

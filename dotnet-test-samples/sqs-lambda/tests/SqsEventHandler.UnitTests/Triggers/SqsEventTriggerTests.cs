@@ -10,7 +10,7 @@ using SqsEventHandler.Models;
 using SqsEventHandler.Triggers;
 using Xunit;
 
-namespace SQSEventHandler.Tests.Triggers;
+namespace SqsEventHandler.UnitTests.Triggers;
 
 public class SqsEventTriggerTests
 {
