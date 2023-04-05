@@ -90,22 +90,22 @@ The goal of these tests is to run a unit test on the ProcessSqsMessage method wh
 The system under test here is completely abstracted from any cloud resources.
 
 ```c#
-    [Fact]
-    public async Task ProcessSqsMessage_with_Valid_SQSMessage_Should_not_Throw_ArgumentNullException()
+[Fact]
+public async Task ProcessSqsMessage_with_Valid_SQSMessage_Should_not_Throw_ArgumentNullException()
+{
+    //Arrange
+    var sut = new ProcessEmployeeFunction();
+    var employee = new Employee
     {
-        //Arrange
-        var sut = new ProcessEmployeeFunction();
-        var employee = new Employee
-        {
-            EmployeeId = "100"
-        };
-        var context = new TestLambdaContext();
+        EmployeeId = "100"
+    };
+    var context = new TestLambdaContext();
 
-        //Act & Assert
-        await sut.Invoking(x => sut.ProcessSqsMessage(employee, context))
-            .Should()
-            .NotThrowAsync<ArgumentNullException>();
-    }
+    //Act & Assert
+    await sut.Invoking(x => sut.ProcessSqsMessage(employee, context))
+        .Should()
+        .NotThrowAsync<ArgumentNullException>();
+}
 ```
 
 #### [SqsEventTriggerTests.cs](../tests/SqsEventHandler.UnitTests/Triggers/SqsEventTriggerTests.cs)
@@ -113,42 +113,42 @@ The goal of these tests is to run a unit test on the SqsEventTrigger which imple
 It uses [Moq](https://github.com/moq/moq4) for the mocking framework. The `ProcessSqsMessage` method is mocked.
 
 ```c#
-    [Fact]
-    public async Task SqsEventTrigger_with_One_SQSMessage_Should_Call_ProcessSqsMessage_Once()
+[Fact]
+public async Task SqsEventTrigger_with_One_SQSMessage_Should_Call_ProcessSqsMessage_Once()
+{
+    //Arrange
+    var expected = new Employee
     {
-        //Arrange
-        var expected = new Employee
-        {
-            EmployeeId = "100",
-            DateOfBirth = new DateTime(1990, 11, 05),
-            DateOfHire = new DateTime(2007, 11, 05)
-        };
+        EmployeeId = "100",
+        DateOfBirth = new DateTime(1990, 11, 05),
+        DateOfHire = new DateTime(2007, 11, 05)
+    };
 
-        var sqsEvent = new SQSEvent
+    var sqsEvent = new SQSEvent
+    {
+        Records = new List<SQSEvent.SQSMessage>
         {
-            Records = new List<SQSEvent.SQSMessage>
+            new()
             {
-                new()
-                {
-                    MessageId = Guid.NewGuid().ToString(),
-                    Body = @"{'employee_id':'100','dob':'11/05/1990','hire_date':'11/05/2007'}",
-                    EventSource = "aws:sqs"
-                }
+                MessageId = Guid.NewGuid().ToString(),
+                Body = @"{'employee_id':'100','dob':'11/05/1990','hire_date':'11/05/2007'}",
+                EventSource = "aws:sqs"
             }
-        };
-        var lambdaContext = new TestLambdaContext();
+        }
+    };
+    var lambdaContext = new TestLambdaContext();
 
-        //Act
-        var result = await _mockSqsEventTrigger.Object.Handler(sqsEvent, lambdaContext);
+    //Act
+    var result = await _mockSqsEventTrigger.Object.Handler(sqsEvent, lambdaContext);
 
-        //Assert
-        result.BatchItemFailures.Should().BeEmpty();
-        _mockSqsEventTrigger.Verify(x =>
-                x.ProcessSqsMessage(
-                    It.Is<Employee>(employee => employee.Equals(expected)),
-                    It.IsAny<ILambdaContext>()),
-            Times.Once);
-    }
+    //Assert
+    result.BatchItemFailures.Should().BeEmpty();
+    _mockSqsEventTrigger.Verify(x =>
+            x.ProcessSqsMessage(
+                It.Is<Employee>(employee => employee.Equals(expected)),
+                It.IsAny<ILambdaContext>()),
+        Times.Once);
+}
 ```
 
 To execute the tests:
