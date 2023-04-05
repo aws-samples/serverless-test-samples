@@ -36,8 +36,13 @@ Outputs:
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
   ProcessEmployeeFunction:
-    Description: "Hello World Lambda Function ARN"
+    Description: "Process Employee Function ARN"
     Value: !GetAtt ProcessEmployeeFunction.Arn
   ProcessEmployeeFunctionIamRole:
     Description: "Implicit IAM Role created for Process Employee Function"
     Value: !GetAtt ProcessEmployeeFunctionRole.Arn
+  SQSEventQueueUrl:
+    Description: "SQS Event Queue Url"
+    Value: !Ref SQSEventQueue
+
+    

@@ -5,7 +5,7 @@ using FluentAssertions;
 using SqsEventHandler.Models;
 using Xunit;
 
-namespace SqsEventHandler.Tests;
+namespace SqsEventHandler.UnitTests;
 
 public class ProcessEmployeeFunctionTests
 {
