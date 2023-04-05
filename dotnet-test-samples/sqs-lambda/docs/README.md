@@ -55,7 +55,7 @@ sam deploy --guided
 
 ## Testing
 
-To test the application, you need to publish a message to the SQS Queue. This can be done in two ways:
+To test the application, you need to publish a message to the SQS Queue. This can be done in following ways:
 
 - AWS Console
   
@@ -73,11 +73,16 @@ To test the application, you need to publish a message to the SQS Queue. This ca
     &Version=2012-11-05
     &AUTHPARAMS
   ```
+- SAM Local Invoke: A sample SQSEvent is added here [sqs-event.json](../src/SqsEventHandler/sqs-event.json)
+  ```
+  cd src
+  sam local invoke -e ./SQSEventHandler/sqs-event.json
+  ```
 
 ## Automated Tests
 The source code for this sample includes automated unit and integration tests. [xUnit](https://xunit.net/) is the primary test framework used to write these tests. A few other libraries and frameworks are used depending on the test case pattern. Please see below.
 
-### Unit Tests ([MockPutProductFunctionTests.cs](tests/ApiTests.UnitTest/MockPutProductFunctionTests.cs))
+### Unit Tests [ProcessEmployeeFunctionTests.cs]()
 The goal of these tests is to run a unit test on the handler method of the Lambda functions. It uses [Moq](https://github.com/moq/moq4) for the mocking framework. The `ProductsDAO` interface is mocked.
 
 ```c#
