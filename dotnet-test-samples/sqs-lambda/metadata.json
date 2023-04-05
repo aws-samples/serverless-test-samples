@@ -1,0 +1,33 @@
+{
+  "title": "Amazon Simple Queue Service (SQS) with AWS Lambda Function",
+  "description": "This project contains an AWS Lambda function that consumes messages from an Amazon Simple Queue Service (Amazon SQS) queue using SAM and .NET 6.",
+  "content_language": "English",
+  "language": "CSharp",
+  "type": ["Unit", "Integration"],
+  "diagram": "../docs/sqs-lambda.png",
+  "framework": "SAM",
+  "services": ["sqs", "lambda"],
+  "pattern_detail_tabs": [
+    {
+      "title": "Application Code",
+      "filepath": "/src/"
+    },
+    {
+      "title": "Unit Tests",
+      "filepath": "/tests/SqsEventHandler.UnitTests"
+    },
+    {
+      "title": "Integration Tests",
+      "filepath": "/tests/SqsEventHandler.IntegrationTest"
+    }
+  ],
+  "authors": [
+    {
+      "name": "Leslie Daniel Raj",
+      "image": "https://media.licdn.com/dms/image/D4E03AQExIU1IcSs9lg/profile-displayphoto-shrink_400_400/0/1663268087652?e=1686182400&v=beta&t=xzsZ2Jxcw9rzafTAfB4wqu6noJlJI9bX3hfe3cvjpNA",
+      "bio": "Cloud Application Architect at AWS",
+      "linkedin": "https://www.linkedin.com/in/leslie-daniel-raj-21b55449/",
+      "twitter": ""
+    }
+  ]
+}

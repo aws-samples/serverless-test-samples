@@ -4,6 +4,20 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqsEventHandler", "src\SqsE
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqsEventHandler.UnitTests", "tests\SqsEventHandler.Tests\SqsEventHandler.UnitTests.csproj", "{70EB2F02-CE96-4A99-B7D0-4DA06ACC4061}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{00140B9F-D533-4F2C-85B4-ABAEA8529CE4}"
+	ProjectSection(SolutionItems) = preProject
+		docs\README.md = docs\README.md
+		docs\sqs-lambda.png = docs\sqs-lambda.png
+		docs\send-message.png = docs\send-message.png
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0CFC5F99-9F8B-4703-AC45-5536D7075C8D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{77FA1BAD-35CA-4CAE-AEDA-70640E39D80E}"
+	ProjectSection(SolutionItems) = preProject
+		src\template.yaml = src\template.yaml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +32,9 @@ Global
 		{70EB2F02-CE96-4A99-B7D0-4DA06ACC4061}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{70EB2F02-CE96-4A99-B7D0-4DA06ACC4061}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{70EB2F02-CE96-4A99-B7D0-4DA06ACC4061}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{70EB2F02-CE96-4A99-B7D0-4DA06ACC4061} = {0CFC5F99-9F8B-4703-AC45-5536D7075C8D}
+		{0DA48489-31EC-4E4D-8365-C7B6140F18D8} = {77FA1BAD-35CA-4CAE-AEDA-70640E39D80E}
 	EndGlobalSection
 EndGlobal
