@@ -19,6 +19,8 @@ public class ProcessEmployeeFunction : SqsEventTrigger<Employee>
     {
         if (message == null)
             throw new ArgumentNullException(nameof(message));
+        if (message.EmployeeId == null)
+            throw new ArgumentNullException(nameof(message.EmployeeId));
 
         lambdaContext.Logger.LogLine($"Message: {message}");
         await Task.CompletedTask;
