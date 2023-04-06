@@ -1,10 +1,10 @@
 {
-    "customerId": "577af109-1f19-4d0a-9c56-359f44ca0034",
-    "firstName": "Jane",
-    "lastName": "Doe",
-    "address": "2 Park St",
-    "city": "Sydney",
-    "state": "NSW",
-    "country": "Australia",
-    "postcode": "2000"
+  "customerId": "577af109-1f19-4d0a-9c56-359f44ca0034",
+  "firstName": "Jane",
+  "lastName": "Doe",
+  "address": "2 Park St",
+  "city": "Sydney",
+  "state": "NSW",
+  "country": "Australia",
+  "postcode": "2000"
 }

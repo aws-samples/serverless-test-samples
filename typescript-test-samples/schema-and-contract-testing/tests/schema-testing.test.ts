@@ -2,51 +2,53 @@
 // SPDX-License-Identifier: MIT-0
 import jsonSchemaDiff from 'json-schema-diff';
 
-// The schema can be obtained from a repository or from Amazon EventBridge Schema Registry (the latter supports only OpenAPI 3.0 and Json Schema Draft 4 versions).
+// The schema can be obtained from a repository or from Amazon EventBridge Schema Registry (the latter supports only OpenAPI 3.0 and json Schema Draft 4 versions).
 // Here we're just reading schemas from a local json file for simplicity.
-import schema_v1_0_0 from '../schemas/Json/CustomerCreated-v1.0.0.json';
-import schema_v1_1_0 from '../schemas/Json/CustomerCreated-v1.1.0.json';
-import schema_v1_2_0 from '../schemas/Json/CustomerCreated-v1.2.0.json';
-import schema_v1_3_0 from '../schemas/Json/CustomerCreated-v1.3.0.json';
+import schema_v1_0_0 from '../schemas/json/CustomerCreated-v1.0.0.json';
+import schema_v1_1_0 from '../schemas/json/CustomerCreated-v1.1.0.json';
+import schema_v1_2_0 from '../schemas/json/CustomerCreated-v1.2.0.json';
+import schema_v1_3_0 from '../schemas/json/CustomerCreated-v1.3.0.json';
 
-test('adding new optional elements is backward compatible', async () => {    
-  const initialSchema = schema_v1_0_0;
-  const updatedSchema = schema_v1_1_0;
+describe('Schema testing examples', () => {
+  test('adding new optional elements is backward compatible', async () => {
+    const initialSchema = schema_v1_0_0;
+    const updatedSchema = schema_v1_1_0;
 
-  const result = await jsonSchemaDiff.diffSchemas({
-      sourceSchema: updatedSchema, 
-      destinationSchema: initialSchema
+    const result = await jsonSchemaDiff.diffSchemas({
+      sourceSchema: updatedSchema,
+      destinationSchema: initialSchema,
+    });
+
+    const isBreakingChange = result.removalsFound;
+
+    expect(isBreakingChange).toBeFalsy();
   });
 
-  const isBreakingChange = result.removalsFound;
+  test('removing elements is a breaking change', async () => {
+    const initialSchema = schema_v1_1_0;
+    const updatedSchema = schema_v1_2_0;
 
-  expect(isBreakingChange).toBeFalsy();
-});
+    const result = await jsonSchemaDiff.diffSchemas({
+      sourceSchema: updatedSchema,
+      destinationSchema: initialSchema,
+    });
 
-test('removing elements is a breaking change', async () => {    
-  const initialSchema = schema_v1_1_0;
-  const updatedSchema = schema_v1_2_0;
+    const isBreakingChange = result.removalsFound;
 
-  const result = await jsonSchemaDiff.diffSchemas({
-      sourceSchema: updatedSchema, 
-      destinationSchema: initialSchema
+    expect(isBreakingChange).toBeTruthy();
   });
 
-  const isBreakingChange = result.removalsFound;
+  test('adding new optional elements is considered backward compatible in spite of the logic change', async () => {
+    const initialSchema = schema_v1_0_0;
+    const updatedSchema = schema_v1_3_0;
 
-  expect(isBreakingChange).toBeTruthy();
-});
+    const result = await jsonSchemaDiff.diffSchemas({
+      sourceSchema: updatedSchema,
+      destinationSchema: initialSchema,
+    });
 
-test('adding new optional elements is considered backward compatible in spite of the logic change', async () => {    
-  const initialSchema = schema_v1_0_0;
-  const updatedSchema = schema_v1_3_0;
+    const isBreakingChange = result.removalsFound;
 
-  const result = await jsonSchemaDiff.diffSchemas({
-      sourceSchema: updatedSchema, 
-      destinationSchema: initialSchema
+    expect(isBreakingChange).toBeFalsy();
   });
-
-  const isBreakingChange = result.removalsFound;
-
-  expect(isBreakingChange).toBeFalsy();
 });
