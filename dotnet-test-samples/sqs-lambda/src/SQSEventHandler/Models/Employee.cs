@@ -1,25 +1,25 @@
 using System;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace SqsEventHandler.Models;
 
 public record Employee
 {
-    [JsonProperty("employee_id")] 
-    public string EmployeeId { get; set; }
+    [JsonPropertyName("employee_id")] 
+    public string EmployeeId { get; init; }
 
-    [JsonProperty("email")] 
-    public string Email { get; set; }
+    [JsonPropertyName("email")] 
+    public string Email { get; init; }
 
-    [JsonProperty("first_name")] 
-    public string FirstName { get; set; }
+    [JsonPropertyName("first_name")] 
+    public string FirstName { get; init; }
 
-    [JsonProperty("last_name")] 
-    public string LastName { get; set; }
+    [JsonPropertyName("last_name")] 
+    public string LastName { get; init; }
 
-    [JsonProperty("dob")]
-    public DateTime DateOfBirth { get; set; }
+    [JsonPropertyName("dob")]
+    public DateTime DateOfBirth { get; init; }
 
-    [JsonProperty("hire_date")]
-    public DateTime DateOfHire { get; set; }
+    [JsonPropertyName("hire_date")]
+    public DateTime DateOfHire { get; init; }
 }
