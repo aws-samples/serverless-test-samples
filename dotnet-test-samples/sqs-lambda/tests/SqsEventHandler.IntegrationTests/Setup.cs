@@ -22,7 +22,7 @@ public class Setup : IAsyncLifetime
             await cloudFormationClient.DescribeStacksAsync(new DescribeStacksRequest() { StackName = stackName });
         var outputs = response.Stacks[0].Outputs;
 
-        SqsEventQueueUrl = GetOutputVariable(outputs, "SQSEventQueueUrl");
+        SqsEventQueueUrl = GetOutputVariable(outputs, "ProcessEmployeeQueueUrl");
     }
 
     public Task DisposeAsync()

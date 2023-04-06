@@ -178,7 +178,7 @@ To execute the tests:
 ```powershell
 $env:AWS_SAM_STACK_NAME = <STACK_NAME_USED_IN_SAM_DEPLOY>
 $env:AWS_SAM_REGION_NAME = <REGION_NAME_USED_IN_SAM_DEPLOY>
-dotnet test .\tests\ApiTests.IntegrationTest\ApiTests.IntegrationTest.csproj
+dotnet test ./tests/SqsEventHandler.IntegrationTests/SqsEventHandler.IntegrationTests.csproj
 ```
 
 **Bash**

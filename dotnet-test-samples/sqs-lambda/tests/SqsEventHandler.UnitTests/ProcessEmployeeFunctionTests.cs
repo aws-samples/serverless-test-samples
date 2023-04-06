@@ -27,16 +27,20 @@ public class ProcessEmployeeFunctionTests
     }
 
     [Fact]
-    public async Task ProcessSqsMessage_with_null_SQS_Message_Should_Throw_ArgumentNullException()
+    public async Task ProcessSqsMessage_with_Invalid_SQS_Message_Should_Throw_ArgumentNullException()
     {
         //Arrange
         var sut = new ProcessEmployeeFunction();
+        var employee = new Employee
+        {
+            FirstName = "UnitTest"
+        };
         var context = new TestLambdaContext();
 
         //Act & Assert
-        await sut.Invoking(x => sut.ProcessSqsMessage(null, context))
+        await sut.Invoking(x => sut.ProcessSqsMessage(employee, context))
             .Should()
             .ThrowAsync<ArgumentNullException>()
-            .WithMessage("Value cannot be null. (Parameter 'message')");
+            .WithMessage("Value cannot be null. (Parameter 'EmployeeId')");
     }
 }
