@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.SQSEvents;
-using Newtonsoft.Json;
 
 namespace SqsEventHandler.Handlers;
 
@@ -65,7 +65,7 @@ public abstract class SqsEventHandler<TMessage> where TMessage : class, new()
             {
                 lambdaContext.Logger.LogLine($"Processing {sqsMessage.EventSource} Message Id: {sqsMessage.MessageId}");
 
-                var message = JsonConvert.DeserializeObject<TMessage>(sqsMessage.Body);
+                var message = JsonSerializer.Deserialize<TMessage>(sqsMessage.Body);
 
                 // This abstract method is implemented by the concrete classes i.e. ProcessEmployeeFunction.
                 await ProcessSqsMessage(message, lambdaContext);

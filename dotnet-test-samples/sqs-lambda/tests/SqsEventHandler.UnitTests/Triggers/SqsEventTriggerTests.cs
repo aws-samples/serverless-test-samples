@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.SQSEvents;
@@ -43,7 +44,7 @@ public class SqsEventTriggerTests
                 new()
                 {
                     MessageId = Guid.NewGuid().ToString(),
-                    Body = @"{'employee_id':'100','dob':'11/05/1990','hire_date':'11/05/2007'}",
+                    Body = JsonSerializer.Serialize(expected),
                     EventSource = "aws:sqs"
                 }
             }
@@ -86,13 +87,13 @@ public class SqsEventTriggerTests
                 new()
                 {
                     MessageId = Guid.NewGuid().ToString(),
-                    Body = @"{'employee_id':'100','dob':'11/05/1990','hire_date':'11/05/2007'}",
+                    Body = JsonSerializer.Serialize(expected1),
                     EventSource = "aws:sqs"
                 },
                 new()
                 {
                     MessageId = Guid.NewGuid().ToString(),
-                    Body = @"{'employee_id':'101','dob':'11/05/1990','hire_date':'11/06/2007'}",
+                    Body = JsonSerializer.Serialize(expected2),
                     EventSource = "aws:sqs"
                 }
             }
