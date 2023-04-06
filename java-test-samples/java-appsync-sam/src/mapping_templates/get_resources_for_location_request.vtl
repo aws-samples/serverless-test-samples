@@ -1,0 +1,12 @@
+        #set($locationid = $util.defaultIfNullOrBlank($ctx.args.locationid, $ctx.source.locationid))
+        {
+          "version" : "2018-05-29",
+          "operation" : "Query",
+          "query" : {
+              "expression": "locationid = :locationid",
+              "expressionValues" : {
+                  ":locationid" : $util.dynamodb.toDynamoDBJson($locationid)
+              }
+          },
+          "index": "locationidGSI"
+        }

@@ -1,0 +1,25 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto11
+    commands:
+      - cd ./java-appsync-sam
+  build:
+    commands:
+      - echo Build started on `date`
+      - mvn test -Dtest=IntegrationTest
+  post_build:
+    commands:
+      - echo Build completed on `date`
+artifacts:
+  files:
+    - ./java-appsync-sam/target/java-appsync-sam-1.0-SNAPSHOT.jar
+    - ./java-appsync-sam/appspec.yml
+    - ./java-appsync-sam/application.yaml
+    - ./java-appsync-sam/cognito.yaml
+  discard-paths: yes
