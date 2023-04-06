@@ -41,7 +41,7 @@ To use the SAM CLI, you need the following tools.
 -   `sam build` - Creates a deployment package.
 -   `sam deploy --guided` - Deploy the project to the AWS cloud.
 
-[[top]](#asynchronous-integration-test-with-lambda-event-listener-and-dynamodb)ma
+[[top]](#asynchronous-integration-test-with-lambda-event-listener-and-dynamodb)
 
 The deploy process accepts a parameter named `DeployTestResources`. The allowed values for this parameter are `true` and `false`.
 If you pass `true` as this parameter's value CloudFormation will attempt to deploy the test event listener and storage resources
@@ -62,7 +62,7 @@ Run these four commands in sequence.
 
 ## Cleanup
 
-To delete the sample application that you created, use the following command. Assuming you used your project name for the stack name, you can run:
+To delete the sample application that you created, use the following command.
 
 -   `sam delete --stack-name <your-aws-stack-name>`
 
