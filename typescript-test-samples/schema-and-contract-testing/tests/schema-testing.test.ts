@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT-0
 import jsonSchemaDiff from 'json-schema-diff';
 
-// The schema can be obtained from a repository or from Amazon EventBridge Schema Registry (the latter supports only OpenAPI 3.0 and json Schema Draft 4 versions).
+// The schema can be obtained from a repository or from Amazon EventBridge Schema Registry (the latter supports only OpenAPI 3.0 and Json Schema Draft 4 versions).
 // Here we're just reading schemas from a local json file for simplicity.
 import schema_v1_0_0 from '../schemas/json/CustomerCreated-v1.0.0.json';
 import schema_v1_1_0 from '../schemas/json/CustomerCreated-v1.1.0.json';
