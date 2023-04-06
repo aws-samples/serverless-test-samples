@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Map;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,12 +33,6 @@ public class MockTest {
             e.printStackTrace();
         }
         
-    }
-    
-    @Test
-    public void testFirst(){
-        String testString = "halo";
-        Assertions.assertNotNull(testString);
     }
 
     @Test
@@ -395,11 +388,6 @@ public class MockTest {
         for (JsonNode jsonNode : resultMapResponse) {
             Assertions.assertEquals(contextMap.get("result").get(jsonNode.asText()), resultMapResponse.get(jsonNode.asText()));
         }
-    }
-
-    @Test
-    public void testGetBookingsForResourceResolver() throws IOException{
-
     }
 
     private String getTemplateToString(String location) throws IOException{

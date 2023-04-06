@@ -106,10 +106,10 @@ To create the CI/CD pipeline, we will split out code for this set of examples fr
 First, navigate to the root directory of the repository. To verify it run command *basename "$PWD"* - it should return serverless-test-samples as an output. Then run the following commands:
 
 ```bash
-git subtree split -P serverless-graphql-api -b serverless-graphql-api
-mkdir ../serverless-graphql-api-cicd && cd ../serverless-graphql-api-cicd
+git subtree split -P java-test-samples -b java-test-samples
+mkdir ../java-test-samples-cicd && cd ../java-test-samples-cicd
 git init -b main
-git pull ../serverless-test-samples serverless-graphql-api
+git pull ../serverless-test-samples java-test-samples
 cd java-appsync-sam
 ```
 

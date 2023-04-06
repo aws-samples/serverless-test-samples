@@ -2,7 +2,6 @@ package com.example;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,7 +30,6 @@ import com.fasterxml.jackson.databind.node.NullNode;
 import software.amazon.awssdk.services.cloudformation.CloudFormationClient;
 import software.amazon.awssdk.services.cloudformation.model.DescribeStacksRequest;
 import software.amazon.awssdk.services.cloudformation.model.DescribeStacksResponse;
-import software.amazon.awssdk.services.cognitoidentity.CognitoIdentityClient;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminAddUserToGroupRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminConfirmSignUpRequest;
@@ -55,7 +53,6 @@ public class IntegrationTest {
 
     private static Map<String,String> globalConfigMap = new HashMap<>();
     private static CloudFormationClient cfClient;
-    private static CognitoIdentityClient cognitoClient;
     private static CognitoIdentityProviderClient idpClient;
     private static DynamoDbClient dbClient;
     private static SecretsManagerClient smClient;
@@ -77,7 +74,6 @@ public class IntegrationTest {
         try {
             ObjectMapper mapper = new ObjectMapper();
             cfClient = CloudFormationClient.builder().build();
-            cognitoClient = CognitoIdentityClient.builder().build();
             idpClient = CognitoIdentityProviderClient.builder().build();
             smClient = SecretsManagerClient.builder().build();
             dbClient = DynamoDbClient.builder().build();
@@ -102,7 +98,6 @@ public class IntegrationTest {
         DescribeStacksResponse response = cfClient.describeStacks(DescribeStacksRequest.builder().stackName(stackName).build());
         response.stacks().forEach(stack -> {
             stack.outputs().forEach(output ->{
-                System.out.println(output.outputKey() + "," + output.outputValue());
                 globalConfigMap.put(output.outputKey(), output.outputValue());
             });
         });
@@ -125,7 +120,7 @@ public class IntegrationTest {
                         .build());
             
         } catch (Exception e) {
-            System.out.println("Regular user haven't been created previously");
+            System.err.println("Regular user haven't been created previously");
         }
 
         Collection<AttributeType> userAttributes = new ArrayList<>();
@@ -392,9 +387,7 @@ public class IntegrationTest {
                 
                 resourceid = resultNode.get("data").get("createResource").get("resourceid").asText();
                 mapNewBooking.put("resourceid", resourceid);
-                System.out.println(resourceid);
             }
-        System.out.println(resourceid);
     }
 
     @Test
@@ -402,7 +395,6 @@ public class IntegrationTest {
     public void testAllowPutBookingForYourself() throws IOException{
         ObjectMapper mapper = new ObjectMapper();
         String schemaRequest = "{\"query\":\"mutation addBooking {createBooking(resourceid: \\\""+resourceid+"\\\", starttimeepochtime: "+newBooking.get("starttimeepochtime").asText()+") {bookingid resourceid starttimeepochtime userid timestamp}}\",\"variables\":{}}";
-        System.out.println(schemaRequest);
         StringEntity entity = new StringEntity(schemaRequest);
         final HttpPost httpPost = new HttpPost(globalConfigMap.get("APIEndpoint"));
         httpPost.setEntity(entity);
@@ -414,7 +406,6 @@ public class IntegrationTest {
                 assertEquals(HttpStatus.SC_OK, statusCode);
                 String stringResponse = EntityUtils.toString(response.getEntity());
                 JsonNode resultNode = mapper.readTree(stringResponse);
-                System.out.println(stringResponse);
                 assertEquals(resourceid,resultNode.get("data")
                     .get("createBooking")
                     .get("resourceid").asText());
@@ -444,7 +435,6 @@ public class IntegrationTest {
                 assertEquals(HttpStatus.SC_OK, statusCode);
                 String stringResponse = EntityUtils.toString(response.getEntity());
                 JsonNode resultNode = mapper.readTree(stringResponse);
-                System.out.println(stringResponse);
                 assertEquals(bookingid,resultNode.get("data")
                     .get("getResource")
                     .get("bookings").get(0).get("bookingid").asText());
@@ -473,7 +463,6 @@ public class IntegrationTest {
                 assertEquals(HttpStatus.SC_OK, statusCode);
                 String stringResponse = EntityUtils.toString(response.getEntity());
                 JsonNode resultNode = mapper.readTree(stringResponse);
-                System.out.println(stringResponse);
                 assertEquals(bookingid,resultNode.get("data")
                     .get("getMyBookings").get(0)
                     .get("bookingid").asText());
