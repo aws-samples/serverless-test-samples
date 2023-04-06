@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Amazon.Lambda.TestUtilities;
 using FluentAssertions;
+using SqsEventHandler.Functions;
 using SqsEventHandler.Models;
 using Xunit;
 
