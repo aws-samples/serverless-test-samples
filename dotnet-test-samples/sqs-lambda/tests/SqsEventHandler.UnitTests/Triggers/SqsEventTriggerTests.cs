@@ -6,19 +6,19 @@ using Amazon.Lambda.SQSEvents;
 using Amazon.Lambda.TestUtilities;
 using FluentAssertions;
 using Moq;
+using SqsEventHandler.Handlers;
 using SqsEventHandler.Models;
-using SqsEventHandler.Triggers;
 using Xunit;
 
 namespace SqsEventHandler.UnitTests.Triggers;
 
 public class SqsEventTriggerTests
 {
-    private readonly Mock<SqsEventTrigger<Employee>> _mockSqsEventTrigger;
+    private readonly Mock<SqsEventHandler<Employee>> _mockSqsEventTrigger;
 
     public SqsEventTriggerTests()
     {
-        _mockSqsEventTrigger = new Mock<SqsEventTrigger<Employee>>();
+        _mockSqsEventTrigger = new Mock<SqsEventHandler<Employee>>();
 
         _mockSqsEventTrigger.Setup(x =>
                 x.ProcessSqsMessage(It.IsAny<Employee>(), It.IsAny<ILambdaContext>()))
