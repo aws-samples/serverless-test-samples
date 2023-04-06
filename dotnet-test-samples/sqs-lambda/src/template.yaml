@@ -26,9 +26,17 @@ Resources:
         SampleSQSEvent:
           Type: SQS
           Properties:
-            Queue: !GetAtt SQSEventQueue.Arn
+            Queue: !GetAtt ProcessEmployeeQueue.Arn
             BatchSize: 10
-  SQSEventQueue:
+            FunctionResponseTypes:
+              - ReportBatchItemFailures
+  ProcessEmployeeQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt ProcessEmployeeQueueDLQ.Arn
+        maxReceiveCount: 5
+  ProcessEmployeeQueueDLQ:
     Type: AWS::SQS::Queue
 
 Outputs:
@@ -41,8 +49,8 @@ Outputs:
   ProcessEmployeeFunctionIamRole:
     Description: "Implicit IAM Role created for Process Employee Function"
     Value: !GetAtt ProcessEmployeeFunctionRole.Arn
-  SQSEventQueueUrl:
-    Description: "SQS Event Queue Url"
-    Value: !Ref SQSEventQueue
+  ProcessEmployeeQueueUrl:
+    Description: "Process Employee Queue Url"
+    Value: !Ref ProcessEmployeeQueue
 
     
