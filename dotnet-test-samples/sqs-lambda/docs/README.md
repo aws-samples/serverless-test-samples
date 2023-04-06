@@ -28,12 +28,6 @@ You will be able to create and delete the CloudFormation stack using the SAM CLI
 
 ## Project Structure
 
-The serverless application was created with an AWS SAM Template.
-
-```
-sam init -r dotnet6
-```
-
 The solution is split down into two projects:
 
 - Function project(s):
@@ -48,7 +42,6 @@ The solution is split down into two projects:
 The AWS SAM CLI is used to deploy the application. When working through the `sam deploy --guided` take note of the stack name used.
 
 ```
-sam init
 sam build
 sam deploy --guided
 ```
