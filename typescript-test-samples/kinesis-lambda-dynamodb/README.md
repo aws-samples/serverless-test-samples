@@ -95,7 +95,7 @@ When you configure the Lambda ESM for Kinesis you specify a batch size. This bat
 ![Unit Test Description](img/unit-test-description.png)
 
 
-### Run Unit Test
+### Run the Unit Test
 
 [test-handler.test.ts](src/tests/unit/test-handler.test.ts)
 
