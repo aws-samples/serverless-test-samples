@@ -1,4 +1,5 @@
 ﻿using Amazon.Lambda.Core;
+using AWS.Lambda.Powertools.Logging;
 using GetStock.Adapters.Exceptions;
 using GetStock.Domains.Models;
 using GetStock.Ports;
@@ -38,7 +39,7 @@ namespace GetStock.Domains
             }
             catch (StockNotFoundException exc)
             {
-                LambdaLogger.Log(exc.Message);
+                Logger.LogError(exc);
              
                 return new StockWithCurrencies(stockId, Array.Empty<KeyValuePair<string, double>>());
             }

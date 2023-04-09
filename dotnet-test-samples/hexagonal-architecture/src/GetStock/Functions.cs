@@ -3,6 +3,7 @@ using System.Text.Json;
 using Amazon.DynamoDBv2;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
+using AWS.Lambda.Powertools.Logging;
 using GetStock.Adapters;
 using GetStock.Domains;
 using GetStock.Ports;
@@ -55,9 +56,9 @@ public class Functions
         _handler = handler;
     }
 
+    [Logging(LogEvent = true)]
     public APIGatewayProxyResponse GetStockById(APIGatewayProxyRequest request, ILambdaContext context)
     {
-        context.Logger.LogInformation("Get Request\n");
         var getValueResult = request.PathParameters.TryGetValue("StockId", out var stockId);
         if (!getValueResult || stockId == null)
         {
@@ -68,11 +69,11 @@ public class Functions
             };
         }
 
-        context.Logger.LogInformation($"StockId:{stockId}");
+        Logger.LogInformation($"StockId:{stockId}");
 
         var result = _handler.RetrieveStockValues(stockId).Result;
 
-        context.Logger.LogInformation($"result:{result}");
+        Logger.LogInformation($"result:{result}");
 
         var response = new APIGatewayProxyResponse
         {

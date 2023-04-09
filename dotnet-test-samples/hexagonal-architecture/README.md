@@ -46,8 +46,12 @@ We need a 3rd party service to retrieve real-time currencies value for this exam
 
 ### Deploy to AWS
 The SAM template contains all the information to deploy AWS resources (an API Gateway, Lambda function and a DynamoDB table) and also the permission required by these services to communicate.
+The AWS SAM CLI is used to deploy the application. When working through the `sam deploy --guided` take note of the stack name used.
 
-You will be able to create and delete the CloudFormation stack using the SAM CLI.
+```
+sam build
+sam deploy --guided
+```
 
 After the stack is created you can access the follow routes on the API to perform different CRUD actions:
 
@@ -64,6 +68,13 @@ Create or update a product in the database, the API expects the below payload:
     "StockId": "my-unique-id",    
     "Value": 10
 }
+```
+
+## Cleanup
+
+Run the given command to delete the resources that were created. It might take some time for the CloudFormation stack to get deleted.
+```
+sam delete
 ```
 
 ## Project Structure
@@ -193,13 +204,6 @@ The goal of these tests is to demonstrate tests that runs against DynamoDB. The 
 To run this test locally you will need to install Docker on the dev machine. To run the tests using your AWS account resources will need to be deployed using the steps in the `Deployment Commands` section above.
 
 It uses the [IClassFixture](https://xunit.net/docs/shared-context) feature of [xUnit](https://xunit.net/) to perform setup and teardown logic. The setup code creates an DynamoDB client with the endpoint url.
-
-## Cleanup
-
-Run the given command to delete the resources that were created. It might take some time for the CloudFormation stack to get deleted.
-```
-sam delete
-```
 
 ## Requirements
 

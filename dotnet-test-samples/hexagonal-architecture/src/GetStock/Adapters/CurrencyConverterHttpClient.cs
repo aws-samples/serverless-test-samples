@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using Amazon.Lambda.Core;
+using AWS.Lambda.Powertools.Logging;
 using GetStock.Adapters.Model;
 
 namespace GetStock.Adapters
@@ -25,7 +26,7 @@ namespace GetStock.Adapters
             var requestUrl = $"?symbols={currencyList}&base={baseCurrency}";
             var responseJson = await _httpHandler.GetAsync(requestUrl);
             //TODO: chgeck for empty result
-            LambdaLogger.Log("response: " + responseJson);
+            Logger.LogInformation("response: " + responseJson);
 
             var result = JsonSerializer.Deserialize<CurrencyRates>(responseJson);
             if (result is not { Success: true })
