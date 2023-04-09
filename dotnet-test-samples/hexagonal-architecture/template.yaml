@@ -13,7 +13,7 @@ Resources:
   StocksConverterFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./src/GetStock/bin/Release/net6.0
+      CodeUri: ./src/GetStock/
       Handler: GetStock::GetStock.Functions::GetStockById
       Policies:
         - DynamoDBReadPolicy:

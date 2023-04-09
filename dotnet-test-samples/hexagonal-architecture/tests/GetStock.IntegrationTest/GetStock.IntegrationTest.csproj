@@ -20,7 +20,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.102.2" />
+    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.102.22" />
   </ItemGroup>
 
   <ItemGroup>
