@@ -1,24 +1,26 @@
 [![python: 3.9](https://img.shields.io/badge/Python-3.9-green)](https://img.shields.io/badge/Python-3.9-green)
 [![AWS: DynamoDB](https://img.shields.io/badge/AWS-DynamoDB-blueviolet)](https://img.shields.io/badge/AWS-DynamoDB-blueviolet)
+[![AWS: Kinesis](https://img.shields.io/badge/AWS-Kinesis-orange)](https://img.shields.io/badge/AWS-Kinesis-orange)
 [![test: unit](https://img.shields.io/badge/Test-Unit-blue)](https://img.shields.io/badge/Test-Unit-blue)
 [![test: integration](https://img.shields.io/badge/Test-Integration-yellow)](https://img.shields.io/badge/Test-Integration-yellow)
 
-# Python: Amazon Api Gateway, AWS Lambda, Amazon DynamoDB Example
+# Python: Amazon Kinesis, AWS Lambda, Amazon DynamoDB Example
 
 ## Introduction
-This project contains automated test sample code samples for serverless applications written in Python. The project demonstrates several techniques for executing tests including mocking, emulation and testing in the cloud specifically when interacting with the Amazon DynamoDB service. Based on current tooling, we recommend customers **focus on testing in the cloud** as much as possible. 
+This project contains an example of testing a small data processing system that processes records from an Amazon Kinesis Data Stream and stores the processed records in an Amazon DynamoDB table. 
 
 The project uses the [AWS Serverless Application Model](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) (SAM) CLI for configuration, testing and deployment. 
 
 ---
 
 ## Contents
-- [Python: Amazon Api Gateway, AWS Lambda, Amazon DynamoDB Example](#python-amazon-api-gateway-aws-lambda-amazon-dynamodb-example)
+- [Python: Amazon Kinesis, AWS Lambda, Amazon DynamoDB Example](#python-amazon-kinesis-aws-lambda-amazon-dynamodb-example)
   - [Introduction](#introduction)
   - [Contents](#contents)
-  - [Key Files in the Project](#key-files-in-the-project)
+  - [About this Pattern](#pattern)
+  - [About this example](#example)
+    - [Key Files in the Project](#key-files-in-the-project)
   - [Sample project description](#sample-project-description)
-  - [Testing Data Considerations](#testing-data-considerations)
   - [Run the Unit Test](#run-the-unit-test)
   - [Run the Integration Test](#run-the-integration-test)
 ---
@@ -27,103 +29,136 @@ The project uses the [AWS Serverless Application Model](https://docs.aws.amazon.
   - [app.py](src/app.py) - Lambda handler code to test
   - [template.yaml](template.yaml) - SAM script for deployment
   - [mock_test.py](tests/unit/mock_test.py) - Unit test using mocks
-  - [test_api_gateway.py](tests/integration/test_api_gateway.py) - Integration tests on a live stack
+  - [test_kinesis.py](tests/integration/kinesis.py) - Integration tests on a live stack
   
 [Top](#contents)
 
 ---
 
-## Sample project description
+## About this Pattern
 
-The sample project allows a user to call an API endpoint generate a custom "hello" message, and also tracks the messages it generates.  A user provides an "id", which the endpoint uses to look up the person's name associated with that id, and generates a message.  The message is recorded in DynamoDB and also returned to the caller:
+### System Under Test (SUT)
 
-![Event Sequence](img/sequence.png)
+The SUT is a streaming data processing system. A Lambda function has an Event Source Mapping to a Kinesis Data Stream. The Lambda Event Source Mapping(ESM) polls the Kinesis Data Stream and then synchronously invokes the Lambda function with a batch of messages. The Lambda function processes batches of messages and writes results to a DynamoDB Table.
 
-This project consists of an [API Gateway](https://aws.amazon.com/api-gateway/), a single [AWS Lambda](https://aws.amazon.com/lambda) function, and a [Amazon DynamoDB](https://aws.amazon.com/dynamodb) table.
+![System Under Test (SUT)](img/system-under-test.png)
 
-The DynamoDB Table is a [single-table design](https://aws.amazon.com/blogs/compute/creating-a-single-table-design-with-amazon-dynamodb/), as both the name lookup and the message tracking use the same table. The table schema is defined as follows:
-* For all records, the "Partition Key" is the id.
-* For name records, the "Sort Key" is set to a constant = "NAME#"
-* For message history records, the "Sort Key" is set to "TS#" appended with the current date-time stamp.
-* The payloads are in a field named "data".
+### Goal
 
+The goal of this example is to show how to test Lambda functions that are part of a streaming data processing application. In streaming workloads the number of messages that are sent to Lambda in a batch can change with the rate of messages being published to the stream, so we show testing with different sized batches.
 
-[Top](#contents)
+### Description
 
----
+In this pattern you will deploy a streaming workload where a Lambda function is triggered by messages in a Kinesis Data Stream. This project demonstrates several techniques for executing tests including running Lambda function locally with a simulated payload as well integration tests in the cloud.
 
-## Testing Data Considerations
-
-Data persistence brings additional testing considerations.
-
-First, the data store must be pre-populated with data to test certain functionality.  In our example, we need a valid `id` to retrieve a name to test our function.  Therefore, we will add data to the data stores prior to running the tests.  This data seeding operation is performed in the test setup.  
-
-Second, the data store will be populated as a side-effect of our testing.  In our example, items of recorded "Hello" messages will be populated in our DynamoDB table.  To prevent unintended side-effects, we will clean-up data generated during the test execution.  This data cleaning operation is performed in the test tear-down. 
-
-Third, any identifying values should be unique to the specific test.  This will prevent 
-collisions between tests should there be an issue with tear-down.  Each test can define
-a unique postfix to prevent the issues.
+![System Under Test Description (SUT)](img/system-under-test-description.png)
 
 [Top](#contents)
-
 ---
 
-## Run the Unit Test
-[mock_test.py](tests/unit/mock_test.py) 
+## About this Example
 
-In the [unit test](tests/unit/mock_test.py), all references and calls to the DynamoDB service [are mocked on line 18](tests/unit/mock_test.py#L20).
+This example contains an [Amazon Kinesis Data Stream](https://aws.amazon.com/kinesis/data-streams/), [AWS Lambda](https://aws.amazon.com/lambda/) and [Amazon DynamoDB](https://aws.amazon.com/dynamodb/) table core resources.
 
-The unit test establishes the DYNAMODB_TABLE_NAME environment
-variable that the Lambda function uses to reference the DynamoDB table.  DYNAMODB_TABLE_NAME is definied in the [setUp method of test class in mock_test.py](tests/unit/mock_test.py#L37-38).   
+The Amazon Kinesis Data Stream can stream and data but the AWS Lambda function in this example expects Kinesis Stream Event data to contain a JSON object with 2 properties, `batch` and `id`:
+
+```json
+{
+    "batch": "string",
+    "id": "string"
+}
+```
+
+ - `batch`: should be unique identifier that represents batch of test records that should all be processed before test is considered completed. Each record in the test batch should have a matching `batch` property value
+ - `id`: unique identifier for each individual record. Each records should have a unique `id` property value
+
+The AWS Lambda function processes records by writing them in batches into the DynamoDB table. The DynamoDB table item is a JSON object with format:
+
+```json
+{
+    "PK": "string",
+    "SK": "string"
+}
+```
+
+The AWS Lambda function converts the incoming event data into the processed record JSON, setting the `PK` (DDB Partition Key) to be the value of `batch` event record property and `SK` (DDB Sort Key) to be the value of `id` event record propert.
+
+### Key Files in the Project
+
+  - [app.py](src/app.py) - Lambda handler code to test
+  - [template.yaml](template.yaml) - SAM script for deployment
+  - [mock_test.py](src/tests/unit/mock_test.py) - Unit test using mocks
+  - [test_kinesis.py](src/tests/integration/test_kinesis.py) - Integration
+
+[Top](#contents)
+---
+
+## Unit Test
+
+### Unit Test description
+
+This example contains a sample event with pre-generated records but we can also use the SAM CLI to generate a test event that matches the shape of the event that will be received by a Lambda functions subscribed to a Kinesis Data Stream. Another option to get test events is to log them, when logging is set to debug, in the Lambda function. This allows you to capture real world messages to use for testing, just ensure that they don’t contain any sensitive data.
+
+When you configure the Lambda ESM for Kinesis you specify a batch size. This batch size functions as a maximum batch size. Your Lambda function may still be invoked with batches smaller than this, but not larger. Create a test events that contain a single message, your expected average message batch, and your max batch size. If the size of the individual records varies by a large amount you should also create some test payloads that have batches of larger records.
+
+![Unit Test Description](img/unit-test-description.png)
 
 
-In a unit test, you must create a mocked version of the DynamoDB table.  The example approach in the [setUp method of test class in mock_test.py](tests/unit/mock_test.py#L43-50) reads in the DynamoDB table schema directly the [SAM Template](template.yaml) so that the definition is maintained in one place.  This simple technique works if there are no intrinsics (like !If or !Ref) in the resource properties for KeySchema, AttributeDefinitions, & BillingMode.  Once the mocked table is created, test data is populated.
+### Run the Unit Test
 
-With the mocked DynamoDB table created and the DYNAMODB_TABLE_NAME set to the mocked table name, the Lambda function will use the mocked DynamoDB table when executing.
+[mock_test.py](src/tests/unit/mock_test.py)
 
-The [unit test tear-down](tests/unit/mock_test.py#L61-66) removes the mocked DynamoDB table and clears the DYNAMODB_TABLE_NAME environment variable.
-
-To run the unit test, execute the following
-```shell
+In the [unit test](src/tests/unit/test-handler.test.ts#L44), all references and calls to the DynamoDB service are mocked using aws-sdk-client-mock client.
+To run the unit tests
+``` shell
 # Create and Activate a Python Virtual Environment
 # One-time setup
-apigw-lambda-dynamodb$ pip3 install virtualenv
-apigw-lambda-dynamodb$ python3 -m venv venv
-apigw-lambda-dynamodb$ source ./venv/bin/activate
+kinesis-lambda-dynamodb$ pip3 install virtualenv
+kinesis-lambda-dynamodb$ python3 -m venv venv
+kinesis-lambda-dynamodb$ source ./venv/bin/activate
 
 # install dependencies
-apigw-lambda-dynamodb$ pip3 install -r tests/requirements.txt
+kinesis-lambda-dynamodb$ pip3 install -r tests/requirements.txt
 
 # run unit tests with mocks
-apigw-lambda-dynamodb$ python3 -m pytest -s tests/unit  -v
+kinesis-lambda-dynamodb$ python3 -m pytest -s tests/unit  -v
+
 ```
 
 [Top](#contents)
 
 ---
 
-## Run the Integration Test
-[test_api_gateway.py](tests/integration/test_api_gateway.py) 
+## Integration Test
 
-For integration tests, the full stack is deployed before testing:
+### Integration Test description
+
+In order to run integration tests in the cloud we will use an event listener pattern to capture the items processed in the SUT. While we could just look directly at the DynamoDB table in the SUT, using a second table allows us to capture timings and other metadata, it also makes this pattern more re-usable across different types of streaming applications. This event listener should only be deployed in non-production environments for the purposes of testing. In Step 1 in the diagram below the test establishes a long polling pattern with DynamoDB. In Step 2, the test uses the Kinesis Data Streams APIs to send messages into the SUT. The streaming application processes those messages and in Step 3 the Event Listener Lambda function receives the messages and writes them to the Event Listener DynamoDB table. The test receives the results via the long polling mechanism and examines the results.
+
+![Integration Test Description](img/integration-test-description.png)
+
+### Run the Integration Tests
+[test_kinesis.py](tests/integration/test_api_gateway.py) 
+
+For integration tests, deploy the full stack before testing:
 ```shell
-apigw-lambda-dynamodb$ sam build
-apigw-lambda-dynamodb$ sam deploy --guided
+kinesis-lambda-dynamodb$ sam build
+kinesis-lambda-dynamodb$ sam deploy --guided
 ```
- 
-The [integration test](tests/integration/test_api_gateway.py) setup determines both the [API endpoint](tests/integration/test_api_gateway.py#L50-53) and the name of the [DynamoDB table](tests/integration/test_api_gateway.py#L56-58) in the stack.  
 
-The integration test then [populates data into the DyanamoDB table](tests/integration/test_api_gateway.py#L66-70).
+The [integration tests](src/tests/integration/test_kinesis.py) needs to be provided a single environment variable `AWS_SAM_STACK_NAME` - the AWS CloudFormation Stack name of the stack that was deployed using the `sam deploy` command.
 
-The [integration test tear-down](tests/integration/test_api_gateway.py#L73-87) removes the seed data, as well as data generated during the test.
+Set up the environment variables, replacing the `<PLACEHOLDERS>` with your values:
 
-To run the integration test, create the environment variable "AWS_SAM_STACK_NAME" with the name of the test stack, and execute the test.
+```shell
+src $ export AWS_SAM_STACK_NAME=<YOUR_AWS_SAM_STACK_NAME>
+```
 
 ```shell
 # Set the environment variables AWS_SAM_STACK_NAME and (optionally)AWS_DEFAULT_REGION 
 # to match the name of the stack and the region where you will test
 
-apigw-lambda-dynamodb$  AWS_SAM_STACK_NAME=<stack-name> AWS_DEFAULT_REGION=<region_name> python -m pytest -s tests/integration -v
+kinesis-lambda-dynamodb$  AWS_SAM_STACK_NAME=<stack-name> AWS_DEFAULT_REGION=<region_name> python -m pytest -s tests/integration -v
 ```
 
 [Top](#contents)
