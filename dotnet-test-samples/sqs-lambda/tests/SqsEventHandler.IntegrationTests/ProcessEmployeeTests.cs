@@ -1,18 +1,19 @@
 ﻿using System.Net;
 using Amazon.SQS;
 using FluentAssertions;
+using SqsEventHandler.IntegrationTests.Utilities;
 using Xunit;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace SqsEventHandler.IntegrationTests;
 
-public class SqsEventHandlerTests : IClassFixture<Setup>, IDisposable
+public class ProcessEmployeeTests : IClassFixture<Setup>, IDisposable
 {
     private readonly Setup _setup;
     private readonly AmazonSQSClient _client;
     private bool _disposed;
 
-    public SqsEventHandlerTests(Setup setup)
+    public ProcessEmployeeTests(Setup setup)
     {
         _setup = setup;
 
@@ -32,10 +33,10 @@ public class SqsEventHandlerTests : IClassFixture<Setup>, IDisposable
     }
 
     [Fact]
-    public async Task PublishEmployee_Should_ReturnSuccess()
+    public async Task PublishToProcessEmployeeQueue_Should_ReturnSuccess()
     {
         //Arrange
-        var sqsMessage = new TestEmployeeBuilder().Build();
+        var sqsMessage = new EmployeeBuilder().Build();
 
         //Act
         var response = await _setup.SendMessage(

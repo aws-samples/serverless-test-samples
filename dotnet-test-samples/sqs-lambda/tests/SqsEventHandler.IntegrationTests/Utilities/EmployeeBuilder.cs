@@ -1,12 +1,12 @@
 using SqsEventHandler.Models;
 
-namespace SqsEventHandler.IntegrationTests;
+namespace SqsEventHandler.IntegrationTests.Utilities;
 
-public class TestEmployeeBuilder
+public class EmployeeBuilder
 {
     private readonly Employee _employee;
 
-    public TestEmployeeBuilder()
+    public EmployeeBuilder()
     {
         _employee = new Employee
         {

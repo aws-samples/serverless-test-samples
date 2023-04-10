@@ -5,7 +5,7 @@ using Amazon.SQS;
 using Amazon.SQS.Model;
 using Xunit;
 
-namespace SqsEventHandler.IntegrationTests;
+namespace SqsEventHandler.IntegrationTests.Utilities;
 
 public class Setup : IAsyncLifetime
 {
