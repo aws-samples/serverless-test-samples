@@ -1,5 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
+// @ts-nocheck
 import jsonSchemaDiff from 'json-schema-diff';
 
 // The schema can be obtained from a repository or from Amazon EventBridge Schema Registry (the latter supports only OpenAPI 3.0 and Json Schema Draft 4 versions).
