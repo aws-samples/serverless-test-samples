@@ -7,6 +7,9 @@ from uuid import uuid4
 from boto3.dynamodb.conditions import Key
 import boto3
 import requests
+import json
+from typing import Any, Dict
+from app import lambda_handler
 
 """
 Set the environment variable AWS_SAM_STACK_NAME 
@@ -15,10 +18,12 @@ to match the name of the stack you will test
 AWS_SAM_STACK_NAME=<stack-name> python -m pytest -s tests/integration -v
 """
 
-class TestApiGateway(TestCase):
-    api_endpoint: str
+class TestKinesis(TestCase):
+    
 
     aws_region = os.environ.get("AWS_DEFAULT_REGION") or "us-east-1"
+    kinesis_client = boto3.client("kinesis")
+    
 
     @classmethod
     def get_stack_name(cls) -> str:
@@ -34,12 +39,14 @@ class TestApiGateway(TestCase):
     def setUp(self) -> None:
         """
         Based on the provided env variable AWS_SAM_STACK_NAME,
-        We use the cloudformation API to retrieve the HelloPersonApi URL and the DynamoDB Table Name
+        We use the cloudformation API to retrieve the kinesis stream and the DynamoDB Table Name
         We also seed the DynamoDB Table for the test
         """
-        stack_name = TestApiGateway.get_stack_name()
+        stack_name = TestKinesis.get_stack_name()
 
         client = boto3.client("cloudformation")
+        
+        
 
         try:
             response = client.describe_stacks(StackName=stack_name)
@@ -48,12 +55,18 @@ class TestApiGateway(TestCase):
                 f"Cannot find stack {stack_name}. \n" f'Please make sure stack with the name "{stack_name}" exists.'
             ) from e
 
-        # HelloPersonApi
+        
         stack_outputs = response["Stacks"][0]["Outputs"]
-        api_outputs = [output for output in stack_outputs if output["OutputKey"] == "HelloPersonApi"]
-        self.assertTrue(api_outputs, f"Cannot find output HelloPersonApi in stack {stack_name}")
-        self.api_endpoint = api_outputs[0]["OutputValue"]
-
+        # Kinesis Stream
+        kinesis_outputs = [output for output in stack_outputs if output["OutputKey"] == "RecordsStreamArn"]
+        self.assertTrue(kinesis_outputs, f"Cannot find output RecordsStreamArn in stack {stack_name}")
+        self.record_stream_arn = kinesis_outputs[0]["OutputValue"] 
+        
+        kinesis_outputs = [output for output in stack_outputs if output["OutputKey"] == "StreamName"]
+        self.assertTrue(kinesis_outputs, f"Cannot find output StreamName in stack {stack_name}")
+        self.stream_name = kinesis_outputs[0]["OutputValue"] 
+        
+        
         # DynamoDBTableName
         dynamodb_outputs = [output for output in stack_outputs if output["OutputKey"] == "DynamoDBTableName"]
         self.assertTrue(dynamodb_outputs, f"Cannot find output DynamoDBTableName in stack {stack_name}")
@@ -87,17 +100,31 @@ class TestApiGateway(TestCase):
             if "Items" in id_items:
                 for item in id_items["Items"]:
                     dynamodb_table.delete_item(Key={"PK":item["PK"],"SK":item["SK"]})
+    
+    def load_test_event(self, test_event_file_name: str) ->  Dict[str, Any]:
+        """
+        Load a sample event from a file
+        Add the test isolation postfix to the path parameter {id}
+        """
+        with open(f"tests/events/{test_event_file_name}.json","r") as f:
+            event = json.load(f)
+            return event    
 
-    def test_api_gateway_200(self):
-        """
-        Call the API Gateway endpoint and check the response for a 200
-        """
-        response = requests.get(self.api_endpoint.replace("{id}","TEST001" + self.id_postfix))
-        self.assertEqual(response.status_code, requests.codes.ok)
+    def test_lambda_handler(self):
+        # Put a record into the Kinesis stream
+        test_event = self.load_test_event("sample_test_event")
+        self.kinesis_client.put_record(StreamName=self.stream_name, Data=test_event, PartitionKey='1')
 
-    def test_api_gateway_404(self):
-        """
-        Call the API Gateway endpoint and check the response for a 404 (id not found)
-        """    
-        response = requests.get(self.api_endpoint.replace("{id}","TEST002" + self.id_postfix))
-        self.assertEqual(response.status_code, requests.codes.not_found)
+        # Invoke the Lambda function with the Kinesis record
+        event = test_event
+        lambda_handler(event, None)
+
+        # Wait for the record to be processed
+        waiter = self.kinesis_client.get_waiter('stream_record_processed')
+        waiter.wait(StreamName=self.stream_name, ShardId='shardId-000000000000', ExpectedShardIterator='AT_SEQUENCE_NUMBER')
+
+        # Verify that the record was written to the DynamoDB table
+        dynamodb_resource = boto3.resource("dynamodb", region_name = self.aws_region)
+        dynamodb_table = dynamodb_resource.Table(name=self.dynamodb_table_name)
+        response = dynamodb_table.get_item(Key={'id': '1'})
+        self.assertIn(response['Item']['data'], 'e04c537a-7177-4254-afae-594470849a2d')
