@@ -1,4 +1,4 @@
-from adapters import StocksDB
+from src.adapters import StocksDB
 
 def getStockData(stockID):
     try:
@@ -6,3 +6,4 @@ def getStockData(stockID):
         return data
     except Exception as e:
         print(e)
+        raise

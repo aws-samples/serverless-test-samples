@@ -1,4 +1,4 @@
-from domains import stock
+from src.domains import stock
 
 def retrieveStock(stockID):
     try:
@@ -6,3 +6,4 @@ def retrieveStock(stockID):
         return stockWithCurrencies
     except Exception as e:
         print(e)
+        raise

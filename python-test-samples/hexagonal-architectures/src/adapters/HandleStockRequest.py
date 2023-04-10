@@ -1,4 +1,4 @@
-from ports import HttpHandler
+from src.ports import HttpHandler
 import json
 
 def getStocksRequest(stockID):
@@ -11,6 +11,7 @@ def getStocksRequest(stockID):
                 "message": stockData,
             })
         }
+        return response
     except Exception as e:
         print(e)
-    return response
+        raise

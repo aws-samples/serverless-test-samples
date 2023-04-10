@@ -11,15 +11,8 @@ def getCurrencies(currencies):
         rates = {}
         for currency in currencies:
             dynamodb_response = dynamodb_table.get_item(Key={"CURRENCY": f"{currency}"})
-            print(dynamodb_response)
-        #stockData = HttpHandler.retrieveStock(stockID)
-        response = {
-            "rates":{
-                "USD": 1.21,
-                "CAD": 1.31,
-                "AUD": 1.41
-            }
-        }
-        return response
+            rates[dynamodb_response["Item"]["CURRENCY"]] = dynamodb_response["Item"]["Rate"]
+        print(rates)
+        return rates
     except Exception as e:
         print(e)

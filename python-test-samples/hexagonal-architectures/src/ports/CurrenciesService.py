@@ -1,4 +1,4 @@
-from adapters import CurrencyExchangeDB
+from src.adapters import CurrencyExchangeDB
 
 def getCurrenciesData(currencies):
     try:
