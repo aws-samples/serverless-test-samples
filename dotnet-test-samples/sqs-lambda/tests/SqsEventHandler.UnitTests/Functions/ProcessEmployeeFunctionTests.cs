@@ -3,10 +3,10 @@ using System.Threading.Tasks;
 using Amazon.Lambda.TestUtilities;
 using FluentAssertions;
 using SqsEventHandler.Functions;
-using SqsEventHandler.Models;
+using SqsEventHandler.UnitTests.Utilities;
 using Xunit;
 
-namespace SqsEventHandler.UnitTests;
+namespace SqsEventHandler.UnitTests.Functions;
 
 public class ProcessEmployeeFunctionTests
 {
@@ -15,10 +15,7 @@ public class ProcessEmployeeFunctionTests
     {
         //Arrange
         var sut = new ProcessEmployeeFunction();
-        var employee = new Employee
-        {
-            EmployeeId = "100"
-        };
+        var employee = new EmployeeBuilder().Build();
         var context = new TestLambdaContext();
 
         //Act & Assert
@@ -32,10 +29,7 @@ public class ProcessEmployeeFunctionTests
     {
         //Arrange
         var sut = new ProcessEmployeeFunction();
-        var employee = new Employee
-        {
-            FirstName = "UnitTest"
-        };
+        var employee = new EmployeeBuilder().WithEmployeeId(null);
         var context = new TestLambdaContext();
 
         //Act & Assert

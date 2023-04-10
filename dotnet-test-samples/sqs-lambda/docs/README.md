@@ -84,14 +84,11 @@ The system under test here is completely abstracted from any cloud resources.
 
 ```c#
 [Fact]
-public async Task ProcessEmployeeFunction_with_ValidEmployee_ShouldNotThrowArgumentNullException()
+public async Task ProcessEmployeeFunction_Should_NotThrowArgumentNullException()
 {
     //Arrange
     var sut = new ProcessEmployeeFunction();
-    var employee = new Employee
-    {
-        EmployeeId = "100"
-    };
+    var employee = new TestEmployeeBuilder().Build();
     var context = new TestLambdaContext();
 
     //Act & Assert

@@ -1,14 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Amazon.Lambda.Core;
-using Amazon.Lambda.SQSEvents;
 using Amazon.Lambda.TestUtilities;
 using FluentAssertions;
 using Moq;
 using SqsEventHandler.Handlers;
 using SqsEventHandler.Models;
+using SqsEventHandler.UnitTests.Utilities;
 using Xunit;
 
 namespace SqsEventHandler.UnitTests.Handlers;
@@ -30,20 +27,8 @@ public class SqsEventHandlerTests
     public async Task SqsEventTrigger_Should_CallProcessSqsMessageOnce()
     {
         //Arrange
-        var expected = new TestEmployeeBuilder().Build();
-
-        var sqsEvent = new SQSEvent
-        {
-            Records = new List<SQSEvent.SQSMessage>
-            {
-                new()
-                {
-                    MessageId = Guid.NewGuid().ToString(),
-                    Body = JsonSerializer.Serialize(expected),
-                    EventSource = "aws:sqs"
-                }
-            }
-        };
+        var expected = new EmployeeBuilder().Build();
+        var sqsEvent = new SqsEventBuilder().WithEmployees(new[] { expected });
         var lambdaContext = new TestLambdaContext();
 
         //Act
@@ -62,27 +47,9 @@ public class SqsEventHandlerTests
     public async Task SqsEventTrigger_Should_CallProcessSqsMessageTwice()
     {
         //Arrange
-        var expected1 = new TestEmployeeBuilder().WithEmployeeId("101");
-        var expected2 = new TestEmployeeBuilder().WithEmployeeId("102");
-
-        var sqsEvent = new SQSEvent
-        {
-            Records = new List<SQSEvent.SQSMessage>
-            {
-                new()
-                {
-                    MessageId = Guid.NewGuid().ToString(),
-                    Body = JsonSerializer.Serialize(expected1),
-                    EventSource = "aws:sqs"
-                },
-                new()
-                {
-                    MessageId = Guid.NewGuid().ToString(),
-                    Body = JsonSerializer.Serialize(expected2),
-                    EventSource = "aws:sqs"
-                }
-            }
-        };
+        var expected1 = new EmployeeBuilder().WithEmployeeId("101");
+        var expected2 = new EmployeeBuilder().WithEmployeeId("102");
+        var sqsEvent = new SqsEventBuilder().WithEmployees(new[] { expected1, expected2 });
         var lambdaContext = new TestLambdaContext();
 
         //Act
@@ -106,18 +73,7 @@ public class SqsEventHandlerTests
     public async Task SqsEventTrigger_Should_ReturnBatchItemFailures()
     {
         //Arrange
-        var sqsEvent = new SQSEvent
-        {
-            Records = new List<SQSEvent.SQSMessage>
-            {
-                new()
-                {
-                    MessageId = Guid.NewGuid().ToString(),
-                    Body = null,
-                    EventSource = "aws:sqs"
-                }
-            }
-        };
+        var sqsEvent = new SqsEventBuilder().WithoutEmployees();
         var lambdaContext = new TestLambdaContext();
 
         //Act
