@@ -95,15 +95,15 @@ To run the unit test, execute the following
 ```shell
 # Create and Activate a Python Virtual Environment
 # One-time setup
-apigw-lambda-dynamodb$ pip3 install virtualenv
-apigw-lambda-dynamodb$ python3 -m venv venv
-apigw-lambda-dynamodb$ source ./venv/bin/activate
+hexagonal-architectures$ pip3 install virtualenv
+hexagonal-architectures$ python3 -m venv venv
+hexagonal-architectures$ source ./venv/bin/activate
 
 # install dependencies
-apigw-lambda-dynamodb$ pip3 install -r tests/requirements.txt
+hexagonal-architectures$ pip3 install -r tests/requirements.txt
 
 # run unit tests with mocks
-apigw-lambda-dynamodb$ python3 -m pytest -s tests/unit  -v
+hexagonal-architectures$ python3 -m coverage run -m pytest
 ```
 
 [Top](#contents)
@@ -118,13 +118,13 @@ apigw-lambda-dynamodb$ python3 -m pytest -s tests/unit  -v
 
 For integration tests, the full stack is deployed before testing:
 ```shell
-apigw-lambda-dynamodb$ sam build
-apigw-lambda-dynamodb$ sam deploy --guided
+hexagonal-architectures$ sam build
+hexagonal-architectures$ sam deploy --guided
 ```
  
 The [integration test](tests/integration/test_api_gateway.py) setup determines both the [API endpoint](tests/integration/test_api_gateway.py#L50-53) and the name of the [DynamoDB table](tests/integration/test_api_gateway.py#L56-58) in the stack.  
 
-The integration test then [populates data into the DyanamoDB table](tests/integration/test_api_gateway.py#L66-70).
+The integration test then [populates data into the DynamoDB table](tests/integration/test_api_gateway.py#L66-70).
 
 The [integration test tear-down](tests/integration/test_api_gateway.py#L73-87) removes the seed data, as well as data generated during the test.
 
@@ -134,7 +134,7 @@ To run the integration test, create the environment variable "AWS_SAM_STACK_NAME
 # Set the environment variables AWS_SAM_STACK_NAME and (optionally)AWS_DEFAULT_REGION 
 # to match the name of the stack and the region where you will test
 
-apigw-lambda-dynamodb$  AWS_SAM_STACK_NAME=<stack-name> AWS_DEFAULT_REGION=<region_name> python -m pytest -s tests/integration -v
+hexagonal-architectures$  AWS_SAM_STACK_NAME=<stack-name> AWS_DEFAULT_REGION=<region_name> python -m pytest -s tests/integration -v
 ```
 
 [Top](#contents)
