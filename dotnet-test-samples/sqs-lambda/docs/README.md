@@ -84,7 +84,7 @@ The system under test here is completely abstracted from any cloud resources.
 
 ```c#
 [Fact]
-public async Task ProcessSqsMessage_with_Valid_SQSMessage_Should_not_Throw_ArgumentNullException()
+public async Task ProcessEmployeeFunction_with_ValidEmployee_ShouldNotThrowArgumentNullException()
 {
     //Arrange
     var sut = new ProcessEmployeeFunction();
@@ -107,15 +107,10 @@ It uses [Moq](https://github.com/moq/moq4) for the mocking framework. The `Proce
 
 ```c#
 [Fact]
-public async Task SqsEventTrigger_with_One_SQSMessage_Should_Call_ProcessSqsMessage_Once()
+public async Task SqsEventTrigger_Should_CallProcessSqsMessageOnce()
 {
     //Arrange
-    var expected = new Employee
-    {
-        EmployeeId = "100",
-        DateOfBirth = new DateTime(1990, 11, 05),
-        DateOfHire = new DateTime(2007, 11, 05)
-    };
+    var expected = new TestEmployeeBuilder().Build();
 
     var sqsEvent = new SQSEvent
     {
@@ -124,7 +119,7 @@ public async Task SqsEventTrigger_with_One_SQSMessage_Should_Call_ProcessSqsMess
             new()
             {
                 MessageId = Guid.NewGuid().ToString(),
-                Body = @"{'employee_id':'100','dob':'11/05/1990','hire_date':'11/05/2007'}",
+                Body = JsonSerializer.Serialize(expected),
                 EventSource = "aws:sqs"
             }
         }

@@ -11,7 +11,7 @@ namespace SqsEventHandler.UnitTests;
 public class ProcessEmployeeFunctionTests
 {
     [Fact]
-    public async Task ProcessSqsMessage_with_Valid_SQSMessage_Should_not_Throw_ArgumentNullException()
+    public async Task ProcessEmployeeFunction_Should_NotThrowArgumentNullException()
     {
         //Arrange
         var sut = new ProcessEmployeeFunction();
@@ -28,7 +28,7 @@ public class ProcessEmployeeFunctionTests
     }
 
     [Fact]
-    public async Task ProcessSqsMessage_with_Invalid_SQS_Message_Should_Throw_ArgumentNullException()
+    public async Task ProcessEmployeeFunction_Should_ThrowArgumentNullException()
     {
         //Arrange
         var sut = new ProcessEmployeeFunction();
