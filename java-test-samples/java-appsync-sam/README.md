@@ -1,6 +1,19 @@
 # java-appsync-sam
 This is implementation of the backend GraphQL API using Java with [AWS Java SDK 2.x](https://github.com/aws/aws-sdk-java-v2) and AWS SAM. SAM had been chosen for future extensibility and ease of development of Serverless resources, such as Lambda Resolvers or Lambda Authorizers. 
 
+## Architecture
+
+![Architecture diagram](./assets/Architecture-appsync.png)
+
+The API uses AWS AppSync as a front door. Every new client is first required to use their credentials to authenticate with Amazon Cognito and retrieve an identity token. They must then pass this as a bearer token in the Authorization header with each subsequent request. The AWS AppSync inspects this token and allows or denies the query or mutation specified in the client request. 
+
+Access to the data depends on the user's role and identity. All users have read access to the Locations and Resources associated with Locations. They also have read/write access to their own Bookings. Administrative users have read/write access to all Locations, Resources, and Bookings. User status (regular vs. administrative) is defined by their membership in the API administrators’ group in Cognito User Pool. 
+
+AWS AppSync uses Amazon DynamoDB Resolvers to implement application business logic. Data is persisted in DynamoDB tables, one table per API resource. 
+
+![GraphQL Schema](./assets/schema.png)
+
+
 ## Project structure
 This project contains source code and supporting files for a serverless application that you can deploy with the AWS Serverless Application Model (AWS SAM) command-line interface (CLI). It includes the following files and folders:
 
