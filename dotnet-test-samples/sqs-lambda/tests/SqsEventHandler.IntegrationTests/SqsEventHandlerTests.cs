@@ -32,7 +32,7 @@ public class SqsEventHandlerTests : IClassFixture<Setup>, IDisposable
     }
 
     [Fact]
-    public async Task Publish_SQS_Message_Should_Not_Throw_Exception()
+    public async Task PublishEmployee_Should_ReturnSuccess()
     {
         //Arrange
         var sqsMessage = new TestEmployeeBuilder().Build();
