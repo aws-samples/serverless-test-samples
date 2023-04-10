@@ -10,8 +10,8 @@ Resources:
   StocksConverterFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/
-      Handler: app.lambda_handler
+      CodeUri: ./
+      Handler: src.app.lambda_handler
       Runtime: python3.9
       MemorySize: 256
       Policies:
