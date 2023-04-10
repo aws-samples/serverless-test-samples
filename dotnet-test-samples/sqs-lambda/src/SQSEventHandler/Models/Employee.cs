@@ -6,7 +6,7 @@ namespace SqsEventHandler.Models;
 public record Employee
 {
     [JsonPropertyName("employee_id")] 
-    public string EmployeeId { get; init; }
+    public string EmployeeId { get; set; }
 
     [JsonPropertyName("email")] 
     public string Email { get; init; }

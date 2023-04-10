@@ -2,18 +2,17 @@
 using Amazon.SQS;
 using FluentAssertions;
 using Xunit;
-using SqsEventHandler.Models;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace SqsEventHandler.IntegrationTests;
 
-public class IntegrationTest : IClassFixture<Setup>, IDisposable
+public class SqsEventHandlerTests : IClassFixture<Setup>, IDisposable
 {
     private readonly Setup _setup;
     private readonly AmazonSQSClient _client;
     private bool _disposed;
 
-    public IntegrationTest(Setup setup)
+    public SqsEventHandlerTests(Setup setup)
     {
         _setup = setup;
 
@@ -36,15 +35,7 @@ public class IntegrationTest : IClassFixture<Setup>, IDisposable
     public async Task Publish_SQS_Message_Should_Not_Throw_Exception()
     {
         //Arrange
-        var sqsMessage = new Employee
-        {
-            EmployeeId = "IntTest001",
-            FirstName = "Integration",
-            LastName = "Test",
-            Email = "dotnet.integration@test.com",
-            DateOfBirth = new DateTime(1990, 11, 05),
-            DateOfHire = new DateTime(2007, 11, 05)
-        };
+        var sqsMessage = new TestEmployeeBuilder().Build();
 
         //Act
         var response = await _setup.SendMessage(

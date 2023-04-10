@@ -1,6 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using Amazon.Lambda.Core;
+using AWS.Lambda.Powertools.Logging;
+using AWS.Lambda.Powertools.Tracing;
 using SqsEventHandler.Handlers;
 using SqsEventHandler.Models;
 
@@ -15,6 +17,7 @@ namespace SqsEventHandler.Functions;
 /// </summary>
 public class ProcessEmployeeFunction : SqsEventHandler<Employee>
 {
+    [Tracing(SegmentName = "ProcessEmployeeFunction")]
     public override async Task ProcessSqsMessage(Employee message, ILambdaContext lambdaContext)
     {
         if (message == null)
@@ -22,7 +25,7 @@ public class ProcessEmployeeFunction : SqsEventHandler<Employee>
         if (message.EmployeeId == null)
             throw new ArgumentNullException(nameof(message.EmployeeId));
 
-        lambdaContext.Logger.LogLine($"Message: {message}");
+        Logger.LogInformation($"Message: {message}");
         await Task.CompletedTask;
     }
 }

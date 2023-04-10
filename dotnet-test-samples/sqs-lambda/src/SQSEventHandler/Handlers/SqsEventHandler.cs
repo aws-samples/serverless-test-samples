@@ -4,6 +4,9 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.SQSEvents;
+using AWS.Lambda.Powertools.Logging;
+using AWS.Lambda.Powertools.Metrics;
+using AWS.Lambda.Powertools.Tracing;
 
 namespace SqsEventHandler.Handlers;
 
@@ -36,6 +39,9 @@ public abstract class SqsEventHandler<TMessage> where TMessage : class, new()
     /// <param name="sqsEvent">SQS Event received by the function handler</param>
     /// <param name="lambdaContext">Lambda Context</param>
     /// <returns></returns>
+    [Logging(LogEvent = false, ClearState = true)]
+    [Metrics(Namespace = "SqsEventHandler", CaptureColdStart = true)]
+    [Tracing(Namespace = "SqsEventHandler", SegmentName = "SqsEventHandler")]
     public async Task<SQSBatchResponse> Handler(SQSEvent sqsEvent, ILambdaContext lambdaContext)
     {
         await ProcessEvent(sqsEvent, lambdaContext);
@@ -54,6 +60,7 @@ public abstract class SqsEventHandler<TMessage> where TMessage : class, new()
     /// </summary>
     /// <param name="sqsEvent">SQS Event received by the function handler</param>
     /// <param name="lambdaContext">Lambda Context</param>
+    [Tracing(SegmentName = "ProcessEvent")]
     private async Task ProcessEvent(SQSEvent sqsEvent, ILambdaContext lambdaContext)
     {
         var sqsMessages = sqsEvent.Records;
@@ -63,8 +70,6 @@ public abstract class SqsEventHandler<TMessage> where TMessage : class, new()
         {
             try
             {
-                lambdaContext.Logger.LogLine($"Processing {sqsMessage.EventSource} Message Id: {sqsMessage.MessageId}");
-
                 var message = JsonSerializer.Deserialize<TMessage>(sqsMessage.Body);
 
                 // This abstract method is implemented by the concrete classes i.e. ProcessEmployeeFunction.
@@ -72,7 +77,7 @@ public abstract class SqsEventHandler<TMessage> where TMessage : class, new()
             }
             catch (Exception ex)
             {
-                lambdaContext.Logger.LogError($"Exception: {ex.Message}");
+                Logger.LogError($"Exception: {ex.Message}");
                 batchItemFailures.Add(
                     new SQSBatchResponse.BatchItemFailure
                     {
