@@ -7,7 +7,7 @@ import event_1_3_0 from '../events/event-1.3.0.json';
 
 import { isAddressValid } from '../src/address-validation';
 
-describe('Conract testing examples', () => {
+describe('Contract testing examples', () => {
   test('business logic in the producer has not changed', async () => {
     // First check the business logic on the original event.
     const initialEvent = event_1_0_0;
