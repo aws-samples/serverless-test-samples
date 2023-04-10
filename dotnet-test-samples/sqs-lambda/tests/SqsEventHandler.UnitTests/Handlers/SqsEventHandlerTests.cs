@@ -11,13 +11,13 @@ using SqsEventHandler.Handlers;
 using SqsEventHandler.Models;
 using Xunit;
 
-namespace SqsEventHandler.UnitTests.Triggers;
+namespace SqsEventHandler.UnitTests.Handlers;
 
-public class SqsEventTriggerTests
+public class SqsEventHandlerTests
 {
     private readonly Mock<SqsEventHandler<Employee>> _mockSqsEventTrigger;
 
-    public SqsEventTriggerTests()
+    public SqsEventHandlerTests()
     {
         _mockSqsEventTrigger = new Mock<SqsEventHandler<Employee>>();
 
@@ -30,12 +30,7 @@ public class SqsEventTriggerTests
     public async Task SqsEventTrigger_with_One_SQSMessage_Should_Call_ProcessSqsMessage_Once()
     {
         //Arrange
-        var expected = new Employee
-        {
-            EmployeeId = "100",
-            DateOfBirth = new DateTime(1990, 11, 05),
-            DateOfHire = new DateTime(2007, 11, 05)
-        };
+        var expected = new TestEmployeeBuilder().Build();
 
         var sqsEvent = new SQSEvent
         {
@@ -67,18 +62,8 @@ public class SqsEventTriggerTests
     public async Task SqsEventTrigger_with_Two_SQSMessages_Should_Call_ProcessSqsMessage_Twice()
     {
         //Arrange
-        var expected1 = new Employee
-        {
-            EmployeeId = "100",
-            DateOfBirth = new DateTime(1990, 11, 05),
-            DateOfHire = new DateTime(2007, 11, 05)
-        };
-        var expected2 = new Employee
-        {
-            EmployeeId = "101",
-            DateOfBirth = new DateTime(1990, 11, 05),
-            DateOfHire = new DateTime(2007, 11, 06)
-        };
+        var expected1 = new TestEmployeeBuilder().WithEmployeeId("101");
+        var expected2 = new TestEmployeeBuilder().WithEmployeeId("102");
 
         var sqsEvent = new SQSEvent
         {

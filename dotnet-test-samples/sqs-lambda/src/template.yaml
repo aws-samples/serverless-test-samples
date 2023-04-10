@@ -8,6 +8,15 @@ Globals:
   Function:
     Timeout: 10
     MemorySize: 128
+    Runtime: dotnet6
+    Tracing: Active
+    Environment:
+      Variables:
+        POWERTOOLS_LOG_LEVEL: Information
+        POWERTOOLS_LOGGER_LOG_EVENT: true
+        POWERTOOLS_LOGGER_CASE: PascalCase # Allowed values are: CamelCase, PascalCase and SnakeCase
+        POWERTOOLS_LOGGER_SAMPLE_RATE: 0
+        POWERTOOLS_METRICS_NAMESPACE: SqsEventHandler
 
 Resources:
   ProcessEmployeeFunction:
@@ -15,9 +24,11 @@ Resources:
     Properties:
       CodeUri: ./SqsEventHandler/
       Handler: SqsEventHandler::SqsEventHandler.Functions.ProcessEmployeeFunction::Handler
-      Runtime: dotnet6
       Architectures:
         - x86_64
+      Environment:
+        Variables:
+          POWERTOOLS_SERVICE_NAME: process-employee-function
       Events:
         SampleSQSEvent:
           Type: SQS
