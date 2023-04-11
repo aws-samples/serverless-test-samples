@@ -33,13 +33,16 @@ export const lambdaHandler = async (event: DynamoDBStreamEvent): Promise<void> =
     const batchPromises: Promise<void>[] = [];
 
     for (let index = 0; index < event.Records.length; index++) {
+        // Ignore deletion or modification events
+        if (event.Records[index].eventName !== 'INSERT') continue;
+
         const processedRecord = unmarshallProcessedRecord(event.Records[index]);
         itemBatch.push({
             PutRequest: {
                 Item: {
                     PK: processedRecord.PK,
                     SK: `PROCESSED#${processedRecord.SK}`
-                }
+                },
             },
         });
         itemBatch.push({
@@ -47,8 +50,8 @@ export const lambdaHandler = async (event: DynamoDBStreamEvent): Promise<void> =
                 Key: {
                     PK: processedRecord.PK,
                     SK: `UNPROCESSED#${processedRecord.SK}`
-                }
-            }
+                },
+            },
         });
 
         const isLastItem = index === event.Records.length - 1;
@@ -78,7 +81,6 @@ const processBatch = async (records: any[], tableName: string): Promise<void> =>
 
     try {
         const response = await ddbDocumentClient.send(writeCommand);
-        console.log(response)
     } catch (e) {
         console.error(e);
     }

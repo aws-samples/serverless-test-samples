@@ -17,11 +17,13 @@ import {
 const ddbClient = new DynamoDBClient({});
 const ddbDocumentClient = DynamoDBDocumentClient.from(ddbClient);
 
+// Porcessed record is type stored in the DDB Table
 export type ProcessedRecord = {
     PK: string,
     SK: string,
 }
 
+// Record type expected in the Kinesis Data Stream data paload
 export type UnprocessedRecord = {
     batch: string,
     id: string,
@@ -41,6 +43,7 @@ export const lambdaHandler = async (event: KinesisStreamEvent): Promise<void> =>
 
         // DDB BatchWriteItem is limited to 25 items
         if (isLastItem || itemBatch.length === 25) {
+            // store batch in the DDB Table and reset itemBatch
             batchPromises.push(storeBatchInTable(itemBatch, dynamoDBTableName));
             itemBatch = [];
         }
@@ -67,6 +70,7 @@ const storeBatchInTable = async (records: ProcessedRecord[], tableName: string):
             })),
         },
     });
+
     try {
         const response = await ddbDocumentClient.send(writeCommand);
         console.log(response)
