@@ -1,0 +1,151 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: SAM Template for kinesis-lambda-dynamodb
+
+Parameters:
+  DeployTestResources:
+    Description: The parameter instructs the template whether or not to deploy test resources to your environment.
+    Default: "True"
+    Type: String
+    AllowedValues:
+      - "True"
+      - "False"
+    ConstraintDescription: Allowed values are True and False
+
+Conditions:
+  CreateTestResources: !Equals [!Ref DeployTestResources, "True"]
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 30
+
+Resources:
+
+  RecordsStream:
+    Type: AWS::Kinesis::Stream
+    Properties:
+      Name: RecordsStream
+      RetentionPeriodHours: 48
+      ShardCount: 2
+
+  # DynamoDB Resource https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html
+  
+  # This single-table DynamoDB design has a generic Partition Key (PK) and Sort Key (RK), and the item fields
+  # are dependent on the item type:
+  #  "Person Name Items"  :  PK = {id}, SK = "NAME#", data = "Person's Name"
+  #  "Hello Message Items" :  PK = {id}, SK = "DT#{datetime}", data = "Hello Message"
+
+  DynamoDBTable:
+    Type: AWS::DynamoDB::Table
+    UpdateReplacePolicy: Delete
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: PK
+        AttributeType: S
+      - AttributeName: SK
+        AttributeType: S
+      KeySchema:
+      - AttributeName: PK
+        KeyType: HASH
+      - AttributeName: SK
+        KeyType: RANGE
+      BillingMode: PAY_PER_REQUEST
+      SSESpecification:
+        SSEEnabled: true
+      StreamSpecification:
+        - StreamViewType: NEW_AND_OLD_IMAGES
+    Metadata:
+      SamResourceId: ProcessedRecordsTable
+
+  RecordProcessorFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: src/
+      Handler: app.lambdaHandler
+      Runtime: python3.9
+      Architectures:
+        - x86_64
+      Tracing: Active
+        # Available policies:
+        # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-template-list.html
+      Policies:
+        - AWSXrayWriteOnlyAccess
+        - DynamoDBWritePolicy:
+            TableName: !Ref ProcessedRecordsTable
+        - KinesisStreamReadPolicy:
+            StreamName: !Ref RecordsStream
+      Environment:
+        Variables:
+          PROCESSED_RECORDS_TABLE_NAME: !Ref ProcessedRecordsTable
+      Events:
+        KinesisRecords:
+          Type: Kinesis # More info about API Event Source: https://github.com/aws/serverless-application-model/blob/master/versions/2016-10-31.md#kinesis
+          Properties:
+            Stream: !GetAtt RecordsStream.Arn
+            BatchSize: 20
+            StartingPosition: LATEST
+
+  
+    RecordProcessingTestResultsTable:
+      Type: AWS::DynamoDB::Table
+      Condition: CreateTestResources
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: PK
+            AttributeType: S
+          - AttributeName: SK
+            AttributeType: S
+        KeySchema:
+          - AttributeName: PK
+            KeyType: HASH
+          - AttributeName: SK
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+  
+    ProcessedRecordsTableListener:
+      Type: AWS::Serverless::Function
+      Condition: CreateTestResources
+      Properties:
+        CodeUri: src/tests/integration/
+        Handler: appTest.lambdaHandler
+        Runtime: python3.9
+        Policies:
+          - DynamoDBWritePolicy:
+              TableName: !Ref RecordProcessingTestResultsTable
+        Environment:
+          Variables:
+            TEST_RESULTS_TABLE_NAME: !Ref RecordProcessingTestResultsTable
+        Events:
+          ProcessedRecordsTableEvent:
+            Type: DynamoDB
+            Properties:
+              Stream:
+                !GetAtt ProcessedRecordsTable.StreamArn
+              StartingPosition: TRIM_HORIZON
+              BatchSize: 20
+              Enabled: true
+      
+    
+Outputs:
+
+  RecordsStreamArn:
+    Description: "Kinesis stream accepts records for processing"
+    Value: !GetAtt RecordsStream.Arn
+
+  RecordProcessorFunctionArn:
+    Description: "Kinesis records processor Lambda Function ARN"
+    Value: !GetAtt RecordProcessorFunction.Arn
+
+  ProcessedRecordsTableName:
+    Description: "Processed Records DynamoDB table name"
+    Value: !Ref ProcessedRecordsTable
+
+  RecordProcessingTestResultsTableName:
+    Condition: CreateTestResources
+    Description: "Test results table allows monitoring of processed test records"
+    Value: !Ref RecordProcessingTestResultsTable
+
