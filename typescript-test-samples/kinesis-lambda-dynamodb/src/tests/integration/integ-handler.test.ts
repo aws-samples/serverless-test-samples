@@ -2,19 +2,8 @@
 //SPDX-License-Identifier: MIT-0
 
 /**
- * test-handler.test.ts
- *
- * Unit tests for the Lambda handler function.
- *
-  The unit tests here are focused on testing this interface, exercising code
- * paths that validate inbound request payloads and checking for correct
- * behavior when the busines layer returns different results.
- */
-
-/**
- * Import Modules
- *
- * Standard practice to put imports at the top of a module definition.
+ * Integration Tests
+ * Before running this we would deploy the stack
  *
 */
 
@@ -32,17 +21,28 @@ const ddbDocumentClient = DynamoDBDocumentClient.from(ddbClient);
 
 const RECORDS_STREAM_ARN_EXPORT_NAME = 'RecordsStreamArn';
 const TEST_RESULTS_TABLE_EXPORT_NAME = 'RecordProcessingTestResultsTableName';
+const DATA_TABLE_EXPORT_NAME = 'ProcessedRecordsTableName';
 
 // Only wait for this long to process all records before failing
-const TEST_TIMEOUT_SECONDS = 30;
+const SUT_PROCESSING_TIMEOUT_SECONDS = 30;
 const POLL_INTERVAL_SECONDS = 2;
+const TEST_SETUP_CLEANUP_TIMEOUT = 30
 
 type TestResultRecord = {
     PK: string,
     SK: string,
 }
 
-const getDeployedResources = async (): Promise<{ testTableName: string, streamArn: string }> => {
+type DeployedResources = {
+    testTableName: string,
+    dataTableName: string,
+    streamArn: string
+}
+
+let deployedResources: DeployedResources;
+
+const getDeployedResources = async (): Promise<DeployedResources> => {
+    // get the required ENV variable
     const stackName = process.env.AWS_SAM_STACK_NAME;
 
     if (!stackName) {
@@ -61,12 +61,14 @@ const getDeployedResources = async (): Promise<{ testTableName: string, streamAr
     }
 
     const outputs = response?.Stacks[0].Outputs;
-
-    console.log(outputs);
-
     const streamOutput = outputs.find((o) => o.OutputKey === RECORDS_STREAM_ARN_EXPORT_NAME);
     if (!streamOutput) {
         throw new Error(`Stack output export ${RECORDS_STREAM_ARN_EXPORT_NAME} not found`)
+    }
+
+    const dataTableOutput = outputs.find((o) => o.OutputKey === DATA_TABLE_EXPORT_NAME);
+    if (!dataTableOutput) {
+        throw new Error(`Stack output export ${DATA_TABLE_EXPORT_NAME} not found`)
     }
 
     const resultsTableOutput = outputs.find((o) => o.OutputKey === TEST_RESULTS_TABLE_EXPORT_NAME);
@@ -77,6 +79,7 @@ const getDeployedResources = async (): Promise<{ testTableName: string, streamAr
     return {
         streamArn: streamOutput.OutputValue,
         testTableName: resultsTableOutput.OutputValue,
+        dataTableName: dataTableOutput.OutputValue,
     };
 }
 
@@ -103,8 +106,7 @@ const storeBatchInTable = async (records: TestResultRecord[], tableName: string)
         },
     });
     try {
-        const response = await ddbDocumentClient.send(writeCommand);
-        console.log(response)
+        await ddbDocumentClient.send(writeCommand);
     } catch (e) {
         console.error(e);
     }
@@ -112,7 +114,6 @@ const storeBatchInTable = async (records: TestResultRecord[], tableName: string)
 
 const populateTestResultsTable = async (
     records: UnprocessedRecord[],
-    tableName: string,
 ): Promise<void> => {
     let itemBatch : TestResultRecord[] = [];
     const batchPromises: Promise<void>[] = [];
@@ -127,7 +128,7 @@ const populateTestResultsTable = async (
 
         // DDB BatchWriteItem is limited to 25 items
         if (isLastItem || itemBatch.length === 25) {
-            batchPromises.push(storeBatchInTable(itemBatch, tableName));
+            batchPromises.push(storeBatchInTable(itemBatch, deployedResources.testTableName));
             itemBatch = [];
         }
     }
@@ -152,7 +153,6 @@ const sendBatchToKineses = async (
 
 const sendRecordsToKinesis = async (
     records: UnprocessedRecord[],
-    kinesisArn: string,
 ): Promise<void> => {
     let itemBatch : UnprocessedRecord[] = [];
     const batchPromises: Promise<void>[] = [];
@@ -163,7 +163,7 @@ const sendRecordsToKinesis = async (
 
         // Kinesis put records supports up to 500 items, total 5MB but we will limit to 100
         if (isLastItem || itemBatch.length === 100) {
-            batchPromises.push(sendBatchToKineses(itemBatch, kinesisArn));
+            batchPromises.push(sendBatchToKineses(itemBatch, deployedResources.streamArn));
             itemBatch = [];
         }
     }
@@ -171,25 +171,30 @@ const sendRecordsToKinesis = async (
     await Promise.all(batchPromises);
 };
 
-const verifyAllResultsProcessed = async (testTableName: string, batchId: string): Promise<boolean> => {
+const verifyAllResultsProcessed = async (
+    batchId: string,
+): Promise<boolean> => {
     const startTime = performance.now();
 
     let completed = false;
 
-    while (!completed && (TEST_TIMEOUT_SECONDS * 1000 + TEST_TIMEOUT_SECONDS) > performance.now()) {
+    // keep polling the test results DDB table to check if all records were processed
+    while (!completed && (SUT_PROCESSING_TIMEOUT_SECONDS * 1000 + startTime) > performance.now()) {
+        // query to see if unprocessed record for a batch still exists
         const command = new QueryCommand({
-            TableName: testTableName,
+            TableName: deployedResources.testTableName,
             Limit: 1,
             ProjectionExpression: 'PK, SK',
             KeyConditionExpression: 'PK = :pk AND begins_with(SK, :prefix)',
             ExpressionAttributeValues: {
                 ':pk': batchId,
                 ':prefix': 'UNPROCESSED#',
-            }
+            },
         });
 
         const response = await ddbClient.send(command);
 
+        // if there isn't any unprocessed record for a batch, all records from this test were processed
         if (response.Count === 0) {
             completed = true;
         } else {
@@ -200,19 +205,91 @@ const verifyAllResultsProcessed = async (testTableName: string, batchId: string)
     return completed;
 }
 
-describe('Unit test for app handler', function () {
+const cleanUpTable = async (batchId: string, tableName: string): Promise<void> => {
+    let exclusiveStartKey: Record<string, any> | undefined;
+    const keys = [];
 
-    it('verify that the kinesis records were stored in the Dynamo DB', async () => {
+    // fetch all items in the batch
+    do {
+        const command = new QueryCommand({
+            TableName: tableName,
+            ProjectionExpression: 'PK, SK',
+            KeyConditionExpression: 'PK = :pk',
+            ExpressionAttributeValues: {
+                ':pk': batchId,
+            },
+            ExclusiveStartKey: exclusiveStartKey,
+        });
+        const response = await ddbClient.send(command);
+        response.Items.forEach((i) => keys.push(i));
+
+    } while(!!exclusiveStartKey);
+
+    // delete all items in the batch using the keys
+    let deleteBatch = [];
+    for (let index = 0; index < keys.length; index++) {
+        deleteBatch.push({
+            DeleteRequest: { Key: keys[index] },
+        });
+        const isLastItem = index === keys.length - 1;
+        if (isLastItem || deleteBatch.length === 24) {
+            const writeCommand = new BatchWriteCommand({
+                RequestItems: {
+                    [tableName]: deleteBatch,
+                },
+            });
+            await ddbClient.send(writeCommand);
+            deleteBatch = [];
+        }
+    }
+};
+
+describe('Integration test for the SUT', function () {
+    beforeAll(async () => {
+        deployedResources = await getDeployedResources();
+    });
+
+    it('verify that batch of 20 streamed records were stored in the Dynamo DB', async () => {
+        // set up resources for this test
         const batchId = uuidv4();
-
-        const deployedResources = await getDeployedResources();
         const recordsBatch = createMockRecordsBatch(20, batchId);
-        await populateTestResultsTable(recordsBatch, deployedResources.testTableName);
+        await populateTestResultsTable(recordsBatch);
 
-        await sendRecordsToKinesis(recordsBatch, deployedResources.streamArn);
+        // stream records to SUT
+        await sendRecordsToKinesis(recordsBatch);
 
-        const completed = await verifyAllResultsProcessed(deployedResources.testTableName, batchId);
+        // wait for completion
+        const completed = await verifyAllResultsProcessed(batchId);
 
+        // clean up
+        await Promise.all([
+            cleanUpTable(batchId, deployedResources.dataTableName),
+            cleanUpTable(batchId, deployedResources.testTableName),
+        ]);
+
+        // verify result
         expect(completed).toBe(true);
-    }, (TEST_TIMEOUT_SECONDS + 10) * 1000);
+    }, (SUT_PROCESSING_TIMEOUT_SECONDS + TEST_SETUP_CLEANUP_TIMEOUT) * 1000);
+
+    it('verify that batch of 200 streamed ecords were stored in the Dynamo DB', async () => {
+        // set up resources for this test
+        const batchId = uuidv4();
+        const recordsBatch = createMockRecordsBatch(200, batchId);
+        await populateTestResultsTable(recordsBatch);
+
+        // stream records to SUT
+        await sendRecordsToKinesis(recordsBatch);
+
+        // wait for completion
+        const completed = await verifyAllResultsProcessed(batchId);
+
+        // clean up
+        await Promise.all([
+            cleanUpTable(batchId, deployedResources.dataTableName),
+            cleanUpTable(batchId, deployedResources.testTableName),
+        ]);
+
+        // verify result
+        expect(completed).toBe(true);
+    }, (SUT_PROCESSING_TIMEOUT_SECONDS + TEST_SETUP_CLEANUP_TIMEOUT) * 1000);
 });
