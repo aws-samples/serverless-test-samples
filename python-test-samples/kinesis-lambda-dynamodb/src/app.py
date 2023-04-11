@@ -10,6 +10,7 @@ from os import environ
 from datetime import datetime
 import boto3
 import json
+import base64
 
 from aws_xray_sdk.core import patch_all
 
@@ -19,7 +20,7 @@ from aws_lambda_powertools.utilities.typing import LambdaContext
 
 # Retrieve the table name from the environment, and create a boto3 Table object
 dynamodb_table_name = environ["DYNAMODB_TABLE_NAME"]
-dynamodb_resource = boto3.resource('dynamodb')
+dynamodb_resource = boto3.Session(region_name="us-east-1").resource('dynamodb')
 dynamodb_table = dynamodb_resource.Table(dynamodb_table_name)
 
 def lambda_handler(event: KinesisStreamEvent, context: LambdaContext) -> dict:
@@ -35,8 +36,11 @@ def lambda_handler(event: KinesisStreamEvent, context: LambdaContext) -> dict:
     
     # Iterate through records and add each one to the list
     for record in records:
-        data = json.loads(record['kinesis']['data'])
-        items_to_write.append(data)
+        #data = json.loads(record['kinesis']['data'])
+        data = base64.b64decode(record['kinesis']['data']).decode('ascii')
+        payload_dict = json.loads(data)
+        item = {'PK': payload_dict['batch'], 'SK': payload_dict['id']}
+        items_to_write.append(item)
         
         # If the list is at the batch size, write the items to the table and clear the list
         if len(items_to_write) >= batch_size:
