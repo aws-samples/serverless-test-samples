@@ -62,7 +62,6 @@ public class ProcessEmployeeTests : IClassFixture<Setup>, IDisposable
     public async Task PublishToProcessEmployeeQueue_Should_UpsertEmployee()
     {
         //Act
-        //Thread.Sleep(10000);
         using var cts = new CancellationTokenSource();
         var response = await _setup.TestEmployeeRepository!.GetItemAsync(EmployeeId, cts.Token);
 

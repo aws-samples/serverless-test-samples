@@ -30,6 +30,8 @@ You will be able to create and delete the CloudFormation stack using the SAM CLI
 
 The solution is split down into two projects:
 
+- [SqsEventHandler.Infrastructure](../src/SqsEventHandler.Infrastructure/SqsEventHandler.Infrastructure.csproj) _Contains code for bootstrapping the ServiceProvider and extensions._
+- [SqsEventHandler.Repositories](../src/SqsEventHandler.Repositories/SqsEventHandler.Repositories.csproj) _Contains code for any persistence layer, in this case DynamoDB._
 - Function project(s):
   - [SqsEventHandler](../src/SqsEventHandler/SqsEventHandler.csproj)
 
@@ -84,17 +86,24 @@ The system under test here is completely abstracted from any cloud resources.
 
 ```c#
 [Fact]
-public async Task ProcessEmployeeFunction_Should_NotThrowArgumentNullException()
+public async Task ProcessEmployeeFunction_Should_ExecuteSuccessfully()
 {
     //Arrange
-    var sut = new ProcessEmployeeFunction();
-    var employee = new TestEmployeeBuilder().Build();
+    var repository = new Mock<IDynamoDbRepository<EmployeeDto>>();
+
+    repository.Setup(x =>
+            x.PutItemAsync(It.IsAny<EmployeeDto>(), It.IsAny<CancellationToken>()))
+        .ReturnsAsync(UpsertResult.Inserted);
+
+    var sut = new ProcessEmployeeFunction(repository.Object);
+    var employee = new EmployeeBuilder().Build();
     var context = new TestLambdaContext();
 
-    //Act & Assert
-    await sut.Invoking(x => sut.ProcessSqsMessage(employee, context))
-        .Should()
-        .NotThrowAsync<ArgumentNullException>();
+    //Act
+    var exception = await Record.ExceptionAsync(() => sut.ProcessSqsMessage(employee, context));
+
+    //Assert
+    Assert.Null(exception);
 }
 ```
 
@@ -107,20 +116,8 @@ It uses [Moq](https://github.com/moq/moq4) for the mocking framework. The `Proce
 public async Task SqsEventTrigger_Should_CallProcessSqsMessageOnce()
 {
     //Arrange
-    var expected = new TestEmployeeBuilder().Build();
-
-    var sqsEvent = new SQSEvent
-    {
-        Records = new List<SQSEvent.SQSMessage>
-        {
-            new()
-            {
-                MessageId = Guid.NewGuid().ToString(),
-                Body = JsonSerializer.Serialize(expected),
-                EventSource = "aws:sqs"
-            }
-        }
-    };
+    var expected = new EmployeeBuilder().Build();
+    var sqsEvent = new SqsEventBuilder().WithEmployees(new[] { expected });
     var lambdaContext = new TestLambdaContext();
 
     //Act
@@ -149,11 +146,47 @@ dotnet test tests/SQSEventHandler.UnitTests/SQSEventHandler.UnitTests.csproj
 
 ### Integration Tests 
 
-#### [IntegrationTest.cs](./tests/SQSEventHandler.IntegrationTest/IntegrationTest.cs)
+#### [ProcessEmployeeTests.cs](../tests/SqsEventHandler.IntegrationTests/ProcessEmployeeTests.cs)
 
 The goal of this test is to demonstrate a test that runs the Lambda function's code against deployed resources.
 The tests interact with the SQS Queue directly using [AmazonSQSClient](https://docs.aws.amazon.com/sdkfornet1/latest/apidocs/html/T_Amazon_SQS_AmazonSQSClient.htm) 
 and tests the expected responses returned.
+
+```c#
+[Fact, TestPriority(1)]
+public async Task PublishToProcessEmployeeQueue_Should_ReturnSuccess()
+{
+    //Arrange
+    var sqsMessage = new EmployeeBuilder().WithEmployeeId(EmployeeId);
+
+    //Act
+    var response = await _setup.SendMessageAsync(
+        _client,
+        _setup.SqsEventQueueUrl,
+        JsonSerializer.Serialize(sqsMessage)
+    );
+
+    //Assert
+    response.Should().NotBeNull();
+    response.HttpStatusCode.Should().Be(HttpStatusCode.OK);
+}
+
+[RetryFact(3, 5000), TestPriority(2)]
+public async Task PublishToProcessEmployeeQueue_Should_UpsertEmployee()
+{
+    //Act
+    using var cts = new CancellationTokenSource();
+    var response = await _setup.TestEmployeeRepository!.GetItemAsync(EmployeeId, cts.Token);
+
+    //Assert
+    response.Should().NotBeNull();
+    response!.EmployeeId.Should().Be(EmployeeId);
+    _testOutputHelper.WriteLine(response.ToString());
+
+    //Dispose
+    _setup.CreatedEmployeeIds.Add(EmployeeId);
+}
+```
 
 > Before running these tests, resources will need to be deployed using the steps in the `Deployment Commands` section above. Tests are there for both happy and sad paths.
 
