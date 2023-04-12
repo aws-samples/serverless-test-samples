@@ -46,6 +46,5 @@ public class ProcessEmployeeFunction : SqsEventHandler<Employee>
         var response = await _employeeRepository.PutItemAsync(message.AsDto(), cts.Token);
 
         Logger.LogInformation($"{response}, {message}");
-        await Task.CompletedTask;
     }
 }

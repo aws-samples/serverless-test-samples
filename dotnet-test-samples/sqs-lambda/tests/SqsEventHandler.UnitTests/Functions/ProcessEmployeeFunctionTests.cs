@@ -16,6 +16,27 @@ namespace SqsEventHandler.UnitTests.Functions;
 public class ProcessEmployeeFunctionTests
 {
     [Fact]
+    public async Task ProcessEmployeeFunction_Should_ExecuteSuccessfully()
+    {
+        //Arrange
+        var repository = new Mock<IDynamoDbRepository<EmployeeDto>>();
+
+        repository.Setup(x =>
+                x.PutItemAsync(It.IsAny<EmployeeDto>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(UpsertResult.Inserted);
+
+        var sut = new ProcessEmployeeFunction(repository.Object);
+        var employee = new EmployeeBuilder().Build();
+        var context = new TestLambdaContext();
+
+        //Act
+        var exception = await Record.ExceptionAsync(() => sut.ProcessSqsMessage(employee, context));
+
+        //Assert
+        Assert.Null(exception);
+    }
+
+    [Fact]
     public async Task ProcessEmployeeFunction_Should_NotThrowArgumentNullException()
     {
         //Arrange
