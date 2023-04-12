@@ -7,6 +7,7 @@ using Amazon.Lambda.SQSEvents;
 using AWS.Lambda.Powertools.Logging;
 using AWS.Lambda.Powertools.Metrics;
 using AWS.Lambda.Powertools.Tracing;
+using SqsEventHandler.Infrastructure;
 
 namespace SqsEventHandler.Handlers;
 
@@ -16,12 +17,18 @@ namespace SqsEventHandler.Handlers;
 /// <typeparam name="TMessage">A generic SQS Message Model Type</typeparam>
 public abstract class SqsEventHandler<TMessage> where TMessage : class, new()
 {
+    protected readonly IServiceProvider ServiceProvider;
     private List<SQSBatchResponse.BatchItemFailure> _batchItemFailures;
     private readonly SQSBatchResponse _sqsBatchResponse;
 
-    protected SqsEventHandler()
+    protected SqsEventHandler() : this(Startup.ServiceProvider)
     {
         _sqsBatchResponse = new SQSBatchResponse();
+    }
+
+    private SqsEventHandler(IServiceProvider serviceProvider)
+    {
+        ServiceProvider = serviceProvider;
     }
 
     /// <summary>
@@ -39,7 +46,7 @@ public abstract class SqsEventHandler<TMessage> where TMessage : class, new()
     /// <param name="sqsEvent">SQS Event received by the function handler</param>
     /// <param name="lambdaContext">Lambda Context</param>
     /// <returns></returns>
-    [Logging(LogEvent = false, ClearState = true)]
+    [Logging(LogEvent = true, ClearState = true)]
     [Metrics(Namespace = "SqsEventHandler", CaptureColdStart = true)]
     [Tracing(Namespace = "SqsEventHandler", SegmentName = "SqsEventHandler")]
     public async Task<SQSBatchResponse> Handler(SQSEvent sqsEvent, ILambdaContext lambdaContext)
@@ -77,7 +84,7 @@ public abstract class SqsEventHandler<TMessage> where TMessage : class, new()
             }
             catch (Exception ex)
             {
-                Logger.LogError($"Exception: {ex.Message}");
+                Logger.LogError(ex);
                 batchItemFailures.Add(
                     new SQSBatchResponse.BatchItemFailure
                     {
