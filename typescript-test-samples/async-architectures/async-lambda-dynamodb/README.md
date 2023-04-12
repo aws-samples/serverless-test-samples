@@ -51,8 +51,8 @@ If you pass `true` as this parameter's value CloudFormation will attempt to depl
 
 ## Run the tests
 
-Install a virtual environment to install the development dependencies and execute your tests.
-Run these four commands in sequence.
+Install the dependencies and execute your tests.
+Run these commands in sequence.
 
 -   `npm install` - Install project dependencies locally
 -   `npm run test:integration` - Run integration test against cloud environment (requires AWS_SAM_STACK_NAME environment variable)
