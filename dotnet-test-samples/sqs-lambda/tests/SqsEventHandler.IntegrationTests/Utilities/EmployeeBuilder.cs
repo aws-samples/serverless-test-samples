@@ -10,7 +10,7 @@ public class EmployeeBuilder
     {
         _employee = new Employee
         {
-            EmployeeId = "IntTest001",
+            EmployeeId = Guid.NewGuid().ToString(),
             FirstName = "Integration",
             LastName = "Test",
             Email = "dotnet.integration@test.com",

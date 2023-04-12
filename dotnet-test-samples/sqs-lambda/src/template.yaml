@@ -1,13 +1,15 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  Sample SAM Template for sqs-lambda
+  SAM Template for sqs-lambda
 
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
-    Timeout: 10
-    MemorySize: 128
+    Timeout: 30
+    MemorySize: 1024
+    Architectures:
+      - arm64
     Runtime: dotnet6
     Tracing: Active
     Environment:
@@ -24,11 +26,10 @@ Resources:
     Properties:
       CodeUri: ./SqsEventHandler/
       Handler: SqsEventHandler::SqsEventHandler.Functions.ProcessEmployeeFunction::Handler
-      Architectures:
-        - x86_64
       Environment:
         Variables:
           POWERTOOLS_SERVICE_NAME: process-employee-function
+          EMPLOYEE_TABLE_NAME: !Ref EmployeeTable
       Events:
         SampleSQSEvent:
           Type: SQS
@@ -37,14 +38,34 @@ Resources:
             BatchSize: 10
             FunctionResponseTypes:
               - ReportBatchItemFailures
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref EmployeeTable
+
   ProcessEmployeeQueue:
     Type: AWS::SQS::Queue
     Properties:
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt ProcessEmployeeQueueDLQ.Arn
         maxReceiveCount: 5
+
   ProcessEmployeeQueueDLQ:
     Type: AWS::SQS::Queue
+
+  EmployeeTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: employee_id
+          AttributeType: S
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      KeySchema:
+        - AttributeName: employee_id
+          KeyType: HASH
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
@@ -59,3 +80,6 @@ Outputs:
   ProcessEmployeeQueueUrl:
     Description: "Process Employee Queue Url"
     Value: !Ref ProcessEmployeeQueue
+  EmployeeTableName:
+    Description: "Employee Table Name"
+    Value: !Ref EmployeeTable

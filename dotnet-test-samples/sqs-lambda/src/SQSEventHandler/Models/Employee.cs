@@ -1,5 +1,6 @@
 using System;
 using System.Text.Json.Serialization;
+using SqsEventHandler.Repositories.Models;
 
 namespace SqsEventHandler.Models;
 
@@ -17,9 +18,11 @@ public record Employee
     [JsonPropertyName("last_name")] 
     public string LastName { get; init; }
 
-    [JsonPropertyName("dob")]
+    [JsonPropertyName("dob")] 
     public DateTime DateOfBirth { get; init; }
 
-    [JsonPropertyName("hire_date")]
+    [JsonPropertyName("hire_date")] 
     public DateTime DateOfHire { get; init; }
+
+    public EmployeeDto AsDto() => new(EmployeeId, Email, FirstName, LastName, DateOfBirth, DateOfHire);
 }
