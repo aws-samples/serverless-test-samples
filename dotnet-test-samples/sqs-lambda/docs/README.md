@@ -19,7 +19,7 @@ The AWS services used in this pattern are
 
 ## Topology
 
-<img src="./image.png" alt="topology" width="80%"/>
+<img src="./sqs-lambda-latest.png" alt="topology" width="80%"/>
 
 ## Description
 The SAM template contains all the information to deploy AWS resources (An Amazon SQS queue and an AWS Lambda function) and also the permissions required by these services to communicate.
