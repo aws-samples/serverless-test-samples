@@ -9,7 +9,8 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.301.0",
     "@aws-sdk/client-dynamodb": "^3.301.0",
-    "@aws-sdk/lib-dynamodb": "^3.301.0"
+    "@aws-sdk/lib-dynamodb": "^3.301.0",
+    "esbuild": "^0.14.14"
   },
   "scripts": {
     "compile": "tsc",
@@ -24,7 +25,6 @@
     "@types/uuid": "^9.0.1",
     "@typescript-eslint/eslint-plugin": "^5.10.2",
     "@typescript-eslint/parser": "^5.10.2",
-    "esbuild": "^0.14.14",
     "esbuild-jest": "^0.5.0",
     "eslint": "^8.8.0",
     "eslint-config-prettier": "^8.3.0",
