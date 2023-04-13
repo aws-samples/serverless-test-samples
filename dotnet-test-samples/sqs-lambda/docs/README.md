@@ -15,7 +15,9 @@ The framework used to deploy the infrastructure is [SAM](https://aws.amazon.com/
 ## Services used
 The AWS services used in this pattern are
 
-*Amazon SQS  &rarr;  AWS Lambda*
+*Amazon SQS  &rarr;  AWS Lambda &rarr; Amazon DynamoDB*
+
+> Amazon DynamoDB is not part of SUT in this pattern
 
 ## Topology
 
@@ -52,12 +54,6 @@ sam deploy --guided
 
 To test the application, you need to publish a message to the SQS Queue. This can be done in following ways:
 
-- SAM Local Invoke: A sample SQSEvent is added here [sqs-event.json](../src/SqsEventHandler/sqs-event.json)
-  ```
-  cd src
-  sam local invoke -e ./SqsEventHandler/sqs-event.json
-  ```
-  
 - AWS Console
   
   <img src="./send-message.png" alt="topology" width="80%"/>
