@@ -2,7 +2,7 @@
 
 Automated tests are crucial components to event driven architectures. They help to ensure that your systems are developed efficiently, accurately and with high quality. This section provides some guidance for designing automated tests for event driven architectures and asynchronous systems using Python. 
 
-## A Common Asynchronous Pattern
+## View a Generic Asynchronous Pattern
 Asynchronous systems typically receive messages or events and immediately store them for future processing. Later, a secondary processing service may perform operations on the stored data. Processed data may then be sent as output to additional services or placed into another storage location. Below is a diagram illustrating a generic asynchronous pattern.
 
 ![Generic Asynchronous System](./img/generic.png)
@@ -13,7 +13,7 @@ Asynchronous systems rarely exist in isolation. Typically a production system wi
 ## Create Test Harnesses
 When testing asynchronous systems, it can be useful to create test harnesses. These harnesses contain resources that generate inputs for your subsystem and then receive the system’s outputs. Your tests will use the harnesses to exercise the system and determine whether it is performing as expected. These harnesses are resources that are used for testing purposes only. They are not used by production features. Test harnesses are typically deployed to pre-production environments only. However, deploying test harnesses to production environments may be useful for production systems that are tolerant of test data. In these cases you may decide to perform tests in production.
 
-## Event Producers and Event Listeners
+## Configure Event Producers and Event Listeners
 Test harnesses are usually composed of event producers and event listeners. The producers provide input to the System Under Test (SUT) and the listeners are configured to receive output. The automated tests send configured events to the producer and then poll the listener to examine the output. If the output meets expectations the test passes.
 
 ![Generic Asynchronous System Test](./img/generic-async-test.png)
