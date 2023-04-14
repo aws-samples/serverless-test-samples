@@ -51,19 +51,21 @@ The diagram below shows an example of running the schema validation as part of a
 
 ![System Under Test (SUT)](img/schema_testing.png)
 
-### Limitations
+### Schema Test Limitations
 
-First, schema inherently has ambiguity as does not capture business constraints. It does not tell if particular combination of fields is invalid, or make explicit dependencies between fields. As an example, when you create a AWS Lambda function, the runtime property is mandatory for zip packaging formats but not required for container image packaging. The schema for create function request payload will not capture this. There is always the possibility of business logic breaking on consumer side due to assumptions made about payload even though there are no breaking schema changes.
+Schema tests have two limitations worth mentioning. 
 
-Second, unless consumer uses SDK/code bindings generated specifically for the version of schema in use, there is a likelihood of drift between code and schema. There is no way to guarantee the business logic adhere to the schema. Schema validation results in a false sense of security in such cases.
+First, schemas are inherently ambiguous as they do not capture business requirements. They may not express that a particular combination of fields is invalid, or they may not explicitly state the dependencies between fields. For example, when you create an AWS Lambda function, the `runtime` property is mandatory for zip packaging formats, but this field is not required for container image packaging formats. The schema for the Lambda `create-function` API payload will not convey this requirement. If an event consumer makes invalid assumptions about a new version of the payload, its business logic may fail even if there are technically no breaking schema changes.
 
-Both of these limitations can be addressed with [Contract testing](#contract-testing).
+Second, unless an event consumer uses SDK/code bindings generated specifically for the version of schema in use, the code and the schema may drift apart over time and the consumer business logic may eventually fail. In these cases, the schema validation test results create a false sense of security.
+
+Both of these limitations can be addressed with [contract testing](#contract-testing).
 
 ## Contract Testing
 
 ### System Under Test (SUT)
 
-This test is integration service agnostic as it uses sample events generated from schema published to a schema registry. The diagram below shows one way of implementing contract testing as part of producer’s CI/CD pipeline.
+This test is integration service agnostic as it uses sample events generated from a schema published to a schema registry. The diagram below shows one way of implementing contract testing as part of producer’s CI/CD pipeline.
 
 The diagram below shows an example of running the schema validation as part of a producer’s CI/CD pipeline. A sample unit test from the "Build" step is provided in this pattern - [Contract Unit Test](tests/contract-testing.test.ts).
 
@@ -75,7 +77,9 @@ Identify side effects of non-breaking schema changes on consumer applications.
 
 ### Description
 
-Event driven architectures decouple producers and consumers at the infrastructure layer but they are still coupled at the application layer by the event contract. Consumers rely on the event contract and schema to write their processing logic. Contract testing uses sample events provided by producers to validate business logic on consumer side for strong guarantee of no breaking changes. Contract tests are owned by consumers. As an example, changing the format of an “address” field from full address to only street address and adding new event fields like country, city, state and postcode would be considered a backward compatible schema change, since it’s only adding new elements. However, a consumer test expecting the full address in the “address’ field will fail and hence we will know that this change is actually not backward compatible.
+Event driven architectures decouple producers and consumers at the infrastructure layer but they are still coupled at the application layer by the event contract. Consumers rely on the event contract and schema to write their processing logic. Contract testing uses sample events provided by producers to validate business logic on the consumer side for a stronger guarantee of preventing breaking changes. Contract tests are owned by consumers. 
+
+In a schema test, changing the format of an `address` field from a full address to a street address only and then adding new event fields like `country`, `city`, `state` and `postcode` would not produce a failure. These schema changes would be considered to be backward compatible, since the changes only add new elements. However, a consumer test expecting the full address in the `address` field will fail and hence we will know that this change is actually not backward compatible.
 
 There are other ways to implement contract testing. For instance, one of the common ways is to use test doubles on the consumer and check that all the calls to your test doubles return the same results as a call to the real application would. Review the Pact.io documentation for an example of this approach.
 
