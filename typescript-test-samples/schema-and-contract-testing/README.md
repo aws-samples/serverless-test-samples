@@ -81,13 +81,13 @@ Event driven architectures decouple producers and consumers at the infrastructur
 
 Consider the following example. In a schema test, changing the format of an `address` field from a full address to a street address only and then adding new event fields like `country`, `city`, `state` and `postcode` would not produce a failure. These schema changes would be considered to be backward compatible, since the changes only add new elements. In contrast, a consumer test expecting a full address in the `address` field would fail and notify us that this change is actually not backward compatible.
 
-There are other ways to implement contract testing. One other common way is through the use of test doubles. Test doubles are resources that replace production objects for testing purposes. The contract tests run on the consumer side and expect that calls to your test doubles return the same results as calls to the production application. Review the [Pact.io documentation](https://docs.pact.io/) for examples of this approach.
+There are other common strategies for implementing contract testing. One strategy is to establish test doubles. Test doubles are resources that replace production objects for testing purposes. The contract tests with test doubles run on the consumer side and expect that calls to the doubles return the same results as calls to the production application. Review the [Pact.io documentation](https://docs.pact.io/) for examples of this approach.
 
 ### Limitations
 
-There is upfront effort required on consumer side to write tests and on-going maintenance efforts. However once written, the tests are reusable. It takes longer to roll out schema changes and increases collaboration overhead to resolve breaking changes.
+Writing tests and performing on-going maintenance requires a degree of additional effort. However once written, schema changes can be done more efficiently and with less effort to prevent and resolve breaking changes.
 
-Customers can be selective in using contract testing for critical applications where cost of breaking changes is much higher than the additional work of extra tests and collaboration. For applications with lax SLA, not in critical path, they can trade off strong guarantee in favour of lower overhead by using only schema testing.
+You may choose to be selective in deciding where to implement contract testing. Start by identifying critical applications where the cost of breaking changes is highest. Applications with greater tolerances for failure may choose to rely on schema testing only.
 
 ---
 
