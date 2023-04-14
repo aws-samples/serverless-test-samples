@@ -47,7 +47,7 @@ This test is integration service agnostic, as it runs against the schema publish
 
 Schema testing checks for changes that are not backward-compatible, such as removing elements, changing a field type or adding new mandatory elements. Adding optional elements is considered backward-compatible. If the updated schema is backward-compatible, the tests should be passing and the consumer application should be able to use the new version of the schema without issues.
 
-The diagram below shows an example of running the schema validation as part of a producer’s CI/CD pipeline. A sample unit test from the "Build" step is provided in this pattern - [Schema Diff Unit Test](tests/schema-testing.test.ts).
+The diagram below shows an example of how schema tests may run as part of a producer’s CI/CD pipeline. You can [view a sample schema test](tests/schema-testing.test.ts) that could be run during the "Build" step of the process.
 
 ![System Under Test (SUT)](img/schema_testing.png)
 
@@ -67,7 +67,7 @@ Both of these limitations can be addressed with [contract testing](#contract-tes
 
 This test is integration service agnostic as it uses sample events generated from a schema published to a schema registry. The diagram below shows one way of implementing contract testing as part of producer’s CI/CD pipeline.
 
-The diagram below shows an example of running the schema validation as part of a producer’s CI/CD pipeline. A sample unit test from the "Build" step is provided in this pattern - [Contract Unit Test](tests/contract-testing.test.ts).
+The diagram below shows an example of how contract testing can be used as part of a producer’s CI/CD pipeline. You can [view a sample contract test](tests/contract-testing.test.ts) that could be run during the "Build" step of the process.
 
 ![System Under Test (SUT)](img/contract_testing.png)
 
