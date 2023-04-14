@@ -79,9 +79,9 @@ Identify side effects of non-breaking schema changes on consumer applications.
 
 Event driven architectures decouple producers and consumers at the infrastructure layer but they are still coupled at the application layer by the event contract. Consumers rely on the event contract and schema to write their processing logic. Contract testing uses sample events provided by producers to validate business logic on the consumer side for a stronger guarantee of preventing breaking changes. Contract tests are owned by consumers. 
 
-Consider the following example. In a schema test, changing the format of an `address` field from a full address to a street address only and then adding new event fields like `country`, `city`, `state` and `postcode` would not produce a failure. These schema changes would be considered to be backward compatible, since the changes only add new elements. However, a consumer test expecting the full address in the `address` field will fail and hence we will know that this change is actually not backward compatible.
+Consider the following example. In a schema test, changing the format of an `address` field from a full address to a street address only and then adding new event fields like `country`, `city`, `state` and `postcode` would not produce a failure. These schema changes would be considered to be backward compatible, since the changes only add new elements. In contrast, a consumer test expecting a full address in the `address` field would fail and notify us that this change is actually not backward compatible.
 
-There are other ways to implement contract testing. For instance, one of the common ways is to use test doubles on the consumer and check that all the calls to your test doubles return the same results as a call to the real application would. Review the Pact.io documentation for an example of this approach.
+There are other ways to implement contract testing. One other common way is through the use of test doubles. Test doubles are resources that replace production objects for testing purposes. The contract tests run on the consumer side and expect that calls to your test doubles return the same results as calls to the production application. Review the [Pact.io documentation](https://docs.pact.io/) for examples of this approach.
 
 ### Limitations
 
