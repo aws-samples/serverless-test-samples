@@ -84,11 +84,16 @@ class TestKinesisLambdaWithDynamoDB(TestCase):
         and DynamoDB is mocked for the entire class, this test will 
         implicitly use the mocked DynamoDB table we created in setUp.
         """
-
+        
         test_event = self.load_test_event("sample_test_event")
         from src.app import lambda_handler
         test_return = lambda_handler(event=test_event,context=None)
         
-
         self.assertEqual( test_return["statusCode"] , 200)
         self.assertEqual( test_return["body"] , "Kinesis events processed and persisted to DynamoDB table")
+        
+        #check the mocked DynamoDB to see if PK matches to what we passed to the Kinesss Event
+        id_items = self.mock_dynamodb_table.query(KeyConditionExpression=Key("PK").eq(test_event["Records"][0]["kinesis"]["partitionKey"]))
+        #check if the number of items with PK is 5
+        self.assertEqual( len(id_items["Items"]), 5)
+        
