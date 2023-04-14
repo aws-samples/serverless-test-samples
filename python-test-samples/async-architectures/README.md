@@ -18,7 +18,7 @@ Test harnesses are usually composed of event producers and event listeners. The 
 
 ![Generic Asynchronous System Test](./img/generic-async-test.png)
 
-## Define Your Service Level Agreements
+## Define Service Level Agreements
 Although your architecture may be asynchronous, it is still useful to establish reasonable expectations about the maximum duration your system may take to process before it considered to be in a failure state. These expectations may be explicitly defined as Service Level Agreements (SLAs). When you design your tests, you may set timeouts that match your SLA’s. If the system does not return results within the timeout period it can be considered to be in violation of the SLA and the tests will fail.
 
 ### Asynchronous Test Samples
