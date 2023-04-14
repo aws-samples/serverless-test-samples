@@ -1,6 +1,6 @@
 # Test Asynchronous Architectures
 
-Automated tests are crucial components to event driven architectures. They help to ensure that your systems are developed efficiently, accurately and with high quality. This section provides some guidance for designing automated tests for event driven architectures and asynchronous systems using Python. 
+Automated tests are crucial components of event driven architectures. They help to ensure that your systems are developed efficiently, accurately and with high quality. This section provides some guidance for designing automated tests for event driven architectures and asynchronous systems using Python. 
 
 ## View a Generic Asynchronous Pattern
 Asynchronous systems typically receive messages or events and immediately store them for future processing. Later, a secondary processing service may perform operations on the stored data. Processed data may then be sent as output to additional services or placed into another storage location. Below is a diagram illustrating a generic asynchronous pattern.
