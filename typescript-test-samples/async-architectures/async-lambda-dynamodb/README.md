@@ -40,6 +40,8 @@ To use the SAM CLI, you need the following tools.
 
 -   `sam build` - Creates a deployment package.
 -   `sam deploy --guided` - Deploy the project to the AWS cloud.
+-   `sam deploy` - If samconfig.toml file is already saved and you want to use the parameters stored in it.
+-   `sam deploy --parameter-overrides=DeployTestResources=False` - If you do not want to deploy test resources. This will overide the value specified in samconfig.toml. More options at https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-cli-command-reference-sam-deploy.html
 
 [[top]](#asynchronous-integration-test-with-lambda-event-listener-and-dynamodb)
 
