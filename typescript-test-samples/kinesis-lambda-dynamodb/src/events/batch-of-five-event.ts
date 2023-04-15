@@ -14,9 +14,9 @@ export const eventJSON: KinesisStreamEvent = {
       "eventVersion": "1.0",
       "eventID": "shardId-000000000003:49639361778013079949213770147123790306706254358336503858",
       "eventName": "aws:kinesis:record",
-      "invokeIdentityArn": "arn:aws:iam::854269476353:role/service-role/event-gen-receive-role-xztb222e",
+      "invokeIdentityArn": "arn:aws:iam::123456789012:role/service-role/event-gen-receive-role-xztb222e",
       "awsRegion": "eu-west-1",
-      "eventSourceARN": "arn:aws:kinesis:eu-west-1:854269476353:stream/event-gen-stream"
+      "eventSourceARN": "arn:aws:kinesis:eu-west-1:123456789012:stream/event-gen-stream"
     },
     {
       "kinesis": {
@@ -30,9 +30,9 @@ export const eventJSON: KinesisStreamEvent = {
       "eventVersion": "1.0",
       "eventID": "shardId-000000000003:49639361778013079949213770147124999232525868987511210034",
       "eventName": "aws:kinesis:record",
-      "invokeIdentityArn": "arn:aws:iam::854269476353:role/service-role/event-gen-receive-role-xztb222e",
+      "invokeIdentityArn": "arn:aws:iam::123456789012:role/service-role/event-gen-receive-role-xztb222e",
       "awsRegion": "eu-west-1",
-      "eventSourceARN": "arn:aws:kinesis:eu-west-1:854269476353:stream/event-gen-stream"
+      "eventSourceARN": "arn:aws:kinesis:eu-west-1:123456789012:stream/event-gen-stream"
     },
     {
       "kinesis": {
@@ -46,9 +46,9 @@ export const eventJSON: KinesisStreamEvent = {
       "eventVersion": "1.0",
       "eventID": "shardId-000000000003:49639361778013079949213770147126208158345483616685916210",
       "eventName": "aws:kinesis:record",
-      "invokeIdentityArn": "arn:aws:iam::854269476353:role/service-role/event-gen-receive-role-xztb222e",
+      "invokeIdentityArn": "arn:aws:iam::123456789012:role/service-role/event-gen-receive-role-xztb222e",
       "awsRegion": "eu-west-1",
-      "eventSourceARN": "arn:aws:kinesis:eu-west-1:854269476353:stream/event-gen-stream"
+      "eventSourceARN": "arn:aws:kinesis:eu-west-1:123456789012:stream/event-gen-stream"
     },
     {
       "kinesis": {
@@ -62,9 +62,9 @@ export const eventJSON: KinesisStreamEvent = {
       "eventVersion": "1.0",
       "eventID": "shardId-000000000003:49639361778013079949213770147127417084165098245860622386",
       "eventName": "aws:kinesis:record",
-      "invokeIdentityArn": "arn:aws:iam::854269476353:role/service-role/event-gen-receive-role-xztb222e",
+      "invokeIdentityArn": "arn:aws:iam::123456789012:role/service-role/event-gen-receive-role-xztb222e",
       "awsRegion": "eu-west-1",
-      "eventSourceARN": "arn:aws:kinesis:eu-west-1:854269476353:stream/event-gen-stream"
+      "eventSourceARN": "arn:aws:kinesis:eu-west-1:123456789012:stream/event-gen-stream"
     },
     {
       "kinesis": {
@@ -78,9 +78,9 @@ export const eventJSON: KinesisStreamEvent = {
       "eventVersion": "1.0",
       "eventID": "shardId-000000000003:49639361778013079949213770147128626009984712875035328562",
       "eventName": "aws:kinesis:record",
-      "invokeIdentityArn": "arn:aws:iam::854269476353:role/service-role/event-gen-receive-role-xztb222e",
+      "invokeIdentityArn": "arn:aws:iam::123456789012:role/service-role/event-gen-receive-role-xztb222e",
       "awsRegion": "eu-west-1",
-      "eventSourceARN": "arn:aws:kinesis:eu-west-1:854269476353:stream/event-gen-stream"
+      "eventSourceARN": "arn:aws:kinesis:eu-west-1:123456789012:stream/event-gen-stream"
     }
   ]
 };
