@@ -16,11 +16,11 @@
       },
       {
           "title": "Unit Tests - Mock",
-          "filepath": "/tests/unit/test-handler.test.ts"
+          "filepath": "/src/tests/unit/test-handler.test.ts"
       },
       {
           "title": "Integration Tests",
-          "filepath": "/tests/integration/integ-handler.test.ts"
+          "filepath": "/src/tests/integration/integ-handler.test.ts"
       }
   ],
   "authors": [
