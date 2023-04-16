@@ -4,6 +4,8 @@ namespace SchemaTesting.Validation;
 
 public abstract class CustomerCreatedEvent: Event{}
 
+// Different versions of the same event are used to demonstrate how test failures
+// are caused by schema changes
 public class CustomerCreatedEventV1 : CustomerCreatedEvent
 {
     [JsonPropertyName("customerId")]
