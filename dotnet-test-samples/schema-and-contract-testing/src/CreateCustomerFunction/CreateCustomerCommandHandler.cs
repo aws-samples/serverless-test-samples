@@ -1,3 +1,5 @@
+using AWS.Lambda.Powertools.Logging;
+
 namespace CreateCustomerFunction;
 
 public enum EventVersion
@@ -25,19 +27,27 @@ public class CreateCustomerCommandHandler
     
     public async Task<bool> Handle(CreateCustomerCommand command)
     {
-        var customerId = Guid.NewGuid().ToString();
+        Logger.LogInformation("Received new create customer event");
         
         // Perform business logic to create customer.
         var validAddress = command.IsValid();
         
         if (!validAddress)
         {
+            Logger.LogInformation("Command is invalid, returning");
             return false;
         }
+        
+        var customerId = Guid.NewGuid().ToString();
+        
+        Logger.LogInformation($"Generated customer id {customerId}");
+        Logger.AppendKey("customerId", customerId);
         
         // Persist to database
         
         // Publish customer created event
+        Logger.LogInformation("Publishing customer created event");
+        
         await this._publisher.Publish(this.GenerateEvent(customerId, command));
 
         return true;
