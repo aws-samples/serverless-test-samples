@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A8475A9D-FCB6-4C68-90EB-99F531CFD0D4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchemaTesting.Validation", "src\SchemaTesting.Validation\SchemaTesting.Validation.csproj", "{D34DF46E-831D-42FE-A01E-1077352B125B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateCustomerFunction", "src\CreateCustomerFunction\CreateCustomerFunction.csproj", "{D34DF46E-831D-42FE-A01E-1077352B125B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{4409C9E1-4330-4111-8AA7-8A33B5571393}"
 EndProject

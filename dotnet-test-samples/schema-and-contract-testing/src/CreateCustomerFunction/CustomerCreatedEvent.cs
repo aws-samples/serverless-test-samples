@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace SchemaTesting.Validation;
+namespace CreateCustomerFunction;
 
 public abstract class CustomerCreatedEvent: Event{}
 

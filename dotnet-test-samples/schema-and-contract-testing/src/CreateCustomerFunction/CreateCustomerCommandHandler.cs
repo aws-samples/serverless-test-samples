@@ -1,4 +1,4 @@
-namespace SchemaTesting.Validation;
+namespace CreateCustomerFunction;
 
 public enum EventVersion
 {

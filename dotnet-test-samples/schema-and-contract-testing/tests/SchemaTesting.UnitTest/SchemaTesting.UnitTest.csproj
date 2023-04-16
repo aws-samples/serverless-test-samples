@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\SchemaTesting.Validation\SchemaTesting.Validation.csproj" />
+    <ProjectReference Include="..\..\src\CreateCustomerFunction\CreateCustomerFunction.csproj" />
   </ItemGroup>
 
   <ItemGroup>

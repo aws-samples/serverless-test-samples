@@ -1,3 +1,5 @@
+using CreateCustomerFunction;
+
 namespace SchemaTesting.UnitTest;
 
 public class AddressTests

@@ -1,4 +1,4 @@
-namespace SchemaTesting.Validation;
+namespace CreateCustomerFunction;
 
 public abstract class Event { }
 
