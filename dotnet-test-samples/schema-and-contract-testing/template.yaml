@@ -1,0 +1,39 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Globals:
+  Function:
+    MemorySize: 1024
+    Architectures:
+      - arm64
+    Runtime: dotnet6
+    Timeout: 30
+    Tracing: Active
+    Environment:
+      Variables:
+        ENV: 'dev'
+
+
+Resources:
+  CreateCustomerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/CreateCustomerFunction/
+      Handler: CreateCustomerFunction::CreateCustomerFunction.Function::FunctionHandler
+      Environment:
+        Variables:
+          EVENT_BUS_NAME: !Ref CentralEventBus
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /customer
+            Method: POST
+      Policies:
+      - EventBridgePutEventsPolicy:
+          EventBusName: !Ref CentralEventBus
+
+  CentralEventBus:
+    Type: AWS::Events::EventBus
+    Properties:
+      Name: central-event-bus
