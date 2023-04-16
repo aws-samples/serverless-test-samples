@@ -51,7 +51,7 @@ In this pattern you will deploy a streaming workload where a Lambda function is 
 
 This example contains an [Amazon Kinesis Data Stream](https://aws.amazon.com/kinesis/data-streams/), [AWS Lambda](https://aws.amazon.com/lambda/) and [Amazon DynamoDB](https://aws.amazon.com/dynamodb/) table core resources.
 
-The Amazon Kinesis Data Stream can stream and data but the AWS Lambda function in this example expects Kinesis Stream Event data to contain a JSON object with 2 properties, `batch` and `id`:
+The Amazon Kinesis Data Stream can stream data but the AWS Lambda function in this example expects Kinesis Stream Event data to contain a JSON object with 2 properties, `batch` and `id`:
 
 ```json
 {
@@ -61,7 +61,7 @@ The Amazon Kinesis Data Stream can stream and data but the AWS Lambda function i
 ```
 
  - `batch`: should be unique identifier that represents batch of test records that should all be processed before test is considered completed. Each record in the test batch should have a matching `batch` property value
- - `id`: unique identifier for each individual record. Each records should have a unique `id` property value
+ - `id`: unique identifier for each individual record. Each record should have a unique `id` property value
 
 The AWS Lambda function processes records by writing them in batches into the DynamoDB table. The DynamoDB table item is a JSON object with format:
 

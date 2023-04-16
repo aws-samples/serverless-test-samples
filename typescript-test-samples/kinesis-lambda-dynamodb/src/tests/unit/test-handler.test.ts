@@ -21,7 +21,7 @@
 import { lambdaHandler } from '../../app';
 import { mockClient } from "aws-sdk-client-mock";
 import { BatchWriteCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
-import { eventJSON } from '../../events/batch-of-five-event';
+import eventJSON from '../../events/unit-test-event.json';
 import 'aws-sdk-client-mock-jest';
 
 const ddbMock = mockClient(DynamoDBDocumentClient);

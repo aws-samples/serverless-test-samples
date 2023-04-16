@@ -1,6 +1,4 @@
-import { KinesisStreamEvent } from 'aws-lambda';
-
-export const eventJSON: KinesisStreamEvent = {
+{
   "Records": [
     {
       "kinesis": {
@@ -83,4 +81,4 @@ export const eventJSON: KinesisStreamEvent = {
       "eventSourceARN": "arn:aws:kinesis:eu-west-1:123456789012:stream/event-gen-stream"
     }
   ]
-};
+}
