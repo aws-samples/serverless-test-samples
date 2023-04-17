@@ -54,5 +54,6 @@ jobs:
     - name: Test with pytest
       run: |
         pwd
+        os.environ['AWS_DEFAULT_REGION'] = "us-east-1"
         cd apigw-lambda-dynamodb
         pytest -s tests/unit  -v
