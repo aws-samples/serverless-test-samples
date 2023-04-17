@@ -126,6 +126,7 @@ To run the integration test, create the environment variable "AWS_SAM_STACK_NAME
 apigw-lambda-dynamodb$  AWS_SAM_STACK_NAME=<stack-name> AWS_DEFAULT_REGION=<region_name> python -m pytest -s tests/integration -v
 ```
 
+
 [Top](#contents)
 
 
