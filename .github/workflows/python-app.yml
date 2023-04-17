@@ -5,9 +5,9 @@ name: Python application
 
 on:
   pull_request:
-    branches: [ main ]
     paths:
-      - 'serverless-test-samples/python-test-samples/**/*'
+      - '**.py'
+      - "python-test-samples/**"
 permissions:
   contents: read
 defaults:
