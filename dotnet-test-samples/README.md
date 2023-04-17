@@ -1,26 +1,22 @@
+[![.NET: 6.0](https://img.shields.io/badge/.NET-6.0-Green)](https://img.shields.io/badge/.NET-6.0-Green)
+
 # .NET Test Samples
 
-This project contains code samples for testing serverless applications using .NET.
+This portion of the repository contains code samples for testing serverless applications using .NET
 
-## Getting Started
+## Test Basic Patterns
+|Project|Description|
+---|---
+|[.NET Starter Project](./apigw-lambda-list-s3-buckets)|This project contains introductory examples of .NET tests written for AWS Lambda. This is the best place to start!|
+|[API Gateway with Lambda and DynamoDB](./apigw-lambda-ddb)|This project contains unit and integration tests for a pattern using API Gateway, AWS Lambda and Amazon DynamoDB.|
+|[Hexagonal Architecture](./hexagonal-architecture)|An example of hexagonal architecture implemented using AWS Lambda with tests.|
 
-- [.NET Starter Project](./apigw-lambda-list-s3-buckets/): This project contains introductory examples of .NET tests written for AWS Lambda. This is the best place to start!
-
-## Patterns
-
-- [API Gateway to Lambda to DynamoDB CRUD API](./apigw-lambda-ddb/): An example of simple serverless microservice with Amazon API Gateway, .NET AWS Lambda and Amazon DynamoDB with tests.
-- [Hexagonal architecture](./hexagonal-architecture/): An example of hexagonal architecture implemented using AWS Lambda with tests
 
 ## Test Asynchronous Architectures
 * In a synchronous system, a calling service makes a request to a receiving service and then blocks, waiting for the receiver to complete the operation and return a result. In contrast, in an **asynchronous system**, a caller makes a request to a receiving system, which typically returns an immediate acknowledgement but then performs the requested operation at a later time. Asynchronous systems are frequently designed using event-driven architectures. These types of systems have several advantages including increased reliability, greater control over load processing, and improved scalability. However, testing these systems can present unique challenges.
-* [Learn more about testing asynchronous architectures](./async-architectures)
 
+|Project|Description|
+---|---
+|[Schema & Contract Testing](./schema-and-contract-testing)|This project contains examples on how to do schema and contract testing for your event driven applications.|
+|[Async Testing Introduction](./apigw-lambda-ddb)|This project contains an introduction to asynchronous testing using Lambda, S3 & DynamoDB.|
 
-## Roadmap
-
-- *Coming Soon* [load-testing](./load-testing/)
-- *Coming Soon* [observability-driven-development](./odd/)
-- *Coming Soon* SQS triggered Lambda test
-- *Coming Soon* EventBridge triggered Lambda test
-- *Coming Soon* SNS triggered Lambda test
-- *Coming Soon* S3 triggered Lambda test
