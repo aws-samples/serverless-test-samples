@@ -32,17 +32,13 @@ jobs:
         folder=${{ steps.get_changed.outputs.changed }}
         echo $folder
         folder=$folder | awk -F'/' '{print $2}'
-        pwd
-        ls
     - name: Set up Python 3.10
       uses: actions/setup-python@v3
       with:
         python-version: "3.10"
     - name: Install dependencies
       run: |
-        ls
-        pwd
-        cd $folder/apigw-lambda
+        cd apigw-lambda
         python -m pip install --upgrade pip
         pip install flake8 pytest boto3
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
