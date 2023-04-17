@@ -16,7 +16,7 @@ namespace SqsEventHandler.UnitTests.Functions;
 public class ProcessEmployeeFunctionTests
 {
     [Fact]
-    public async Task ProcessEmployeeFunction_Should_ExecuteSuccessfully()
+    public Task ProcessEmployeeFunction_Should_ExecuteSuccessfully()
     {
         //Arrange
         var repository = new Mock<IDynamoDbRepository<EmployeeDto>>();
@@ -34,6 +34,7 @@ public class ProcessEmployeeFunctionTests
 
         //Assert
         Assert.True(taskResult.IsCompleted);
+        return Task.CompletedTask;
     }
 
     [Fact]
