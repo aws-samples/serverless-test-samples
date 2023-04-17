@@ -25,17 +25,20 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         ignore: "**/+(.github)"
-        foldersOnly: false
-        format: csv
+        foldersOnly: true
+        format: newline
     - name: Echo changed files
-      run: echo ${{ steps.get_changed.outputs.changed }}
+      run: |
+        echo ${{ steps.get_changed.outputs.changed }}
+        folder=${ steps.get_changed.outputs.changed }
+        echo $folder
     - name: Set up Python 3.10
       uses: actions/setup-python@v3
       with:
         python-version: "3.10"
     - name: Install dependencies
       run: |
-        ls
+        cd $folder
         python -m pip install --upgrade pip
         pip install flake8 pytest boto3
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
