@@ -29,7 +29,7 @@ jobs:
         format: newline
     - name: Echo changed files
       run: |
-        echo ${{ steps.get_changed.outputs.changed | awk -F'/' '{print $2}' }}
+        echo ${{ steps.get_changed.outputs.changed } | awk -F'/' '{print $2}' }
         folder=${{ steps.get_changed.outputs.changed } | awk -F'/' '{print $2}' }
         echo $folder
     - name: Set up Python 3.10
