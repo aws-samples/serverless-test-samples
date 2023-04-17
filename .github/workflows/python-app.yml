@@ -29,9 +29,9 @@ jobs:
         format: newline
     - name: Echo changed files
       run: |
-        folder=${{ steps.get_changed.outputs.changed }}
-        echo $folder
-        folder=$folder | awk -F'/' '{print $2}'
+        file=${{ steps.get_changed.outputs.changed }}
+        echo $file
+        folder=$file | awk -F'/' '{print $2}'
         echo $folder
     - name: Set up Python 3.10
       uses: actions/setup-python@v3
