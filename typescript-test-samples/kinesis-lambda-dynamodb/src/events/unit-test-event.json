@@ -1,0 +1,84 @@
+{
+  "Records": [
+    {
+      "kinesis": {
+        "kinesisSchemaVersion": "1.0",
+        "partitionKey": "e04c537a-7177-4254-afae-594470849a2d",
+        "sequenceNumber": "49639361778013079949213770147123790306706254358336503858",
+        "data": "eyJiYXRjaCI6ICJlMDRjNTM3YS03MTc3LTQyNTQtYWZhZS01OTQ0NzA4NDlhMmQiLCAiaWQiOiAiMjczNGU3NTMtNjMzMC00NjU4LWIwZDctYTliY2RlNGZkM2E1IiwgImJhdGNoc2VxdWVuY2UiOiAwfQ==",
+        "approximateArrivalTimestamp": 1680172558.525
+      },
+      "eventSource": "aws:kinesis",
+      "eventVersion": "1.0",
+      "eventID": "shardId-000000000003:49639361778013079949213770147123790306706254358336503858",
+      "eventName": "aws:kinesis:record",
+      "invokeIdentityArn": "arn:aws:iam::123456789012:role/service-role/event-gen-receive-role-xztb222e",
+      "awsRegion": "eu-west-1",
+      "eventSourceARN": "arn:aws:kinesis:eu-west-1:123456789012:stream/event-gen-stream"
+    },
+    {
+      "kinesis": {
+        "kinesisSchemaVersion": "1.0",
+        "partitionKey": "e04c537a-7177-4254-afae-594470849a2d",
+        "sequenceNumber": "49639361778013079949213770147124999232525868987511210034",
+        "data": "eyJiYXRjaCI6ICJlMDRjNTM3YS03MTc3LTQyNTQtYWZhZS01OTQ0NzA4NDlhMmQiLCAiaWQiOiAiODVhMDViZDEtMTQ3YS00ODcyLWE4MzAtY2I2YzdlMjI5ZTA4IiwgImJhdGNoc2VxdWVuY2UiOiAxfQ==",
+        "approximateArrivalTimestamp": 1680172558.528
+      },
+      "eventSource": "aws:kinesis",
+      "eventVersion": "1.0",
+      "eventID": "shardId-000000000003:49639361778013079949213770147124999232525868987511210034",
+      "eventName": "aws:kinesis:record",
+      "invokeIdentityArn": "arn:aws:iam::123456789012:role/service-role/event-gen-receive-role-xztb222e",
+      "awsRegion": "eu-west-1",
+      "eventSourceARN": "arn:aws:kinesis:eu-west-1:123456789012:stream/event-gen-stream"
+    },
+    {
+      "kinesis": {
+        "kinesisSchemaVersion": "1.0",
+        "partitionKey": "e04c537a-7177-4254-afae-594470849a2d",
+        "sequenceNumber": "49639361778013079949213770147126208158345483616685916210",
+        "data": "eyJiYXRjaCI6ICJlMDRjNTM3YS03MTc3LTQyNTQtYWZhZS01OTQ0NzA4NDlhMmQiLCAiaWQiOiAiMzY5YzI5NmUtNWIxNS00NTAzLTk5YzQtZmQ0NjllNjFiZDRjIiwgImJhdGNoc2VxdWVuY2UiOiAyfQ==",
+        "approximateArrivalTimestamp": 1680172558.528
+      },
+      "eventSource": "aws:kinesis",
+      "eventVersion": "1.0",
+      "eventID": "shardId-000000000003:49639361778013079949213770147126208158345483616685916210",
+      "eventName": "aws:kinesis:record",
+      "invokeIdentityArn": "arn:aws:iam::123456789012:role/service-role/event-gen-receive-role-xztb222e",
+      "awsRegion": "eu-west-1",
+      "eventSourceARN": "arn:aws:kinesis:eu-west-1:123456789012:stream/event-gen-stream"
+    },
+    {
+      "kinesis": {
+        "kinesisSchemaVersion": "1.0",
+        "partitionKey": "e04c537a-7177-4254-afae-594470849a2d",
+        "sequenceNumber": "49639361778013079949213770147127417084165098245860622386",
+        "data": "eyJiYXRjaCI6ICJlMDRjNTM3YS03MTc3LTQyNTQtYWZhZS01OTQ0NzA4NDlhMmQiLCAiaWQiOiAiMDUzN2YxYjQtZTQzOS00ZWQwLWFiMDktZjMyN2YwNTU1MGFjIiwgImJhdGNoc2VxdWVuY2UiOiAzfQ==",
+        "approximateArrivalTimestamp": 1680172558.528
+      },
+      "eventSource": "aws:kinesis",
+      "eventVersion": "1.0",
+      "eventID": "shardId-000000000003:49639361778013079949213770147127417084165098245860622386",
+      "eventName": "aws:kinesis:record",
+      "invokeIdentityArn": "arn:aws:iam::123456789012:role/service-role/event-gen-receive-role-xztb222e",
+      "awsRegion": "eu-west-1",
+      "eventSourceARN": "arn:aws:kinesis:eu-west-1:123456789012:stream/event-gen-stream"
+    },
+    {
+      "kinesis": {
+        "kinesisSchemaVersion": "1.0",
+        "partitionKey": "e04c537a-7177-4254-afae-594470849a2d",
+        "sequenceNumber": "49639361778013079949213770147128626009984712875035328562",
+        "data": "eyJiYXRjaCI6ICJlMDRjNTM3YS03MTc3LTQyNTQtYWZhZS01OTQ0NzA4NDlhMmQiLCAiaWQiOiAiZDNmNDc1ZDUtMzAxYy00NDgyLTk2MTQtMmIxOGQ0NWI1YTQ1IiwgImJhdGNoc2VxdWVuY2UiOiA0fQ==",
+        "approximateArrivalTimestamp": 1680172558.528
+      },
+      "eventSource": "aws:kinesis",
+      "eventVersion": "1.0",
+      "eventID": "shardId-000000000003:49639361778013079949213770147128626009984712875035328562",
+      "eventName": "aws:kinesis:record",
+      "invokeIdentityArn": "arn:aws:iam::123456789012:role/service-role/event-gen-receive-role-xztb222e",
+      "awsRegion": "eu-west-1",
+      "eventSourceARN": "arn:aws:kinesis:eu-west-1:123456789012:stream/event-gen-stream"
+    }
+  ]
+}
