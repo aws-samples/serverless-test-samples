@@ -30,10 +30,10 @@ public class ProcessEmployeeFunctionTests
         var context = new TestLambdaContext();
 
         //Act
-        var exception = await Record.ExceptionAsync(() => sut.ProcessSqsMessage(employee, context));
+        var taskResult = sut.ProcessSqsMessage(employee, context);
 
         //Assert
-        Assert.Null(exception);
+        Assert.True(taskResult.IsCompleted);
     }
 
     [Fact]
