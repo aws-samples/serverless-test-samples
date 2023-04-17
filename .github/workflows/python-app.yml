@@ -20,6 +20,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - uses: Stockopedia/action-get-changed-files@v1
+      id: get_changed
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        ignore: "**/+(.github)"
+        foldersOnly: false
+        format: csv
+    - name: Echo changed files
+      run: echo ${{ steps.get_changed.outputs.changed }}
     - name: Set up Python 3.10
       uses: actions/setup-python@v3
       with:
