@@ -11,11 +11,12 @@ using Xunit;
 
 namespace SqsEventHandler.IntegrationTests.Utilities;
 
-public class Setup : IAsyncLifetime
+public class ProcessEmployeeFixture : IAsyncLifetime
 {
     public string? SqsEventQueueUrl;
     public List<string> CreatedEmployeeIds { get; } = new();
     public EmployeeRepository? TestEmployeeRepository;
+    public readonly AmazonSQSClient SqsClient = new();
 
     public async Task InitializeAsync()
     {
@@ -53,9 +54,9 @@ public class Setup : IAsyncLifetime
         }
     }
 
-    public async Task<SendMessageResponse> SendMessageAsync(IAmazonSQS sqsClient, string? qUrl, string? messageBody)
+    public async Task<SendMessageResponse> SendMessageAsync(string? qUrl, string? messageBody)
     {
-        return await sqsClient.SendMessageAsync(qUrl, messageBody);
+        return await SqsClient.SendMessageAsync(qUrl, messageBody);
     }
 
     private static string GetOutputVariable(IEnumerable<Output> outputs, string name) =>

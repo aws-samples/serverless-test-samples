@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using Amazon.SQS;
 using FluentAssertions;
 using SqsEventHandler.IntegrationTests.Utilities;
 using xRetry;
@@ -12,21 +11,17 @@ namespace SqsEventHandler.IntegrationTests;
 [TestCaseOrderer(
     ordererTypeName: "SqsEventHandler.IntegrationTests.Utilities.PriorityOrderer",
     ordererAssemblyName: "SqsEventHandler.IntegrationTests")]
-public class ProcessEmployeeTests : IClassFixture<Setup>, IDisposable
+public class ProcessEmployeeTests : IClassFixture<ProcessEmployeeFixture>, IDisposable
 {
-    private readonly Setup _setup;
+    private readonly ProcessEmployeeFixture _processEmployeeFixture;
     private readonly ITestOutputHelper _testOutputHelper;
-    private readonly AmazonSQSClient _client;
     private const string EmployeeId = "569c13fc-1435-45cb-847d-38e89a86e5a0";
     private bool _disposed;
 
-    public ProcessEmployeeTests(Setup setup, ITestOutputHelper testOutputHelper)
+    public ProcessEmployeeTests(ProcessEmployeeFixture processEmployeeFixture, ITestOutputHelper testOutputHelper)
     {
-        _setup = setup;
+        _processEmployeeFixture = processEmployeeFixture;
         _testOutputHelper = testOutputHelper;
-
-        // Create the Amazon SQS client
-        _client = new AmazonSQSClient();
     }
 
     public void Dispose()
@@ -37,7 +32,7 @@ public class ProcessEmployeeTests : IClassFixture<Setup>, IDisposable
         }
 
         _disposed = true;
-        _client.Dispose();
+        _processEmployeeFixture.SqsClient.Dispose();
     }
 
     [Fact, TestPriority(1)]
@@ -47,9 +42,8 @@ public class ProcessEmployeeTests : IClassFixture<Setup>, IDisposable
         var sqsMessage = new EmployeeBuilder().WithEmployeeId(EmployeeId);
 
         //Act
-        var response = await _setup.SendMessageAsync(
-            _client,
-            _setup.SqsEventQueueUrl,
+        var response = await _processEmployeeFixture.SendMessageAsync(
+            _processEmployeeFixture.SqsEventQueueUrl,
             JsonSerializer.Serialize(sqsMessage)
         );
 
@@ -63,7 +57,7 @@ public class ProcessEmployeeTests : IClassFixture<Setup>, IDisposable
     {
         //Act
         using var cts = new CancellationTokenSource();
-        var response = await _setup.TestEmployeeRepository!.GetItemAsync(EmployeeId, cts.Token);
+        var response = await _processEmployeeFixture.TestEmployeeRepository!.GetItemAsync(EmployeeId, cts.Token);
 
         //Assert
         response.Should().NotBeNull();
@@ -71,6 +65,6 @@ public class ProcessEmployeeTests : IClassFixture<Setup>, IDisposable
         _testOutputHelper.WriteLine(response.ToString());
 
         //Dispose
-        _setup.CreatedEmployeeIds.Add(EmployeeId);
+        _processEmployeeFixture.CreatedEmployeeIds.Add(EmployeeId);
     }
 }
