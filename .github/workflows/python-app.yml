@@ -25,12 +25,12 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         ignore: "**/+(.github)"
-        foldersOnly: true
+        foldersOnly: false
         format: newline
     - name: Echo changed files
       run: |
-        echo ${{ steps.get_changed.outputs.changed }}
-        folder=${ steps.get_changed.outputs.changed }
+        echo ${{ steps.get_changed.outputs.changed | awk -F'/' '{print $2}' }}
+        folder=${{ steps.get_changed.outputs.changed } | awk -F'/' '{print $2}' }
         echo $folder
     - name: Set up Python 3.10
       uses: actions/setup-python@v3
