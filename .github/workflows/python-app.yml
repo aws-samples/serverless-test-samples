@@ -55,4 +55,4 @@ jobs:
       run: |
         pwd
         cd apigw-lambda-dynamodb
-        pytest
+        pytest -s tests/unit  -v
