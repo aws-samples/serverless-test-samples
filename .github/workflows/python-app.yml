@@ -4,7 +4,7 @@
 name: Python application
 
 on:
-  pull_request:
+  push:
     paths:
       - '**.py'
       - "python-test-samples/**"
@@ -12,7 +12,7 @@ permissions:
   contents: read
 defaults:
   run:
-    working-directory: client
+    working-directory: python-test-samples
 jobs:
   build:
 
@@ -28,7 +28,7 @@ jobs:
       run: |
         ls
         python -m pip install --upgrade pip
-        pip install flake8 pytest
+        pip install flake8 pytest boto3
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         if [ -f tests/requirements.txt ]; then pip install -r tests/requirements.txt; fi
     - name: Lint with flake8
