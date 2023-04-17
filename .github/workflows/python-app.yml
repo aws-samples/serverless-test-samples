@@ -5,9 +5,13 @@ name: Python application
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ $default-branch ]
+    paths:
+      - 'serverless-test-samples/python-test-samples/**/*'
   pull_request:
-    branches: [ "main" ]
+    branches: [ $default-branch ]
+    paths:
+      - 'serverless-test-samples/python-test-samples/**/*'
 
 permissions:
   contents: read
