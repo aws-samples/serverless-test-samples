@@ -53,7 +53,6 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
-        pwd
-        os.environ['AWS_DEFAULT_REGION'] = "us-east-1"
+        export AWS_DEFAULT_REGION=us-east-1
         cd apigw-lambda-dynamodb
         pytest -s tests/unit  -v
