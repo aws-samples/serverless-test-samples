@@ -36,9 +36,9 @@ jobs:
       with:
         python-version: "3.10"
     - name: Get new folder
-        run: |
-          pwd
-          python ../.github/workflows/getPatternFolder.py $files
+      run: |
+        pwd
+        python ../.github/workflows/getPatternFolder.py $files
     - name: Install dependencies
       run: |
         cd apigw-lambda-dynamodb
