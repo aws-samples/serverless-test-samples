@@ -5,6 +5,7 @@
     "language": "CSharp",
     "type": ["Unit", "Integration"],
     "diagram": "../docs/apigw-lambda-list-s3-buckets.png",
+    "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
     "framework": "SAM",
     "services": ["apigw", "lambda", "s3"],
     "pattern_detail_tabs": [

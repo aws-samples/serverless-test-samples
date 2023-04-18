@@ -5,6 +5,7 @@
     "language": "CSharp",
     "type": ["Unit", "Integration"],
     "diagram": "../docs/apigw-lambda-ddb.jpg",
+    "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
     "framework": "SAM",
     "services": ["apigw", "lambda", "dynamodb"],
     "pattern_detail_tabs": [
