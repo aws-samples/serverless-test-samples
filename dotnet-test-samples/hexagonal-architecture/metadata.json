@@ -5,6 +5,7 @@
     "language": ".NET",
     "type": ["Unit", "Integration"],
     "diagram": "../docs/hexagonal-architecture.png.png",
+    "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
     "framework": "SAM",
     "services": ["apigw", "lambda", "dynamoDB"],
     "pattern_detail_tabs": [
