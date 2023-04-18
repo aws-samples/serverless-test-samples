@@ -14,11 +14,11 @@
         },
         {
             "title": "Unit Tests",
-            "filepath": "/tests/ApiTests.UnitTest/ApiTests.UnitTest"
+            "filepath": "/tests/ApiTests.UnitTest/FunctionTest.cs"
         },
         {
             "title": "Integration Test",
-            "filepath": "/tests/ApiTests.IntegrationTest"
+            "filepath": "/tests/ApiTests.IntegrationTest/IntegrationTest.cs"
         }        
     ],
     "authors": [
