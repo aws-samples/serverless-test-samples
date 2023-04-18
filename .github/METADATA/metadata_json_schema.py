@@ -79,7 +79,7 @@ METADATA = {
             "uniqueItems": True,
             "items": {
                 "type": "string",
-                "minLength": 3
+                "minLength": 2
                 }
         },
         "git_repo_url": {
