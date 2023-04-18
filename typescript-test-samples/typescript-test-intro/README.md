@@ -10,20 +10,21 @@ While testing in the cloud may create additional developer latency, increase cos
 
 The project uses the [AWS Serverless Application Model](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) (SAM) CLI for configuration, testing and deployment. 
 
-- [Project contents](#project-contents)
-- [Prerequisites](#prerequisites)
-- [Build and deploy with the SAM CLI](#build-and-deploy-with-the-sam-cli)
-- [Working with events](#working-with-events)
-- [Working with local emulators](#working-with-local-emulators)
-- [Use the SAM API Gateway emulator](#use-the-sam-api-gateway-emulator)
-- [Run a unit test using a mock framework](#run-a-unit-test-using-a-mock-framework)
-- [Run integration tests against cloud resources](#run-integration-tests-against-cloud-resources)
-- [Invoke a Lambda function in the cloud](#invoke-a-lambda-function-in-the-cloud)
-- [Fetch, tail, and filter Lambda function logs locally](#fetch-tail-and-filter-lambda-function-logs-locally)
-- [Use SAM Accerate to speed up feedback cycles](#use-sam-accerate-to-speed-up-feedback-cycles)
-- [Implement application tracing](#implement-application-tracing)
-- [Cleanup](#cleanup)
-- [Additional Resources](#additional-resources)
+- [Typescript Test Samples Starter Project](#typescript-test-samples-starter-project)
+  - [Testing in the Cloud](#testing-in-the-cloud)
+  - [Project contents](#project-contents)
+  - [Prerequisites](#prerequisites)
+  - [Build and deploy with the SAM CLI](#build-and-deploy-with-the-sam-cli)
+  - [Working with events](#working-with-events)
+  - [Working with local emulators](#working-with-local-emulators)
+  - [Run a unit test using a mock framework](#run-a-unit-test-using-a-mock-framework)
+  - [Run integration tests against cloud resources](#run-integration-tests-against-cloud-resources)
+  - [Invoke a Lambda function in the cloud](#invoke-a-lambda-function-in-the-cloud)
+  - [Fetch, tail, and filter Lambda function logs](#fetch-tail-and-filter-lambda-function-logs)
+  - [Use SAM Accerate to speed up feedback cycles](#use-sam-accerate-to-speed-up-feedback-cycles)
+  - [Implement application tracing](#implement-application-tracing)
+  - [Cleanup](#cleanup)
+  - [Additional Resources](#additional-resources)
 
 This project contains source code and supporting files for a serverless application that you can deploy with the SAM CLI. It includes the following files and folders.
 
@@ -207,3 +208,4 @@ aws cloudformation delete-stack --stack-name typescript-test-intro
 See the [AWS SAM developer guide](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) for an introduction to SAM specification, the SAM CLI, and serverless application concepts.
 
 Next, you can use AWS Serverless Application Repository to deploy ready to use Apps that go beyond hello world samples and learn how authors developed their applications: [AWS Serverless Application Repository main page](https://aws.amazon.com/serverless/serverlessrepo/)
+
