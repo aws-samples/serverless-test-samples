@@ -4,6 +4,9 @@ on:
   push:
     paths:
       - "python-test-samples/**"
+      - "dotnet-test-samples/**"
+      - "typescript-test-samples/**"
+      - "java-test-samples/**"
 
 permissions:
   contents: read

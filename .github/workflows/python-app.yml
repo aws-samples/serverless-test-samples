@@ -6,7 +6,6 @@ name: Python Pattern Submission Workflow
 on:
   push:
     paths:
-      - '**.py'
       - "python-test-samples/**"
 permissions:
   contents: read
