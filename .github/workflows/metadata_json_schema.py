@@ -37,7 +37,7 @@ METADATA = {
             "type": "string",
             "title": "Repository Programming Language",
             "examples": [".NET","Python"],
-            "pattern": ".NET|Java|Python|Typescript|GO|Rust",
+            "pattern": ".NET|Java|Python|TypeScript|Go|Rust",
             "maxLength": 60,
             "minLength": 3
         },
