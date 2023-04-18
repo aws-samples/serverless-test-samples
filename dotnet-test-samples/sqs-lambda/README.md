@@ -56,7 +56,7 @@ To test the application, you need to publish a message to the SQS Queue. This ca
 
 - AWS Console
   
-  <img src="./send-message.png" alt="topology" width="80%"/>
+  <img src="../docs/send-message.png" alt="topology" width="80%"/>
 
 - Send Message API: refer [SQS API Reference](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_SendMessage.html)
   
