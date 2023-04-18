@@ -28,17 +28,19 @@ jobs:
         foldersOnly: false
         format: csv
     - name: Echo changed files
+      id: setfiles
       run: |
         files=${{ steps.get_changed.outputs.changed }}
         echo $files
+        echo "FILES=$files" >> $GITHUB_OUTPUT
     - name: Set up Python 3.10
       uses: actions/setup-python@v3
       with:
         python-version: "3.10"
     - name: Get new folder
       env: 
-        FILES: ${files}
-      run: python ../.github/workflows/getPatternFolder.py
+        FILES: ${{files}}
+      run: python ../.github/workflows/getPatternFolder.py "${{ steps.setfiles.outputs.FILES }}"
     - name: Install dependencies
       run: |
         cd apigw-lambda-dynamodb
