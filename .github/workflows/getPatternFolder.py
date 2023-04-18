@@ -12,7 +12,7 @@ fileList= files.split(",")
 folders = {}
 foldersOutput = ""
 for file in fileList:
-    folder = file.split('/')[1].strip()
+    folder = file.split("/", 2)
     if folder not in foldersOutput:
         if (len(foldersOutput) > 0):
             foldersOutput += " "

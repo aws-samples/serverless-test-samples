@@ -42,4 +42,4 @@ jobs:
     - name: Validate Schema
       run: |
         pip install -r .github/workflows/requirements.txt
-        python .github/workflows/metadata_json_validator.py python-test-samples/${{ steps.setfolders.outputs.folders }}
+        python .github/workflows/metadata_json_validator.py ${{ steps.setfolders.outputs.folders }}

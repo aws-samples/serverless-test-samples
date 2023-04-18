@@ -10,9 +10,6 @@ on:
       - "python-test-samples/**"
 permissions:
   contents: read
-defaults:
-  run:
-    working-directory: python-test-samples
 jobs:
   build:
 
@@ -42,7 +39,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install github-action-utils
-        python ../.github/workflows/getPatternFolder.py "${{ steps.setfiles.outputs.FILES }}"
+        python .github/workflows/getPatternFolder.py "${{ steps.setfiles.outputs.FILES }}"
     - name: Install dependencies
       run: |
         cd ${{ steps.setfolders.outputs.folders }}
