@@ -9,17 +9,17 @@
     "services": ["apigw", "lambda", "dynamoDB"],
     "pattern_detail_tabs": [
         {
-            "title": "Application Code",
-            "filepath": "/src/"
+            "title": "Application Code (example)",
+            "filepath": "/src/GetStock/Functions.cs"
         },
         {
             "title": "Unit Tests",
-            "filepath": "/tests/GetStock.UnitTest"
+            "filepath": "/tests/GetStock.UnitTest/FunctionsTests.cs"
         },
         {
             "title": "Integration Test",
-            "filepath": "/tests/GetStock.IntegrationTests"
-        }        
+            "filepath": "/tests/GetStock.IntegrationTest/Adapters/StockDynamoDbTests.cs"
+        }
     ],
     "authors": [
         {

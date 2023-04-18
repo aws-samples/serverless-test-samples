@@ -10,18 +10,18 @@
   "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
   "pattern_source": "AWS",
   "pattern_detail_tabs": [
-      {
-          "title": "Application Code",
-          "filepath": "/src/app.ts"
-      },
-      {
-          "title": "Unit Tests - Mock",
-          "filepath": "/tests/unit/test-handler.test.ts"
-      },
-      {
-          "title": "Integration Tests",
-          "filepath": "/tests/integration/integ-handler.test.ts"
-      }
+    {
+        "title": "Application Code",
+        "filepath": "/src/app.ts"
+    },
+    {
+        "title": "Unit Tests - Mock",
+        "filepath": "/src/tests/unit/test-handler.test.ts"
+    },
+    {
+        "title": "Integration Tests",
+        "filepath": "/src/tests/integration/integ-handler.test.ts"
+    }
   ],
   "authors": [
       {

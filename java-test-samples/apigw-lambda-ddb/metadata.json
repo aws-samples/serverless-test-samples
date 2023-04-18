@@ -10,22 +10,22 @@
     "git_repo_url": "https://github.com/aws-samples/aws-stepfunctions-examples/tree/main/sam/demo-local-testing-using-java",
     "pattern_source": "AWS",
     "pattern_detail_tabs": [
-        {
-            "title": "Application Code",
-            "filepath": "/TicketFunction/src/main/java/com/example/TicketFunction.java"
-        },
-        {
-            "title": "Unit Tests",
-            "filepath": "/TicketFunction/src/test/java/com/example/TicketFunctionMockTest.java"
-        },
-        {
-            "title": "Integration Test",
-            "filepath": "/TicketFunction/src/test/java/com/example/TicketFunctionIntegrationTest.java"
-        },
-        {
+      {
+          "title": "Application Code",
+          "filepath": "/TicketsFunction/src/main/java/com/example/TicketFunction.java"
+      },
+      {
+          "title": "Unit Tests",
+          "filepath": "/TicketsFunction/src/test/java/com/example/TicketFunctionMockTest.java"
+      },
+      {
+          "title": "Integration Test",
+          "filepath": "/TicketsFunction/src/test/java/com/example/TicketFunctionIntegrationTest.java"
+      },
+      {
           "title": "Load Test",
           "filepath": "/load-test/run-load-tests-dynamic-data.sh"
-        }
+      }
     ],
     "authors": [
         {
