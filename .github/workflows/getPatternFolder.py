@@ -12,10 +12,10 @@ fileList= files.split(",")
 folders = {}
 foldersOutput = ""
 for file in fileList:
-    print(file)
     folder = file.split('/')[1].strip()
     if folder not in foldersOutput:
         if (len(foldersOutput) > 0):
             foldersOutput += " "
         foldersOutput += folder
+print(foldersOutput)
 gha_utils.set_output("folders", foldersOutput)
