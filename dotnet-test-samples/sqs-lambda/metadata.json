@@ -2,7 +2,7 @@
   "title": "Amazon Simple Queue Service (SQS) with AWS Lambda Function",
   "description": "This project contains an AWS Lambda function that consumes messages from an Amazon Simple Queue Service (Amazon SQS) queue using SAM and .NET 6.",
   "content_language": "English",
-  "language": "CSharp",
+  "language": ".NET",
   "type": ["Unit", "Integration"],
   "diagram": "../docs/image.png",
   "framework": "SAM",
@@ -18,7 +18,7 @@
     },
     {
       "title": "Integration Tests",
-      "filepath": "/tests/SqsEventHandler.IntegrationTest"
+      "filepath": "/tests/SqsEventHandler.IntegrationTests"
     }
   ],
   "authors": [
