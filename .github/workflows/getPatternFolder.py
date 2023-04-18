@@ -1,7 +1,8 @@
 import sys
-# Read the command-line argument passed to the interpreter when invoking the script
-files = sys.argv[1]
+import os
 
+# Read the command-line argument passed to the interpreter when invoking the script
+files =os.environ['FILES']
 print(files)
 
 fileList= files.split(",")
