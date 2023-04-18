@@ -19,38 +19,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-      with:
-          fetch-depth: ${{ github.event_name == 'pull_request' && 2 || 0 }}
-    - name: Get changed files
-      id: changed-files
-      run: |
-          echo "changed_files=$(git diff --dirstat=files,0 HEAD~1 --name-only ${{ github.event.before }} ${{ github.event.after }} | xargs)" >> $GITHUB_OUTPUT
-    - name: List changed files
-      run: |
-          for file in ${{ steps.changed-files.outputs.changed_files }}; do
-              echo "$file was changed"
-          done
     - name: Set up Python 3.10
       uses: actions/setup-python@v3
       with:
         python-version: "3.10"
     - name: Install dependencies
       run: |
-        cd apigw-lambda-dynamodb
-        python -m pip install --upgrade pip
-        pip install flake8 pytest boto3
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        if [ -f tests/requirements.txt ]; then pip install -r tests/requirements.txt; fi
-    - name: Lint with flake8
-      run: |
-        cd apigw-lambda-dynamodb
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --max-complexity=10 --max-line-length=127 --statistics
-    - name: Test with pytest
-      run: |
-        export AWS_DEFAULT_REGION=us-east-1
-        cd apigw-lambda-dynamodb
-        pytest -s tests/unit  -v
+        for dir in */; do
+          echo "$dir"
+          cd apigw-lambda-dynamodb
+          python -m pip install --upgrade pip
+          pip install flake8 pytest boto3
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f tests/requirements.txt ]; then pip install -r tests/requirements.txt; fi
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+          export AWS_DEFAULT_REGION=us-east-1
+          pytest -s tests/unit  -v
+        done
