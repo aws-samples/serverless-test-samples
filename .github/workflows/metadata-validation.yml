@@ -31,7 +31,7 @@ jobs:
       run: |
         files=${{ steps.get_changed.outputs.changed }}
         echo $files
-
+        echo "FILES=$files" >> $GITHUB_OUTPUT
     - name: Set up Python 3.10
       uses: actions/setup-python@v3
       with:
