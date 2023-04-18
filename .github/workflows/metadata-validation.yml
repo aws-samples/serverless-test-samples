@@ -8,10 +8,6 @@ on:
 permissions:
   contents: read
 
-defaults:
-  run:
-    working-directory: python-test-samples
-
 jobs:
   build:
 
@@ -41,9 +37,9 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install github-action-utils
-        python ../.github/workflows/getPatternFolder.py "${{ steps.setfiles.outputs.FILES }}"
+        python .github/workflows/getPatternFolder.py "${{ steps.setfiles.outputs.FILES }}"
 
     - name: Validate Schema
       run: |
         pip install -r ../.github/workflows/requirements.txt
-        python ../.github/workflows/metadata_json_validator.py python-test-samples/${{ steps.setfolders.outputs.folders }}
+        python .github/workflows/metadata_json_validator.py python-test-samples/${{ steps.setfolders.outputs.folders }}
