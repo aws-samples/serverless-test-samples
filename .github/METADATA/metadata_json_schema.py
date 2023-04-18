@@ -36,8 +36,8 @@ METADATA = {
             "$id": "#/properties/language",
             "type": "string",
             "title": "Repository Programming Language",
-            "examples": ["Dotnet","Python"],
-            "pattern": "Dotnet|Java|Python|Typescript|GO|Rust",
+            "examples": [".NET","Python"],
+            "pattern": ".NET|Java|Python|Typescript|GO|Rust",
             "maxLength": 60,
             "minLength": 3
         },
@@ -91,15 +91,6 @@ METADATA = {
             "maxLength": 2048,
             "minLength": 3
         },   
-        "pattern_source": {
-            "$id": "#/properties/pattern_source",
-            "type": "string",
-            "title": "Contributor of the the pattern",
-            "examples": ["AWS"],
-            "pattern": "AWS|Customer",
-            "maxLength": 60,
-            "minLength": 3
-        },  
         "pattern_source": {
             "$id": "#/properties/pattern_source",
             "type": "string",
