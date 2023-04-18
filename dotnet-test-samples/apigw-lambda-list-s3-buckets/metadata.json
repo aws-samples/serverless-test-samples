@@ -3,7 +3,7 @@
     "description": "This project contains unit and integration tests for a pattern using API Gateway, AWS Lambda and Amazon DynamoDB.",
     "content_language": "English",
     "language": ".NET",
-    "type": ["Unit", "Integration"],
+    "type": ["Integration"],
     "diagram": "../docs/apigw-lambda-list-s3-buckets.png",
     "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
     "framework": "SAM",
@@ -11,15 +11,11 @@
     "pattern_detail_tabs": [
         {
             "title": "Application Code",
-            "filepath": "/src/"
-        },
-        {
-            "title": "Unit Tests",
-            "filepath": "/tests/ServerlessTestSamples.UnitTest/ApiTests.UnitTest"
+            "filepath": "/src/ServerlessTestSamples/Function.cs"
         },
         {
             "title": "Integration Test",
-            "filepath": "/tests/ServerlessTestSamples.IntegrationTest"
+            "filepath": "/tests/ServerlessTestSamples.IntegrationTest/IntegrationTest.cs"
         }        
     ],
     "authors": [

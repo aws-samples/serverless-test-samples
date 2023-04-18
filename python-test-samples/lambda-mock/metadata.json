@@ -12,7 +12,7 @@
     "pattern_detail_tabs": [
         {
             "title": "Application Code",
-            "filepath": "/src/app.py"
+            "filepath": "/src/sample_lambda/app.py"
         },
         {
             "title": "Unit Tests",
