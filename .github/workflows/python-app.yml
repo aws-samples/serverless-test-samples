@@ -20,19 +20,17 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - uses: Stockopedia/action-get-changed-files@v1
-      id: get_changed
       with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        ignore: "**/+(.github)"
-        foldersOnly: true
-        format: newline
-    - name: Echo changed files
+          fetch-depth: ${{ github.event_name == 'pull_request' && 2 || 0 }}
+    - name: Get changed files
+      id: changed-files
       run: |
-        file=${{ steps.get_changed.outputs.changed }}
-        echo $file
-        folder=$file | awk -F'/' '{print $2}'
-        echo $folder
+          echo "changed_files=$(git diff --dirstat=files,0 HEAD~1 --name-only ${{ github.event.before }} ${{ github.event.after }} | xargs)" >> $GITHUB_OUTPUT
+    - name: List changed files
+      run: |
+          for file in ${{ steps.changed-files.outputs.changed_files }}; do
+              echo "$file was changed"
+          done
     - name: Set up Python 3.10
       uses: actions/setup-python@v3
       with:
