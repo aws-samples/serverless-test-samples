@@ -38,7 +38,6 @@ jobs:
     - name: Get new folder # run main.py
         run: |
           pwd
-          python ../.github/workflows/getPatternFolder.py $files
     - name: Install dependencies
       run: |
         cd apigw-lambda-dynamodb
