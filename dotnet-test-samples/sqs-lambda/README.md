@@ -21,7 +21,7 @@ The AWS services used in this pattern are
 
 ## Topology
 
-<img src="./sqs-lambda.png" alt="topology" width="80%"/>
+<img src="../docs/sqs-lambda.png" alt="topology" width="80%"/>
 
 ## Description
 The SAM template contains all the information to deploy AWS resources (An Amazon SQS queue and an AWS Lambda function) and also the permissions required by these services to communicate.
@@ -32,14 +32,14 @@ You will be able to create and delete the CloudFormation stack using the SAM CLI
 
 The solution is split down into two projects:
 
-- [SqsEventHandler.Infrastructure](../src/SqsEventHandler.Infrastructure/SqsEventHandler.Infrastructure.csproj) _Contains code for bootstrapping the ServiceProvider and extensions._
-- [SqsEventHandler.Repositories](../src/SqsEventHandler.Repositories/SqsEventHandler.Repositories.csproj) _Contains code for any persistence layer, in this case DynamoDB._
+- [SqsEventHandler.Infrastructure](./src/SqsEventHandler.Infrastructure/SqsEventHandler.Infrastructure.csproj) _Contains code for bootstrapping the ServiceProvider and extensions._
+- [SqsEventHandler.Repositories](./src/SqsEventHandler.Repositories/SqsEventHandler.Repositories.csproj) _Contains code for any persistence layer, in this case DynamoDB._
 - Function project(s):
-  - [SqsEventHandler](../src/SqsEventHandler/SqsEventHandler.csproj)
+  - [SqsEventHandler](./src/SqsEventHandler/SqsEventHandler.csproj)
 
 - Test project(s):
-  - [SqsEventHandler.UnitTests](../tests/SqsEventHandler.UnitTests/SqsEventHandler.UnitTests.csproj)
-  - [SqsEventHandler.IntegrationTests](../tests/SqsEventHandler.IntegrationTests/SqsEventHandler.IntegrationTests.csproj)
+  - [SqsEventHandler.UnitTests](./tests/SqsEventHandler.UnitTests/SqsEventHandler.UnitTests.csproj)
+  - [SqsEventHandler.IntegrationTests](./tests/SqsEventHandler.IntegrationTests/SqsEventHandler.IntegrationTests.csproj)
 
 ## Deployment commands
 
@@ -76,7 +76,7 @@ The source code for this sample includes automated unit and integration tests. [
 
 ### Unit Tests
 
-#### [ProcessEmployeeFunctionTests.cs](../tests/SqsEventHandler.UnitTests/ProcessEmployeeFunctionTests.cs)
+#### [ProcessEmployeeFunctionTests.cs](./tests/SqsEventHandler.UnitTests/ProcessEmployeeFunctionTests.cs)
 The goal of these tests is to run a unit test on the ProcessSqsMessage method which is called by the handler method of the Lambda function.
 The system under test here is completely abstracted from any cloud resources.
 
@@ -103,7 +103,7 @@ public async Task ProcessEmployeeFunction_Should_ExecuteSuccessfully()
 }
 ```
 
-#### [SqsEventTriggerTests.cs](../tests/SqsEventHandler.UnitTests/Triggers/SqsEventTriggerTests.cs)
+#### [SqsEventTriggerTests.cs](./tests/SqsEventHandler.UnitTests/Triggers/SqsEventTriggerTests.cs)
 The goal of these tests is to run a unit test on the SqsEventTrigger which implements the handler method of the Lambda function.
 It uses [Moq](https://github.com/moq/moq4) for the mocking framework. The `ProcessSqsMessage` method is mocked.
 
@@ -142,7 +142,7 @@ dotnet test tests/SQSEventHandler.UnitTests/SQSEventHandler.UnitTests.csproj
 
 ### Integration Tests 
 
-#### [ProcessEmployeeTests.cs](../tests/SqsEventHandler.IntegrationTests/ProcessEmployeeTests.cs)
+#### [ProcessEmployeeTests.cs](./tests/SqsEventHandler.IntegrationTests/ProcessEmployeeTests.cs)
 
 The goal of this test is to demonstrate a test that runs the Lambda function's code against deployed resources.
 The tests interact with the SQS Queue directly using [AmazonSQSClient](https://docs.aws.amazon.com/sdkfornet1/latest/apidocs/html/T_Amazon_SQS_AmazonSQSClient.htm) 

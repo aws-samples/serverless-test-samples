@@ -4,21 +4,22 @@
   "content_language": "English",
   "language": ".NET",
   "type": ["Unit", "Integration"],
-  "diagram": "../docs/image.png",
+  "diagram": "../docs/syntevent-trigger.png",
+  "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
   "framework": "SAM",
   "services": ["sqs", "lambda"],
   "pattern_detail_tabs": [
     {
       "title": "Application Code",
-      "filepath": "/src/"
+      "filepath": "/src/SQSEventHandler/Functions/ProcessEmployeeFunction.cs"
     },
     {
       "title": "Unit Tests",
-      "filepath": "/tests/SqsEventHandler.UnitTests"
+      "filepath": "/tests/SqsEventHandler.UnitTests/ProcessEmployeeFunctionTests.cs"
     },
     {
       "title": "Integration Tests",
-      "filepath": "/tests/SqsEventHandler.IntegrationTests"
+      "filepath": "/tests/SqsEventHandler.IntegrationTests/ProcessEmployeeTests.cs"
     }
   ],
   "authors": [
