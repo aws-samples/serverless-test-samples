@@ -6,7 +6,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqsEventHandler.UnitTests",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{00140B9F-D533-4F2C-85B4-ABAEA8529CE4}"
 	ProjectSection(SolutionItems) = preProject
-		docs\README.md = docs\README.md
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0CFC5F99-9F8B-4703-AC45-5536D7075C8D}"
