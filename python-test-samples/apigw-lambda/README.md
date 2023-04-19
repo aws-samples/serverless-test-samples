@@ -4,7 +4,7 @@
 [![test: integration](https://img.shields.io/badge/Test-Integration-yellow)](https://img.shields.io/badge/Test-Integration-yellow)
 [![test: local](https://img.shields.io/badge/Test-Local-red)](https://img.shields.io/badge/Test-Local-red)
 
-# Python Test Samples Starter Project
+# Python Starter Project
 This project contains automated test sample code samples for serverless applications written in Python. The project demonstrates several techniques for executing tests including mocking, emulation and testing in the cloud. Based on current tooling, we recommend customers **focus on testing in the cloud** as much as possible. 
 
 ## Testing in the Cloud
@@ -13,7 +13,7 @@ While testing in the cloud may create additional developer latency, increase cos
 ## Project contents
 The project uses the [AWS Serverless Application Model](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) (SAM) CLI for configuration, testing and deployment. 
 
-- [Python Test Samples Starter Project](#python-test-samples-starter-project)
+- [Python Starter Project](#python-starter-project)
   - [Testing in the Cloud](#testing-in-the-cloud)
   - [Project contents](#project-contents)
   - [Prerequisites](#prerequisites)
@@ -249,3 +249,4 @@ aws cloudformation delete-stack --stack-name apigw-lambda
 See the [AWS SAM developer guide](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) for an introduction to SAM specification, the SAM CLI, and serverless application concepts.
 
 Check out [serverlessland.com](https://serverlessland.com/) to view the latest blogs, videos and training for AWS Serverless. 
+

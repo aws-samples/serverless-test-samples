@@ -7,6 +7,8 @@
     "diagram": "/img/diagram.png",
     "framework": "SAM",
     "services": ["apigw", "lambda", "dynamodb"],
+    "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
+    "pattern_source": "AWS",
     "pattern_detail_tabs": [
         {
             "title": "Application Code",
@@ -28,6 +30,12 @@
           "bio": "Principal Solutions Architect at AWS",
           "linkedin": "https://www.linkedin.com/in/danfoxprofile/",
           "twitter": "https://twitter.com/danfox"
+        },
+        {
+            "name": "Tom Romano",
+            "image": "https://media.licdn.com/dms/image/C4E03AQFWNGT9Tkov8g/profile-displayphoto-shrink_800_800/0/1614031821710?e=1684368000&v=beta&t=-b90PMeTFMcE3tkk_X9MXcS2ZkctE3A7iRvRTnOtCwQ",
+            "bio": "Solutions Architect at AWS",
+            "linkedin": "https://https://www.linkedin.com/in/wtromano/"
         }
     ]
 }

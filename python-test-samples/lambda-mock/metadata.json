@@ -7,10 +7,12 @@
     "diagram": "/doc/architecture.png",
     "framework": "SAM",
     "services": ["apigw", "lambda", "dynamodb","s3"],
+    "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
+    "pattern_source": "AWS",
     "pattern_detail_tabs": [
         {
             "title": "Application Code",
-            "filepath": "/src/app.py"
+            "filepath": "/src/sample_lambda/app.py"
         },
         {
             "title": "Unit Tests",

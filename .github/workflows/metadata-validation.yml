@@ -1,0 +1,48 @@
+name: Metadata Validation Pattern Submission Workflow
+
+on:
+  push:
+    paths:
+      - "python-test-samples/**"
+      - "dotnet-test-samples/**"
+      - "typescript-test-samples/**"
+      - "java-test-samples/**"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: Stockopedia/action-get-changed-files@v1
+      id: get_changed
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        ignore: "**/+(.github)"
+        foldersOnly: false
+        format: csv
+    - name: Echo changed files
+      id: setfiles
+      run: |
+        files=${{ steps.get_changed.outputs.changed }}
+        echo $files
+        echo "FILES=$files" >> $GITHUB_OUTPUT
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.10"
+    - name: Get new folder
+      id: setfolders
+      run: |
+        python -m pip install --upgrade pip
+        pip install github-action-utils
+        python .github/workflows/getPatternFolder.py "${{ steps.setfiles.outputs.FILES }}"
+
+    - name: Validate Schema
+      run: |
+        pip install -r .github/workflows/requirements.txt
+        python .github/workflows/metadata_json_validator.py ${{ steps.setfolders.outputs.folders }}

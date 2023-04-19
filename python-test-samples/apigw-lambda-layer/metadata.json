@@ -1,0 +1,39 @@
+{
+    "title": "Test local Lambda layer with mocks",
+    "description": "Test an AWS Lambda python layer locally by replacing remote API calls with mocks. ",
+    "content_language": "English",
+    "language": "Python",
+    "type": ["Unit"],
+    "diagram": "/img/pattern_05_lambda_layer_sut.png",
+    "framework": "SAM",
+    "services": ["apigw", "lambda", "s3"],
+    "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
+    "pattern_source": "AWS",
+    "pattern_detail_tabs": [
+        {
+            "title": "Application Code",
+            "filepath": "/src/sampleLambda/app.py"
+        },
+        {
+            "title": "Lambda Layer Code",
+            "filepath": "/src/sampleCodeLayer/python/layer.py"
+        },
+        {
+            "title": "Lambda Handler Unit Tests",
+            "filepath": "/tests/unit/mock_test_samplelambda.py"
+        }
+        ,
+        {
+            "title": "Lambda Layer Unit Tests",
+            "filepath": "/tests/unit/mock_test_samplecodelayer.py"
+        }
+    ],
+    "authors": [
+        {
+          "name": "Tom Romano",
+          "image": "https://media.licdn.com/dms/image/C4E03AQFWNGT9Tkov8g/profile-displayphoto-shrink_800_800/0/1614031821710?e=1684368000&v=beta&t=-b90PMeTFMcE3tkk_X9MXcS2ZkctE3A7iRvRTnOtCwQ",
+          "bio": "Solutions Architect at AWS",
+          "linkedin": "https://https://www.linkedin.com/in/wtromano/"
+        }
+    ]
+}
