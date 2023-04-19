@@ -10,7 +10,7 @@ Hexagonal architecture is a pattern used for encapsulating domain logic and deco
 
 System Under Test (SUT)
 
-The SUT in this pattern is a Lambda function that is organized using a hexagonal architecture. You can read this blog post to learn more about these types of architectures. The example in this test pattern receives a request via API Gateway and makes calls out to other AWS cloud services like DynamoDB.
+The SUT in this pattern is a Lambda function that is organized using a hexagonal architecture. You can read this [blog post](https://aws.amazon.com/blogs/compute/developing-evolutionary-architecture-with-aws-lambda/) to learn more about these types of architectures. The example in this test pattern receives a request via API Gateway and makes calls out to other AWS cloud services like DynamoDB.
 
 The project uses the [AWS Serverless Application Model](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) (SAM) CLI for configuration, testing and deployment. 
 
@@ -22,6 +22,8 @@ The project uses the [AWS Serverless Application Model](https://docs.aws.amazon.
   - [Contents](#contents)
   - [Key Files in the Project](#key-files-in-the-project)
   - [Sample project description](#sample-project-description)
+    - [Terms:](#terms)
+    - [Application Description](#application-description)
   - [Testing Data Considerations](#testing-data-considerations)
   - [Run the Unit Test](#run-the-unit-test)
   - [Run the Integration Test](#run-the-integration-test)
@@ -44,15 +46,16 @@ Hexagonal architecture is also known as the ports and adapters architecture. It 
 
 In Lambda functions, hexagonal architecture can help you implement new business requirements and improve the agility of a workload. This approach can help create separation of concerns and separate the domain logic from the infrastructure. For development teams, it can also simplify the implementation of new features and parallelize the work across different developers.
 
-Terms:
+[Diagram](img/hexagonal-architecture-diagram.png)
 
+### Terms:
 1. Domain logic: Represents the task that the application should perform, abstracting any interaction with the external world.
 2. Ports: Provide a way for the primary actors (on the left) to interact with the application, via the domain logic. The domain logic also uses ports for interacting with secondary actors (on the right) when needed.
 3. Adapters: A design pattern for transforming one interface into another interface. They wrap the logic for interacting with a primary or secondary actor.
 4. Primary actors: Users of the system such as a webhook, a UI request, or a test script.
 5. Secondary actors: used by the application, these services are either a Repository (for example, a database) or a Recipient (such as a message queue).
 
-Application Description
+### Application Description
 The example application is a backend web service built using Amazon API Gateway, AWS Lambda, and Amazon DynamoDB. Business logic in the domain layer should be tested with unit tests. Responses from secondary actors via ports should be mocked during unit testing to speed up test execution. 
 
 Adapter and port code can be tested in the cloud by deploying primary and secondary actors such as an API Gateway and a DynamoDB table. The test code will create an HTTP client that will send requests to the deployed API Gateway endpoint. The endpoint will invoke the primary actor, test resource configuration, IAM permissions, authorizers, internal business logic, and secondary actors of the SUT.

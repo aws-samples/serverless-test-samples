@@ -4,3 +4,4 @@ fastjsonschema
 boto3
 pytest
 moto
+pytest-cov
