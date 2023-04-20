@@ -1,4 +1,11 @@
-## Amazon Simple Queue Service (SQS) & AWS Lambda Function
+[![Built with: .Net 6](https://img.shields.io/badge/Microsoft-.Net%206-blue?style=plastic&logo=microsoft)](https://learn.microsoft.com/en-us/dotnet/core/introduction)
+[![Amazon: SQS](https://img.shields.io/badge/Amazon-SQS-blueviolet?style=plastic&logo=amazonaws)]()
+[![AWS: Lambda](https://img.shields.io/badge/AWS-Lambda-orange?style=plastic&logo=amazonaws)]()
+[![AWS: DynamoDB](https://img.shields.io/badge/Amazon-DynamoDB-darkblue?style=plastic&logo=amazonaws)]()
+[![test: unit](https://img.shields.io/badge/Test-Unit-blue?style=plastic&logo=)]()
+[![test: integration](https://img.shields.io/badge/Test-Integration-yellow?style=plastic&logo=)]()
+
+## Amazon Simple Queue Service (SQS), AWS Lambda Function & Amazon DynamoDB
 
 ### Description
 
@@ -21,10 +28,47 @@ The AWS services used in this pattern are
 
 ## Topology
 
-<img src="../docs/sqs-lambda.png" alt="topology" width="80%"/>
+### System Under Test (SUT)
 
-## Description
-The SAM template contains all the information to deploy AWS resources (An Amazon SQS queue and an AWS Lambda function) and also the permissions required by these services to communicate.
+The SUT in this pattern is a Lambda function invoked by the presence of messages in an SQS queue as the event source.
+
+![System Under Test (SUT)](../docs/sqs-lambda-sut.png)
+
+### Goal
+
+This pattern is intended to perform rapid functional testing without affecting cloud resources.  Testing is conducted in a self-contained local environment.  The test goal is to validate that the Lambda function exhibits proper message handling with both singleton messages and batch messages.
+
+### Description
+
+In this pattern the Lambda function processes SQS messages without interacting directly with the SQS queue itself, instead relying on the [default visibility and deletion behaviors](https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html) of the SQS event. This project demonstrates several techniques for executing tests including running Lambda function locally with a simulated payload as well integration tests in the cloud.
+
+![System Under Test Description (SUT)](../docs/sqs-lambda.png)
+
+This example contains an [Amazon SQS](https://aws.amazon.com/sqs/), [AWS Lambda](https://aws.amazon.com/lambda/) and [Amazon DynamoDB](https://aws.amazon.com/dynamodb/) table core resources.
+
+The AWS Lambda function in this example expects SQS Queue Event data to contain a JSON object with 6 properties:
+
+```json
+{
+    "employee_id": "string",
+    "email": "string",
+    "first_name": "string",
+    "last_name": "string",
+    "dob": "DateTime",
+    "doh": "DateTime"
+}
+```
+
+- `employee_id`: unique identifier for each individual record. Each record should have a unique `id` property value
+- `email`: email address of the employee
+- `first_name`: first name of the employee
+- `last_name`: last name of the employee
+- `dob`: date of birth of the employee
+- `doh`: date of hire of the employee
+
+The AWS Lambda function converts the incoming event data into the processed record JSON, setting the `employee_id` to be the DynamoDB Partition Key.
+
+> The SAM template contains all the information to deploy AWS resources (An Amazon SQS queue and an AWS Lambda function) and also the permissions required by these services to communicate.
 
 You will be able to create and delete the CloudFormation stack using the SAM CLI.
 
@@ -56,7 +100,7 @@ To test the application, you need to publish a message to the SQS Queue. This ca
 
 - AWS Console
   
-  <img src="./send-message.png" alt="topology" width="80%"/>
+  <img src="../docs/send-message.png" alt="topology" width="80%"/>
 
 - Send Message API: refer [SQS API Reference](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_SendMessage.html)
   
@@ -76,13 +120,13 @@ The source code for this sample includes automated unit and integration tests. [
 
 ### Unit Tests
 
-#### [ProcessEmployeeFunctionTests.cs](./tests/SqsEventHandler.UnitTests/ProcessEmployeeFunctionTests.cs)
+#### [ProcessEmployeeFunctionTests.cs](./tests/SqsEventHandler.UnitTests/Functions/ProcessEmployeeFunctionTests.cs)
 The goal of these tests is to run a unit test on the ProcessSqsMessage method which is called by the handler method of the Lambda function.
 The system under test here is completely abstracted from any cloud resources.
 
 ```c#
 [Fact]
-public async Task ProcessEmployeeFunction_Should_ExecuteSuccessfully()
+public Task ProcessEmployeeFunction_Should_ExecuteSuccessfully()
 {
     //Arrange
     var repository = new Mock<IDynamoDbRepository<EmployeeDto>>();
@@ -96,20 +140,21 @@ public async Task ProcessEmployeeFunction_Should_ExecuteSuccessfully()
     var context = new TestLambdaContext();
 
     //Act
-    var exception = await Record.ExceptionAsync(() => sut.ProcessSqsMessage(employee, context));
+    var taskResult = sut.ProcessSqsMessage(employee, context);
 
     //Assert
-    Assert.Null(exception);
+    Assert.True(taskResult.IsCompleted);
+    return Task.CompletedTask;
 }
 ```
 
-#### [SqsEventTriggerTests.cs](./tests/SqsEventHandler.UnitTests/Triggers/SqsEventTriggerTests.cs)
+#### [SqsEventHandlerTests.cs](./tests/SqsEventHandler.UnitTests/Handlers/SqsEventHandlerTests.cs)
 The goal of these tests is to run a unit test on the SqsEventTrigger which implements the handler method of the Lambda function.
 It uses [Moq](https://github.com/moq/moq4) for the mocking framework. The `ProcessSqsMessage` method is mocked.
 
 ```c#
 [Fact]
-public async Task SqsEventTrigger_Should_CallProcessSqsMessageOnce()
+public async Task SqsEventHandler_Should_CallProcessSqsMessageOnce()
 {
     //Arrange
     var expected = new EmployeeBuilder().Build();
@@ -132,11 +177,11 @@ public async Task SqsEventTrigger_Should_CallProcessSqsMessageOnce()
 To execute the tests:
 
 **Powershell**
-```powershell
+```shell
 dotnet test tests\SQSEventHandler.UnitTests\SQSEventHandler.UnitTests.csproj
 ```
 **Bash**
-```powershell
+```shell
 dotnet test tests/SQSEventHandler.UnitTests/SQSEventHandler.UnitTests.csproj
 ```
 
@@ -156,9 +201,8 @@ public async Task PublishToProcessEmployeeQueue_Should_ReturnSuccess()
     var sqsMessage = new EmployeeBuilder().WithEmployeeId(EmployeeId);
 
     //Act
-    var response = await _setup.SendMessageAsync(
-        _client,
-        _setup.SqsEventQueueUrl,
+    var response = await _processEmployeeFixture.SendMessageAsync(
+        _processEmployeeFixture.SqsEventQueueUrl,
         JsonSerializer.Serialize(sqsMessage)
     );
 
@@ -172,7 +216,7 @@ public async Task PublishToProcessEmployeeQueue_Should_UpsertEmployee()
 {
     //Act
     using var cts = new CancellationTokenSource();
-    var response = await _setup.TestEmployeeRepository!.GetItemAsync(EmployeeId, cts.Token);
+    var response = await _processEmployeeFixture.TestEmployeeRepository!.GetItemAsync(EmployeeId, cts.Token);
 
     //Assert
     response.Should().NotBeNull();
@@ -180,7 +224,7 @@ public async Task PublishToProcessEmployeeQueue_Should_UpsertEmployee()
     _testOutputHelper.WriteLine(response.ToString());
 
     //Dispose
-    _setup.CreatedEmployeeIds.Add(EmployeeId);
+    _processEmployeeFixture.CreatedEmployeeIds.Add(EmployeeId);
 }
 ```
 
@@ -189,14 +233,14 @@ public async Task PublishToProcessEmployeeQueue_Should_UpsertEmployee()
 To execute the tests:
 
 **Powershell**
-```powershell
+```shell
 $env:AWS_SAM_STACK_NAME = <STACK_NAME_USED_IN_SAM_DEPLOY>
 $env:AWS_SAM_REGION_NAME = <REGION_NAME_USED_IN_SAM_DEPLOY>
 dotnet test ./tests/SqsEventHandler.IntegrationTests/SqsEventHandler.IntegrationTests.csproj
 ```
 
 **Bash**
-```bash
+```shell
 AWS_SAM_STACK_NAME=<STACK_NAME_USED_IN_SAM_DEPLOY>
 AWS_SAM_REGION_NAME=<REGION_NAME_USED_IN_SAM_DEPLOY>
 dotnet test ./tests/SqsEventHandler.IntegrationTests/SqsEventHandler.IntegrationTests.csproj 
