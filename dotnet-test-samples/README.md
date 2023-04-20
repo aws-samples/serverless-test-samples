@@ -9,7 +9,7 @@ This project contains code samples for testing serverless applications using .NE
 ## Patterns
 
 - [API Gateway to Lambda to DynamoDB CRUD API](./apigw-lambda-ddb/): An example of simple serverless microservice with Amazon API Gateway, .NET AWS Lambda and Amazon DynamoDB with tests.
-
+- [Hexagonal architecture](./hexagonal-architecture/): An example of hexagonal architecture implemented using AWS Lambda with tests
 ## Roadmap
 
 - *Coming Soon* [load-testing](./load-testing/)
