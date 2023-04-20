@@ -1,10 +1,11 @@
 {
   "title": "Amazon Simple Queue Service (SQS), AWS Lambda Function & Amazon DynamoDB",
-  "description": "This project contains an AWS Lambda function that consumes messages from an Amazon Simple Queue Service (Amazon SQS) queue using SAM and .NET 6.",
+  "description": "This project contains an AWS Lambda function that consumes messages from an Amazon Simple Queue Service (Amazon SQS) and inserts them to Amazon DynamoDB using SAM and .NET 6.",
   "content_language": "English",
   "language": ".NET",
   "type": ["Unit", "Integration"],
-  "diagram": "../docs/sqs-lambda.png",
+  "diagram": "/../docs/sqs-lambda.png",
+  "pattern_source": "AWS",
   "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
   "framework": "SAM",
   "services": ["sqs", "lambda", "dynamodb"],
