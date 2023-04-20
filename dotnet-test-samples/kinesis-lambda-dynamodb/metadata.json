@@ -5,6 +5,7 @@
   "language": ".NET",
   "type": ["Unit", "Integration"],
   "diagram": "../docs/kinesis-system-under-test-description.png",
+  "pattern_source": "AWS",
   "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
   "framework": "SAM",
   "services": ["kinesis", "lambda", "dynamodb"],
