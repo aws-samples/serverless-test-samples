@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Amazon.Lambda.TestUtilities" Version="2.0.0" />
+    <PackageReference Include="Autofac.Extras.FakeItEasy" Version="7.0.0" />
+    <PackageReference Include="FakeItEasy" Version="7.3.1" />
+    <PackageReference Include="FluentAssertions" Version="6.10.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
+    <PackageReference Include="xunit" Version="2.4.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="coverlet.collector" Version="3.2.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\GetStock\GetStock.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Builder\" />
+    <Folder Include="Adapters\" />
+    <Folder Include="Domains\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Adapters\" />
+    <None Remove="Domains\" />
+  </ItemGroup>
+</Project>

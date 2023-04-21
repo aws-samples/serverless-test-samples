@@ -12,4 +12,8 @@ This project contains code samples for testing serverless applications using Typ
 
 These projects have excellent examples of unit and integration tests for API based applications. 
 
-* [javascript-http-sam](https://github.com/aws-samples/serverless-samples/tree/main/serverless-rest-api/javascript-http-sam) : [External] an implementation of the backend API using AWS API Gateway HTTP endpoint, Node.js and AWS SAM.
+* [javascript-http-sam](https://github.com/aws-samples/serverless-samples/tree/main/serverless-rest-api/javascript-http-sam): [External] an implementation of the backend API using AWS API Gateway HTTP endpoint, Node.js and AWS SAM.
+
+## Event Driven Architectures
+
+* [schema-and-contract-testing](https://github.com/aws-samples/serverless-test-samples/tree/main/typescript-test-samples/schema-and-contract-testing): This project contains introductory examples of TypeScript unit tests demonstrating schema and contract testing.
