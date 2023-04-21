@@ -24,7 +24,7 @@ public class SqsEventHandlerTests
     }
 
     [Fact]
-    public async Task SqsEventTrigger_Should_CallProcessSqsMessageOnce()
+    public async Task SqsEventHandler_Should_CallProcessSqsMessageOnce()
     {
         //Arrange
         var expected = new EmployeeBuilder().Build();
@@ -44,7 +44,7 @@ public class SqsEventHandlerTests
     }
 
     [Fact]
-    public async Task SqsEventTrigger_Should_CallProcessSqsMessageTwice()
+    public async Task SqsEventHandler_Should_CallProcessSqsMessageTwice()
     {
         //Arrange
         var expected1 = new EmployeeBuilder().WithEmployeeId("101");
@@ -70,7 +70,7 @@ public class SqsEventHandlerTests
     }
 
     [Fact]
-    public async Task SqsEventTrigger_Should_ReturnBatchItemFailures()
+    public async Task SqsEventHandler_Should_ReturnBatchItemFailures()
     {
         //Arrange
         var sqsEvent = new SqsEventBuilder().WithoutEmployees();
