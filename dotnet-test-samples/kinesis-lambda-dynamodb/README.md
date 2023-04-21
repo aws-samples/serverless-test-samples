@@ -131,7 +131,7 @@ The system under test here is completely abstracted from any cloud resources.
 
 ```c#
 [Fact]
-public Task ProcessEmployeeFunction_Should_ExecuteSuccessfully()
+public Task ProcessEmployeeFunction_With_ValidEmployeeRecord_Should_ProcessKinesisRecordSuccessfully()
 {
     //Arrange
     var repository = new Mock<IDynamoDbRepository<EmployeeDto>>();
@@ -159,11 +159,18 @@ It uses [Moq](https://github.com/moq/moq4) for the mocking framework. The `PutIt
 
 ```c#
 [Fact]
-public async Task KinesisEventHandler_Should_CallProcessKinesisRecordOnce()
+public async Task KinesisEventHandler_With_N_Records_Should_CallProcessKinesisRecord_N_Times()
 {
     //Arrange
-    var expected = new EmployeeBuilder().Build();
-    var kinesisEvent = new KinesisEventBuilder().WithEmployees(new[] { expected });
+    var randomNumber = (new Random()).Next(2, 20);
+    var employees = new List<Employee>();
+
+    for (var i = 0; i < randomNumber; i++)
+    {
+        employees.Add(new EmployeeBuilder().Build());
+    }
+
+    var kinesisEvent = new KinesisEventBuilder().WithEmployees(employees);
     var lambdaContext = new TestLambdaContext();
 
     //Act
@@ -173,9 +180,9 @@ public async Task KinesisEventHandler_Should_CallProcessKinesisRecordOnce()
     result.BatchItemFailures.Should().BeEmpty();
     _mockKinesisEventTrigger.Verify(x =>
             x.ProcessKinesisRecord(
-                It.Is<Employee>(employee => employee.Equals(expected)),
+                It.IsAny<Employee>(),
                 It.IsAny<ILambdaContext>()),
-        Times.Once);
+        Times.Exactly(randomNumber));
 }
 ```
 
@@ -199,11 +206,11 @@ The tests interact with the Kinesis Data Stream directly using [AmazonKinesisCli
 and tests the expected responses returned.
 
 ```c#
-[Fact, TestPriority(1)]
-public async Task WriteToEmployeeRecordsStream_Should_ReturnSuccess()
+[Fact]
+public async Task WriteToEmployeeRecordsStream_Should_Return_HTTP_OK()
 {
     //Arrange
-    var employee = new EmployeeBuilder().WithEmployeeId(EmployeeId);
+    var employee = new EmployeeBuilder().Build();
 
     //Act
     var response = await _processEmployeeFixture.StreamRecordAsync(employee);
@@ -211,23 +218,27 @@ public async Task WriteToEmployeeRecordsStream_Should_ReturnSuccess()
     //Assert
     response.Should().NotBeNull();
     response.HttpStatusCode.Should().Be(HttpStatusCode.OK);
-}
-
-[RetryFact(3, 5000), TestPriority(2)]
-public async Task WriteToEmployeeRecordsStream_Should_UpsertEmployee()
-{
-    //Act
-    using var cts = new CancellationTokenSource();
-    var response = await _processEmployeeFixture.TestEmployeeRepository!
-        .GetItemAsync(EmployeeId, cts.Token);
-
-    //Assert
-    response.Should().NotBeNull();
-    response!.EmployeeId.Should().Be(EmployeeId);
-    _testOutputHelper.WriteLine(response.ToString());
 
     //Dispose
-    _processEmployeeFixture.CreatedEmployeeIds.Add(EmployeeId);
+    _processEmployeeFixture.CreatedEmployeeIds.Add(employee.EmployeeId);
+}
+
+[Fact]
+public async Task WriteToEmployeeRecordsStream_Should_Upsert_To_EmployeeStreamTable()
+{
+    //Arrange
+    var employee = new EmployeeBuilder().Build();
+
+    //Act
+    using var cts = new CancellationTokenSource();
+    await _processEmployeeFixture.StreamRecordAsync(employee);
+    var response = await _processEmployeeFixture.PollForProcessedMessage(employee, cts.Token);
+
+    //Assert
+    response.Should().NotBeNull().And.BeEquivalentTo(employee);
+
+    //Dispose
+    _processEmployeeFixture.CreatedEmployeeIds.Add(employee.EmployeeId);
 }
 ```
 

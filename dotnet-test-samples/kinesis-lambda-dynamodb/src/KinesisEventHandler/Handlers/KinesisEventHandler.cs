@@ -10,13 +10,16 @@ using AWS.Lambda.Powertools.Tracing;
 using KinesisEventHandler.Infrastructure;
 using KinesisEventHandler.Models;
 
+// Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
+[assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
+
 namespace KinesisEventHandler.Handlers;
 
 /// <summary>
 /// This class abstracts the AWS interaction between Amazon Kinesis Data Streams (Kinesis) & AWS Lambda Function.
 /// </summary>
-/// <typeparam name="TMessage">A generic Kinesis Record Model Type</typeparam>
-public abstract class KinesisEventHandler<TMessage> where TMessage : class, new()
+/// <typeparam name="TRecord">A generic Kinesis Record Model Type</typeparam>
+public abstract class KinesisEventHandler<TRecord> where TRecord : class, new()
 {
     protected readonly IServiceProvider ServiceProvider;
     private List<KinesisEventResponse.BatchItemFailure> _batchItemFailures;
@@ -33,12 +36,19 @@ public abstract class KinesisEventHandler<TMessage> where TMessage : class, new(
     }
 
     /// <summary>
-    /// This method is completely abstracted from AWS Infrastructure and is called for every message.
+    /// This method is completely abstracted from AWS Infrastructure and is called for every record.
     /// </summary>
-    /// <param name="message">Kinesis Record Object</param>
+    /// <param name="record">Kinesis Record Object</param>
     /// <param name="lambdaContext">Lambda Context</param>
     /// <returns></returns>
-    public abstract Task ProcessKinesisRecord(TMessage message, ILambdaContext lambdaContext);
+    public abstract Task ProcessKinesisRecord(TRecord record, ILambdaContext lambdaContext);
+    
+    /// <summary>
+    /// This method is used to perform any validation on the incoming records.
+    /// </summary>
+    /// <param name="record"></param>
+    /// <returns></returns>
+    public abstract Task<bool> ValidateKinesisRecord(TRecord record);
 
     /// <summary>
     /// This method is called for every Lambda invocation. This method takes in a Kinesis event object and creates
@@ -78,10 +88,11 @@ public abstract class KinesisEventHandler<TMessage> where TMessage : class, new(
         {
             try
             {
-                var message = JsonSerializer.Deserialize<TMessage>(kinesisRecord.Kinesis.Data);
+                var record = JsonSerializer.Deserialize<TRecord>(kinesisRecord.Kinesis.Data);
 
-                // This abstract method is implemented by the concrete classes i.e. ProcessEmployeeFunction.
-                await ProcessKinesisRecord(message, lambdaContext);
+                // These abstract methods is implemented by the concrete classes i.e. ProcessEmployeeFunction.
+                await ValidateKinesisRecord(record);
+                await ProcessKinesisRecord(record, lambdaContext);
             }
             catch (Exception ex)
             {

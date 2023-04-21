@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.TestUtilities;
@@ -16,15 +20,18 @@ public class KinesisEventHandlerTests
 
     public KinesisEventHandlerTests()
     {
-        _mockKinesisEventTrigger = new Mock<KinesisEventHandler<Employee>>();
+        _mockKinesisEventTrigger = new Mock<KinesisEventHandler<Employee>>(MockBehavior.Strict);
 
         _mockKinesisEventTrigger.Setup(x =>
                 x.ProcessKinesisRecord(It.IsAny<Employee>(), It.IsAny<ILambdaContext>()))
             .Returns(Task.CompletedTask);
+        _mockKinesisEventTrigger.Setup(x =>
+                x.ValidateKinesisRecord(It.IsAny<Employee>()))
+            .ReturnsAsync(true);
     }
 
     [Fact]
-    public async Task KinesisEventHandler_Should_CallProcessKinesisRecordOnce()
+    public async Task KinesisEventHandler_With_OneRecord_Should_CallProcessKinesisRecord_Once()
     {
         //Arrange
         var expected = new EmployeeBuilder().Build();
@@ -44,12 +51,18 @@ public class KinesisEventHandlerTests
     }
 
     [Fact]
-    public async Task KinesisEventHandler_Should_CallProcessKinesisRecordTwice()
+    public async Task KinesisEventHandler_With_N_Records_Should_CallProcessKinesisRecord_N_Times()
     {
         //Arrange
-        var expected1 = new EmployeeBuilder().WithEmployeeId("101");
-        var expected2 = new EmployeeBuilder().WithEmployeeId("102");
-        var kinesisEvent = new KinesisEventBuilder().WithEmployees(new[] { expected1, expected2 });
+        var randomNumber = (new Random()).Next(2, 20);
+        var employees = new List<Employee>();
+
+        for (var i = 0; i < randomNumber; i++)
+        {
+            employees.Add(new EmployeeBuilder().Build());
+        }
+
+        var kinesisEvent = new KinesisEventBuilder().WithEmployees(employees);
         var lambdaContext = new TestLambdaContext();
 
         //Act
@@ -59,32 +72,75 @@ public class KinesisEventHandlerTests
         result.BatchItemFailures.Should().BeEmpty();
         _mockKinesisEventTrigger.Verify(x =>
                 x.ProcessKinesisRecord(
-                    It.Is<Employee>(employee => employee.Equals(expected1)),
+                    It.IsAny<Employee>(),
                     It.IsAny<ILambdaContext>()),
-            Times.Once);
-        _mockKinesisEventTrigger.Verify(x =>
-                x.ProcessKinesisRecord(
-                    It.Is<Employee>(employee => employee.Equals(expected2)),
-                    It.IsAny<ILambdaContext>()),
-            Times.Once);
+            Times.Exactly(randomNumber));
     }
 
     [Fact]
-    public async Task KinesisEventHandler_Should_ReturnBatchItemFailures()
+    public async Task KinesisEventHandler_With_Zero_Records_Should_Not_CallProcessKinesisRecord()
     {
         //Arrange
         var kinesisEvent = new KinesisEventBuilder().WithoutEmployees();
         var lambdaContext = new TestLambdaContext();
 
         //Act
-        var result = await _mockKinesisEventTrigger.Object.Handler(kinesisEvent, lambdaContext);
+        await _mockKinesisEventTrigger.Object.Handler(kinesisEvent, lambdaContext);
 
         //Assert
-        result.BatchItemFailures.Should().NotBeEmpty();
         _mockKinesisEventTrigger.Verify(x =>
                 x.ProcessKinesisRecord(
                     It.IsAny<Employee>(),
                     It.IsAny<ILambdaContext>()),
             Times.Never);
+    }
+
+    [Fact]
+    public async Task KinesisEventHandler_With_InvalidRecords_Should_Return_BatchItemFailures()
+    {
+        //Arrange
+        var randomNumber = (new Random()).Next(2, 20);
+        var validEmployees = new List<Employee>();
+        var invalidEmployees = new List<Employee>();
+
+        //Adding valid Employees
+        for (var i = 0; i < randomNumber; i++)
+        {
+            validEmployees.Add(new EmployeeBuilder().Build());
+        }
+
+        //Adding invalid Employees
+        for (var i = 0; i < randomNumber; i++)
+        {
+            invalidEmployees.Add(new EmployeeBuilder().WithEmployeeId(null));
+        }
+
+        var employees = new List<Employee>();
+        employees.AddRange(validEmployees);
+        employees.AddRange(invalidEmployees);
+        var kinesisEvent = new KinesisEventBuilder().WithEmployees(employees);
+        var lambdaContext = new TestLambdaContext();
+
+        //Setup
+        _mockKinesisEventTrigger.Setup(x =>
+                x.ValidateKinesisRecord(It.IsIn<Employee>(invalidEmployees)))
+            .ThrowsAsync(new ValidationException());
+        _mockKinesisEventTrigger.Setup(x =>
+                x.ValidateKinesisRecord(It.IsIn<Employee>(validEmployees)))
+            .ReturnsAsync(true);
+
+        //Act
+        var result = await _mockKinesisEventTrigger.Object.Handler(kinesisEvent, lambdaContext);
+
+        //Assert
+        result.BatchItemFailures.Should().HaveCount(invalidEmployees.Count).And.OnlyHaveUniqueItems();
+
+        result.BatchItemFailures
+            .Select(b => b.ItemIdentifier)
+            .Should()
+            .BeSubsetOf(
+                kinesisEvent.Records
+                    .Select(k => k.Kinesis.SequenceNumber)
+            );
     }
 }

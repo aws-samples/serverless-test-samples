@@ -14,7 +14,7 @@ public class EmployeeBuilder
             EmployeeId = "UnitTest001",
             FirstName = "Unit",
             LastName = "Test",
-            Email = "dotnet.integration@test.com",
+            Email = "dotnet.unit@test.com",
             DateOfBirth = new DateTime(1990, 11, 05),
             DateOfHire = new DateTime(2007, 11, 05)
         };

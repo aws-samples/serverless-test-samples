@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Amazon.Lambda.Core;
 using AWS.Lambda.Powertools.Logging;
@@ -9,9 +10,6 @@ using KinesisEventHandler.Repositories;
 using KinesisEventHandler.Repositories.Models;
 using Microsoft.Extensions.DependencyInjection;
 using KinesisEventHandler.Infrastructure;
-
-// Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
-[assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
 
 namespace KinesisEventHandler.Functions;
 
@@ -34,17 +32,21 @@ public class ProcessEmployeeFunction : KinesisEventHandler<Employee>
     }
 
     [Tracing(SegmentName = "ProcessEmployeeFunction")]
-    public override async Task ProcessKinesisRecord(Employee message, ILambdaContext lambdaContext)
+    public override async Task ProcessKinesisRecord(Employee record, ILambdaContext lambdaContext)
     {
-        if (message == null)
-            throw new ArgumentNullException(nameof(message));
-        if (message.EmployeeId == null)
-            throw new ArgumentNullException(nameof(message.EmployeeId));
-
         using var cts = lambdaContext.GetCancellationTokenSource();
+        var response = await _employeeRepository.PutItemAsync(record.AsDto(), cts.Token);
+        Logger.LogInformation($"{response}, {record}");
+    }
 
-        var response = await _employeeRepository.PutItemAsync(message.AsDto(), cts.Token);
+    [Tracing(SegmentName = "ProcessEmployeeFunction")]
+    public override Task<bool> ValidateKinesisRecord(Employee record)
+    {
+        if (record == null)
+            throw new ArgumentNullException(nameof(record));
+        if (string.IsNullOrEmpty(record.EmployeeId))
+            throw new ValidationException($"'{nameof(record.EmployeeId)}' cannot be null or empty");
 
-        Logger.LogInformation($"{response}, {message}");
+        return Task.FromResult(true);
     }
 }
