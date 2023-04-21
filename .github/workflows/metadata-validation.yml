@@ -49,3 +49,4 @@ jobs:
           echo $folder
           pip install -r .github/workflows/requirements.txt
           python .github/workflows/metadata_json_validator.py $folder
+        done
