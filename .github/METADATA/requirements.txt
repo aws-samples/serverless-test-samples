@@ -1,1 +1,1 @@
-aws_lambda_powertools
+jsonschema
