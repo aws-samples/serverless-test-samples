@@ -20,8 +20,8 @@ import {
 
 import { mockClient } from 'aws-sdk-client-mock';
 
-import { Product } from "../../model/Product";
-import { DynamoDbStore } from './dynamodb-store';
+import { Product } from "../../../../src/model/Product";
+import { DynamoDbStore } from '../../../../src/store/dynamodb/dynamodb-store';
 import exp from 'constants';
 import { table } from 'console';
 import { mockVariable } from '../../../test/helpers/env';
