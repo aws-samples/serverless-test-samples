@@ -130,4 +130,3 @@ apigw-lambda-dynamodb$  AWS_SAM_STACK_NAME=<stack-name> AWS_DEFAULT_REGION=<regi
 [Top](#contents)
 
 ---
-
