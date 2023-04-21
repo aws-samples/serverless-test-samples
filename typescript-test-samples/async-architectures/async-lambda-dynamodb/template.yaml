@@ -1,0 +1,158 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  This template deploys a code sample for testing an asynchronous architecture using Typescript.
+
+Parameters:
+  DeployTestResources:
+    Description: The parameter instructs the template whether or not to deploy test resources to your environment.
+    Default: "True"
+    Type: String
+    AllowedValues:
+      - "True"
+      - "False"
+    ConstraintDescription: Allowed values are True and False
+
+Conditions:
+  CreateTestResources: !Equals [!Ref DeployTestResources, "True"]
+
+Globals: # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-specification-template-anatomy-globals.html
+  Function:
+    Timeout: 15
+    MemorySize: 256
+    Runtime: nodejs18.x
+    Architectures:
+        - x86_64
+    Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
+    Environment:
+      Variables:
+        DESTINATION_BUCKET: !Sub "async-destination-${AWS::StackName}-${AWS::AccountId}"
+        RESULTS_TABLE: !Sub "async-results-${AWS::StackName}-${AWS::AccountId}"
+
+Resources:
+  SourceBucket:
+    Type: AWS::S3::Bucket
+    UpdateReplacePolicy: Delete
+    Properties:
+      BucketName: !Sub "async-source-${AWS::StackName}-${AWS::AccountId}"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  DestinationBucket:
+    Type: AWS::S3::Bucket
+    UpdateReplacePolicy: Delete
+    Properties:
+      BucketName: !Sub "async-destination-${AWS::StackName}-${AWS::AccountId}"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  ToUppercaseTextTransformer:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "ToUppercaseTextTransformer-${AWS::StackName}-${AWS::AccountId}"
+      CodeUri: src/
+      Handler: app.handler
+      Policies:
+        - S3ReadPolicy:
+            BucketName: !Sub "async-source-${AWS::StackName}-${AWS::AccountId}"
+        - S3CrudPolicy:
+            BucketName: !Sub "async-destination-${AWS::StackName}-${AWS::AccountId}"
+      Events:
+        FileUpload:
+          Type: S3
+          Properties:
+            Bucket: !Ref SourceBucket
+            Events: s3:ObjectCreated:*
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: suffix
+                    Value: ".txt"
+    Metadata: # Manage esbuild properties
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        # Sourcemap: true # Enabling source maps will create the required NODE_OPTIONS environment variables on your lambda function during sam build
+        EntryPoints: 
+          - app.ts
+
+  AsyncTransformTestResultsTable:
+    Type: AWS::DynamoDB::Table
+    Condition: CreateTestResources
+    Properties:
+      TableName: !Sub "async-results-${AWS::StackName}-${AWS::AccountId}"
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
+
+  DestinationBucketListener:
+    Type: AWS::Serverless::Function
+    Condition: CreateTestResources
+    Properties:
+      FunctionName: !Sub "DestinationBucketListener-${AWS::StackName}-${AWS::AccountId}"
+      CodeUri: src/tests/integration/
+      Handler: event_listener_lambda.handler
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref AsyncTransformTestResultsTable
+        - S3ReadPolicy:
+            BucketName: !Sub "async-destination-${AWS::StackName}-${AWS::AccountId}"
+      Events:
+        FileUpload:
+          Type: S3
+          Properties:
+            Bucket: !Ref DestinationBucket
+            Events: s3:ObjectCreated:*
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: suffix
+                    Value: ".txt"
+    Metadata: # Manage esbuild properties
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        # Sourcemap: true # Enabling source maps will create the required NODE_OPTIONS environment variables on your lambda function during sam build
+        EntryPoints: 
+          - event_listener_lambda.ts
+
+Outputs:
+  SourceBucketName:
+    Description: "Source bucket for asynchronous testing sample"
+    Value: !Ref SourceBucket
+
+  DestinationBucketName:
+    Description: "Destination bucket for asynchronous testing sample"
+    Value: !Ref DestinationBucket
+
+  DestinationBucketListenerName:
+    Condition: CreateTestResources
+    Description: "Lambda Function to listen for test results"
+    Value: !Ref DestinationBucketListener
+
+  AsyncTransformTestResultsTable:
+    Condition: CreateTestResources
+    Description: "DynamoDB table to persist test results"
+    Value: !Ref AsyncTransformTestResultsTable

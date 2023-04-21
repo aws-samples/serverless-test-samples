@@ -4,14 +4,15 @@
     "content_language": "English",
     "language": ".NET",
     "type": ["Unit", "Integration"],
-    "diagram": "../docs/apigw-lambda-ddb.jpg",
+    "diagram": "/img/apigw-lambda-ddb.jpg",
     "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
     "framework": "SAM",
     "services": ["apigw", "lambda", "dynamodb"],
+    "pattern_source": "AWS",
     "pattern_detail_tabs": [
         {
-            "title": "Application Code",
-            "filepath": "/src/"
+            "title": "Application Code Example (GetProduct)",
+            "filepath": "/src/GetProduct/Function.cs"
         },
         {
             "title": "Unit Tests",
