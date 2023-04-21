@@ -30,7 +30,7 @@ import { DynamoDbStore } from "../../../src/store/dynamodb/dynamodb-store";
 import { handler } from '../../../src/api/delete-product';
 import { inputContext } from '../../stubs/api-gateway-input-context';
 
-jest.mock('../store/dynamodb/dynamodb-store');
+jest.mock('../../../src/store/dynamodb/dynamodb-store');
 
 const mockedStore = jest.mocked(DynamoDbStore);
 
