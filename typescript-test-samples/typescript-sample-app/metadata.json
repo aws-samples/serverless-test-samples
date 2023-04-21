@@ -1,0 +1,35 @@
+{
+  "title": "Typescript Sample App",
+  "description": "This project contains automated test samples for serverless applications written in TypeScript. The project includes techniques for executing tests including mocking and testing in the cloud in the context of a larger application.",
+  "content_language": "English",
+  "language": "TypeScript",
+  "type": ["Unit","Integration"],
+  "diagram": "/imgs/diagram.png",
+  "framework": "SAM",
+  "services": ["apigw", "lambda","dynamodb"],
+  "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
+  "pattern_source": "AWS",
+  "pattern_detail_tabs": [
+      {
+          "title": "Application Code",
+          "filepath": "/src/"
+      },
+      {
+          "title": "Unit Tests - Mock",
+          "filepath": "/test/unit/"
+      },
+      {
+          "title": "Integration Tests",
+          "filepath": "/test/integration/"
+      }
+  ],
+  "authors": [
+      {
+        "name": "Brian Krygsman",
+        "image": "https://avatars.githubusercontent.com/u/3408210?v=4",
+        "bio": "Senior Solutions Architect at AWS",
+        "linkedin": "https://www.linkedin.com/in/brian-krygsman/",
+        "twitter": "https://twitter.com/brnkrygs"
+      }
+  ]
+}
