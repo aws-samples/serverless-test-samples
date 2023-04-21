@@ -4,22 +4,23 @@
     "content_language": "English",
     "language": ".NET",
     "type": ["Unit", "Integration"],
-    "diagram": "../docs/hexagonal-architecture.png.png",
+    "diagram": "/img/hexagonal-architecture.png",
     "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
+    "pattern_source": "AWS",
     "framework": "SAM",
     "services": ["apigw", "lambda", "dynamoDB"],
     "pattern_detail_tabs": [
         {
-            "title": "Application Code",
-            "filepath": "/src/"
+            "title": "Application Code Example (GetStock Functions)",
+            "filepath": "/src/GetStock/Functions.cs"
         },
         {
             "title": "Unit Tests",
-            "filepath": "/tests/GetStock.UnitTest"
+            "filepath": "/tests/GetStock.UnitTest/FunctionsTests.cs"
         },
         {
             "title": "Integration Test",
-            "filepath": "/tests/GetStock.IntegrationTests"
+            "filepath": "/tests/GetStock.IntegrationTest/Usings.cs"
         }        
     ],
     "authors": [

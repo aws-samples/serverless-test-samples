@@ -21,5 +21,10 @@ These projects have excellent in-depth examples of unit and integration tests fo
 |[API Gateway REST with SAM](https://github.com/aws-samples/serverless-samples/tree/main/serverless-rest-api/python-rest-sam) [External] | An implementation of a backend REST API using Python and AWS SAM
 
 ## Test Asynchronous Architectures
-* In a synchronous system, a calling service makes a request to a receiving service and then blocks, waiting for the receiver to complete the operation and return a result. In contrast, in an **asynchronous system**, a caller makes a request to a receiving system, which typically returns an immediate acknowledgement but then performs the requested operation at a later time. Asynchronous systems are frequently designed using event-driven architectures. These types of systems have several advantages including increased reliability, greater control over load processing, and improved scalability. However, testing these systems can present unique challenges.
-* [Learn more about testing asynchronous architectures](./async-architectures)
+In a synchronous system, a calling service makes a request to a receiving service and then blocks, waiting for the receiver to complete the operation and return a result. In contrast, in an **asynchronous system**, a caller makes a request to a receiving system, which typically returns an immediate acknowledgement but then performs the requested operation at a later time. Asynchronous systems are frequently designed using event-driven architectures. These types of systems have several advantages including increased reliability, greater control over load processing, and improved scalability. However, testing these systems can present unique challenges.
+
+[Click this link to learn more about testing asynchronous architectures](./README-ASYNC.md).
+
+|Project|Description|
+|---|---|
+|[Asynchronous Lambda and DynamoDB](./async-lambda-dynamodb)|This project contains tests for an Asynchronous pattern using AWS Lambda and Amazon DynamoDB.|
