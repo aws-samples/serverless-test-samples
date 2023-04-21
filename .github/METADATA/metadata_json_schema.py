@@ -87,7 +87,7 @@ METADATA = {
             "type": "string",
             "title": "URL of the git repo",
             "examples": ["https://github.com/aws-samples/serverless-test-samples"],
-            "pattern": "https://github.com/aws-samples/serverless-test-samples",
+            "pattern": "https://github.com/aws-samples/serverless-test-samples|https://github.com/aws-samples/*",
             "maxLength": 2048,
             "minLength": 3
         },   

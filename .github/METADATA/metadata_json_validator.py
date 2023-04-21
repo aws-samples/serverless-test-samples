@@ -37,10 +37,13 @@ def validate_metadata_json(metadata_json_filename: str) -> dict:
         if path.isfile(diagram_path) is False:
             raise FileNotFoundError("Invalid diagram path: " + metadata_contents["diagram"])
 
-        for pattern_detail in metadata_contents["pattern_detail_tabs"]:
-            detail_path = path.dirname(metadata_json_filename) + pattern_detail["filepath"]
-            if path.isfile(detail_path) is False:
-                raise FileNotFoundError("Invalid detail path: " + pattern_detail["filepath"])
+        if "https://github.com/aws-samples/serverless-test-samples" in metadata_contents["git_repo_url"]:
+            for pattern_detail in metadata_contents["pattern_detail_tabs"]:
+                detail_path = path.dirname(metadata_json_filename) + pattern_detail["filepath"]
+                if path.isfile(detail_path) is False:
+                    raise FileNotFoundError("Invalid detail path: " + pattern_detail["filepath"])
+        else:
+            print( "External repo detected, bypassing code path checks.")
 
         return {"body": "OK", "statusCode": 200}
     except FileNotFoundError as exception:
