@@ -29,7 +29,7 @@ The project uses the [AWS Serverless Application Model](https://docs.aws.amazon.
   - [app.py](src/app.py) - Lambda handler code to test
   - [template.yaml](template.yaml) - SAM script for deployment
   - [mock_test.py](tests/unit/mock_test.py) - Unit test using mocks
-  - [test_kinesis.py](tests/integration/kinesis.py) - Integration tests on a live stack
+  - [test_kinesis.py](tests/integration/test_kinesis.py) - Integration tests on a live stack
   
 [Top](#contents)
 
@@ -39,13 +39,13 @@ The project uses the [AWS Serverless Application Model](https://docs.aws.amazon.
 
 ### System Under Test (SUT)
 
-The SUT is a streaming data processing system. A Lambda function has an Event Source Mapping to a Kinesis Data Stream. The Lambda Event Source Mapping(ESM) polls the Kinesis Data Stream and then synchronously invokes the Lambda function with a batch of messages. The Lambda function processes batches of messages and writes results to a DynamoDB Table.
+The SUT is a streaming data processing system. A Lambda function has an Event Source Mapping to a Kinesis Data Stream. The Lambda Event Source Mapping (ESM) polls the Kinesis Data Stream and then synchronously invokes the Lambda function with a batch of messages. The Lambda function processes batches of messages and writes results to a DynamoDB Table.
 
 ![System Under Test (SUT)](img/system-under-test.png)
 
 ### Goal
 
-The goal of this example is to show how to test Lambda functions that are part of a streaming data processing application. In streaming workloads the number of messages that are sent to Lambda in a batch can change with the rate of messages being published to the stream, so we show testing with different sized batches.
+The goal of this example is to show how to test Lambda functions that are part of a streaming data processing application. In streaming workloads, the number of messages that are sent to Lambda in a batch can change with the rate of messages being published to the stream, so we show testing with different sized batches.
 
 ### Description
 
@@ -106,9 +106,9 @@ When you configure the Lambda ESM for Kinesis you specify a batch size. This bat
 
 ### Run the Unit Test
 
-[mock_test.py](src/tests/unit/mock_test.py)
+[mock_test.py](tests/unit/mock_test.py)
 
-In the [unit test](src/tests/unit/test-handler.test.ts#L44), all references and calls to the DynamoDB service are mocked using aws-sdk-client-mock client.
+In the [unit test](tests/unit/mock_test.py), all references and calls to the DynamoDB service are mocked using aws-sdk-client-mock client.
 To run the unit tests
 ``` shell
 # Create and Activate a Python Virtual Environment
@@ -118,7 +118,7 @@ kinesis-lambda-dynamodb$ python3 -m venv venv
 kinesis-lambda-dynamodb$ source ./venv/bin/activate
 
 # install dependencies
-kinesis-lambda-dynamodb$ pip3 install -r tests/requirements.txt
+kinesis-lambda-dynamodb$ pip3 install -r tests/requirements.txt --use-pep517
 
 # run unit tests with mocks
 kinesis-lambda-dynamodb$ python3 -m pytest -s tests/unit  -v
@@ -138,7 +138,7 @@ In order to run integration tests in the cloud we will use an event listener pat
 ![Integration Test Description](img/integration-test-description.png)
 
 ### Run the Integration Tests
-[test_kinesis.py](tests/integration/test_api_gateway.py) 
+[test_kinesis.py](tests/integration/test_kinesis.py) 
 
 For integration tests, deploy the full stack before testing:
 ```shell

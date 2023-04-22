@@ -56,8 +56,14 @@ Resources:
       BillingMode: PAY_PER_REQUEST
       SSESpecification:
         SSEEnabled: true
+    StreamSpecification:
+        !If
+        - CreateTestResources
+        -
+          StreamViewType: NEW_AND_OLD_IMAGES
+        - !Ref AWS::NoValue
     Metadata:
-      SamResourceId: DynamoDBTable
+      SamResourceId: ProcessedRecordsTable
 
   RecordProcessorFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -73,12 +79,12 @@ Resources:
       Policies:
         - AWSXrayWriteOnlyAccess
         - DynamoDBWritePolicy:
-            TableName: !Ref DynamoDBTable
+            TableName: !Ref ProcessedRecordsTable
         - KinesisStreamReadPolicy:
             StreamName: !Ref RecordsStream
       Environment:
         Variables:
-          PROCESSED_RECORDS_TABLE_NAME: !Ref DynamoDBTable
+          PROCESSED_RECORDS_TABLE_NAME: !Ref ProcessedRecordsTable
       Events:
         KinesisRecords:
           Type: Kinesis # More info about API Event Source: https://github.com/aws/serverless-application-model/blob/master/versions/2016-10-31.md#kinesis
@@ -115,7 +121,7 @@ Outputs:
 
   ProcessedRecordsTableName:
     Description: "Processed Records DynamoDB table name"
-    Value: !Ref DynamoDBTable
+    Value: !Ref ProcessedRecordsTable
 
   RecordProcessingTestResultsTableName:
     Condition: CreateTestResources
