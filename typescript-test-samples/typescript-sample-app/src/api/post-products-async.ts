@@ -49,7 +49,7 @@ const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPro
   });
 
   let products = JSON.parse(event.body ?? '[]') as MetaProduct[];
-  let errorPromises = [];
+  let errorPromises: (null | unknown)[] = [];
 
   while (products.length) {
     const batchedProducts = products.splice(0, 10); // max batch size is 10 for SQS

@@ -3,7 +3,7 @@
 
 import { describe, it, expect, beforeAll } from '@jest/globals';
 import axios from 'axios';
-import { MetaProduct, Product } from '../../src/model/Product';
+import { MetaProduct } from '../../src/model/Product';
 import { DynamoDbStore } from '../../src/store/dynamodb/dynamodb-store';
 import { ProductStore } from '../../src/store/product-store';
 import { Repeater } from '../helpers/repeater';
