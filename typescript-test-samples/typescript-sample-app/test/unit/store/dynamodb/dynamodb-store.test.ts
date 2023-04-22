@@ -19,9 +19,9 @@ import {
 } from "@aws-sdk/lib-dynamodb";
 
 import { mockClient } from 'aws-sdk-client-mock';
-
-import { Product } from "../../../../src/model/Product";
+import { mockVariable } from '../../../helpers/env';
 import { DynamoDbStore } from '../../../../src/store/dynamodb/dynamodb-store';
+import { Product } from '../../../../src/model/Product';
 
 /**
  * Set up Mocks
@@ -38,8 +38,11 @@ const mockDynamoDBClient = mockClient(DynamoDBDocumentClient);
  */
 describe( 'dynamodb-store', () => {
 
-  // The dynamo store needs this environment variable set to work properly
-  expect(process.env.TABLE_NAME).toBeDefined();
+  beforeAll(() => {
+    // The dynamo store needs this environment variable set to work properly
+    mockVariable('TABLE_NAME', 'Products');
+    expect(process.env.TABLE_NAME).toBeDefined();
+  });
 
   beforeEach(() => {
     mockDynamoDBClient.reset();

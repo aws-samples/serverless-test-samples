@@ -8,11 +8,17 @@ import {
   aws_dynamodb,
   aws_logs,
   aws_lambda,
+  aws_sqs,
+  aws_lambda_event_sources
 } from "aws-cdk-lib";
 
 export class ServerlessTypescriptDemoStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
+
+    const productsQueue = new aws_sqs.Queue(this, 'ProductsQueue', {
+      removalPolicy: RemovalPolicy.DESTROY
+    });
 
     const productsTable = new aws_dynamodb.Table(this, "Products", {
       tableName: "Products",
@@ -90,10 +96,45 @@ export class ServerlessTypescriptDemoStack extends Stack {
       }
     );
 
+    const postProductsAsyncFunction = new aws_lambda_nodejs.NodejsFunction(
+      this,
+      "PostProductsAsyncFunction",
+      {
+        awsSdkConnectionReuse: true,
+        entry: "./src/api/post-products-async.ts",
+        ...functionSettings,
+        environment: {
+          ...functionSettings.environment,
+          QUEUE_URL: productsQueue.queueUrl
+        }
+      }
+    );
+
+    const consumeProductsFunction = new aws_lambda_nodejs.NodejsFunction(
+      this,
+      "ConsumeProductsFunction",
+      {
+        awsSdkConnectionReuse: true,
+        entry: "./src/queue/consume-products.ts",
+        ...functionSettings,
+        environment: {
+          ...functionSettings.environment,
+          QUEUE_URL: productsQueue.queueUrl,
+        }
+      }
+    );
+
     productsTable.grantReadData(getProductsFunction);
     productsTable.grantReadData(getProductFunction);
     productsTable.grantWriteData(deleteProductFunction);
     productsTable.grantWriteData(putProductFunction);
+    productsTable.grantWriteData(consumeProductsFunction);
+
+    productsQueue.grantSendMessages(postProductsAsyncFunction);
+    productsQueue.grantConsumeMessages(consumeProductsFunction);
+
+    const productsEventSource = new aws_lambda_event_sources.SqsEventSource(productsQueue);
+    consumeProductsFunction.addEventSource(productsEventSource);
 
     const api = new aws_apigateway.RestApi(this, "ProductsApi", {
       restApiName: "ProductsApi",
@@ -109,6 +150,10 @@ export class ServerlessTypescriptDemoStack extends Stack {
     products.addMethod(
       "GET",
       new aws_apigateway.LambdaIntegration(getProductsFunction)
+    );
+    products.addMethod(
+      "POST",
+      new aws_apigateway.LambdaIntegration(postProductsAsyncFunction)
     );
 
     const product = products.addResource("{id}");
@@ -126,7 +171,7 @@ export class ServerlessTypescriptDemoStack extends Stack {
     );
 
     new CfnOutput(this, "ApiURL", {
-      value: `${api.url}products`,
+      value: api.url,
     });
   }
 }
