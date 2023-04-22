@@ -24,6 +24,7 @@ import { Product } from "../../model/Product";
 import { DynamoDbStore } from './dynamodb-store';
 import exp from 'constants';
 import { table } from 'console';
+import { mockVariable } from '../../../test/helpers/env';
 
 /**
  * Set up Mocks
@@ -40,8 +41,11 @@ const mockDynamoDBClient = mockClient(DynamoDBDocumentClient);
  */
 describe( 'dynamodb-store', () => {
 
-  // The dynamo store needs this environment variable set to work properly
-  expect(process.env.TABLE_NAME).toBeDefined();
+  beforeAll(() => {
+    // The dynamo store needs this environment variable set to work properly
+    mockVariable('TABLE_NAME', 'Products');
+    expect(process.env.TABLE_NAME).toBeDefined();
+  });
 
   beforeEach(() => {
     mockDynamoDBClient.reset();
