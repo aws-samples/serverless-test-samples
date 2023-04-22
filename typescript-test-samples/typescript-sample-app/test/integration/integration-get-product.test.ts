@@ -30,15 +30,7 @@ import axios, { AxiosResponse } from 'axios';
 import { seedData, unseedData } from '../helpers/dynamodb-test-helpers';
 
 import { Product } from '../../src/model/Product';
-
-/**
- * Validate environment
- */
-if(!process.env.API_URL)
-  throw new Error('API_URL environment variable not set.');
-
-if(!process.env.TABLE_NAME)
-  throw new Error('TABLE_NAME environment variable not set.');
+import { mockVariable } from '../helpers/env';
 
 describe('API Integration tests: GET Product', () => {
   /**
@@ -68,6 +60,16 @@ describe('API Integration tests: GET Product', () => {
   let baseApiUrl :string;
 
   beforeAll(async () => {
+    /**
+     * Validate environment
+     */
+    if(!process.env.API_URL)
+      throw new Error('API_URL environment variable not set.');
+
+    mockVariable('TABLE_NAME', 'Products');
+    if(!process.env.TABLE_NAME)
+      throw new Error('TABLE_NAME environment variable not set.');
+
     baseApiUrl = process.env.API_URL as string;
     if(!baseApiUrl.endsWith('/')) baseApiUrl += '/';
 
