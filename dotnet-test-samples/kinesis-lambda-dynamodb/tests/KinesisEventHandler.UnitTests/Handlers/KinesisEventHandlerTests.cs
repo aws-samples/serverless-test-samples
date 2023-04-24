@@ -16,7 +16,19 @@ namespace KinesisEventHandler.UnitTests.Handlers;
 
 public class KinesisEventHandlerTests
 {
-    private Mock<KinesisEventHandler<Employee>> _mockKinesisEventTrigger;
+    private Mock<KinesisEventHandler<Employee>> InitializeMockKinesisEventHandler()
+    {
+        var mockKinesisEventTrigger = new Mock<KinesisEventHandler<Employee>>(MockBehavior.Strict);
+
+        mockKinesisEventTrigger.Setup(x =>
+                x.ProcessKinesisRecord(It.IsAny<Employee>(), It.IsAny<ILambdaContext>()))
+            .Returns(Task.CompletedTask);
+        mockKinesisEventTrigger.Setup(x =>
+                x.ValidateKinesisRecord(It.IsAny<Employee>()))
+            .ReturnsAsync(true);
+
+        return mockKinesisEventTrigger;
+    }
 
     [Fact]
     public async Task KinesisEventHandler_With_OneRecord_Should_CallProcessKinesisRecord_Once()
@@ -25,23 +37,16 @@ public class KinesisEventHandlerTests
         var expected = new EmployeeBuilder().Build();
         var kinesisEvent = new KinesisEventBuilder().WithEmployees(new[] { expected });
         var lambdaContext = new TestLambdaContext();
-        
-        //Setup
-        _mockKinesisEventTrigger = new Mock<KinesisEventHandler<Employee>>(MockBehavior.Strict);
 
-        _mockKinesisEventTrigger.Setup(x =>
-                x.ProcessKinesisRecord(It.IsAny<Employee>(), It.IsAny<ILambdaContext>()))
-            .Returns(Task.CompletedTask);
-        _mockKinesisEventTrigger.Setup(x =>
-                x.ValidateKinesisRecord(It.IsAny<Employee>()))
-            .ReturnsAsync(true);
+        //Setup
+        var mockKinesisEventTrigger = InitializeMockKinesisEventHandler();
 
         //Act
-        var result = await _mockKinesisEventTrigger.Object.Handler(kinesisEvent, lambdaContext);
+        var result = await mockKinesisEventTrigger.Object.Handler(kinesisEvent, lambdaContext);
 
         //Assert
         result.BatchItemFailures.Should().BeEmpty();
-        _mockKinesisEventTrigger.Verify(x =>
+        mockKinesisEventTrigger.Verify(x =>
                 x.ProcessKinesisRecord(
                     It.Is<Employee>(employee => employee.Equals(expected)),
                     It.IsAny<ILambdaContext>()),
@@ -49,40 +54,32 @@ public class KinesisEventHandlerTests
     }
 
     [Fact]
-    public async Task KinesisEventHandler_With_N_Records_Should_CallProcessKinesisRecord_N_Times()
+    public async Task KinesisEventHandler_With_10_Records_Should_CallProcessKinesisRecord_10_Times()
     {
         //Arrange
-        var randomNumber = (new Random()).Next(2, 20);
         var employees = new List<Employee>();
 
-        for (var i = 0; i < randomNumber; i++)
+        for (var i = 0; i < 10; i++)
         {
             employees.Add(new EmployeeBuilder().Build());
         }
 
         var kinesisEvent = new KinesisEventBuilder().WithEmployees(employees);
         var lambdaContext = new TestLambdaContext();
-        
-        //Setup
-        _mockKinesisEventTrigger = new Mock<KinesisEventHandler<Employee>>(MockBehavior.Strict);
 
-        _mockKinesisEventTrigger.Setup(x =>
-                x.ProcessKinesisRecord(It.IsAny<Employee>(), It.IsAny<ILambdaContext>()))
-            .Returns(Task.CompletedTask);
-        _mockKinesisEventTrigger.Setup(x =>
-                x.ValidateKinesisRecord(It.IsAny<Employee>()))
-            .ReturnsAsync(true);
+        //Setup
+        var mockKinesisEventTrigger = InitializeMockKinesisEventHandler();
 
         //Act
-        var result = await _mockKinesisEventTrigger.Object.Handler(kinesisEvent, lambdaContext);
+        var result = await mockKinesisEventTrigger.Object.Handler(kinesisEvent, lambdaContext);
 
         //Assert
         result.BatchItemFailures.Should().BeEmpty();
-        _mockKinesisEventTrigger.Verify(x =>
+        mockKinesisEventTrigger.Verify(x =>
                 x.ProcessKinesisRecord(
                     It.IsAny<Employee>(),
                     It.IsAny<ILambdaContext>()),
-            Times.Exactly(randomNumber));
+            Times.Exactly(employees.Count));
     }
 
     [Fact]
@@ -91,22 +88,15 @@ public class KinesisEventHandlerTests
         //Arrange
         var kinesisEvent = new KinesisEventBuilder().WithoutEmployees();
         var lambdaContext = new TestLambdaContext();
-        
-        //Setup
-        _mockKinesisEventTrigger = new Mock<KinesisEventHandler<Employee>>(MockBehavior.Strict);
 
-        _mockKinesisEventTrigger.Setup(x =>
-                x.ProcessKinesisRecord(It.IsAny<Employee>(), It.IsAny<ILambdaContext>()))
-            .Returns(Task.CompletedTask);
-        _mockKinesisEventTrigger.Setup(x =>
-                x.ValidateKinesisRecord(It.IsAny<Employee>()))
-            .ReturnsAsync(true);
+        //Setup
+        var mockKinesisEventTrigger = InitializeMockKinesisEventHandler();
 
         //Act
-        await _mockKinesisEventTrigger.Object.Handler(kinesisEvent, lambdaContext);
+        await mockKinesisEventTrigger.Object.Handler(kinesisEvent, lambdaContext);
 
         //Assert
-        _mockKinesisEventTrigger.Verify(x =>
+        mockKinesisEventTrigger.Verify(x =>
                 x.ProcessKinesisRecord(
                     It.IsAny<Employee>(),
                     It.IsAny<ILambdaContext>()),
@@ -140,20 +130,18 @@ public class KinesisEventHandlerTests
         var lambdaContext = new TestLambdaContext();
 
         //Setup
-        _mockKinesisEventTrigger = new Mock<KinesisEventHandler<Employee>>(MockBehavior.Strict);
+        var mockKinesisEventTrigger = InitializeMockKinesisEventHandler();
 
-        _mockKinesisEventTrigger.Setup(x =>
-                x.ProcessKinesisRecord(It.IsAny<Employee>(), It.IsAny<ILambdaContext>()))
-            .Returns(Task.CompletedTask);
-        _mockKinesisEventTrigger.Setup(x =>
+        //Specific mock for this test
+        mockKinesisEventTrigger.Setup(x =>
                 x.ValidateKinesisRecord(It.IsIn<Employee>(invalidEmployees)))
             .ThrowsAsync(new ValidationException());
-        _mockKinesisEventTrigger.Setup(x =>
+        mockKinesisEventTrigger.Setup(x =>
                 x.ValidateKinesisRecord(It.IsIn<Employee>(validEmployees)))
             .ReturnsAsync(true);
 
         //Act
-        var result = await _mockKinesisEventTrigger.Object.Handler(kinesisEvent, lambdaContext);
+        var result = await mockKinesisEventTrigger.Object.Handler(kinesisEvent, lambdaContext);
 
         //Assert
         result.BatchItemFailures.Should().HaveCount(invalidEmployees.Count).And.OnlyHaveUniqueItems();
