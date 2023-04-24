@@ -1,0 +1,34 @@
+{
+  "title": "Schema and Contract Testing for Event-Driven Architectures Samples Project",
+  "description": "This project contains automated test samples for schema and contract testing for events.",
+  "content_language": "English",
+  "language": "Python",
+  "type": ["Unit"],
+  "diagram": ["/img/schema_testing.png", "/img/contract_testing.png"],
+  "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
+  "pattern_source": "AWS",
+  "pattern_detail_tabs": [
+    {
+      "title": "Schema Tests",
+      "filepath": "/tests/test_schema.py"
+    },
+    {
+      "title": "Contract Tests",
+      "filepath": "/tests/test_contract.py"
+    }
+  ],
+  "authors": [
+    {
+      "name": "Arthi Jaganathan",
+      "image": "https://media.licdn.com/dms/image/C5603AQGmkzZORs2pgA/profile-displayphoto-shrink_200_200/0/1660822331422?e=1687392000&v=beta&t=p8BXOv1ADhDT80S6l6fDf9YHIdfFh-VoWsqVUsMlsPY",
+      "bio": "Principal Serverless Solutions Architect at AWS",
+      "linkedin": "https://www.linkedin.com/in/arthi-jaganathan-b3b95644/"
+    },
+    {
+      "name": "Katherine Vishnevskaya",
+      "image": "https://avatars.githubusercontent.com/u/26699700",
+      "bio": "Solutions Architect at AWS",
+      "linkedin": "https://www.linkedin.com/in/katherine-vishnevskaya/"
+    }
+  ]
+}
