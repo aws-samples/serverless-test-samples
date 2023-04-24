@@ -4,11 +4,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqsEventHandler", "src\SqsE
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqsEventHandler.UnitTests", "tests\SqsEventHandler.UnitTests\SqsEventHandler.UnitTests.csproj", "{70EB2F02-CE96-4A99-B7D0-4DA06ACC4061}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{00140B9F-D533-4F2C-85B4-ABAEA8529CE4}"
-	ProjectSection(SolutionItems) = preProject
-		README.md = README.md
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0CFC5F99-9F8B-4703-AC45-5536D7075C8D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{77FA1BAD-35CA-4CAE-AEDA-70640E39D80E}"
