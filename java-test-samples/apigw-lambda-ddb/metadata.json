@@ -7,20 +7,20 @@
     "diagram": "/docs/TicketTopology.png",
     "framework": "SAM",
     "services": ["apigw", "lambda", "dynamodb"],
-    "git_repo_url": "https://github.com/aws-samples/aws-stepfunctions-examples/tree/main/sam/demo-local-testing-using-java",
+    "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
     "pattern_source": "AWS",
     "pattern_detail_tabs": [
         {
             "title": "Application Code",
-            "filepath": "/TicketFunction/src/main/java/com/example/TicketFunction.java"
+            "filepath": "/TicketsFunction/src/main/java/com/example/TicketFunction.java"
         },
         {
             "title": "Unit Tests",
-            "filepath": "/TicketFunction/src/test/java/com/example/TicketFunctionMockTest.java"
+            "filepath": "/TicketsFunction/src/test/java/com/example/TicketFunctionMockTest.java"
         },
         {
             "title": "Integration Test",
-            "filepath": "/TicketFunction/src/test/java/com/example/TicketFunctionIntegrationTest.java"
+            "filepath": "/TicketsFunction/src/test/java/com/example/TicketFunctionIntegrationTest.java"
         },
         {
           "title": "Load Test",
@@ -39,15 +39,13 @@
           "name": "Rahul Popat",
           "image": "https://media.licdn.com/dms/image/C4E03AQFM5sRp_8nsnQ/profile-displayphoto-shrink_400_400/0/1594949331033?e=1684368000&v=beta&t=7plmbrKM3n92zwVx5YZ8kh0DOJY1NO-NZFkyPoHjq-k",
           "bio": "Senior Specialist Solutions Architect at AWS",
-          "linkedin": "https://www.linkedin.com/in/rahulpopat",
-          "twitter": ""
+          "linkedin": "https://www.linkedin.com/in/rahulpopat"
         },
         {
           "name": "Aneel Murari",
           "image": "https://media.licdn.com/dms/image/C4E03AQEKB5q7oE1Vug/profile-displayphoto-shrink_400_400/0/1517729240352?e=1684368000&v=beta&t=gqSVXveSHrXQK9ZHNIKB1ihV8gjqjOZ2gMTeW3_86mQ",
           "bio": "Senior Specialist Solutions Architect at AWS",
-          "linkedin": "https://www.linkedin.com/in/aneelmurari",
-          "twitter": ""
+          "linkedin": "https://www.linkedin.com/in/aneelmurari"
         }
     ]
 }

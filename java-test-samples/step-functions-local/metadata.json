@@ -7,20 +7,20 @@
     "diagram": "/images/stepfunctions_local_test.png",
     "framework": "SAM",
     "services": ["stepfunctions", "lambda", "dynamodb", "eventbridge"],
-    "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
+    "git_repo_url": "https://github.com/aws-samples/aws-stepfunctions-examples",
     "pattern_source": "AWS",
     "pattern_detail_tabs": [
         {
             "title": "Application Code",
-            "filepath": "/aws-stepfunctions-examples/sam/demo-local-testing-using-java/statemachine/local_testing.asl.json"
+            "filepath": "/sam/demo-local-testing-using-java/statemachine/local_testing.asl.json"
         },
         {
             "title": "Unit Tests",
-            "filepath": "/aws-stepfunctions-examples/sam/demo-local-testing-using-java/src/test/java/com/example/sfn/StepFunctionsLocalJUnitTest.java"
+            "filepath": "/sam/demo-local-testing-using-java/src/test/java/com/example/sfn/StepFunctionsLocalJUnitTest.java"
         },
         {
             "title": "Integration Test",
-            "filepath": "aws-stepfunctions-examples/sam/demo-local-testing-using-java/src/test/groovy/com/example/sfn/StepFunctionsLocalSpockSpec.groovy"
+            "filepath": "/sam/demo-local-testing-using-java/src/test/groovy/com/example/sfn/StepFunctionsLocalSpockSpec.groovy"
         }
     ],
     "authors": [
