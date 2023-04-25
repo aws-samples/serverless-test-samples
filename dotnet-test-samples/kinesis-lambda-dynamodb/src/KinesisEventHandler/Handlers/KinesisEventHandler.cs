@@ -42,7 +42,7 @@ public abstract class KinesisEventHandler<TRecord> where TRecord : class, new()
     /// <param name="lambdaContext">Lambda Context</param>
     /// <returns></returns>
     public abstract Task ProcessKinesisRecord(TRecord record, ILambdaContext lambdaContext);
-    
+
     /// <summary>
     /// This method is used to perform any validation on the incoming records.
     /// </summary>
@@ -62,6 +62,7 @@ public abstract class KinesisEventHandler<TRecord> where TRecord : class, new()
     [Tracing(Namespace = "KinesisEventHandler", SegmentName = "KinesisEventHandler")]
     public async Task<KinesisEventResponse> Handler(KinesisEvent kinesisEvent, ILambdaContext lambdaContext)
     {
+        Metrics.AddMetric("Employees", kinesisEvent.Records.Count, MetricUnit.Count);
         await ProcessEvent(kinesisEvent, lambdaContext);
 
         // Set BatchItemFailures if any
