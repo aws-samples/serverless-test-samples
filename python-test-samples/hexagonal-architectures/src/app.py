@@ -16,10 +16,16 @@ from src.adapters import HandleStockRequest
 
 def lambda_handler(event, context) -> dict:
     try:
-        stockID = event["pathParameters"]["stockID"]
+        print(event)
+        stockID = event["pathParameters"]["StockID"]
         response = HandleStockRequest.getStocksRequest(stockID)
         print("Response", response)
         return response
+    except ValueError as e:
+        print("V", e)
+        return {
+            "statusCode": 404,
+            "body": "Stock not found"
+        }
     except Exception as e:
-        print(e)
         raise
