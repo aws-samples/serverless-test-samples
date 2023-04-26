@@ -4,6 +4,9 @@
   "content_language": "English",
   "language": "TypeScript",
   "type": ["Unit"],
+  "services": [
+        "eventbridge"
+   ],
   "diagram": "/img/schema_testing.png",
   "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
   "pattern_source": "AWS",
