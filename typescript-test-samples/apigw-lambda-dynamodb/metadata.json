@@ -2,7 +2,7 @@
   "title": "Typescript: Amazon Api Gateway, AWS Lambda, Amazon DynamoDB Example",
   "description": "This project contains introductory examples of TypeScript tests written for AWS Lambda.",
   "content_language": "English",
-  "language": "Typescript",
+  "language": "TypeScript",
   "type": ["Unit","Integration"],
   "diagram": "/img/system-under-test.png",
   "framework": "SAM",
