@@ -43,7 +43,7 @@ This project uses the `make` build automation tool to provide convenient command
 - `make install` - Install virtual environment
 - `make build` - Build the project locally.
 
-[[top]](#asynchronous-integration-test-with-lambda-event-listener-and-dynamodb)ma
+[[top]](#asynchronous-integration-test-with-lambda-event-listener-and-dynamodb)
 
 ## Deploy project resources to the cloud
 
