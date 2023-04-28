@@ -4,9 +4,11 @@
   "content_language": "English",
   "language": "Python",
   "type": ["Unit"],
-  "diagram": ["/img/schema_testing.png", "/img/contract_testing.png"],
+  "diagram": "/img/schema_testing.png",
   "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
   "pattern_source": "AWS",
+  "framework": "Serverless Framework",
+  "services": ["lambda"],
   "pattern_detail_tabs": [
     {
       "title": "Schema Tests",
