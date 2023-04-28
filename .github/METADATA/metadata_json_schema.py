@@ -66,7 +66,7 @@ METADATA = {
             "type": "string",
             "title": "Deployment Framework for the pattern",
             "examples": ["SAM"],
-            "pattern": "SAM|Cloudformation|CDK|Local",
+            "pattern": "CDK|SAM|Amplify|CloudFormation|Serverless Framework",
             "maxLength": 60,
             "minLength": 3
         },      
