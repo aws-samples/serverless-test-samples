@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field
 
 
 class Customer(BaseModel):
+    """Class representing a customer"""
     customerId: str = Field(
         ..., examples=['577af109-1f19-4d0a-9c56-359f44ca0034'], title='Customerid'
     )
