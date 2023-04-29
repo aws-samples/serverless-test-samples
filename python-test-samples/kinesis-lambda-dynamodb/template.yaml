@@ -64,7 +64,7 @@ Resources:
     Properties:
       CodeUri: src/
       Handler: app.lambda_handler
-      Runtime: python3.7
+      Runtime: python3.9
       Architectures:
         - x86_64
       Tracing: Active

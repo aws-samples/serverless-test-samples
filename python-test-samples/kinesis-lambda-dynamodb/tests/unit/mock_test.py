@@ -65,7 +65,7 @@ class TestKinesisLambdaWithDynamoDB(TestCase):
         """
         try:
             
-            with open(f"{test_event_file_name}.json","r") as file_name:
+            with open(f"tests/events/{test_event_file_name}.json","r") as file_name:
                 event = json.load(file_name)
                 return event
         except json.decoder.JSONDecodeError:

@@ -17,12 +17,11 @@ The project uses the [AWS Serverless Application Model](https://docs.aws.amazon.
 - [Python: Amazon Kinesis, AWS Lambda, Amazon DynamoDB Example](#python-amazon-kinesis-aws-lambda-amazon-dynamodb-example)
   - [Introduction](#introduction)
   - [Contents](#contents)
-  - [About this Pattern](#pattern)
-  - [About this example](#example)
-    - [Key Files in the Project](#key-files-in-the-project)
+  - [About this Pattern](#about-this-pattern)
+  - [Key Files in the Project](#key-files-in-the-project)
   - [Sample project description](#sample-project-description)
   - [Run the Unit Test](#run-the-unit-test)
-  - [Run the Integration Test](#run-the-integration-test)
+  - [Integration Test](#run-the-integration-test)
 ---
 
 ## Key Files in the Project
@@ -83,13 +82,6 @@ The AWS Lambda function processes records by writing them in batches into the Dy
 
 The AWS Lambda function converts the incoming event data into the processed record JSON, setting the `PK` (DDB Partition Key) to be the value of `batch` event record property and `SK` (DDB Sort Key) to be the value of `id` event record propert.
 
-### Key Files in the Project
-
-  - [app.py](src/app.py) - Lambda handler code to test
-  - [template.yaml](template.yaml) - SAM script for deployment
-  - [mock_test.py](src/tests/unit/mock_test.py) - Unit test using mocks
-  - [test_kinesis.py](src/tests/integration/test_kinesis.py) - Integration
-
 [Top](#contents)
 ---
 
@@ -146,13 +138,9 @@ kinesis-lambda-dynamodb$ sam build
 kinesis-lambda-dynamodb$ sam deploy --guided
 ```
 
-The [integration tests](src/tests/integration/test_kinesis.py) needs to be provided a single environment variable `AWS_SAM_STACK_NAME` - the AWS CloudFormation Stack name of the stack that was deployed using the `sam deploy` command.
+The [integration tests](tests/integration/test_kinesis.py) needs to be provided a single environment variable `AWS_SAM_STACK_NAME` - the AWS CloudFormation Stack name of the stack that was deployed using the `sam deploy` command.
 
 Set up the environment variables, replacing the `<PLACEHOLDERS>` with your values:
-
-```shell
-src $ export AWS_SAM_STACK_NAME=<YOUR_AWS_SAM_STACK_NAME>
-```
 
 ```shell
 # Set the environment variables AWS_SAM_STACK_NAME and (optionally)AWS_DEFAULT_REGION 
