@@ -19,9 +19,8 @@ The project uses the [AWS Serverless Application Model](https://docs.aws.amazon.
   - [Contents](#contents)
   - [About this Pattern](#about-this-pattern)
   - [Key Files in the Project](#key-files-in-the-project)
-  - [Sample project description](#sample-project-description)
   - [Run the Unit Test](#run-the-unit-test)
-  - [Integration Test](#run-the-integration-test)
+  - [Run the Integration Tests](#run-the-integration-tests)
 ---
 
 ## Key Files in the Project
