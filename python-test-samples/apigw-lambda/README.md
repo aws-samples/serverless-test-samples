@@ -249,3 +249,5 @@ aws cloudformation delete-stack --stack-name apigw-lambda
 See the [AWS SAM developer guide](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) for an introduction to SAM specification, the SAM CLI, and serverless application concepts.
 
 Check out [serverlessland.com](https://serverlessland.com/) to view the latest blogs, videos and training for AWS Serverless. 
+
+
