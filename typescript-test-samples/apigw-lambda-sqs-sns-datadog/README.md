@@ -1,5 +1,7 @@
 # Testing Serverless architectures with Datadog
 
+This example is about creating Synthetic Tests and Monitors, to ensure Serverless services are functioning properly in a real, AWS environment.
+
 Datadog makes it easy to add logging, metrics, distributed tracing, profiling, and more to Serverless architectures built on AWS.
 
 For this testing experience we'll use API Gateway, SNS, SQS, and Lambda:
