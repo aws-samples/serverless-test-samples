@@ -52,7 +52,7 @@ This is a demanding load test, to change the rate alter the `arrivalRate` value 
 
 ## Unit Tests
 
-1. Open a terminal window in the root folder of this project and set the API_URL environment variable. You can find this URL in the AWS Console after deploying the infrastructure by following the instructions in Deployment above. Navigate to the API Gateway console app > this project's API > Stages. Copy the `Invoke URL`.
+1. Open a terminal window in the root folder of this project and set the API_URL environment variable. You can find this URL in the AWS Console after deploying the infrastructure by following the instructions in Deployment above. Navigate to the API Gateway console app > this project's API > Stages. Copy the `Invoke URL`. Back in your terminal window, execute this command: `export API_URL=the_URL_you_copied`
 2. In the same terminal window, execute `npx jest`.
 
 ## Monitoring

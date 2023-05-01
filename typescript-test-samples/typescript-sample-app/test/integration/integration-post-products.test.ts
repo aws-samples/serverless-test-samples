@@ -41,7 +41,7 @@ describe('API Integration tests: POST Products Async', () => {
   });
 
   describe('POST /products', () => {
-    const batchCounts = [3, 5, 10, 15]; // max batch is 10 for SQS
+    const batchCounts = [3, 5, 10, 15];
     it.each(batchCounts)('should queue a batch of %s products in SQS and eventually write them to DynamoDB', async (batchCount: number) => {
       const products = createProducts(batchCount);
 
