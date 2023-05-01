@@ -57,7 +57,8 @@ Datadog tracks the performance of your webpages and APIs from the backend to the
 5. Finally we can `test` our endpoint!
 ![](./images/successful_synthetic_test.png)
 
-6. Let's schedule this test to run once per day, from N. Virginia (us-east-1).
+6. Let's schedule this test to run once per day, from N. Virginia (us-east-1). We can assert on the response code, body, and more!
+![](./images/synthetics_assertion.png)
 
 ## Monitoring
 In addition to active tracing and synthetics testing, we can create a monitor which can alert us if the service throws any errors.
