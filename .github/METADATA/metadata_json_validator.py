@@ -16,7 +16,7 @@ python3 .github/METADATA/metadata_json_validator.py python-test-samples/apigw-la
 from os import path
 import json
 import argparse
-from aws_lambda_powertools.utilities.validation import SchemaValidationError, validate
+import jsonschema
 from metadata_json_schema import METADATA
 
 
@@ -28,31 +28,35 @@ def validate_metadata_json(metadata_json_filename: str) -> dict:
     """
     try:
 
+        schema_errors = []
+
         with open(metadata_json_filename,"r", encoding="utf-8") as metadata_object:
             metadata_contents = json.load(metadata_object)
 
-        validate(event=metadata_contents, schema=METADATA)
+        validator = jsonschema.Draft7Validator(METADATA)
+        schema_errors = [x for x in validator.iter_errors(metadata_contents)] 
 
         diagram_path = path.dirname(metadata_json_filename) + metadata_contents["diagram"]
         if path.isfile(diagram_path) is False:
-            raise FileNotFoundError("Invalid diagram path: " + metadata_contents["diagram"])
+            schema_errors.append("Invalid diagram path: " + metadata_contents["diagram"])
 
         if "https://github.com/aws-samples/serverless-test-samples" in metadata_contents["git_repo_url"]:
             for pattern_detail in metadata_contents["pattern_detail_tabs"]:
                 detail_path = path.dirname(metadata_json_filename) + pattern_detail["filepath"]
                 if path.isfile(detail_path) is False:
-                    raise FileNotFoundError("Invalid detail path: " + pattern_detail["filepath"])
+                    schema_errors.append("Invalid detail path: " + pattern_detail["filepath"])
         else:
             print( "External repo detected, bypassing code path checks.")
 
+        if len(schema_errors) > 0:
+            return {"body": str(schema_errors), "statusCode": 406}
+     
         return {"body": "OK", "statusCode": 200}
+    
     except FileNotFoundError as exception:
-        return {"body": str(exception), "statusCode": 404}
-    except SchemaValidationError as exception:
-        # SchemaValidationError indicates where a data mismatch is
-        return {"body": str(exception), "statusCode": 406}
+        return {"body": str([exception.filename + " not found"]), "statusCode": 404}
     except Exception as exception:
-        return {"body": str(exception), "statusCode": 422}
+        return {"body": str([exception]), "statusCode": 422}
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(

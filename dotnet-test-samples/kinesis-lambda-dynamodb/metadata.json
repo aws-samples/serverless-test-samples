@@ -1,26 +1,26 @@
 {
-  "title": "Amazon Simple Queue Service (SQS), AWS Lambda Function & Amazon DynamoDB",
-  "description": "This project contains an AWS Lambda function that consumes messages from an Amazon Simple Queue Service (Amazon SQS) and inserts them to Amazon DynamoDB using SAM and .NET 6.",
+  "title": "Amazon Kinesis Data Streams with AWS Lambda Function & Amazon DynamoDB",
+  "description": "This pattern creates an AWS Lambda function that consumes messages from an Amazon Kinesis Data Streams and dumps them to Amazon DynamoDB using SAM and .NET 6.",
   "content_language": "English",
   "language": ".NET",
   "type": ["Unit", "Integration"],
-  "diagram": "/img/sqs-lambda.png",
+  "diagram": "/../docs/kinesis-system-under-test-description.png",
+  "pattern_source": "AWS",
   "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
   "framework": "SAM",
-  "services": ["sqs", "lambda", "dynamodb"],
-  "pattern_source": "AWS",
+  "services": ["kinesis", "lambda", "dynamodb"],
   "pattern_detail_tabs": [
     {
       "title": "Application Code",
-      "filepath": "/src/SQSEventHandler/Functions/ProcessEmployeeFunction.cs"
+      "filepath": "/src/KinesisEventHandler/Functions/ProcessEmployeeFunction.cs"
     },
     {
       "title": "Unit Tests",
-      "filepath": "/tests/SqsEventHandler.UnitTests/Functions/ProcessEmployeeFunctionTests.cs"
+      "filepath": "/tests/KinesisEventHandler.UnitTests/Functions/ProcessEmployeeFunctionTests.cs"
     },
     {
       "title": "Integration Tests",
-      "filepath": "/tests/SqsEventHandler.IntegrationTests/ProcessEmployeeTests.cs"
+      "filepath": "/tests/KinesisEventHandler.IntegrationTests/ProcessEmployeeTests.cs"
     }
   ],
   "authors": [
