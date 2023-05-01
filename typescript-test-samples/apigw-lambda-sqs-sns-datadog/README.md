@@ -57,7 +57,7 @@ Datadog tracks the performance of your webpages and APIs from the backend to the
 In addition to active tracing and synthetics testing, we can create a monitor which can alert us if the service throws any errors.
 
 1. Select `Monitors -> New Monitor` from the left nav.
-![]('./images/new_monitor.png')
+![](./images/new_monitor.png)
 2. Choose `APM Monitor`
 3. Find our service:
 4. Create a new error monitor:
