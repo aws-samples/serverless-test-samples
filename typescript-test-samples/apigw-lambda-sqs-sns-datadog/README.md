@@ -43,14 +43,14 @@ Great! Now it's time to automate this test.
 Datadog tracks the performance of your webpages and APIs from the backend to the frontend, and at various network levels (HTTP, SSL, DNS, WebSocket, TCP, UDP, ICMP, and gRPC) in a controlled and stable way, alerting you about faulty behavior such as regressions, broken features, high response times, and unexpected status codes.
 
 1. Select `Synthetic Tests` from the last icon in the left navigation sidebar.
-![](./images/sythentics_test_menu_item.png)
+![](./images/synthentics_test_menu_item.png)
 2. Select `New Test` in the upper right corner. Choose `API Test`
-![](./images/new_sythentic_test.png)
+![](./images/new_synthentic_test.png)
 3. Let's give our test a name, `Test API Gateway -> Lambda -> SNS -> SQS -> Lambda service`
 4. Now we can add our URL, and a POST request Body.
-![](./images/sythentic_test.png)
+![](./images/synthentic_test.png)
 5. Finally we can `test` our endpoint!
-![](./images/successful_sythentic_test.png)
+![](./images/successful_synthentic_test.png)
 6. Let's schedule this test to run once per day, from N. Virginia (us-east-1).
 
 ## Monitoring
