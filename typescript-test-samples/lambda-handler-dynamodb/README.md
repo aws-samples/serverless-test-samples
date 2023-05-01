@@ -15,108 +15,108 @@ The project consists of an [AWS Lambda function](https://aws.amazon.com/lambda/)
 
 - [Introduction](#introduction)
 - [Contents](#contents)
-- [System Under Test (SUT)](#system-under-test-sut)
-- [Goal](#goal)
-- [Description](#description)
-- [Key Files in the Project](#key-files-in-the-project)
-- [Prerequisites](#prerequisites)
-- [Make commands for test and deployment](#make-commands-for-test-and-deployment)
-- [Running the project](#running-the-project)
+- [About this Pattern](#about-this-pattern)
+- [About this Example](#about-this-example)
+  - [Key Files in the Project](#key-files-in-the-project)
+- [Sample project description](#sample-project-description)
+- [Integration Test](#integration-test)
+- [Cleanup](#cleanup)
 
 ---
+
+## About this Pattern
 
 ### System Under Test (SUT)
 
-The SUT in this pattern is a Lambda function that makes calls to other AWS cloud services using an AWS SDK. For this example, we demonstrate a system that generates a document, written to Amazon S3, based on contents from a key-value lookup in DynamoDB.
+The SUT in this pattern is a Lambda function that makes calls to other AWS cloud services using an AWS SDK. For this example, we demonstrate a system that generates a new item, written to Amazon DynamoDB table using AWS Lambda function.
 
 ![System Under Test (SUT)](img/system-under-test.png)
 
-An API Gatway path [1] triggers an AWS Lambda function [2] that retrieves a data from a DynamoDB [3] table and writes data to a object on Amazon S3 [4]. The API path contains a Document Type and a Customer ID. The Lambda function retrieves both the Document Type data and Customer ID data and combines them, writing the data to S3 and returning the object key [1]. The DynamoDB table name and the S3 bucket name are provided to the Lambda function via environment variables. 
-
-The DynamoDB table schema is comprised of a Partition Key (PK) for looking up a given item, and a “data” field containing string contents. Document Type Items are prefixed with D#, and Customer items have a PK prefixed with C#.
-
-[Top](#contents)
-
----
-
 ### Goal
 
-This pattern is intended to enable rapid development and testing of a Lambda function that makes calls to other AWS services. Testing occurs on a local desktop environment and does not affect cloud resources. This pattern speeds development by eliminating the need to perform a build and deploy of the Lambda function to the cloud between modifications of test or function code. This pattern eliminates the need to access cloud resources to conduct tests. Mock tests are also useful for testing failure conditions within your code, especially when mocking third party services beyond your control.
-
-[Top](#contents)
-
----
+This pattern is intended to increase development speed. It enables rapid development and testing of a Lambda function that makes calls to other AWS cloud services using an AWS SDK. This pattern eliminates the need to perform a build and deploy of the Lambda function to the cloud between modifications of test or function code.
 
 ### Description
 
-In this pattern, you develop a Lambda function that makes calls to other AWS cloud services using an AWS SDK. The test first sets up mocked versions of the AWS services accessed by the Lambda function. Your tests then invoke the handler function on your local desktop, passing a synthetic event as a parameter. During the test the calls to external cloud services are handled instead by the mocked objects, returning the pre-configured results set up by the test code. 
+In this pattern you develop a Lambda function that makes calls to Amazon DynamoDB using an AWS SDK. Your tests invoke the handler function method on your local desktop passing to it a synthetic event as a parameter. The handler function executes within your local desktop environment. When the SDK invokes the Amazon DynamoDB table, they uses your AWS credentials contained in your local environment. The SDK calls resources deployed to the cloud.
 
-This pattern can be used with a variety of infrastructure as code systems including SAM, Serverless Framework, CDK, CloudFormation and Terraform. This pattern uses a simple test framework, with the test harness directly calling the Lambda function handlers. No cloud resources or full ** stack emulation are required.
+In this pattern, we have used AWS CDK(Cloud Development Kit) for infrastructure as code but it can be also be done using SAM, Serverless Framework, CloudFormation and Terraform. This pattern simplifies the process of attaching a debugger to the handler code. You may generate synthetic events using several methods including the ‘sam local generate-event’ command, by copying event template samples in the AWS Lambda console test section, or by printing events to CloudWatch logs.
 
-![Test Pattern](img/pattern_04_lambda_mock_test.png)
+![Test Pattern](img/pattern_02_lambda_handler_test.png)
 
 [Top](#contents)
 ---
+
+## About this Example
+
+This example contains an [AWS Lambda](https://aws.amazon.com/lambda/) and [Amazon DynamoDB](https://aws.amazon.com/dynamodb/) table core resources.
+
+AWS CDK is used to deploy the AWS Lambda function and Amazon DynamoDB table. The AWS Lambda function generates an item in the json format and put this item in the DynamoDB table using AWS SDK. The DynamoDB table item is a JSON object with format:
+
+```json
+{
+    "PK": "string",
+    "SK": "string"
+}
+```
 
 ### Key Files in the Project
 
   - [app.ts](src/app.ts) - Lambda handler code to test
-  - [template.yaml](template.yaml) - SAM script for deployment
-  - [test-handler.test.ts](src/tests/unit/test-handler.test.ts) - Unit test using mocks
-  - [integ-handler.test.ts](src/tests/integration/integ-handler.test.ts) - Integration tests on a live stack
+  - [lambda-handler-dynamodb-stack.ts](lib/lambda-handler-dynamodb-stack.ts) - CDK stack for deploying required resources
+  - [integ-handler.test.ts](test/integration/integ-handler.test.ts) - Integration tests on a live stack
 
 [Top](#contents)
 ---
 
-## Run the Unit Tests
-[test-handler.test.ts](src/tests/unit/test-handler.test.ts) 
+## Integration Test
 
-In the [unit test](src/tests/unit/test-handler.test.ts#L44), all references and calls to the DynamoDB service are mocked using aws-sdk-client-mock client.
-To run the unit tests
-``` shell
-local-lambda-dynamodb$ cd src
-src $ npm install
-src $ npm run test:unit
-```
+### Integration Test description
 
-[Top](#contents)
+In order to run integration tests in the cloud we will first need to deploy the full CDK stack which will create a lambda function and dynamodb table in your AWS account. The lambda function code inserts an item in the deployed dynamodb table. We will invoke the handler function method on the local desktop passing to it a synthetic event as a parameter. The handler function executes within your local desktop environment. When the SDK invokes the cloud services, they use the AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY credentials contained in your local environment, typically as environment variables. The SDK calls resources deployed in the cloud. 
 
----
-
-## Run the Integration Tests
-[integ-handler.test.ts](src/tests/integration/integ-handler.test.ts) 
+### Run the Integration Tests
+[integ-handler.test.ts](test/integration/integ-handler.test.ts) 
 
 For integration tests, deploy the full stack before testing:
 ```shell
-local-lambda-dynamodb$ sam build
-local-lambda-dynamodb$ sam deploy --guided
+lambda-handler-dynamodb$ npm install
+lambda-handler-dynamodb$ cdk deploy
 ```
  
-The [integration tests](src/tests/integration/integ-handler.test.ts) need to be provided 2 environment variables. 
+The [integration tests](test/integration/integ-handler.test.ts) need to be provided 1 environment variable. 
 
-1. The `DYNAMODB_TABLE_NAME` is the name of the DynamoDB table providing persistence. 
-    * The integration tests [seed data into the DynamoDB table](src/tests/integration/integ-handler.test.ts#L24-28).
-    * The [integration test tear-down](src/tests/integration/integ-handler.test.ts#L30-49) removes the seed data, as well as data generated during the test.
-2. 
+1. The `DatabaseTable` is the name of the DynamoDB table providing persistence. 
+    * The integration tests [invoke lambda handler locally and the call was successful](test/integration/integ-handler.test.ts#L46-49).
+    * The [integration test retrieves item from dynamodb](test/integration/integ-handler.test.ts#L51-56) sends a get command query to dynamo and confirms if the item was found.
 
 Set up the environment variables, replacing the `<PLACEHOLDERS>` with your values:
 ```shell
-src $ export DYNAMODB_TABLE_NAME=<YOUR_DYNAMODB_TABLE_NAME>
-src $ export 
+lambda-handler-dynamodb$ cd test
+test $ export DatabaseTable=<YOUR_DYNAMODB_TABLE_NAME>
+test $ export 
 ```
 
 Then run the test suite.
 ```shell
-apigw-lambda-dynamodb$ cd src
-src $ npm install
-src $ npm run test:integration
+lambda-handler-dynamodb$ cd test
+test $ npm run test
 ```
 
 Alternatively, you can set the environment variables and run the test suite all in one command:
 ```shell
-apigw-lambda-dynamodb$ cd src
-src $ npm install
-src $ DYNAMODB_TABLE_NAME=<YOUR_DYNAMODB_TABLE_NAME> API_URL=<YOUR_APIGATEWAY_BASE_URL> npm run test:integration
+lambda-handler-dynamodb$ cd test
+test $ npm install
+test $ DatabaseTable=<YOUR_DYNAMODB_TABLE_NAME> npm run test
 ```
+
+## Cleanup
+
+In order to delete the sample application that you created, use the AWS cdk command as shown below:
+
+```bash
+lambda-handler-dynamodb$ cdk destroy
+```
+
 
 [Top](#contents)

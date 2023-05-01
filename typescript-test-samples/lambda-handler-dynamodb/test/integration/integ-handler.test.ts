@@ -38,7 +38,6 @@ describe('Lambda and DynamoDB Integration test', () => {
     })
 
     /**
-     * Calling the URL with a valid id.
      * Note have an entry in the database with id 1. 
      * If the entry is not there the test case would fail for the first time.
      */

@@ -1,3 +1,12 @@
+//Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+//SPDX-License-Identifier: MIT-0
+
+/**
+ * Lambda Handler for the typescript pattern lambda-handler-dynamodb
+ * This handler put a new item in the DynamoDB table using AWS SDK.
+ * The DynamoDB Table used is passed as an environment variable "DatabaseTable"
+*/
+
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
     PutCommand,
@@ -9,6 +18,7 @@ const ddb = DynamoDBDocumentClient.from(dynamodb);
 
 export const lambdaHandler = async function main( event: any ) {
   let params = {
+    // Getting the dynamoDB table name from environment variable
     TableName : process.env.DatabaseTable,
     Item: {
       ID: event.Records[0].eventID,
