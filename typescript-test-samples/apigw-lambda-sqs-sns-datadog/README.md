@@ -54,7 +54,7 @@ Datadog tracks the performance of your webpages and APIs from the backend to the
 6. Let's schedule this test to run once per day, from N. Virginia (us-east-1).
 
 ## Monitoring
-In addition to active tracing and sythentics testing, we can create a monitor which can alert us if the service throws any errors.
+In addition to active tracing and synthetics testing, we can create a monitor which can alert us if the service throws any errors.
 
 1. Select `Monitors -> New Monitor` from the left nav.
 ![]('./images/new_monitor.png')
