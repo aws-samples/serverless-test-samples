@@ -44,13 +44,17 @@ Datadog tracks the performance of your webpages and APIs from the backend to the
 
 1. Select `Synthetic Tests` from the last icon in the left navigation sidebar.
 ![](./images/synthetics_test_menu_item.png)
+
 2. Select `New Test` in the upper right corner. Choose `API Test`
 ![](./images/new_synthetic_test.png)
+
 3. Let's give our test a name, `Test API Gateway -> Lambda -> SNS -> SQS -> Lambda service`
 4. Now we can add our URL, and a POST request Body.
 ![](./images/synthetic_test.png)
+
 5. Finally we can `test` our endpoint!
 ![](./images/successful_synthetic_test.png)
+
 6. Let's schedule this test to run once per day, from N. Virginia (us-east-1).
 
 ## Monitoring
@@ -58,8 +62,10 @@ In addition to active tracing and synthetics testing, we can create a monitor wh
 
 1. Select `Monitors -> New Monitor` from the left nav.
 ![](./images/new_monitor.png)
+
 2. Choose `APM Monitor`
 3. Find our service:
 4. Create a new error monitor:
 ![](./images/monitor.png)
+
 5. We're done! Now we'll be alerted if there is a problem with our service!
