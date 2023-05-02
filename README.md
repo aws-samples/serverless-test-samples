@@ -34,15 +34,20 @@ You can also find sample code in this repository for testing a variety of differ
 |[API Gateway, Lambda, DynamoDB](./java-test-samples/apigw-lambda-ddb)|Java|
 |[API Gateway, Lambda, DynamoDB](./dotnet-test-samples/apigw-lambda-ddb)|.NET|
 
-## Service Orchestration
-|System Under Test|Language|Description|
----|---|---
-|[Step Functions](./java-test-samples/step-functions-local) [External]|Java|This project shows a technique for testing an AWS Step Functions workflow in a local desktop environment.
-
-
 ## Event-Driven Architectures
 Event-driven architectures (EDA) are an architecture style that uses events and asynchronous communication to loosely couple an application’s components. To learn more about several strategies for testing EDA's visit [this guide at Serverlessland.com](https://serverlessland.com/event-driven-architecture/testing-introduction).  
 |System Under Test|Language|Description|
 ---|---|---
 |[S3, Lambda](./python-test-samples/async-lambda-dynamodb)|Python|This is a great starter project for learning how to test async EDA.|
 |[Schemas and Contracts](./typescript-test-samples/schema-and-contract-testing)|TypeScript|Event driven architectures decouple producers and consumers at the infrastructure layer, but these resources may still be coupled at the application layer by the event contract. Learn how to test for breaking changes in the contract.|
+
+## Service Orchestration
+|System Under Test|Language|Description|
+---|---|---
+|[Step Functions](./java-test-samples/step-functions-local) [External]|Java|This project shows a technique for testing an AWS Step Functions workflow in a local desktop environment.
+
+## Data Processing
+|System Under Test|Language|Description|
+---|---|---
+|[Kinesis Data Stream, Lambda](./typescript-test-samples/kinesis-lambda-dynamodb)|TypeScript|This project shows a technique for testing a streaming data processing system.|
+
