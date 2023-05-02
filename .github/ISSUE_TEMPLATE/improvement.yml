@@ -20,6 +20,6 @@ body:
     attributes:
       label: Suggested Improvement
       description: Please describe the suggested improvement
-      placeholder: "For the ... pattern at this location ... I sugggest the following improvement:"
+      placeholder: "Please provide a link to the location of the pattern and describe your suggested improvement"
     validations:
       required: true
