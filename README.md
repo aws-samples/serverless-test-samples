@@ -1,5 +1,3 @@
-# Serverless Test Samples
-
 ![Serverless Test Samples](./_img/main_header.png)
 
 This repository is designed to provide code samples and guidance for writing automated tests for serverless applications and event driven architectures.  
