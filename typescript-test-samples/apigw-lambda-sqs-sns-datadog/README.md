@@ -1,4 +1,4 @@
-# Testing Serverless architectures with Datadog
+# Testing Serverless architectures with Datadog Synthetic Testing and Monitoring
 
 This example is about creating Synthetic Tests and Monitors, to ensure Serverless services are functioning properly in a real, AWS environment.
 
@@ -33,7 +33,7 @@ Spend some time exploring this flamegraph. We can see a full end to end trace of
 We can see the impact of loading both the AWS SNS client from the AWS SDK, along with Axios.
 ![](./images/cold_start_traces.png)
 
-Additionally, we can see requests we make to `datadoghq.com` from Axios in both the publisher and the worker, and we can see the time sepnt in SNS and SQS.
+Additionally, we can see requests we make to datadoghq.com from Axios in both the publisher and the worker, and we can see the time spent in SNS and SQS. The detailed breakdown on the trace map will be helpful when debugging our test requests to API Gateway  - now it's time to automate our test!
 ![](./images/sns_sqs.png)
 
 Great! Now it's time to automate this test.
@@ -57,7 +57,7 @@ Datadog tracks the performance of your webpages and APIs from the backend to the
 5. Finally we can `test` our endpoint!
 ![](./images/successful_synthetic_test.png)
 
-6. Let's schedule this test to run once per day, from N. Virginia (us-east-1). We can assert on the response code, body, and more!
+6. Let's schedule this test to run once per day, from N. Virginia (us-east-1). We can assert on the response code, body, and [more](https://docs.datadoghq.com/synthetics/api_tests/http_tests/?tab=requestoptions#define-assertions)!
 ![](./images/synthetics_assertion.png)
 
 ## Monitoring
@@ -69,7 +69,8 @@ In addition to active tracing and synthetics testing, we can create a monitor wh
 
 2. Choose `APM Monitor`
 3. Find our service:
-4. Create a new error monitor:
+![](./images/monitor_service.png)
+4. Create a new error monitor. This monitor will alert us *every* time we see an error but note that you can [configure the sensitivity](https://docs.datadoghq.com/monitors/types/metric/?tab=threshold#data-window) of the monitor depending on how critical the test is:
 ![](./images/monitor.png)
 
 5. We're done! Now we'll be alerted if there is a problem with our service!
