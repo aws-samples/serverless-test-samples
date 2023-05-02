@@ -1,5 +1,7 @@
 ## Serverless Test Samples
 
+![Serverless Test Samples](./_img/main_header.png)
+
 This repository is designed to provide guidance for implementing comprehensive test suites for serverless applications.
 
 ### Runtime Guides:
