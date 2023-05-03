@@ -1,7 +1,13 @@
+"""
+Currentcy Exchange DB Adapter
+"""
 from os import environ
 import boto3
 
-def getCurrencies(currencies):
+def get_currencies(currencies):
+    """
+    get_currencies: Gets the currencies from the DynamoDB table.
+    """
     try:
         dynamodb_table_name = environ["CURRENCIES_DB_TABLE"]
         dynamodb_resource = boto3.resource('dynamodb')
@@ -13,6 +19,7 @@ def getCurrencies(currencies):
             rates[dynamodb_response["Item"]["CURRENCY"]] = dynamodb_response["Item"]["Rate"]
         print(rates)
         return rates
-    except Exception as e:
-        print("getCurrencies Error:" + str(e) + " : " + str(type(e)))
-        raise e
+    except Exception as err:
+        print("get_currencies Error:" + str(err) + " : " + str(type(err)))
+        raise err
+    

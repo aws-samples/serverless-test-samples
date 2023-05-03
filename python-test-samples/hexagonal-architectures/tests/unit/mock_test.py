@@ -1,3 +1,6 @@
+"""
+Unit Test 
+"""
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
 
@@ -6,10 +9,8 @@ from os import environ
 import json
 from unittest import TestCase
 from typing import Any, Dict
-import pytest
 import yaml
 import boto3
-from boto3.dynamodb.conditions import Key
 import moto
 
 
@@ -23,7 +24,7 @@ class TestSampleLambdaWithDynamoDB(TestCase):
     """
     Unit Test class for src/app.py
     """
-    
+
     def setUp(self) -> None:
         """
         Test Set up:
@@ -34,12 +35,13 @@ class TestSampleLambdaWithDynamoDB(TestCase):
 
         # Create a name for a test table, and set the environment
         self.test_stocks_table_name = "unit_test_stock_table_name"
-        environ["STOCKS_DB_TABLE"] = self.test_stocks_table_name 
+        environ["STOCKS_DB_TABLE"] = self.test_stocks_table_name
 
         # Create a mock table using the definition from the SAM YAML template
         # This simple technique works if there are no intrinsics (like !If or !Ref) in the
         # resource properties for KeySchema, AttributeDefinitions, & BillingMode.
-        sam_template_table_properties = self.read_sam_template()["Resources"]["StocksTable"]["Properties"]
+        sam_template_table_properties = \
+            self.read_sam_template()["Resources"]["StocksTable"]["Properties"]
         self.mock_dynamodb = boto3.resource("dynamodb")
         self.mock_dynamodb_table = self.mock_dynamodb.create_table(
             TableName = self.test_stocks_table_name,
@@ -47,20 +49,21 @@ class TestSampleLambdaWithDynamoDB(TestCase):
             AttributeDefinitions = sam_template_table_properties["AttributeDefinitions"],
             BillingMode = sam_template_table_properties["BillingMode"]
         )
- 
+
         # Populate data for the tests
         self.mock_dynamodb_table.put_item(Item={
                                                 "STOCK_ID": "1", 
                                                 "Value": 3})
-        
+
         # Create a name for a test table, and set the environment
         self.test_currencies_table_name = "unit_test_currencies_table_name"
-        environ["CURRENCIES_DB_TABLE"] = self.test_currencies_table_name 
+        environ["CURRENCIES_DB_TABLE"] = self.test_currencies_table_name
 
         # Create a mock table using the definition from the SAM YAML template
         # This simple technique works if there are no intrinsics (like !If or !Ref) in the
         # resource properties for KeySchema, AttributeDefinitions, & BillingMode.
-        sam_template_table_properties = self.read_sam_template()["Resources"]["CurrenciesTable"]["Properties"]
+        sam_template_table_properties = \
+            self.read_sam_template()["Resources"]["CurrenciesTable"]["Properties"]
         self.mock_dynamodb = boto3.resource("dynamodb")
         self.mock_currencies_table = self.mock_dynamodb.create_table(
             TableName = self.test_currencies_table_name,
@@ -68,7 +71,7 @@ class TestSampleLambdaWithDynamoDB(TestCase):
             AttributeDefinitions = sam_template_table_properties["AttributeDefinitions"],
             BillingMode = sam_template_table_properties["BillingMode"]
         )
- 
+
         # Populate data for the tests
         self.mock_currencies_table.put_item(Item={
                                                 "CURRENCY": "USD", 
@@ -90,19 +93,19 @@ class TestSampleLambdaWithDynamoDB(TestCase):
         """
         Utility Function to read the SAM template for the current project
         """
-        with open(sam_template_fn, "r") as fp:
-            template =fp.read().replace("!","")   # Ignoring intrinsic tags
+        with open(sam_template_fn, "r",encoding="utf-8") as fptr:
+            template =fptr.read().replace("!","")   # Ignoring intrinsic tags
             return yaml.safe_load(template)
 
     def load_test_event(self, test_event_file_name: str) ->  Dict[str, Any]:
         """
         Load a sample event from a file
         """
-        with open(f"tests/events/{test_event_file_name}.json","r") as f:
-            event = json.load(f)
+        with open(f"tests/events/{test_event_file_name}.json","r",encoding="utf-8") as fptr:
+            event = json.load(fptr)
             return event
 
-    
+
     def test_lambda_handler_happy_path(self):
         """
         Happy path test where the stock ID exists in the DynamoDB Table
@@ -115,8 +118,9 @@ class TestSampleLambdaWithDynamoDB(TestCase):
         test_event = self.load_test_event("testevent")
         test_return = app.lambda_handler(event=test_event,context=None)
         self.assertEqual( test_return["statusCode"] , 200)
-        self.assertEqual( test_return["body"] , '{"message": {"stock": "1", "values": {"EUR": 3.0, "USD": 3.93, "CAD": 4.23, "AUD": 4.53}}}')
-    
+        expected = '{"message": {"stock": "1", "values": {"EUR": 3.0, "USD": 3.93, "CAD": 4.23, "AUD": 4.53}}}'
+        self.assertEqual( test_return["body"] , expected)
+
     def test_lambda_handler_failure(self):
         """
         Failure Test where the stock ID does not exist in the DynamoDB Table
