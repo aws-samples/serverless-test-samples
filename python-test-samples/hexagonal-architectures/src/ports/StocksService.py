@@ -5,5 +5,5 @@ def getStockData(stockID):
         data = StocksDB.getStockValue(stockID)
         return data
     except Exception as e:
-        print(e)
-        raise
+        print("getStockData Error:" + str(e) + " : " + str(type(e)))
+        raise e

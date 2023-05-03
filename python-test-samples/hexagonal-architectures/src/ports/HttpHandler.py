@@ -5,5 +5,5 @@ def retrieveStock(stockID):
         stockWithCurrencies = stock.retrieveStockValues(stockID)
         return stockWithCurrencies
     except Exception as e:
-        print(e)
-        raise
+        print("retrieveStock Error:" + str(e) + " : " + str(type(e)))
+        raise e

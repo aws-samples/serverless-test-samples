@@ -59,7 +59,7 @@
   },
   "body": "eyJ0ZXN0IjoiYm9keSJ9",
   "pathParameters": {
-    "stockID": "1"
+    "StockID": "1"
   },
   "isBase64Encoded": true,
   "stageVariables": {

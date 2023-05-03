@@ -13,5 +13,5 @@ def getStocksRequest(stockID):
         }
         return response
     except Exception as e:
-        print(e)
-        raise
+        print("getStocksRequest Error:" + str(e) + " : " + str(type(e)))
+        raise e

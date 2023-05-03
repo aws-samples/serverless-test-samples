@@ -1,5 +1,4 @@
 from os import environ
-import json
 import boto3
 from botocore.exceptions import ClientError
 
@@ -16,5 +15,5 @@ def getStockValue(stockID):
         print("dynamodb response", dynamodb_response)
         return dynamodb_response
     except Exception as e:
-        print(e)
-        raise
+        print("getStockValue Error:" + str(e) + " : " + str(type(e)))
+        raise e

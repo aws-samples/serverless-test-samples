@@ -5,4 +5,5 @@ def getCurrenciesData(currencies):
         data = CurrencyExchangeDB.getCurrencies(currencies)
         return data
     except Exception as e:
-        print(e)
+        print("getCurrenciesData Error:" + str(e) + " : " + str(type(e)))
+        raise e

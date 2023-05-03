@@ -4,10 +4,8 @@
 from decimal import Decimal
 from os import environ
 import json
-from datetime import datetime
 from unittest import TestCase
 from typing import Any, Dict
-from uuid import uuid4
 import pytest
 import yaml
 import boto3
@@ -129,5 +127,6 @@ class TestSampleLambdaWithDynamoDB(TestCase):
         """
 
         test_event = self.load_test_event("testevent-failure")
-        with pytest.raises(ValueError):
-            test_return = app.lambda_handler(event=test_event,context=None)
+        test_return = app.lambda_handler(event=test_event,context=None)
+        self.assertEqual( test_return["statusCode"] , 404)
+        self.assertEqual( test_return["body"], "Stock not found")

@@ -1,5 +1,4 @@
 from os import environ
-import json
 import boto3
 
 def getCurrencies(currencies):
@@ -15,4 +14,5 @@ def getCurrencies(currencies):
         print(rates)
         return rates
     except Exception as e:
-        print(e)
+        print("getCurrencies Error:" + str(e) + " : " + str(type(e)))
+        raise e

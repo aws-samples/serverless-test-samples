@@ -18,12 +18,9 @@ def retrieveStockValues(stockID):
                 "EUR": float(stockValue["Item"]["Value"])
             }
         }
-        print(stockWithCurrencies)
         for currency in currencies:
-            print(currencyList[currency])
             stockWithCurrencies["values"][currency] =  float(Decimal(stockValue["Item"]["Value"]) * currencyList[currency])
-        print(stockWithCurrencies)
         return stockWithCurrencies
     except ValueError as e:
-        print(e)
-        raise
+        print("retrieveStockValues Error:" + str(e) + " : " + str(type(e)))
+        raise e
