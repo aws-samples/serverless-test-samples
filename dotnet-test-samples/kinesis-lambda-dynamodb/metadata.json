@@ -1,0 +1,35 @@
+{
+  "title": "Amazon Kinesis Data Streams with AWS Lambda Function & Amazon DynamoDB",
+  "description": "This pattern creates an AWS Lambda function that consumes messages from an Amazon Kinesis Data Streams and dumps them to Amazon DynamoDB using SAM and .NET 6.",
+  "content_language": "English",
+  "language": ".NET",
+  "type": ["Unit", "Integration"],
+  "diagram": "/../docs/kinesis-system-under-test-description.png",
+  "pattern_source": "AWS",
+  "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
+  "framework": "SAM",
+  "services": ["kinesis", "lambda", "dynamodb"],
+  "pattern_detail_tabs": [
+    {
+      "title": "Application Code",
+      "filepath": "/src/KinesisEventHandler/Functions/ProcessEmployeeFunction.cs"
+    },
+    {
+      "title": "Unit Tests",
+      "filepath": "/tests/KinesisEventHandler.UnitTests/Functions/ProcessEmployeeFunctionTests.cs"
+    },
+    {
+      "title": "Integration Tests",
+      "filepath": "/tests/KinesisEventHandler.IntegrationTests/ProcessEmployeeTests.cs"
+    }
+  ],
+  "authors": [
+    {
+      "name": "Leslie Daniel Raj",
+      "image": "https://media.licdn.com/dms/image/D4E03AQExIU1IcSs9lg/profile-displayphoto-shrink_400_400/0/1663268087652?e=1686182400&v=beta&t=xzsZ2Jxcw9rzafTAfB4wqu6noJlJI9bX3hfe3cvjpNA",
+      "bio": "Cloud Application Architect at AWS",
+      "linkedin": "https://www.linkedin.com/in/leslie-daniel-raj-21b55449/",
+      "twitter": "https://twitter.com/lesliedanielraj"
+    }
+  ]
+}

@@ -2,7 +2,7 @@
   "title": "Typescript: Amazon Kinesis Data Streams, AWS Lambda, Amazon DynamoDB Example",
   "description": "This project contains examples of TypeScript tests written for AWS Lambda interacting with Amazon Kinesis Data Streams and Amazon DynamoDB.",
   "content_language": "English",
-  "language": "Typescript",
+  "language": "TypeScript",
   "type": ["Unit","Integration"],
   "diagram": "/img/system-under-test.png",
   "framework": "SAM",
