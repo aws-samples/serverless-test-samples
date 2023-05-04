@@ -59,8 +59,9 @@ AWS CDK is used to deploy the AWS Lambda function and Amazon DynamoDB table. The
 
 ```json
 {
-    "PK": "string",
-    "SK": "string"
+    "ID": "string",
+    "created": "date",
+    "metadata": "json"
 }
 ```
 

@@ -1,3 +1,6 @@
+//Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+//SPDX-License-Identifier: MIT-0
+
 /**
  * Integration Tests
  * Before running this we would deploy the stack 
@@ -13,9 +16,6 @@ import {
 } from "@aws-sdk/lib-dynamodb";
 import { eventJSON } from "../../src/events/event-data";
 import { lambdaHandler } from "../../src/app";
-
-
-//process.env.DatabaseTable = "LambdaHandlerDynamodbStack-DynamoTableB2B22E15-HCH4NYL0QMJZ";
 
 const dynamodb = new DynamoDBClient({ region: 'us-east-1' });
 const ddb = DynamoDBDocumentClient.from(dynamodb);
