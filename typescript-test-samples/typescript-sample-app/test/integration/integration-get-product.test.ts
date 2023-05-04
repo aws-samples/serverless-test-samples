@@ -66,9 +66,8 @@ describe('API Integration tests: GET Product', () => {
     if(!process.env.API_URL)
       throw new Error('API_URL environment variable not set.');
 
-    mockVariable('TABLE_NAME', 'Products');
     if(!process.env.TABLE_NAME)
-      throw new Error('TABLE_NAME environment variable not set.');
+      mockVariable('TABLE_NAME', 'Products');
 
     baseApiUrl = process.env.API_URL as string;
     if(!baseApiUrl.endsWith('/')) baseApiUrl += '/';

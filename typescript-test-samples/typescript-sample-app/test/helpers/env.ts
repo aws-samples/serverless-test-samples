@@ -1,9 +1,11 @@
 import { beforeAll, afterAll } from '@jest/globals';
 
+/* Fake environment variables by temporarily setting them before all tests and then resetting them
+after all tests to avoid unwanted side-effects in the production code. */
+
 let env: any;
 
 beforeAll(() => {
-  jest.resetModules();
   env = process.env;
   process.env = { ...env };
 });
