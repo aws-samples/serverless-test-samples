@@ -24,9 +24,6 @@ jobs:
     - name: Find all solutions
       run: SLN_FILES=$(find dotnet-test-samples -type file -name "*.sln")    
     - name: Build
-      run: |
-        for sln in $SLN_FILES do
-          dotnet build ${sln}
-        done
-    #- name: Test
-    #  run: dotnet test --no-build --verbosity normal
+      run: find dotnet-test-samples -type file -name "*.sln" -exec dotnet build {} \;
+    - name: Test
+      run: find dotnet-test-samples -type file -name "*Unit*.csproj" -exec dotnet test {} \
