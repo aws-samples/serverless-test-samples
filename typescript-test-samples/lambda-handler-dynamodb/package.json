@@ -18,6 +18,7 @@
     "@types/uuid": "^9.0.1",
     "aws-cdk": "2.47.0",
     "aws-sdk-client-mock": "^2.0.1",
+    "esbuild": "^0.17.18",
     "jest": "^27.5.1",
     "ts-jest": "^27.1.4",
     "ts-node": "^10.9.1",
