@@ -33,7 +33,7 @@ export class LambdaHandlerDynamodbStack extends cdk.Stack {
 
     // Outputs
     new cdk.CfnOutput(this, 'DynamoDbTableName', { value: dynamoTable.tableName });
-    new cdk.CfnOutput(this, 'LambdFunctionArn', { value: lambdaPutDynamoDB.functionArn });
+    new cdk.CfnOutput(this, 'LambdaFunctionArn', { value: lambdaPutDynamoDB.functionArn });
     
   }
 }
