@@ -3,9 +3,9 @@
 This repository is designed to provide code samples and guidance for writing automated tests for serverless applications and event driven architectures.  
 
 # Getting Started
-If you would like to understand our opinionated guidance behind the test samples, please read [Serverless Testing Principles](Serverless-Testing-Principles.md). 
+If you would are just getting started with serverless testing, we recommend you start by reading [our thoughts about this topic at Serverlessland](https://serverlessland.com/testing). 
 
-If you are new to serverless testing we recommend you begin with a starter project in your favorite language:
+If you'd like to jump right into code you can begin with a starter project in your favorite language:
 - [Python starter](./python-test-samples/apigw-lambda)
 - [Java starter](./java-test-samples/apigw-lambda-list-s3-buckets)
 - [TypeScript starter](./typescript-test-samples/typescript-test-intro)
