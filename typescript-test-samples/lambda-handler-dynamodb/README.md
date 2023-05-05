@@ -91,7 +91,7 @@ lambda-handler-dynamodb$ npm install
 lambda-handler-dynamodb$ cdk deploy
 ```
  
-The [integration tests](test/integration/integ-handler.test.ts) need to be provided a single environment variable: `DatabaseTable`, which is the name of the DynamoDB table providing persistence.
+The [integration tests](test/integration/integ-handler.test.ts) need to be provided a single environment variable: `DatabaseTable`, which is the name of the DynamoDB table providing persistence. It is available as `DynamoDbTableName` in the CloudFormation outputs shown after the `cdk deploy` step.
 
 Set up the environment variable, replacing the `<PLACEHOLDERS>` with your values:
 
