@@ -9,6 +9,7 @@ This project contains code samples for testing serverless applications using Typ
 |Project|Description|
 ---|---
 |[TypeScript Test Samples Starter Project](./typescript-test-intro/)|This project contains an introductory example of TypeScript tests written for AWS Lambda and Amazon API Gateway. This is the best place to start!|
+|[Calling Cloud Resources from Local Tests](./lambda-handler-dynamodb/)|This project demonstrates testing an AWS Lambda function handler locally which calls remote cloud services. The Lambda function handler makes a call to a DynamoDB table in the cloud in the integration test.|
 
 ### API Tests
 
