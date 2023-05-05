@@ -8,25 +8,24 @@
 */
 
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import {
-    PutCommand,
-    DynamoDBDocumentClient
-} from "@aws-sdk/lib-dynamodb";
-const moment = require('moment');
+import { PutCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+import { DynamoDBStreamEvent } from "aws-lambda/trigger/dynamodb-stream";
+import moment = require('moment');
+
 const dynamodb = new DynamoDBClient({});
 const ddb = DynamoDBDocumentClient.from(dynamodb);
 
-export const lambdaHandler = async function main( event: any ) {
-  let params = {
-    // Getting the dynamoDB table name from environment variable
-    TableName : process.env.DatabaseTable,
-    Item: {
-      ID: event.Records[0].eventID,
-      created: moment().format('YYYYMMDD-hhmmss'),
-      metadata:JSON.stringify(event),
-    }
-  }
+export const lambdaHandler = async ( event: DynamoDBStreamEvent ) => {
   try {
+    const params = {
+      TableName : process.env.DatabaseTable,
+      Item: {
+        ID: event.Records[0].eventID,
+        created: moment().format('YYYYMMDD-hhmmss'),
+        metadata: JSON.stringify(event),
+      }
+    }
+
     await ddb.send(new PutCommand(params));
   }
   catch (err) {
