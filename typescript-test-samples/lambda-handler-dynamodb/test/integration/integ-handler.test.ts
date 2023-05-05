@@ -17,7 +17,7 @@ import {
 import { eventJSON } from "../../src/events/event-data";
 import { lambdaHandler } from "../../src/app";
 
-const dynamodb = new DynamoDBClient({ region: 'us-east-1' });
+const dynamodb = new DynamoDBClient({});
 const ddb = DynamoDBDocumentClient.from(dynamodb);
 
 async function deleteItem(){

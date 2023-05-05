@@ -13,7 +13,7 @@ import {
     DynamoDBDocumentClient
 } from "@aws-sdk/lib-dynamodb";
 const moment = require('moment');
-const dynamodb = new DynamoDBClient({ region: 'us-east-1' });
+const dynamodb = new DynamoDBClient({});
 const ddb = DynamoDBDocumentClient.from(dynamodb);
 
 export const lambdaHandler = async function main( event: any ) {
