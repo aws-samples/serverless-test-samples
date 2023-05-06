@@ -78,7 +78,7 @@ Resources:
             StreamName: !Ref RecordsStream
       Environment:
         Variables:
-          PROCESSED_RECORDS_TABLE_NAME: !Ref DynamoDBTable
+          DYNAMODB_TABLE_NAME: !Ref DynamoDBTable
       Events:
         KinesisRecords:
           Type: Kinesis # More info about API Event Source: https://github.com/aws/serverless-application-model/blob/master/versions/2016-10-31.md#kinesis
