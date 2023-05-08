@@ -49,7 +49,77 @@ This project contains source code and supporting files for a serverless applicat
 - `tests/testspec.yml` - A template that defines the API's test process.
 
 The application uses a shared Amazon Cognito stack for authentication/authorization. You will need to create this stack and update `template.yaml` parameters section with the stack name. See next section for details
-## Amazon Cognito setup
+
+## Deploy CI/CD pipeline for the application
+To create the CI/CD pipeline, we will split out code for this set of examples from the serverless-test-samples repository into a separate directory and use it as a codebase for our pipeline. 
+
+First, navigate to the root directory of the repository. To verify it run command *basename "$PWD"* - it should return serverless-test-samples as an output. Then run the following commands:
+
+```console
+serverless-test-samples:~$ git subtree split -P java-test-samples -b java-test-samples
+serverless-test-samples:~$ mkdir ../java-test-samples-cicd && cd ../java-test-samples-cicd
+java-test-samples-cicd:~$ git init -b main
+java-test-samples-cicd:~$ git pull ../serverless-test-samples java-test-samples
+java-test-samples-cicd:~$ cd java-appsync-sam
+```
+
+To create the pipeline, you will need to run the following command:
+
+```console
+aws cloudformation create-stack --stack-name serverless-api-pipeline --template-body file://pipeline.yaml --capabilities CAPABILITY_IAM
+```
+The pipeline will attempt to run and will fail at the SourceCodeRepo stage as there is no code in the AWS CodeCommit yet.
+
+***NOTE:** If you change stack name, avoid stack names longer than 25 characters. In case you need longer stack names, check comments in the pipeline.yaml and update accordingly.*
+
+***Note:** You may need to set up AWS CodeCommit repository access for HTTPS users [using Git credentials](https://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-gc.html?icmpid=docs_acc_console_connect_np) and [set up the AWS CLI Credential Helper](https://docs.aws.amazon.com/console/codecommit/connect-tc-alert-np).*
+
+Once you have access to the code repository, navigate to python-appsync-sam folder, and, if you changed stack name, make sure that Parameters section of template.yaml is updated with the output values from the shared Amazon Cognito stack, and push code base to CodeCommit to start automated deployments:
+
+```bash
+git remote add origin <URL to AWS CodeCommit repository>
+git push origin main
+```
+
+Navigate to the AWS CodePipeline in AWS Management Console and release this change if needed by clicking "Release change" button.
+
+![CodePipeline](./assets/CodePipeline.png)
+
+Note that the same Amazon Cognito stack is used in both testing and production deployment stages, the same user credentials can be used for testing and API access.
+
+Congratulations! 
+
+You have created a CI/CD pipeline with code repository and two environments - testing and production deployment. Each of the environments has all the resources, including their own shared Cognito stacks. The build stage automatically performs all the unit tests. Testing environment runs integration tests before stopping for a manual production deployment approval step. This is a typical behavior of the Continuous Delivery pipelines - a final human approval step is part of the deployment workflow. 
+
+For a Continuous Deployment pipeline, you would remove the manual approval step. This way, each change in the code repository would be deployed to the production environment immediately after passing integration testing steps in the testing environment.
+
+You can inspect the CloudFormation stacks deployed as part of the CI/CD environment in the [AWS Management Console](https://console.aws.amazon.com/cloudformation/home):
+
+![CloudFormation Stacks](./assets/cloudformation-stack.png)
+
+Check out testing and deployment stack outputs in the console:
+
+![Stack Outputs](./assets/cloudformation-testing.png)
+
+Click on the CloudWatch dashboard link in the stack outputs to see the metrics emitted during the integration testing:
+
+![Stack Outputs](./assets/TestingDashboard.png)
+
+To use APIs in the testing and production deployment environments, you can use an HTTP (or GraphQL) client and the API endpoint URL provided in the CloudFormation stack outputs. Keep in mind that you will need to create user and authenticate using Cognito to get the access token that API uses for authentication/authorization. See the [Cognito deployment instructions](../shared/README.md) for more details on how to do it. You would use the access token as an Authorization header value while sending HTTP request to the API endpoint. 
+For an example on how to create a GraphQL client, also see this [documentation article](https://docs.aws.amazon.com/appsync/latest/devguide/building-a-client-app.html).
+
+
+---
+
+## Alternative to the CI/CD - a manual deployment
+
+***Note: This step is an alternative to the CI/CD pipeline deployment. Skip to the cleanup instructions if you deployed the pipeline already.***
+
+As an alternative to the automated deployment using CI/CD pipeline, you may choose to deploy shared resources and application manually. Typically, you would use this approach for a quick "proof of concept" deployment, or in your individual development environment, when you want to run unit and integration tests before pushing your changes to the code repository.
+
+To deploy the application manually, follow the instructions 
+
+### Amazon Cognito setup
 This example uses a shared stack that deploys Amazon Cognito resources. The shared stack will be deployed automatically if you use CI/CD pipeline. See [README.md](./README-Cognito.md) in this directory for the stack manual deployment instructions. After manual deployment is finished make sure to update your SAM template file `template.yaml` parameter CognitoStackName with the shared Amazon Cognito stack name. 
 
 After the stack is created manually you will need to create user account for authentication/authorization. Deployment by CI/CD pipeline will perform following steps for you automatically. 
@@ -70,8 +140,7 @@ While using command line or third-party tools such as Postman to test APIs, you 
 aws cognito-idp initiate-auth --auth-flow USER_PASSWORD_AUTH --client-id <cognito user pool application client id> --auth-parameters USERNAME=<username>,PASSWORD=<password>
 ```
 
-## Manually deploy the sample application
-***Note:** Before deploying application first time manually, you will need to deploy a shared Cognito stack. See the previous section for details.*
+### Application Deployment
 
 This project is set up like a standard Java project with maven.  
 
@@ -99,56 +168,25 @@ The first command will build the source of your application. The second command 
 
 The AppSync endpoint API will be displayed in the outputs when the deployment is complete.
 
-## Unit and integration tests
+### Testing
 Both unit tests and integration tests are defined in the `tests` folder in this project. Running maven test will invoke unit test using mock. 
 
 ```bash
 mvn test
 ```
-To running only **integration test**, execute mvn with extra argument like below
+To running only **integration test**, add stack-name as environment variable using this command:
+
+```bash
+export TEST_APPLICATION_STACK_NAME=java-appsync-sam
+```
+
+and execute mvn with extra argument like below
 ```bash
 mvn test -Dtest=IntegrationTest
 ```
 
 Unit tests use AWS SDK to evaluate AWS AppSync resolver code. They use mock data, not the integrations with the backend services. Integration tests send GraphQL queries to the AWS AppSync endpoint and verify responses received. In addition, integration tests use WebSocket connection to the AWS AppSync for GraphQL subscriptions.
 
-
-## Deploy CI/CD pipeline for the application
-To create the CI/CD pipeline, we will split out code for this set of examples from the serverless-test-samples repository into a separate directory and use it as a codebase for our pipeline. 
-
-First, navigate to the root directory of the repository. To verify it run command *basename "$PWD"* - it should return serverless-test-samples as an output. Then run the following commands:
-
-```bash
-git subtree split -P java-test-samples -b java-test-samples
-mkdir ../java-test-samples-cicd && cd ../java-test-samples-cicd
-git init -b main
-git pull ../serverless-test-samples java-test-samples
-cd java-appsync-sam
-```
-
-To create the pipeline, you will need to run the following command:
-
-```bash
-aws cloudformation create-stack --stack-name serverless-api-pipeline --template-body file://pipeline.yaml --capabilities CAPABILITY_IAM
-```
-The pipeline will attempt to run and will fail at the SourceCodeRepo stage as there is no code in the AWS CodeCommit yet.
-
-***NOTE:** If you change stack name, avoid stack names longer than 25 characters. In case you need longer stack names, check comments in the pipeline.yaml and update accordingly.*
-
-***Note:** You may need to set up AWS CodeCommit repository access for HTTPS users [using Git credentials](https://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-gc.html?icmpid=docs_acc_console_connect_np) and [set up the AWS CLI Credential Helper](https://docs.aws.amazon.com/console/codecommit/connect-tc-alert-np).*
-
-Once you have access to the code repository, navigate to python-appsync-sam folder, and, if you changed stack name, make sure that Parameters section of template.yaml is updated with the output values from the shared Amazon Cognito stack, and push code base to CodeCommit to start automated deployments:
-
-```bash
-git remote add origin <URL to AWS CodeCommit repository>
-git push origin main
-```
-
-Navigate to the AWS CodePipeline in AWS Management Console and release this change if needed by clicking "Release change" button.
-
-![CodePipeline](./assets/CodePipeline.png)
-
-Note that the same Amazon Cognito stack is used in both testing and production deployment stages, the same user credentials can be used for testing and API access.
 
 ## Cleanup
 
