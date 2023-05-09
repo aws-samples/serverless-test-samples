@@ -18,9 +18,73 @@ import software.amazon.awssdk.services.appsync.model.EvaluateMappingTemplateResp
 
 public class MockTest {
 
-    private static String locationContext = "{\"arguments\":\n    {\n        \"locationid\": \"1234567890\",\n        \"name\": \"Location Name\",\n        \"description\": \"Location Description\",\n        \"imageUrl\": \"https://www.example.com/image.jpg\"\n    },\n\"result\": {\n    \"locationid\": \"1234567890\",\n    \"imageUrl\": \"https://www.example.com/image.jpg\",\n    \"name\": \"Location Name\",\n    \"description\": \"Location Description\",\n    \"timestamp\": \"2023-01-01T00:00:00.000Z\"\n}}";
-    private static String resourceContext = "{\n        \"arguments\":\n            {\n                \"resourceid\": \"1234567890\",\n                \"locationid\": \"abcdefghij\",\n                \"name\": \"Resource Name\",\n                \"description\": \"Resource Description\",\n                \"type\": \"Resource Type\"\n            },\n        \"result\":\n            {\n                \"resourceid\": \"1234567890\",\n                \"locationid\": \"abcdefghij\",\n                \"name\": \"Resource Name\",\n                \"description\": \"Resource Description\",\n                \"type\": \"Resource Type\",\n                \"timestamp\": \"2023-01-01T00:00:00.000Z\"\n            }\n    }";
-    private static String bookingContext = "{\n        \"arguments\":\n            {\n                \"bookingid\": \"1234567890\",\n                \"resourceid\": \"abcdefghij\"\n            },\n        \"identity\":\n            {\n                \"sub\": \"123456-abcdeefg-7890\",\n                \"issuer\": \"\",\n                \"username\": \"johndoe\",\n                \"claims\": {},\n                \"sourceIp\": [\n                    \"x.x.x.x\"\n                ],\n                \"defaultAuthStrategy\": \"ALLOW\"\n            },\n        \"result\":\n            {\n                \"bookingid\": \"1234567890\",\n                \"resourceid\": \"abcdefghij\",\n                \"starttimeepochtime\": 1672578000,\n                \"userid\": \"123456-abcdeefg-7890\",\n                \"timestamp\": \"2023-01-01T00:00:00.000Z\"\n            }\n    }";
+    private static String locationContext = """
+        {
+            "arguments":
+                {
+                    "locationid": "1234567890",
+                    "name": "Location Name",
+                    "description": "Location Description",
+                    "imageUrl": "https://www.example.com/image.jpg"
+                },
+            "result": {
+                "locationid": "1234567890",
+                "imageUrl": "https://www.example.com/image.jpg",
+                "name": "Location Name",
+                "description": "Location Description",
+                "timestamp": "2023-01-01T00:00:00.000Z"
+            }
+        }
+            """;
+    private static String resourceContext = """
+        {
+            "arguments":
+                {
+                    "resourceid": "1234567890",
+                    "locationid": "abcdefghij",
+                    "name": "Resource Name",
+                    "description": "Resource Description",
+                    "type": "Resource Type"
+                },
+            "result":
+                {
+                    "resourceid": "1234567890",
+                    "locationid": "abcdefghij",
+                    "name": "Resource Name",
+                    "description": "Resource Description",
+                    "type": "Resource Type",
+                    "timestamp": "2023-01-01T00:00:00.000Z"
+                }
+        }
+            """;
+    private static String bookingContext = """
+        {
+            "arguments":
+                {
+                    "bookingid": "1234567890",
+                    "resourceid": "abcdefghij"
+                },
+            "identity":
+                {
+                    "sub": "123456-abcdeefg-7890",
+                    "issuer": "",
+                    "username": "johndoe",
+                    "claims": {},
+                    "sourceIp": [
+                        "x.x.x.x"
+                    ],
+                    "defaultAuthStrategy": "ALLOW"
+                },
+            "result":
+                {
+                    "bookingid": "1234567890",
+                    "resourceid": "abcdefghij",
+                    "starttimeepochtime": 1672578000,
+                    "userid": "123456-abcdeefg-7890",
+                    "timestamp": "2023-01-01T00:00:00.000Z"
+                }
+        }
+            """;
 
     private AppSyncClient appClient;
     private String currentDir = System.getProperty("user.dir");
@@ -74,7 +138,39 @@ public class MockTest {
 
     @Test
     public void testGetAllLocationResolver() throws IOException{
-        String context = "{\n            \"arguments\":\n                {\n                },\n            \"result\": {\n                    \"items\": [\n                        {\n                            \"locationid\": \"0\",\n                            \"imageUrl\": \"url\",\n                            \"name\": \"name\",\n                            \"description\": \"description\",\n                            \"timestamp\": \"2023-01-01T00:00:00.000Z\"\n                        },\n                        {\n                            \"locationid\": \"2\",\n                            \"imageUrl\": \"url2\",\n                            \"name\": \"name2\",\n                            \"description\": \"description2\",\n                            \"timestamp\": \"2023-01-01T00:00:00.000Z\"\n                        },\n                        {\n                            \"locationid\": \"1\",\n                            \"imageUrl\": \"url1\",\n                            \"name\": \"name1\",\n                            \"description\": \"description1\",\n                            \"timestamp\": \"2023-01-01T00:00:00.000Z\"\n                        }\n                    ],\n                    \"scannedCount\": 3\n            }\n        }";
+        String context = """
+            {
+                "arguments":
+                    {
+                    },
+                "result": {
+                        "items": [
+                            {
+                                "locationid": "0",
+                                "imageUrl": "url",
+                                "name": "name",
+                                "description": "description",
+                                "timestamp": "2023-01-01T00:00:00.000Z"
+                            },
+                            {
+                                "locationid": "2",
+                                "imageUrl": "url2",
+                                "name": "name2",
+                                "description": "description2",
+                                "timestamp": "2023-01-01T00:00:00.000Z"
+                            },
+                            {
+                                "locationid": "1",
+                                "imageUrl": "url1",
+                                "name": "name1",
+                                "description": "description1",
+                                "timestamp": "2023-01-01T00:00:00.000Z"
+                            }
+                        ],
+                        "scannedCount": 3
+                }
+            }
+                """;
         ObjectMapper mapper = new ObjectMapper();
         JsonNode contextMap = mapper.readTree(context);
         JsonNode contextMapItems = contextMap.get("result").get("items");
@@ -245,7 +341,35 @@ public class MockTest {
 
     @Test
     public void testGetResourceForLocationResolver() throws IOException {
-        String context = "{\n            \"arguments\":\n                {\n                    \"locationid\": \"abcdefghij\"\n                },\n            \"result\": {\n                    \"items\": [\n                        {\n                            \"resourceid\": \"0\",\n                            \"locationid\": \"abcdefghij\",\n                            \"name\": \"Resource Name 0\",\n                            \"description\": \"Resource Description 0\",\n                            \"type\": \"Resource Type 0\",\n                            \"timestamp\": \"2023-01-01T00:00:00.000Z\"\n                        },\n                        {\n                            \"resourceid\": \"1\",\n                            \"locationid\": \"abcdefghij\",\n                            \"name\": \"Resource Name 1\",\n                            \"description\": \"Resource Description 1\",\n                            \"type\": \"Resource Type 1\",\n                            \"timestamp\": \"2023-01-01T00:00:00.000Z\"\n                        }\n                    ],\n                    \"scannedCount\": 2\n            }\n        }";
+        String context = """
+            {
+                "arguments":
+                    {
+                        "locationid": "abcdefghij"
+                    },
+                "result": {
+                        "items": [
+                            {
+                                "resourceid": "0",
+                                "locationid": "abcdefghij",
+                                "name": "Resource Name 0",
+                                "description": "Resource Description 0",
+                                "type": "Resource Type 0",
+                                "timestamp": "2023-01-01T00:00:00.000Z"
+                            },
+                            {
+                                "resourceid": "1",
+                                "locationid": "abcdefghij",
+                                "name": "Resource Name 1",
+                                "description": "Resource Description 1",
+                                "type": "Resource Type 1",
+                                "timestamp": "2023-01-01T00:00:00.000Z"
+                            }
+                        ],
+                        "scannedCount": 2
+                }
+            }
+                """;
         ObjectMapper mapper = new ObjectMapper();
         JsonNode contextMap = mapper.readTree(context);
         JsonNode contextMapItems = contextMap.get("result").get("items");
@@ -324,14 +448,13 @@ public class MockTest {
 
     @Test
     public void testCreateBookingResolverWithoutBookingId() throws IOException {
-        String context = "{\n        \"arguments\":\n            {\n                \"resourceid\": \"abcdefghij\"\n            },\n        \"identity\":\n            {\n                \"sub\": \"123456-abcdeefg-7890\",\n                \"issuer\": \"\",\n                \"username\": \"johndoe\",\n                \"claims\": {},\n                \"sourceIp\": [\n                    \"x.x.x.x\"\n                ],\n                \"defaultAuthStrategy\": \"ALLOW\"\n            },\n        \"result\":\n            {\n                \"bookingid\": \"1234567890\",\n                \"resourceid\": \"abcdefghij\",\n                \"starttimeepochtime\": 1672578000,\n                \"userid\": \"123456-abcdeefg-7890\",\n                \"timestamp\": \"2023-01-01T00:00:00.000Z\"\n            }\n    }";
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode contextMap = mapper.readTree(context);
+        JsonNode contextMap = mapper.readTree(bookingContext);
 
         // Test request mapping template
         EvaluateMappingTemplateRequest templateRequest = EvaluateMappingTemplateRequest.builder()
             .template(getTemplateToString("create_booking_request.vtl"))
-            .context(context)
+            .context(bookingContext)
             .build();
         EvaluateMappingTemplateResponse templateResponseRequest = appClient.evaluateMappingTemplate(templateRequest);
         Assertions.assertNotNull(templateResponseRequest.evaluationResult());
@@ -347,7 +470,7 @@ public class MockTest {
         // Test response mapping response
         EvaluateMappingTemplateRequest templateResponse = EvaluateMappingTemplateRequest.builder()
             .template(getTemplateToString("create_booking_request.vtl"))
-            .context(context)
+            .context(bookingContext)
             .build();
         EvaluateMappingTemplateResponse templateResponseResponse = appClient.evaluateMappingTemplate(templateResponse);
         Assertions.assertNotNull(templateResponseResponse.evaluationResult());
