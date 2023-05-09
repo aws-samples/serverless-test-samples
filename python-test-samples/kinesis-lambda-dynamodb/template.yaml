@@ -110,7 +110,7 @@ Outputs:
     Value: !GetAtt RecordsStream.Arn
 
   RecordProcessorFunctionArn:
-    Description: "Kinesis records processor Lambda Function ARN."
+    Description: "Kinesis records processor Lambda Function ARN"
     Value: !GetAtt RecordProcessorFunction.Arn
 
   ProcessedRecordsTableName:
