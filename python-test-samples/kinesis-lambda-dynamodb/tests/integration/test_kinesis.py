@@ -112,7 +112,7 @@ class TestKinesis(TestCase):
         event = test_event
         lambda_handler(event, None)
         
-        # Verify that the record was written to the DynamoDB table.
+        # Verify that the record was written to the DynamoDB table
         dynamodb_resource = boto3.resource("dynamodb", region_name = self.aws_region)
         dynamodb_table = dynamodb_resource.Table(name=self.dynamodb_table_name)
         response = dynamodb_table.scan(Limit=1)
