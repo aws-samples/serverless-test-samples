@@ -117,6 +117,10 @@ Outputs:
     Description: "Processed Records DynamoDB table name"
     Value: !Ref DynamoDBTable
 
+  DynamoDBTableName:
+    Description: "The DynamoDB Table Name"
+    Value: !Ref DynamoDBTable
+
   RecordProcessingTestResultsTableName:
     Condition: CreateTestResources
     Description: "Test results table allows monitoring of processed test records"

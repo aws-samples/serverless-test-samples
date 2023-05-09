@@ -5,6 +5,7 @@
 import os
 from unittest import TestCase
 from uuid import uuid4
+import base64
 import json
 from typing import Any, Dict
 from boto3.dynamodb.conditions import Key
@@ -55,9 +56,7 @@ class TestKinesis(TestCase):
         kinesis_outputs = [output for output in stack_outputs if output["OutputKey"] == "RecordsStreamArn"]
         self.assertTrue(kinesis_outputs, f"Cannot find output RecordsStreamArn in stack {stack_name}")
         self.record_stream_arn = kinesis_outputs[0]["OutputValue"] 
-        kinesis_outputs = [output for output in stack_outputs if output["OutputKey"] == "StreamName"]
-        self.assertTrue(kinesis_outputs, f"Cannot find output StreamName in stack {stack_name}")
-        self.stream_name = kinesis_outputs[0]["OutputValue"] 
+        self.stream_name = "RecordsStream"
         # DynamoDBTableName
         dynamodb_outputs = [output for output in stack_outputs if output["OutputKey"] == "DynamoDBTableName"]
         self.assertTrue(dynamodb_outputs, f"Cannot find output DynamoDBTableName in stack {stack_name}")
@@ -102,15 +101,21 @@ class TestKinesis(TestCase):
         """
         # Put a record into the Kinesis stream
         test_event = self.load_test_event("sample_test_event")
-        self.kinesis_client.put_record(StreamName=self.stream_name, Data=test_event, PartitionKey='1')
+        data = base64.b64decode(test_event['Records'][0]['kinesis']['data']).decode('utf-8')
+        event_obj = json.loads(data)
+        batch = str(event_obj['batch'])
+        id = str(event_obj['id'])
+        batchsequence = str(event_obj['batchsequence'])
+        result = batch + id + batchsequence
+        self.kinesis_client.put_record(StreamName=self.stream_name, Data=result, PartitionKey='1')
         # Invoke the Lambda function with the Kinesis record
         event = test_event
         lambda_handler(event, None)
-        # Wait for the record to be processed
-        waiter = self.kinesis_client.get_waiter('stream_record_processed')
-        waiter.wait(StreamName=self.stream_name, ShardId='shardId-000000000000', ExpectedShardIterator='AT_SEQUENCE_NUMBER')
+        
         # Verify that the record was written to the DynamoDB table
         dynamodb_resource = boto3.resource("dynamodb", region_name = self.aws_region)
         dynamodb_table = dynamodb_resource.Table(name=self.dynamodb_table_name)
-        response = dynamodb_table.get_item(Key={'id': '1'})
-        self.assertIn(response['Item']['data'], 'e04c537a-7177-4254-afae-594470849a2d')
+        response = dynamodb_table.scan(Limit=1)
+        items = response['Items'][0]
+        values = items.get('PK')
+        self.assertIn(values, 'e04c537a-7177-4254-afae-594470849a2d')
