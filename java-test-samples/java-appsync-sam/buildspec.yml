@@ -10,6 +10,7 @@ phases:
     commands:
       - yum install java-17-amazon-corretto-devel -y
       - alternatives --set java /usr/lib/jvm/java-17-amazon-corretto.x86_64/bin/java 
+      - export JAVA_HOME=/usr/lib/jvm/java-17-amazon-corretto.x86_64
   build:
     commands:
       - echo Build started on `date`
