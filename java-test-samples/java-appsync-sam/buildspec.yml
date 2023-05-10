@@ -3,9 +3,13 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      java: corretto17
+      java: corretto11
     commands:
       - cd ./java-appsync-sam
+  pre-build:
+    commands:
+      - yum install java-17-amazon-corretto-devel -y
+      - alternatives --set java /usr/lib/jvm/java-17-amazon-corretto.aarch64/bin/java 
   build:
     commands:
       - echo Build started on `date`
