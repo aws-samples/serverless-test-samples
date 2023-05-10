@@ -61,15 +61,10 @@ class TestKinesis(TestCase):
         dynamodb_outputs = [output for output in stack_outputs if output["OutputKey"] == "DynamoDBTableName"]
         self.assertTrue(dynamodb_outputs, f"Cannot find output DynamoDBTableName in stack {stack_name}")
         self.dynamodb_table_name = dynamodb_outputs[0]["OutputValue"] 
+        os.environ["DYNAMODB_TABLE_NAME"] = self.dynamodb_table_name
         # Create a random postfix for the id's to prevent data collions between tests
         # Using unique id's per unit test will isolate test data
         self.id_postfix = "_" + str(uuid4())
-        # Seed the DynamoDB Table with Test Data
-        dynamodb_resource = boto3.resource("dynamodb", region_name = self.aws_region)
-        dynamodb_table = dynamodb_resource.Table(name=self.dynamodb_table_name)
-        dynamodb_table.put_item(Item={"PK": "TEST001" + self.id_postfix, 
-                                      "SK": "NAME#",
-                                      "data": "Unit Test Name Data"})
 
     def tearDown(self) -> None:
         """

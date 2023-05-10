@@ -17,15 +17,14 @@ from aws_lambda_powertools.utilities.data_classes import KinesisStreamEvent
 from aws_lambda_powertools.utilities.typing import LambdaContext
 
 
-# Retrieve the table name from the environment, and create a boto3 Table object
-dynamodb_table_name = environ["DYNAMODB_TABLE_NAME"]
-dynamodb_resource = boto3.Session(region_name="us-east-1").resource('dynamodb')
-dynamodb_table = dynamodb_resource.Table(dynamodb_table_name)
-
 def lambda_handler(event: KinesisStreamEvent, context: LambdaContext) -> dict:
     """
     # Function to read Kinesis stream and insert into DynamoDB table
     """
+    # Retrieve the table name from the environment, and create a boto3 Table object
+    dynamodb_table_name = environ.get("DYNAMODB_TABLE_NAME")
+    dynamodb_resource = boto3.Session(region_name="us-east-1").resource('dynamodb')
+    dynamodb_table = dynamodb_resource.Table(dynamodb_table_name)
     print(f"Using DynamoDB Table {dynamodb_table_name}.")
     records = event["Records"]
     batch_size = 25  # maximum number of items to write at once
@@ -40,17 +39,17 @@ def lambda_handler(event: KinesisStreamEvent, context: LambdaContext) -> dict:
         items_to_write.append(item)
         # If the list is at the batch size, write the items to the table and clear the list
         if len(items_to_write) >= batch_size:
-            write_to_dynamodb(items_to_write)
+            write_to_dynamodb(items_to_write, dynamodb_table)
             items_to_write = []
     # If there are any remaining items in the list, write them to the table
     if items_to_write:
-        write_to_dynamodb(items_to_write)
+        write_to_dynamodb(items_to_write, dynamodb_table)
     return {
         "statusCode": 200,
         "body": "Kinesis events processed and persisted to DynamoDB table"
     }
 
-def write_to_dynamodb(items):
+def write_to_dynamodb(items, dynamodb_table):
     """
     # Function to Write to DynamoDB table
     """
