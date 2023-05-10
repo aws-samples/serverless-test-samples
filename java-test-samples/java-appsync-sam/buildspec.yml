@@ -9,7 +9,7 @@ phases:
   pre_build:
     commands:
       - yum install java-17-amazon-corretto-devel -y
-      - alternatives --set java /usr/lib/jvm/java-17-amazon-corretto.aarch64/bin/java 
+      - alternatives --set java /usr/lib/jvm/java-17-amazon-corretto.x86_64/bin/java 
   build:
     commands:
       - echo Build started on `date`
