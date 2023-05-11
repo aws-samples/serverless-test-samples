@@ -1,8 +1,15 @@
+namespace CreateCustomerFunction;
+
+using Amazon.XRay.Recorder.Handlers.AwsSdk;
+
+using AWS.Lambda.Powertools.Logging;
+using AWS.Lambda.Powertools.Tracing;
+
+using SchemaTesting.Shared;
+
 using System.Text.Json;
 using Amazon.EventBridge;
 using Amazon.Lambda.APIGatewayEvents;
-
-namespace CreateCustomerFunction;
 
 public class Function
 {
@@ -14,6 +21,8 @@ public class Function
 
     internal Function(IEventPublisher? publisher)
     {
+        AWSSDKHandler.RegisterXRayForAllServices();
+        
         var eventPublisher = publisher ?? new EventBridgeEventPublisher(new AmazonEventBridgeClient());
 
         _commandHandler =
@@ -21,6 +30,8 @@ public class Function
                 eventPublisher);
     }
 
+    [Logging(LogEvent = true)]
+    [Tracing]
     public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest apiGatewayProxyRequest)
     {
         var command = JsonSerializer.Deserialize<CreateCustomerCommand>(apiGatewayProxyRequest.Body);

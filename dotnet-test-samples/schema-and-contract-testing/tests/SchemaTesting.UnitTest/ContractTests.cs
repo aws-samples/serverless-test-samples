@@ -1,9 +1,14 @@
-using System.Text.Json;
 using CreateCustomerFunction;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 
 namespace SchemaTesting.UnitTest;
+
+using Newtonsoft.Json;
+
+using SchemaTesting.Shared;
+
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 public class ContractTests
 {
@@ -15,10 +20,10 @@ public class ContractTests
     {
         this._publishedEvents = new List<CustomerCreatedEvent?>();
         this._mockEventPublisher = new Mock<IEventPublisher>();
-        _mockEventPublisher.Setup(p => p.Publish(It.IsAny<Event>()))
-            .Callback((Event e) =>
+        _mockEventPublisher.Setup(p => p.Publish(It.IsAny<EventWrapper>()))
+            .Callback((EventWrapper e) =>
             {
-                _publishedEvents.Add(e as CustomerCreatedEvent);
+                _publishedEvents.Add(e.Payload as CustomerCreatedEvent);
             });
         this._schemaReader = new LocalDiskSchemaReader();
     }
@@ -42,7 +47,7 @@ public class ContractTests
         _publishedEvents.Count.Should().Be(1);
 
         // Parse the published event as a JObject.
-        var publishedEventJson = JObject.Parse(JsonSerializer.Serialize(_publishedEvents[0] as CustomerCreatedEventV1));
+        var publishedEventJson = JObject.Parse(JsonConvert.SerializeObject(_publishedEvents[0] as CustomerCreatedEventV1));
 
         var schema = await this._schemaReader.ReadJsonSchemaAsync("1.0.0");
 
@@ -69,7 +74,7 @@ public class ContractTests
         _publishedEvents.Count.Should().Be(1);
 
         // Parse the published event as a JObject.
-        var publishedEventJson = JObject.Parse(JsonSerializer.Serialize(_publishedEvents[0] as CustomerCreatedEventV1));
+        var publishedEventJson = JObject.Parse(JsonConvert.SerializeObject(_publishedEvents[0] as CustomerCreatedEventV1));
 
         var schema = await this._schemaReader.ReadJsonSchemaAsync("1.3.0");
 
@@ -96,7 +101,7 @@ public class ContractTests
         _publishedEvents.Count.Should().Be(1);
 
         // Parse the published event as a JObject.
-        var publishedEventJson = JObject.Parse(JsonSerializer.Serialize(_publishedEvents[0] as CustomerCreatedEventV2));
+        var publishedEventJson = JObject.Parse(JsonConvert.SerializeObject(_publishedEvents[0] as CustomerCreatedEventV2));
 
         var schema = await this._schemaReader.ReadJsonSchemaAsync("1.0.0");
 
@@ -123,7 +128,7 @@ public class ContractTests
         _publishedEvents.Count.Should().Be(1);
 
         // Parse the published event as a JObject.
-        var publishedEventJson = JObject.Parse(JsonSerializer.Serialize(_publishedEvents[0] as CustomerCreatedEventV3));
+        var publishedEventJson = JObject.Parse(JsonConvert.SerializeObject(_publishedEvents[0] as CustomerCreatedEventV3));
 
         var schema = await this._schemaReader.ReadJsonSchemaAsync("1.0.0");
 
@@ -150,7 +155,7 @@ public class ContractTests
         _publishedEvents.Count.Should().Be(1);
 
         // Parse the published event as a JObject.
-        var publishedEventJson = JObject.Parse(JsonSerializer.Serialize(_publishedEvents[0] as CustomerCreatedEventV1));
+        var publishedEventJson = JObject.Parse(JsonConvert.SerializeObject(_publishedEvents[0] as CustomerCreatedEventV1));
 
         var schema = await this._schemaReader.ReadJsonSchemaAsync("1.2.0");
 

@@ -2,6 +2,8 @@ using System.Text.Json.Serialization;
 
 namespace CreateCustomerFunction;
 
+using AWS.Lambda.Powertools.Tracing;
+
 public record CreateCustomerCommand
 {
     [JsonPropertyName("firstName")]
@@ -13,6 +15,7 @@ public record CreateCustomerCommand
     [JsonPropertyName("address")]
     public string? Address { get; init; }
 
+    [Tracing]
     public bool IsValid()
     {
         if (string.IsNullOrEmpty(this.Address))

@@ -2,6 +2,10 @@ using AWS.Lambda.Powertools.Logging;
 
 namespace CreateCustomerFunction;
 
+using AWS.Lambda.Powertools.Tracing;
+
+using SchemaTesting.Shared;
+
 public enum EventVersion
 {
     V1,
@@ -25,6 +29,7 @@ public class CreateCustomerCommandHandler
         options.Invoke(_options);
     }
     
+    [Tracing]
     public async Task<bool> Handle(CreateCustomerCommand command)
     {
         Logger.LogInformation("Received new create customer event");
@@ -41,14 +46,13 @@ public class CreateCustomerCommandHandler
         var customerId = Guid.NewGuid().ToString();
         
         Logger.LogInformation($"Generated customer id {customerId}");
-        Logger.AppendKey("customerId", customerId);
-        
+
         // Persist to database
         
         // Publish customer created event
         Logger.LogInformation("Publishing customer created event");
         
-        await this._publisher.Publish(this.GenerateEvent(customerId, command));
+        await this._publisher.Publish(new EventWrapper(this.GenerateEvent(customerId, command)));
 
         return true;
     }

@@ -1,11 +1,17 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 
+Parameters:
+  ResourceSuffix:
+    Description: A suffix to add to resources to enable multiple developers to deploy to the same account
+    Default: ""
+    Type: String
+
 Globals:
   Function:
     MemorySize: 1024
     Architectures:
-      - arm64
+      - x86_64
     Runtime: dotnet6
     Timeout: 30
     Tracing: Active
@@ -13,11 +19,12 @@ Globals:
       Variables:
         ENV: 'dev'
 
-
 Resources:
   CreateCustomerFunction:
     Type: AWS::Serverless::Function
     Properties:
+      FunctionName:
+        !Sub "CreateCustomerFunction-${AWS::StackName}-${AWS::AccountId}${ResourceSuffix}"
       CodeUri: ./src/CreateCustomerFunction/
       Handler: CreateCustomerFunction::CreateCustomerFunction.Function::FunctionHandler
       Environment:
@@ -37,3 +44,9 @@ Resources:
     Type: AWS::Events::EventBus
     Properties:
       Name: central-event-bus
+  
+  CentralEventBusScehamRegistry:
+    Type: AWS::EventSchemas::Discoverer
+    Properties:
+      SourceArn: !GetAtt CentralEventBus.Arn
+      Description: 'Discover schemas from custom event bus'

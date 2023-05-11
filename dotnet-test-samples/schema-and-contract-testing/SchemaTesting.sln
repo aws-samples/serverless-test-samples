@@ -4,12 +4,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A8475A9D-FCB6-4C68-90EB-99F531CFD0D4}"
+	ProjectSection(SolutionItems) = preProject
+		template.yaml = template.yaml
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateCustomerFunction", "src\CreateCustomerFunction\CreateCustomerFunction.csproj", "{D34DF46E-831D-42FE-A01E-1077352B125B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{4409C9E1-4330-4111-8AA7-8A33B5571393}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchemaTesting.UnitTest", "tests\SchemaTesting.UnitTest\SchemaTesting.UnitTest.csproj", "{625121DE-3E39-44D9-8E2B-59FA9A82B4C9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchemaTesting.SchemaRegistry", "tests\SchemaTesting.SchemaRegistry\SchemaTesting.SchemaRegistry.csproj", "{36BB830A-CD97-4496-B35C-05152A98D750}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchemaTesting.Shared", "src\SchemaTesting.Shared\SchemaTesting.Shared.csproj", "{9F0B2465-02ED-4950-85EF-E1298D381E0B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,9 +35,19 @@ Global
 		{625121DE-3E39-44D9-8E2B-59FA9A82B4C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{625121DE-3E39-44D9-8E2B-59FA9A82B4C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{625121DE-3E39-44D9-8E2B-59FA9A82B4C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36BB830A-CD97-4496-B35C-05152A98D750}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36BB830A-CD97-4496-B35C-05152A98D750}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36BB830A-CD97-4496-B35C-05152A98D750}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36BB830A-CD97-4496-B35C-05152A98D750}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F0B2465-02ED-4950-85EF-E1298D381E0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F0B2465-02ED-4950-85EF-E1298D381E0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F0B2465-02ED-4950-85EF-E1298D381E0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F0B2465-02ED-4950-85EF-E1298D381E0B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{D34DF46E-831D-42FE-A01E-1077352B125B} = {A8475A9D-FCB6-4C68-90EB-99F531CFD0D4}
 		{625121DE-3E39-44D9-8E2B-59FA9A82B4C9} = {4409C9E1-4330-4111-8AA7-8A33B5571393}
+		{36BB830A-CD97-4496-B35C-05152A98D750} = {4409C9E1-4330-4111-8AA7-8A33B5571393}
+		{9F0B2465-02ED-4950-85EF-E1298D381E0B} = {A8475A9D-FCB6-4C68-90EB-99F531CFD0D4}
 	EndGlobalSection
 EndGlobal

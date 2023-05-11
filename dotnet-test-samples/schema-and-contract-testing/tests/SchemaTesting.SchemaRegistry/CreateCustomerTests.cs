@@ -1,13 +1,13 @@
-using CreateCustomerFunction;
+namespace SchemaTesting.SchemaRegistry;
 
-namespace SchemaTesting.UnitTest;
+using CreateCustomerFunction;
 
 using SchemaTesting.Shared;
 
 public class AddressTests
 {
     [Fact]
-    public async Task ProcessCommandWithValidAddress_ShouldReturnSuccess()
+    public async Task HandleCreateCustomerCommand_With_ValidRequest_Should_CompleteSuccessfully()
     {
         var commandHandler = new CreateCustomerCommandHandler(options =>
         {
@@ -27,7 +27,7 @@ public class AddressTests
     }
     
     [Fact]
-    public async Task ParseEmptyAddressEvent_ShouldReturnNull()
+    public async Task HandleCreateCustomerCommand_With_EmptyAddressProperty_Should_ReturnNull()
     {
         var commandHandler = new CreateCustomerCommandHandler(options =>
         {

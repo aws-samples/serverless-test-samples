@@ -8,8 +8,14 @@
 
   <ItemGroup>
     <PackageReference Include="Amazon.Lambda.APIGatewayEvents" Version="2.6.0" />
+    <PackageReference Include="Amazon.Lambda.Core" Version="2.1.0" />
+    <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.3.1" />
     <PackageReference Include="AWS.Lambda.Powertools.Logging" Version="1.0.1" />
     <PackageReference Include="AWSSDK.EventBridge" Version="3.7.102.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SchemaTesting.Shared\SchemaTesting.Shared.csproj" />
   </ItemGroup>
 
 </Project>
