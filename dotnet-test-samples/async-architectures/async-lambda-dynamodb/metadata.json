@@ -2,7 +2,7 @@
     "title": "Asynchronous Integration Test with Lambda Event Listener and DynamoDB",
     "description": "This project used a test harness to perform integration testing of an asynchonous AWS Lambda handler.",
     "content_language": "English",
-    "language": "CSharp",
+    "language": ".NET",
     "type": ["Integration"],
     "diagram": "/img/s3-lambda-s3.png",
     "framework": "SAM",

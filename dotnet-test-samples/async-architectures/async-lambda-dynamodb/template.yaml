@@ -12,6 +12,11 @@ Parameters:
       - "True"
       - "False"
     ConstraintDescription: Allowed values are True and False
+    
+  ResourceSuffix:
+    Description: A suffix to add to resources to enable multiple developers to deploy to the same account
+    Default: ""
+    Type: String
 
 Conditions:
   CreateTestResources: !Equals [!Ref DeployTestResources, "True"]
@@ -24,10 +29,7 @@ Globals: # https://docs.aws.amazon.com/serverless-application-model/latest/devel
         Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
         Environment:
             Variables:
-                DESTINATION_BUCKET: 
-                  !Sub "async-destination-${AWS::StackName}-${AWS::AccountId}"
-                RESULTS_TABLE: 
-                  !Sub "async-results-${AWS::StackName}-${AWS::AccountId}"                
+                DESTINATION_BUCKET: !Sub "async-destination-${AWS::StackName}-${AWS::AccountId}${ResourceSuffix}"
                 # Powertools env vars: https://awslabs.github.io/aws-lambda-powertools-python/#environment-variables
                 LOG_LEVEL: INFO
                 POWERTOOLS_LOGGER_SAMPLE_RATE: 0.1
@@ -41,7 +43,7 @@ Resources:
     UpdateReplacePolicy: Delete
     Properties:
       BucketName: 
-        !Sub "async-source-${AWS::StackName}-${AWS::AccountId}"
+        !Sub "async-source-${AWS::StackName}-${AWS::AccountId}${ResourceSuffix}"
       BucketEncryption:
         ServerSideEncryptionConfiguration:
         - ServerSideEncryptionByDefault:
@@ -57,7 +59,7 @@ Resources:
     UpdateReplacePolicy: Delete
     Properties:
       BucketName:
-        !Sub "async-destination-${AWS::StackName}-${AWS::AccountId}"
+        !Sub "async-destination-${AWS::StackName}-${AWS::AccountId}${ResourceSuffix}"
       BucketEncryption:
         ServerSideEncryptionConfiguration:
         - ServerSideEncryptionByDefault:
@@ -72,16 +74,17 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: 
-        !Sub "ToUppercaseTextTransformer-${AWS::StackName}-${AWS::AccountId}"
+        !Sub "ToUppercaseTextTransformer-${AWS::StackName}-${AWS::AccountId}${ResourceSuffix}"
       CodeUri: src/AsyncTesting.S3EventHandler
       Handler: AsyncTesting.S3EventHandler::AsyncTesting.S3EventHandler.Function::FunctionHandler
+      DeadLetterQueue:
+        Type: SQS
+        TargetArn: !GetAtt TextTransformerDeadLetterQueue.Arn
       Policies:
         - S3ReadPolicy:
-            BucketName: 
-              !Sub "async-source-${AWS::StackName}-${AWS::AccountId}"
+            BucketName: !Sub "async-source-${AWS::StackName}-${AWS::AccountId}${ResourceSuffix}"
         - S3CrudPolicy:
-            BucketName: 
-              !Sub "async-destination-${AWS::StackName}-${AWS::AccountId}"
+            BucketName: !Sub "async-destination-${AWS::StackName}-${AWS::AccountId}${ResourceSuffix}"
       Events:
         FileUpload:
           Type: S3
@@ -93,13 +96,17 @@ Resources:
                 Rules:
                   - Name: suffix
                     Value: '.txt'
+  
+  TextTransformerDeadLetterQueue:
+    Type: 'AWS::SQS::Queue'
+    Properties:
+      QueueName: !Sub "TextTransformerDLQ${ResourceSuffix}"
 
   AsyncTransformTestResultsTable:
     Type: AWS::DynamoDB::Table
     Condition: CreateTestResources
     Properties: 
-      TableName: 
-        !Sub "async-results-${AWS::StackName}-${AWS::AccountId}"
+      TableName: !Sub "async-results-${AWS::StackName}-${AWS::AccountId}${ResourceSuffix}"
       AttributeDefinitions: 
         - AttributeName: id
           AttributeType: S
@@ -115,15 +122,17 @@ Resources:
     Condition: CreateTestResources
     Properties:
       FunctionName: 
-        !Sub "DestinationBucketListener-${AWS::StackName}-${AWS::AccountId}"
+        !Sub "DestinationBucketListener-${AWS::StackName}-${AWS::AccountId}${ResourceSuffix}"
       CodeUri: tests/AsyncTesting.IntegrationTestListener
       Handler: AsyncTesting.IntegrationTestListener::AsyncTesting.IntegrationTestListener.Function::FunctionHandler
+      Environment:
+        Variables:
+          RESULTS_TABLE: !Sub "async-results-${AWS::StackName}-${AWS::AccountId}${ResourceSuffix}"
       Policies:
         - DynamoDBWritePolicy:
             TableName: !Ref AsyncTransformTestResultsTable
         - S3ReadPolicy:
-            BucketName: 
-              !Sub "async-destination-${AWS::StackName}-${AWS::AccountId}"
+            BucketName: !Sub "async-destination-${AWS::StackName}-${AWS::AccountId}${ResourceSuffix}"
       Events:
         FileUpload:
           Type: S3
@@ -137,7 +146,6 @@ Resources:
                     Value: '.txt'
 
 Outputs:
-
     SourceBucketName:
       Description: "Source bucket for asynchronous testing sample"
       Value: !Ref SourceBucket

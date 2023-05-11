@@ -9,7 +9,7 @@ using FluentAssertions;
 
 using Xunit.Abstractions;
 
-public class AsyncTests : IClassFixture<Setup>
+public class TextTransformerE2ETest : IClassFixture<Setup>
 {
     private const int MAX_POLL_ATTEMPTS = 10;
     private const int POLL_INTERVAL = 2;
@@ -17,21 +17,21 @@ public class AsyncTests : IClassFixture<Setup>
     private readonly Setup setup;
     private readonly ITestOutputHelper outputHelper;
 
-    public AsyncTests(Setup setup, ITestOutputHelper outputHelper)
+    public TextTransformerE2ETest(Setup setup, ITestOutputHelper outputHelper)
     {
         this.setup = setup;
         this.outputHelper = outputHelper;
     }
 
     [Fact]
-    public async Task PutObjectToS3_ShouldTriggerAsyncProcess()
+    public async Task PutObjectToS3_With_ValidData_Should_TriggerAsyncProcess()
     {
         // Arrange
         var testFileName = $"{Guid.NewGuid()}.txt";
         
         // Act
         var testString = "hello world";
-        
+
         await this.PutObjectIntoSourceBucket(
             testString,
             this.setup.SourceBucketName,
@@ -49,7 +49,7 @@ public class AsyncTests : IClassFixture<Setup>
     }
 
     [Fact]
-    public async Task PutObjectToS3ForInvalidFileFormat_ShouldNotTriggerAsyncProcess()
+    public async Task PutObjectToS3_With_InvalidFileFormat_Should_NotTriggerAsyncProcess()
     {
         // Arrange
         var testFileName = $"{Guid.NewGuid()}.csv";

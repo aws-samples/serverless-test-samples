@@ -80,7 +80,7 @@ public class Function
                 record.S3.Object.Key);
 
             // convert stream to string
-            var reader = new StreamReader(originalObject.ResponseStream);
+            using var reader = new StreamReader(originalObject.ResponseStream);
 
             var lowerCaseMessage = await reader.ReadToEndAsync();
 
@@ -105,6 +105,8 @@ public class Function
             Logger.LogError(
                 $"Error getting object {s3Event.Object.Key} from bucket {s3Event.Bucket.Name}. Make sure they exist and your bucket is in the same region as this function.",
                 e);
+            
+            // A DLQ is added to the Lambda function, re-throwing the exception here will route the message to the DLQ.
             throw;
         }
     }
