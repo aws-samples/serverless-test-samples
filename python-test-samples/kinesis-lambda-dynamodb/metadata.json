@@ -4,7 +4,7 @@
     "content_language": "English",
     "language": "Python",
     "type": ["Unit", "Integration"],
-    "diagram": "/img/diagram.png",
+    "diagram": ["/img/unit-test-description.png", "/img/system-under-test.png"],
     "framework": "SAM",
     "services": ["kinesis", "lambda", "dynamodb"],
     "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
@@ -16,11 +16,11 @@
         },
         {
             "title": "Unit Tests",
-            "filepath": "/src/tests/unit/mock_test.py"
+            "filepath": "/tests/unit/mock_test.py"
         },
         {
             "title": "Integration Test",
-            "filepath": "/src/tests/integration/test_kinesis.py"
+            "filepath": "/tests/integration/test_kinesis.py"
         }
     ],
     "authors": [
