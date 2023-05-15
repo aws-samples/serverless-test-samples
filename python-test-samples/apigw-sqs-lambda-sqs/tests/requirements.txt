@@ -1,0 +1,4 @@
+pytest
+boto3
+uuid
+requests
