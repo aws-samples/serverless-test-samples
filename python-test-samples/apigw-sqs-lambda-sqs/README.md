@@ -1,33 +1,32 @@
 [![python: 3.9](https://img.shields.io/badge/Python-3.9-green)](https://img.shields.io/badge/Python-3.9-green)
-[![AWS: DynamoDB](https://img.shields.io/badge/AWS-DynamoDB-blueviolet)](https://img.shields.io/badge/AWS-DynamoDB-blueviolet)
-[![test: unit](https://img.shields.io/badge/Test-Unit-blue)](https://img.shields.io/badge/Test-Unit-blue)
+[![AWS: SQS](https://img.shields.io/badge/AWS-SQS-blueviolet)](https://img.shields.io/badge/AWS-SQS-blueviolet)
 [![test: integration](https://img.shields.io/badge/Test-Integration-yellow)](https://img.shields.io/badge/Test-Integration-yellow)
 
 # Python: Amazon Api Gateway, AWS Lambda, Amazon SQS Example
 
 ## Introduction
-This project contains automated test sample code samples for serverless applications written in Python. The project demonstrates several techniques for executing tests in the cloud specifically when interacting with the Amazon DynamoDB service. Based on current tooling, we recommend customers **focus on testing in the cloud** as much as possible. 
+This project contains automated test sample code samples for serverless applications written in Python. The project demonstrates several techniques for executing tests in the cloud specifically when interacting with the AWS Lambda service. Based on current tooling, we recommend customers **focus on testing in the cloud** as much as possible. 
 
 The project uses the [AWS Serverless Application Model](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) (SAM) CLI for configuration, testing and deployment. 
 
 ---
 
 ## Contents
-- [Python: Amazon Api Gateway, AWS Lambda, Amazon DynamoDB Example](#python-amazon-api-gateway-aws-lambda-amazon-dynamodb-example)
+- [Python: Amazon Api Gateway, AWS Lambda, Amazon SQS Example](#python-amazon-api-gateway-aws-lambda-amazon-dynamodb-example)
   - [Introduction](#introduction)
   - [Contents](#contents)
   - [Key Files in the Project](#key-files-in-the-project)
   - [Sample project description](#sample-project-description)
   - [Testing Data Considerations](#testing-data-considerations)
   - [Run the Unit Test](#run-the-unit-test)
-  - [Run the Integration Test](#run-the-integration-test)
 ---
 
 ## Key Files in the Project
-  - [app.py](src/app.py) - Lambda handler code to test
+  - [process_input_queue.py](src/process_input_queue/process_input_queue.py) - Lambda handler code to read from input SQS queue, do some processing, and enqueue the processing results into the output SQS queue
+  - [check_output_queue.py](src/check_output_queue/check_output_queue.py) - Lambda handler code to read from output SQS queue the result of the processing
   - [template.yaml](template.yaml) - SAM script for deployment
-  - [mock_test.py](tests/unit/mock_test.py) - Unit test using mocks
-  - [test_api_gateway.py](tests/integration/test_api_gateway.py) - Integration tests on a live stack
+  - [test_api_gateway.py](tests/integration/test_api_gateway.py) - Integration test written in Python on a live stack deployed on AWS
+  - [client.sh](client.sh) - Simple test client that uses to run from command line (utilizes CURL) for integration tests on a live stack deployed on AWS
   
 [Top](#contents)
 
@@ -35,9 +34,9 @@ The project uses the [AWS Serverless Application Model](https://docs.aws.amazon.
 
 ## Sample project description
 
-The sample project allows a user to call an API endpoint generate a custom "hello" message, and also tracks the messages it generates.  A user provides an "id", which the endpoint uses to look up the person's name associated with that id, and generates a message.  The message is recorded in DynamoDB and also returned to the caller:
+The sample project allows a user to call an API endpoint (using /inbox) and generate a custom "test/hello" message. The user can also track the result of the processing of it in the cloud (using /outbox):
 
-![Event Sequence](img/sequence.png)
+![Event Sequence](img/architecture.png)
 
 This project consists of an [API Gateway](https://aws.amazon.com/api-gateway/), a single [AWS Lambda](https://aws.amazon.com/lambda) function, and a [Amazon DynamoDB](https://aws.amazon.com/dynamodb) table.
 
