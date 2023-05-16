@@ -1,0 +1,168 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+    This template deploys a code sample for testing an asynchronous architecture using Python.
+
+Parameters:
+  DeployTestResources:
+    Description: The parameter instructs the template whether or not to deploy test resources to your environment.
+    Default: "True"
+    Type: String
+    AllowedValues:
+      - "True"
+      - "False"
+    ConstraintDescription: Allowed values are True and False
+    
+  ResourceSuffix:
+    Description: A suffix to add to resources to enable multiple developers to deploy to the same account
+    Default: ""
+    Type: String
+
+Conditions:
+  CreateTestResources: !Equals [!Ref DeployTestResources, "True"]
+
+Globals: # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-specification-template-anatomy-globals.html
+    Function:
+        Timeout: 15
+        MemorySize: 256
+        Runtime: dotnet6
+        Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
+        Environment:
+            Variables:
+                DESTINATION_BUCKET: !Sub "async-destination-${AWS::StackName}-${AWS::AccountId}${ResourceSuffix}"
+                # Powertools env vars: https://awslabs.github.io/aws-lambda-powertools-python/#environment-variables
+                LOG_LEVEL: INFO
+                POWERTOOLS_LOGGER_SAMPLE_RATE: 0.1
+                POWERTOOLS_LOGGER_LOG_EVENT: true
+                POWERTOOLS_METRICS_NAMESPACE: async-test-service
+                POWERTOOLS_SERVICE_NAME: async
+
+Resources:
+  SourceBucket:
+    Type: AWS::S3::Bucket
+    UpdateReplacePolicy: Delete
+    Properties:
+      BucketName: 
+        !Sub "async-source-${AWS::StackName}-${AWS::AccountId}${ResourceSuffix}"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+        - ServerSideEncryptionByDefault:
+            SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  DestinationBucket:
+    Type: AWS::S3::Bucket
+    UpdateReplacePolicy: Delete
+    Properties:
+      BucketName:
+        !Sub "async-destination-${AWS::StackName}-${AWS::AccountId}${ResourceSuffix}"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+        - ServerSideEncryptionByDefault:
+            SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  ToUppercaseTextTransformer:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: 
+        !Sub "ToUppercaseTextTransformer-${AWS::StackName}-${AWS::AccountId}${ResourceSuffix}"
+      CodeUri: src/AsyncTesting.S3EventHandler
+      Handler: AsyncTesting.S3EventHandler::AsyncTesting.S3EventHandler.Function::FunctionHandler
+      DeadLetterQueue:
+        Type: SQS
+        TargetArn: !GetAtt TextTransformerDeadLetterQueue.Arn
+      Policies:
+        - S3ReadPolicy:
+            BucketName: !Sub "async-source-${AWS::StackName}-${AWS::AccountId}${ResourceSuffix}"
+        - S3CrudPolicy:
+            BucketName: !Sub "async-destination-${AWS::StackName}-${AWS::AccountId}${ResourceSuffix}"
+      Events:
+        FileUpload:
+          Type: S3
+          Properties:
+            Bucket: !Ref SourceBucket
+            Events: s3:ObjectCreated:*
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: suffix
+                    Value: '.txt'
+  
+  TextTransformerDeadLetterQueue:
+    Type: 'AWS::SQS::Queue'
+    Properties:
+      QueueName: !Sub "TextTransformerDLQ${ResourceSuffix}"
+
+  AsyncTransformTestResultsTable:
+    Type: AWS::DynamoDB::Table
+    Condition: CreateTestResources
+    Properties: 
+      TableName: !Sub "async-results-${AWS::StackName}-${AWS::AccountId}${ResourceSuffix}"
+      AttributeDefinitions: 
+        - AttributeName: id
+          AttributeType: S
+      KeySchema: 
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput: 
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
+
+  DestinationBucketListener:
+    Type: AWS::Serverless::Function
+    Condition: CreateTestResources
+    Properties:
+      FunctionName: 
+        !Sub "DestinationBucketListener-${AWS::StackName}-${AWS::AccountId}${ResourceSuffix}"
+      CodeUri: tests/AsyncTesting.IntegrationTestListener
+      Handler: AsyncTesting.IntegrationTestListener::AsyncTesting.IntegrationTestListener.Function::FunctionHandler
+      Environment:
+        Variables:
+          RESULTS_TABLE: !Sub "async-results-${AWS::StackName}-${AWS::AccountId}${ResourceSuffix}"
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref AsyncTransformTestResultsTable
+        - S3ReadPolicy:
+            BucketName: !Sub "async-destination-${AWS::StackName}-${AWS::AccountId}${ResourceSuffix}"
+      Events:
+        FileUpload:
+          Type: S3
+          Properties:
+            Bucket: !Ref DestinationBucket
+            Events: s3:ObjectCreated:*
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: suffix
+                    Value: '.txt'
+
+Outputs:
+    SourceBucketName:
+      Description: "Source bucket for asynchronous testing sample"
+      Value: !Ref SourceBucket
+
+    DestinationBucketName:
+      Description: "Destination bucket for asynchronous testing sample"
+      Value: !Ref DestinationBucket
+
+    DestinationBucketListenerName:
+      Condition: CreateTestResources
+      Description: "Lambda Function to listen for test results"
+      Value: !Ref DestinationBucketListener
+
+    AsyncTransformTestResultsTable:
+      Condition: CreateTestResources
+      Description: "DynamoDB table to persist test results"
+      Value: !Ref AsyncTransformTestResultsTable
+
+
+
