@@ -262,7 +262,6 @@ samconfig.toml
 
 # .NET Ignores
 **/.idea/*
-**/bin/*
 **/.vs/*
 **/obj/*
 launchSettings.json
