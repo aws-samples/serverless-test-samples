@@ -19,8 +19,8 @@ import {
 } from "@aws-sdk/lib-dynamodb";
 
 import { mockClient } from 'aws-sdk-client-mock';
-import { mockVariable } from '../../../helpers/env';
 import { DynamoDbStore } from '../../../../src/store/dynamodb/dynamodb-store';
+import { mockVariable } from '../../../helpers/env';
 import { Product } from '../../../../src/model/Product';
 
 /**

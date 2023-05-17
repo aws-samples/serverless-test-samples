@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: MIT-0
+
 import middy from '@middy/core';
 import { MetricUnits, logMetrics } from '@aws-lambda-powertools/metrics';
 import { SQSEvent } from 'aws-lambda';
@@ -7,7 +10,7 @@ import { DynamoDbStore } from '../store/dynamodb/dynamodb-store';
 import { MetaProduct } from '../model/Product';
 import { ProductStore } from '../store/product-store';
 import { logger, tracer, metrics } from '../powertools/utilities';
-import { shortTimestamp } from '../utils.ts/dates';
+import { shortTimestamp } from '../utils/dates';
 
 
 const store: ProductStore = new DynamoDbStore();
