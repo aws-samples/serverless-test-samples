@@ -14,11 +14,11 @@ import boto3
 
 sqs_client = boto3.client('sqs')
 
-"""
-The main lambda handler. will be called by the API Gateway.
-"""
-def lambda_handler(event, context) -> dict:
 
+def lambda_handler(event, context) -> dict:
+    """
+    The main lambda handler. will be called by the API Gateway.
+    """
     # Retrieve the output Q name from the environment
     sqs_output_name = environ["OUTPUT_QUEUE_NAME"]
     logging.debug("Using sqs_output_name: %s", sqs_output_name)

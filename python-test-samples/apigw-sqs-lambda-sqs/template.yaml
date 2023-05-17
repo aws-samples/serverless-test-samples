@@ -140,6 +140,9 @@ Resources:
     Properties:
       MessageRetentionPeriod: 345600
 Outputs:
+  APIGatewayURL:
+    Description: API Gateway EndPoint
+    Value: !Sub https://${Api}.execute-api.${AWS::Region}.amazonaws.com/Prod/
   APIGatewayInputEndPoint:
     Description: API Gateway EndPoint
     Value: !Sub https://${Api}.execute-api.${AWS::Region}.amazonaws.com/Prod/inbox

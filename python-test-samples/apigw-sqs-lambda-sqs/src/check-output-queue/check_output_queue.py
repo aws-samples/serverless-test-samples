@@ -23,6 +23,17 @@ and return it to API Gatway as a response.
 
 
 def lambda_handler(event, context) -> dict:
+    """
+    main function to retrieve one message from the output queue
+    and return it to API Gatway as a response.
+
+    Args:
+        event (dict): event passed by API Gatway
+        context (dict): context passed by API Gatway
+
+    Returns:
+        dict: response to API Gatway
+    """
     # Retrieve the output Q name from the environment
     sqs_output_name = environ["OUTPUT_QUEUE_NAME"]
     response = {}
@@ -34,7 +45,7 @@ def lambda_handler(event, context) -> dict:
         # check if the message is empty
         if "Messages" not in message:
             response = {
-                'statusCode': 200,
+                'statusCode': 404,
                 'body': json.dumps('No message in the output queue')
             }
         else:
