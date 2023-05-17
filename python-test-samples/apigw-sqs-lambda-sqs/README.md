@@ -56,51 +56,37 @@ The Sequence is (corresponding steps 1-7  on the diagram):
 
 ---
 
-## Testing Data Considerations
+## Prerequisites
+The SAM CLI extends the AWS CLI that adds functionality for building and testing serverless applications. It contains features for building your application locally, deploying it to AWS, and emulating AWS services locally to support automated unit tests.  
 
-Data persistence brings additional testing considerations.
+To use the SAM CLI, you need the following tools.
 
-First, the data store must be pre-populated with data to test certain functionality.  In our example, we need a valid `id` to retrieve a name to test our function.  Therefore, we will add data to the data stores prior to running the tests.  This data seeding operation is performed in the test setup.  
-
-Second, the data store will be populated as a side-effect of our testing.  In our example, items of recorded "Hello" messages will be populated in our DynamoDB table.  To prevent unintended side-effects, we will clean-up data generated during the test execution.  This data cleaning operation is performed in the test tear-down. 
-
-Third, any identifying values should be unique to the specific test.  This will prevent 
-collisions between tests should there be an issue with tear-down.  Each test can define
-a unique postfix to prevent the issues.
+* SAM CLI - [Install the SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
+* Python 3.9 - [Install Python 3.9](https://www.python.org/downloads/)
 
 [Top](#contents)
 
----
 
-## Run the Unit Test
-[mock_test.py](tests/unit/mock_test.py) 
-
-In the [unit test](tests/unit/mock_test.py), all references and calls to the DynamoDB service [are mocked on line 18](tests/unit/mock_test.py#L20).
-
-The unit test establishes the DYNAMODB_TABLE_NAME environment
-variable that the Lambda function uses to reference the DynamoDB table.  DYNAMODB_TABLE_NAME is definied in the [setUp method of test class in mock_test.py](tests/unit/mock_test.py#L37-38).   
-
-
-In a unit test, you must create a mocked version of the DynamoDB table.  The example approach in the [setUp method of test class in mock_test.py](tests/unit/mock_test.py#L43-50) reads in the DynamoDB table schema directly the [SAM Template](template.yaml) so that the definition is maintained in one place.  This simple technique works if there are no intrinsics (like !If or !Ref) in the resource properties for KeySchema, AttributeDefinitions, & BillingMode.  Once the mocked table is created, test data is populated.
-
-With the mocked DynamoDB table created and the DYNAMODB_TABLE_NAME set to the mocked table name, the Lambda function will use the mocked DynamoDB table when executing.
-
-The [unit test tear-down](tests/unit/mock_test.py#L61-66) removes the mocked DynamoDB table and clears the DYNAMODB_TABLE_NAME environment variable.
-
-To run the unit test, execute the following
-```shell
-# Create and Activate a Python Virtual Environment
-# One-time setup
-apigw-lambda-dynamodb$ pip3 install virtualenv
-apigw-lambda-dynamodb$ python3 -m venv venv
-apigw-lambda-dynamodb$ source ./venv/bin/activate
-
-# install dependencies
-apigw-lambda-dynamodb$ pip3 install -r tests/requirements.txt
-
-# run unit tests with mocks
-apigw-lambda-dynamodb$ python3 -m pytest -s tests/unit  -v
 ```
+The SAM CLI installs dependencies defined in `src/requirements.txt`, creates a deployment package, and saves it in the `.aws-sam/build` folder. [Read the documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-building.html).
+
+Use the following command to deploy your application package to AWS: 
+
+``` bash
+# deploy your application to the AWS cloud 
+apigw-sqs-lambda-sqs$ sam deploy --guided
+```
+
+After running this command you will receive a series of prompts:
+
+* **Stack Name**: The name of the stack to deploy to CloudFormation. This should be unique to your account and region, and a good starting point would be something matching your project name. Use `apigw-sqs-lambda-sqs` as the stack name for this project.
+* **AWS Region**: The AWS region you want to deploy your app to.
+* **Confirm changes before deploy**: If set to yes, SAM CLI shows you any change sets for manual review before deployment. If set to no, the AWS SAM CLI will automatically deploy application changes.
+* **Allow SAM CLI IAM role creation**: Many AWS SAM templates, including this example, create AWS IAM roles required for the AWS Lambda function(s) included to access AWS services. By default, SAM CLI scopes these down to minimum required permissions. To deploy an AWS CloudFormation stack which creates or changes IAM roles, the `CAPABILITY_IAM` value for `capabilities` must be provided. If you don't provide permission through this prompt, you must explicitly pass `--capabilities CAPABILITY_IAM` to the `sam deploy` command.
+
+* **Save arguments to samconfig.toml**: If set to yes, SAM CLI saves your choices to a configuration file inside the project, so that in the future you can just re-run `sam deploy` without parameters to deploy changes to your application.
+
+You can find your API Gateway Endpoint URL in the output values displayed after deployment. Take note of this URL for use in the logging section below. On subsequent deploys you can run `sam deploy` without the `--guided` flag. [Read the documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-deploying.html).
 
 [Top](#contents)
 
@@ -109,15 +95,14 @@ apigw-lambda-dynamodb$ python3 -m pytest -s tests/unit  -v
 ## Run the Integration Test
 [test_api_gateway.py](tests/integration/test_api_gateway.py) 
 
-For integration tests, the full stack is deployed before testing:
+For integration tests, it is assumed the full stack is already deployed before testing. if not, you can use the following to deploy:
 ```shell
-apigw-lambda-dynamodb$ sam build
-apigw-lambda-dynamodb$ sam deploy --guided
+apigw-sqs-lambda-sqs$ sam build
+apigw-sqs-lambda-sqs$ sam deploy --guided
 ```
- 
-The [integration test](tests/integration/test_api_gateway.py) setup determines both the [API endpoint](tests/integration/test_api_gateway.py#L50-53) and the name of the [DynamoDB table](tests/integration/test_api_gateway.py#L56-58) in the stack.  
+*************************************************************************** TBD with  Yossi *********************************************************
 
-The integration test then [populates data into the DyanamoDB table](tests/integration/test_api_gateway.py#L66-70).
+The [integration test](tests/integration/test_api_gateway.py) setup determines the [API endpoint](tests/integration/test_api_gateway.py#L50-53).  
 
 The [integration test tear-down](tests/integration/test_api_gateway.py#L73-87) removes the seed data, as well as data generated during the test.
 
@@ -127,7 +112,7 @@ To run the integration test, create the environment variable "AWS_SAM_STACK_NAME
 # Set the environment variables AWS_SAM_STACK_NAME and (optionally)AWS_DEFAULT_REGION 
 # to match the name of the stack and the region where you will test
 
-apigw-lambda-dynamodb$  AWS_SAM_STACK_NAME=<stack-name> AWS_DEFAULT_REGION=<region_name> python -m pytest -s tests/integration -v
+apigw-sqs-lambda-sqs$  AWS_SAM_STACK_NAME=<stack-name> AWS_DEFAULT_REGION=<region_name> python -m pytest -s tests/integration -v
 ```
 
 
