@@ -72,16 +72,18 @@ The SAM CLI installs dependencies defined in `src/requirements.txt`, creates a d
 Use the following command to deploy your application package to AWS: 
 
 ``` bash
-# deploy your application to the AWS cloud 
+# deploy your application to the AWS cloud
+apigw-sqs-lambda-sqs$ sam build
 apigw-sqs-lambda-sqs$ sam deploy --guided
 ```
 
 After running this command you will receive a series of prompts:
 
-* **Stack Name**: The name of the stack to deploy to CloudFormation. This should be unique to your account and region, and a good starting point would be something matching your project name. Use `apigw-sqs-lambda-sqs` as the stack name for this project.
+* **Stack Name**: The name of the stack to deploy to CloudFormation. This should be unique to your account and region, and a good starting point would be something matching your project name. Use `apigw-sqs-lambda-sqs` as the stack name for this project. you'll need the stack name to run the Integration test.
 * **AWS Region**: The AWS region you want to deploy your app to.
 * **Confirm changes before deploy**: If set to yes, SAM CLI shows you any change sets for manual review before deployment. If set to no, the AWS SAM CLI will automatically deploy application changes.
 * **Allow SAM CLI IAM role creation**: Many AWS SAM templates, including this example, create AWS IAM roles required for the AWS Lambda function(s) included to access AWS services. By default, SAM CLI scopes these down to minimum required permissions. To deploy an AWS CloudFormation stack which creates or changes IAM roles, the `CAPABILITY_IAM` value for `capabilities` must be provided. If you don't provide permission through this prompt, you must explicitly pass `--capabilities CAPABILITY_IAM` to the `sam deploy` command.
+* **CheckOutputQueue may not have authorization defined, Is this okay?**:set to yes
 
 * **Save arguments to samconfig.toml**: If set to yes, SAM CLI saves your choices to a configuration file inside the project, so that in the future you can just re-run `sam deploy` without parameters to deploy changes to your application.
 
@@ -109,8 +111,10 @@ To run the integration test, create the environment variable "AWS_SAM_STACK_NAME
 ```shell
 # Set the environment variables AWS_SAM_STACK_NAME and (optionally)AWS_DEFAULT_REGION 
 # to match the name of the stack and the region where you will test
+# pip install will check the requireemnt file and will install needed packages to run the pytest
 
-apigw-sqs-lambda-sqs$ export AWS_SAM_STACK_NAME=<stack-name> 
+apigw-sqs-lambda-sqs$ export AWS_SAM_STACK_NAME=<stack-name>
+apigw-sqs-lambda-sqs$ pip install -r tests/requirements.txt 
 apigw-sqs-lambda-sqs$ python -m pytest -s tests/integration -v 
 ```
 
@@ -119,3 +123,10 @@ apigw-sqs-lambda-sqs$ python -m pytest -s tests/integration -v
 
 ---
 
+## Cleanup 
+
+In order to remove the deployed resource in the cloud, please run:
+```shell
+apigw-sqs-lambda-sqs$ sam delete
+```
+answer "yes" to the questions and it will delete the sam stack.
