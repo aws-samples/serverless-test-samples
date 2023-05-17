@@ -1,7 +1,7 @@
 #!/bin/bash 
 
 TIME=`date`
-APIGW="https://n7redw9zh3.execute-api.eu-west-1.amazonaws.com/Prod/"
+APIGW="https://h7fmsf49h1.execute-api.eu-west-1.amazonaws.com/Prod/"
 message="Hello World, the time is: ${TIME}"
 
 echo sending message: $message
@@ -9,7 +9,7 @@ echo
 
 curl --location --request POST ${APIGW}/inbox \
   --header 'Content-Type: application/json' \
-  --data-raw '{ "message": $message }'
+  --data-raw '{ "message": "have a nice day" }'
 
 echo
 echo "sleeping for a sec..."

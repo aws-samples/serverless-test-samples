@@ -96,8 +96,8 @@ class TestApiGateway(TestCase):
         self.assertEqual(response.status_code, 200)
         logging.info("Sent message to Inbox API: %s", self.message)
 
-        # sleeping for 0.5 sec to make sure that the process lambda copies the message
-        time.sleep(0.5)
+        # sleeping for 1 sec to make sure that the process lambda copies the message
+        time.sleep(1)
 
         # Get Message from Output Queue via OUTPUT api
         response = requests.get(self.api_endpoint_outbox, timeout=5)
@@ -109,4 +109,16 @@ class TestApiGateway(TestCase):
         # Check if the sentmessage id is in the received message body
         self.assertIn(self.message['id'], response.json()[
                       'Messages'][0]['Body'])
+
+    def test_api_gateway_404(self):
+        """
+        Call the API Gateway endpoint and check the response for a 200
+        """
+        
+        # Get Message from Output Queue via OUTPUT api, empty Queue should return 404
+        response = requests.get(self.api_endpoint_outbox, timeout=5)
+        self.assertEqual(response.status_code, 404)
+
+        logging.info("Response: %s, Response code: %s",
+                     response.json(), response.status_code)
 
