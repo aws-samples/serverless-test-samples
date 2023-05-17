@@ -26,8 +26,7 @@ The project uses the [AWS Serverless Application Model](https://docs.aws.amazon.
   - [check_output_queue.py](src/check_output_queue/check_output_queue.py) - Lambda handler code to read from output SQS queue the result of the processing
   - [template.yaml](template.yaml) - SAM script for deployment
   - [test_api_gateway.py](tests/integration/test_api_gateway.py) - Integration test written in Python on a live stack deployed on AWS
-  - [client.sh](client.sh) - Simple test client that uses to run from command line (utilizes CURL) for integration tests on a live stack deployed on AWS
-  
+   
 [Top](#contents)
 
 ---
@@ -95,16 +94,15 @@ You can find your API Gateway Endpoint URL in the output values displayed after 
 ## Run the Integration Test
 [test_api_gateway.py](tests/integration/test_api_gateway.py) 
 
-For integration tests, it is assumed the full stack is already deployed before testing. if not, you can use the following to deploy:
+For integration tests, it is assumed the full stack is already deployed before testing. if not, you can use the following commands to deploy (see [Prerequisites](#prerequisites) section):
 ```shell
 apigw-sqs-lambda-sqs$ sam build
 apigw-sqs-lambda-sqs$ sam deploy --guided
 ```
-*************************************************************************** TBD with  Yossi *********************************************************
 
-The [integration test](tests/integration/test_api_gateway.py) setup determines the [API endpoint](tests/integration/test_api_gateway.py#L50-53).  
+The [integration test](tests/integration/test_api_gateway.py) setup determines the [API endpoint](tests/integration/test_api_gateway.py#L56).  
 
-The [integration test tear-down](tests/integration/test_api_gateway.py#L73-87) removes the seed data, as well as data generated during the test.
+The [integration test tear-down](tests/integration/test_api_gateway.py#L79) is not cleaning any data from the queues, it is recomanaded before running any tests to verify (via the console) that the SQS queues are empty, and if not, you can purge the existing messages and perform clean up.
 
 To run the integration test, create the environment variable "AWS_SAM_STACK_NAME" with the name of the test stack, and execute the test.
 
@@ -112,7 +110,8 @@ To run the integration test, create the environment variable "AWS_SAM_STACK_NAME
 # Set the environment variables AWS_SAM_STACK_NAME and (optionally)AWS_DEFAULT_REGION 
 # to match the name of the stack and the region where you will test
 
-apigw-sqs-lambda-sqs$  AWS_SAM_STACK_NAME=<stack-name> AWS_DEFAULT_REGION=<region_name> python -m pytest -s tests/integration -v
+apigw-sqs-lambda-sqs$ export AWS_SAM_STACK_NAME=<stack-name> 
+apigw-sqs-lambda-sqs$ python -m pytest -s tests/integration -v 
 ```
 
 
