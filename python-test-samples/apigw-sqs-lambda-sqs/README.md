@@ -34,17 +34,22 @@ The project uses the [AWS Serverless Application Model](https://docs.aws.amazon.
 
 ## Sample project description
 
-The sample project allows a user to call an API endpoint (using /inbox) and generate a custom "test/hello" message. The user can also track the result of the processing of it in the cloud (using /outbox):
+The sample project allows a user to call an API endpoint (using /inbox) and generate a custom "test/hello" message. The user can also track the result of the processing of it in the cloud (using /outbox). The following diagram demonstatred the architecture and flow. The following diagram has been created using the [AWS Application Composer](https://aws.amazon.com/application-composer/), which can help you visually design and build serverless applications quickly.
 
 ![Event Sequence](img/architecture.png)
 
-This project consists of an [API Gateway](https://aws.amazon.com/api-gateway/), a single [AWS Lambda](https://aws.amazon.com/lambda) function, and a [Amazon DynamoDB](https://aws.amazon.com/dynamodb) table.
+This project consists of an [API Gateway](https://aws.amazon.com/api-gateway/), two [AWS Lambda](https://aws.amazon.com/lambda) functions, and two [Amazon SQS](https://aws.amazon.com/sqs) standart queues which are using 2 DLQ queues accordinally for error handling.
 
-The DynamoDB Table is a [single-table design](https://aws.amazon.com/blogs/compute/creating-a-single-table-design-with-amazon-dynamodb/), as both the name lookup and the message tracking use the same table. The table schema is defined as follows:
-* For all records, the "Partition Key" is the id.
-* For name records, the "Sort Key" is set to a constant = "NAME#"
-* For message history records, the "Sort Key" is set to "TS#" appended with the current date-time stamp.
-* The payloads are in a field named "data".
+The Sequence is (corresponding steps 1-7  on the diagram): 
+
+1. User is using the test client to invoke an API call (POST /inbox) to send a message/job/test to be later on processed in the backend by the ProcessInputQueue lambda function.
+2. API GW is sending the message payload into the InputQueue.
+3. InputQueue is triggering the ProcessInputQueue lambda function to process the message/job/test in the queue. this is where the lambda can be enhanced to do further processing/testing as needed by you. It's up to the user of this sample to decide what this lambda shuold eventualy do, as it can be extended and adapted to the testing needs. 
+4. When the ProcessInputQueue lambda finished its processing, it sends the testing result to the OutputQueue (if needed - please adapt the result JSON/Message). The result will be kept in the queue until consumed by the User.
+5. User is using the test client to invoke an API call (GET /outbox) to receive the testing result/message of the test it issued on step 1.
+6. API GW is triggering the CheckOutputQueue lambda function to recieve the message from the OutputQueue.
+7. CheckOutputQueue lambda function is receiving the the message from the OutputQueue and delivers it back to the test client via the API GW.
+
 
 
 [Top](#contents)
