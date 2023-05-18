@@ -117,6 +117,13 @@ apigw-sqs-lambda-sqs$ export AWS_SAM_STACK_NAME=<stack-name>
 apigw-sqs-lambda-sqs$ pip install -r tests/requirements.txt 
 apigw-sqs-lambda-sqs$ python -m pytest -s tests/integration -v 
 ```
+in the [test_api_gateway.py](tests/integration/test_api_gateway.py) file you can control the polling mechanism for checking the test result, using:
+
+interval_num = 5  # number of times to check if there is a message in the queue.
+
+interval_timeout = 1 # amoount of time in sec to wait between each check.
+
+This may be usefell if the testing takes more than the define default time (5 retries every 1 sec= total of 5 sec). if your lambda [process_input_queue.py](src/process_input_queue/process_input_queue.py) is doing processing for than ~5 seconds, than it is recomanded to adapt this paraemters accordinely.
 
 
 [Top](#contents)
