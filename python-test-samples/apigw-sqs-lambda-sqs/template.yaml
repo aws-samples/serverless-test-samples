@@ -77,8 +77,7 @@ Resources:
       Tracing: Active
       Environment:
         Variables:
-          QUEUE_NAME: !GetAtt OutputQueue.QueueName
-          QUEUE_ARN: !GetAtt OutputQueue.Arn
+          INPUT_QUEUE_NAME: !Ref InputQueue
           OUTPUT_QUEUE_NAME: !Ref OutputQueue
       Policies:
         - AmazonSQSFullAccess
@@ -149,3 +148,9 @@ Outputs:
   APIGatewayOutputEndPoint:
     Description: API Gateway EndPoint
     Value: !Sub https://${Api}.execute-api.${AWS::Region}.amazonaws.com/Prod/outbox
+  SQSInputQueue:
+    Description: SQS Input Queue
+    Value: !Ref InputQueue
+  SQSOutputQueue:
+    Description: SQS Output Queue
+    Value: !Ref OutputQueue

@@ -15,11 +15,17 @@ from uuid import uuid4
 import boto3
 import requests
 
+logging.basicConfig(level=logging.DEBUG)
+
 class TestApiGateway(TestCase):
     """THe main test class for the API Gateway"""
     api_endpoint: str
     api_endpoint_inbox: str
     api_endpoint_outbox: str
+    sqs_input: str
+    sqs_output: str
+    interval_num = 5  # number of times to check if there is a message in the quque
+    interval_timeout = 1 # amoount of time to wait between each check
 
     aws_region = os.environ.get("AWS_DEFAULT_REGION") or "us-east-1"
 
@@ -57,12 +63,18 @@ class TestApiGateway(TestCase):
         stack_outputs = response["Stacks"][0]["Outputs"]
         api_outputs = [
             output for output in stack_outputs if output["OutputKey"] == "APIGatewayURL"]
+        sqs_input   = [
+            output for output in stack_outputs if output["OutputKey"] == "SQSInputQueue"]
+        sqs_output  = [
+            output for output in stack_outputs if output["OutputKey"] == "SQSOutputQueue"]
 
         self.assertTrue(
             api_outputs, f"Cannot find output APIGatewayURL in stack {stack_name}")
         self.api_endpoint = api_outputs[0]["OutputValue"]
         self.api_endpoint_inbox = self.api_endpoint + "/inbox"
         self.api_endpoint_outbox = self.api_endpoint + "/outbox"
+        self.sqs_input = sqs_input[0]["OutputValue"]
+        self.sqs_output = sqs_output[0]["OutputValue"]
 
         logging.info("Setup APIGatewayURL: %s", self.api_endpoint)
         logging.info("Setup APIGatewayURL: %s", self.api_endpoint_inbox)
@@ -79,12 +91,32 @@ class TestApiGateway(TestCase):
     def tearDown(self) -> None:
         """
         # For tear-down, remove any data injected for the tests
-        # purge Input & output SQS
+        # clean Input & output SQS by reading from the queue till its empty
         """
-        # clean Input & output SQS TBD ( basicaly can be done using console UI)
-        # client = boto3.client("sqs")
-        # client.purge_queue(QueueUrl=self.sqs_inbox) #currently not exist
-        # client.purge_queue(QueueUrl=self.sqs_outbox) # currently not exist
+
+        #cleaning input queue
+        client = boto3.client("sqs")
+        response = {}
+
+        response = client.get_queue_attributes(
+            QueueUrl=self.sqs_input,
+            AttributeNames=['ApproximateNumberOfMessages']
+            )
+
+        message_count = int(response['Attributes']['ApproximateNumberOfMessages'])
+        if message_count > 0:
+            logging.debug("Cleaning input queue")
+            client.purge_queue(QueueUrl=self.sqs_input) #purging input queue
+
+        response = client.get_queue_attributes(
+            QueueUrl=self.sqs_output,
+            AttributeNames=['ApproximateNumberOfMessages']
+            )
+
+        message_count = int(response['Attributes']['ApproximateNumberOfMessages'])
+        if message_count > 0:
+            logging.debug("Cleaning output queue")
+            client.purge_queue(QueueUrl=self.sqs_output) #purging output queue
 
     def test_api_gateway_200(self):
         """
@@ -96,29 +128,38 @@ class TestApiGateway(TestCase):
         self.assertEqual(response.status_code, 200)
         logging.info("Sent message to Inbox API: %s", self.message)
 
-        # sleeping for 1 sec to make sure that the process lambda copies the message
-        time.sleep(1)
+        # looping for the number of times to check if there is a message in the quque
+        msg_found=False
+        for i in range(self.interval_num):
+             # Get Message from Output Queue via OUTPUT api
+            print(f"Checking for message in the output queue {i+1} time out of {self.interval_num}")
+            response = requests.get(self.api_endpoint_outbox, timeout=5)
+            if response.status_code == 200:
+                msg_found=True
+                # Check if the sentmessage id is in the received message body
+                self.assertIn(self.message['id'],
+                              response.json()['Messages'][0]['Body'])
+                logging.info("Response: %s, Response code: %s",
+                         response.json(), response.status_code)
+                break
 
-        # Get Message from Output Queue via OUTPUT api
-        response = requests.get(self.api_endpoint_outbox, timeout=5)
-        self.assertEqual(response.status_code, 200)
+            # Sleep for interval_timeout before checking again
+            print (f"Sleeping for {self.interval_timeout} seconds before checking again")
+            time.sleep(self.interval_timeout)
 
-        logging.info("Response: %s, Response code: %s",
-                     response.json(), response.status_code)
-
-        # Check if the sentmessage id is in the received message body
-        self.assertIn(self.message['id'], response.json()[
-                      'Messages'][0]['Body'])
+            # Check if message was found in the output queue or raise fail test
+            if (i == self.interval_num - 1) and (not msg_found):
+                logging.info("Message was not found in the output queue")
+                self.fail("Message was not found in the output queue")
 
     def test_api_gateway_404(self):
         """
-        Call the API Gateway endpoint and check the response for a 200
+        Call the API Gateway endpoint and check the response for a 404
         """
-        
+
         # Get Message from Output Queue via OUTPUT api, empty Queue should return 404
         response = requests.get(self.api_endpoint_outbox, timeout=5)
         self.assertEqual(response.status_code, 404)
 
         logging.info("Response: %s, Response code: %s",
                      response.json(), response.status_code)
-
