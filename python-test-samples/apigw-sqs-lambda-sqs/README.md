@@ -83,7 +83,7 @@ After running this command you will receive a series of prompts:
 * **AWS Region**: The AWS region you want to deploy your app to.
 * **Confirm changes before deploy**: If set to yes, SAM CLI shows you any change sets for manual review before deployment. If set to no, the AWS SAM CLI will automatically deploy application changes.
 * **Allow SAM CLI IAM role creation**: Many AWS SAM templates, including this example, create AWS IAM roles required for the AWS Lambda function(s) included to access AWS services. By default, SAM CLI scopes these down to minimum required permissions. To deploy an AWS CloudFormation stack which creates or changes IAM roles, the `CAPABILITY_IAM` value for `capabilities` must be provided. If you don't provide permission through this prompt, you must explicitly pass `--capabilities CAPABILITY_IAM` to the `sam deploy` command.
-* **CheckOutputQueue may not have authorization defined, Is this okay?**:set to yes
+* **CheckOutputQueue may not have authorization defined, Is this okay?**:set to yes. since this is for testing only we can proceed without client autoriztion for API GW, but for production enviroment we do recommand to have it.
 
 * **Save arguments to samconfig.toml**: If set to yes, SAM CLI saves your choices to a configuration file inside the project, so that in the future you can just re-run `sam deploy` without parameters to deploy changes to your application.
 
@@ -111,7 +111,7 @@ To run the integration test, create the environment variable "AWS_SAM_STACK_NAME
 ```shell
 # Set the environment variables AWS_SAM_STACK_NAME and (optionally)AWS_DEFAULT_REGION 
 # to match the name of the stack and the region where you will test
-# pip install will check the requireemnt file and will install needed packages to run the pytest
+# pip install will check the requirements file and will install needed packages to run the pytest. it is required only once for setting the enviroment
 
 apigw-sqs-lambda-sqs$ export AWS_SAM_STACK_NAME=<stack-name>
 apigw-sqs-lambda-sqs$ pip install -r tests/requirements.txt 
