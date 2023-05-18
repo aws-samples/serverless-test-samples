@@ -2,8 +2,9 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
 
-# The lambda is used as a trigger for the apigw-sqs-lambda example (POST request).
+# The lambda is used as a trigger for the apigw-sqs-lambda-sqs example (POST request).
 # This handler accepts messages from the input queue and deliver it to the output queue.
+# This lambda can be enhanded to do further test processing as needed, and after processing is done, it will deliver the test result to the sqs output queue
 # The lambda uses OUTPUT_QUEUE_NAME environment variable to retrieve the name of the output queue.
 """
 
@@ -27,6 +28,7 @@ def lambda_handler(event, context) -> dict:
     for record in event['Records']:
         payload = record["body"]
         try:
+        # you can extend the lambda here to do more tests/processing as needed, and once completed send the result of the test to the output queue
             message = sqs_client.send_message(
                 QueueUrl=sqs_output_name, MessageBody=payload)
         except Exception as error:
