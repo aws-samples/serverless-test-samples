@@ -1,0 +1,30 @@
+{
+    "title": "AWS AppSync with Java as Test Unit",
+    "description": "This project contains unit, integration, and load tests for a pattern using AppSync, Dynamodb, CodePipeline, and Cognito",
+    "content_language": "English",
+    "language": "Java",
+    "type": ["Unit", "Integration"],
+    "diagram": "/assets/Architecture-appsync.png",
+    "framework": "SAM",
+    "services": ["appsync", "dynamodb"],
+    "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
+    "pattern_source": "AWS",
+    "pattern_detail_tabs": [
+        {
+            "title": "Unit Tests",
+            "filepath": "/src/test/java/com/example/MockTest.java"
+        },
+        {
+            "title": "Integration Test",
+            "filepath": "/src/test/java/com/example/IntegrationTest.java"
+        }
+    ],
+    "authors": [
+        {
+          "name": "Khairul Habib",
+          "image": "https://media.licdn.com/dms/image/D4E03AQHqFAANIi27vQ/profile-displayphoto-shrink_800_800/0/1684490526016?e=1689811200&v=beta&t=30wDnGvZET0z7XI-quDfH7G3m4aGrrDbmo74lvha1y0",
+          "bio": "Senior Solutions Architect at AWS",
+          "linkedin": "https://www.linkedin.com/in/khairulhabib"
+        }
+    ]
+}

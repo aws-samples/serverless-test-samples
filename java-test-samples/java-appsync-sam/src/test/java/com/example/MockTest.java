@@ -513,6 +513,40 @@ public class MockTest {
         }
     }
 
+    // Test delete booking resolver
+    @Test
+    public void testDeleteBookingResolver() throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode contextMap = mapper.readTree(bookingContext);
+
+        // Test request mapping template
+        EvaluateMappingTemplateRequest templateRequest = EvaluateMappingTemplateRequest.builder()
+            .template(getTemplateToString("delete_booking_request.vtl"))
+            .context(bookingContext)
+            .build();
+        EvaluateMappingTemplateResponse templateResponseRequest = appClient.evaluateMappingTemplate(templateRequest);
+        Assertions.assertNotNull(templateResponseRequest.evaluationResult());
+        
+        JsonNode resultMapRequest = mapper.readTree(templateResponseRequest.evaluationResult());
+        
+        Assertions.assertEquals("DeleteItem", resultMapRequest.get("operation").asText());
+        Assertions.assertEquals(contextMap.get("arguments").get("bookingid"), resultMapRequest.get("key").get("bookingid").get("S"));
+        
+        // Test response mapping response
+        EvaluateMappingTemplateRequest templateResponse = EvaluateMappingTemplateRequest.builder()
+            .template(getTemplateToString("delete_booking_response.vtl"))
+            .context(bookingContext)
+            .build();
+        EvaluateMappingTemplateResponse templateResponseResponse = appClient.evaluateMappingTemplate(templateResponse);
+        Assertions.assertNotNull(templateResponseResponse.evaluationResult());
+
+
+        JsonNode resultMapResponse = mapper.readTree(templateResponseResponse.evaluationResult());
+        for (JsonNode jsonNode : resultMapResponse) {
+            Assertions.assertEquals(contextMap.get("result").get(jsonNode.asText()), resultMapResponse.get(jsonNode.asText()));
+        }
+    }
+
     private String getTemplateToString(String location) throws IOException{
 
         try {
@@ -524,4 +558,8 @@ public class MockTest {
         }
         
     }
+    
+    
+
+
 }
