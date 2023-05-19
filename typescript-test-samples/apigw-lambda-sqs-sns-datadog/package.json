@@ -28,6 +28,7 @@
     "axios": "^1.4.0",
     "constructs": "^10.0.0",
     "datadog-cdk-constructs-v2": "^1.6.1",
+    "esbuild": "^0.17.19",
     "source-map-support": "^0.5.21"
   }
 }

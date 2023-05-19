@@ -2,11 +2,13 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as snsSubscriptions from 'aws-cdk-lib/aws-sns-subscriptions';
 import * as lambdaEventSources from 'aws-cdk-lib/aws-lambda-event-sources';
 import { Datadog } from "datadog-cdk-constructs-v2";
+import path = require('path');
 
 export class ApigwLambdaSqsSnsDatadogStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -17,21 +19,21 @@ export class ApigwLambdaSqsSnsDatadogStack extends cdk.Stack {
       visibilityTimeout: cdk.Duration.seconds(300)
     });
 
-    const publisherHandler = new lambda.Function(this, "PublisherHandler", {
-      runtime: lambda.Runtime.NODEJS_18_X, 
-      code: lambda.Code.fromAsset("resources"),
-      handler: "publisher.main",
+    const publisherHandler = new NodejsFunction(this, "PublisherHandler", {
+      runtime: Runtime.NODEJS_18_X, 
+      entry: path.join(__dirname, '../resources/publisher.ts'),
+      handler: "main",
       memorySize: 1024,
       environment: {
         SNS_TOPIC_ARN: topic.topicArn
       },
     });
 
-    const workerHandler = new lambda.Function(this, "WorkerHandler", {
-      runtime: lambda.Runtime.NODEJS_18_X, 
-      code: lambda.Code.fromAsset("resources"),
+    const workerHandler = new NodejsFunction(this, "WorkerHandler", {
+      runtime: Runtime.NODEJS_18_X, 
+      entry: path.join(__dirname, '../resources/worker.ts'),
       memorySize: 1024,
-      handler: "worker.main",
+      handler: "main",
     });
 
     const snsToSqsSubscription = new snsSubscriptions.SqsSubscription(queue);
