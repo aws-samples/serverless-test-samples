@@ -13,6 +13,10 @@ AWS AppSync uses Amazon DynamoDB Resolvers to implement application business log
 
 ![GraphQL Schema](./assets/schema.png)
 
+## System Under Test
+This project contain two different scope on System Under Test (SUT), Integration test which include end to end testing, and Mock test which only test resolver using java code.
+![System Under Test](./assets/sut.png)
+
 
 ## Project structure
 This project contains source code and supporting files for a serverless application that you can deploy with the AWS Serverless Application Model (AWS SAM) command-line interface (CLI). It includes the following files and folders:

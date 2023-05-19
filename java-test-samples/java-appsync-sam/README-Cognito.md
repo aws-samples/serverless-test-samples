@@ -1,5 +1,5 @@
-# Shared Resources
-These resources are available to integrate and use as a boilerplate infrastructure-as-a-code (IaaC) templates.
+# Shared Resources from AppSync-SAM project
+Integration test on AppSync-SAM project need to include end-to-end testing using Cognito. These resources are available to integrate and use as a boilerplate infrastructure-as-a-code (IaaC) templates.
 
 ## Amazon Cognito
 [This template](cognito.yaml) creates Amazon Cognito user and identity pools. Both authorized and unauthorized roles are created for identity pool and empty administrative user group is created in the User Pool. You will need to create appropriate policies and associate them with the roles created. Please note that this stack does not create UI that could be used for interactive login and User Pool callback URL points to the localhost.
