@@ -4,7 +4,8 @@ SPDX-License-Identifier: MIT-0
 
 Set the environment variable AWS_SAM_STACK_NAME to the name of the stack you deploied
 > export AWS_SAM_STACK_NAME=<stack-name> 
-> python -m pytest -s tests/integration -v 
+> python -m pytest -s tests/integration -v  
+> to see logs you can use: python -m pytest -s tests/integration --log-cli-level=20
 """
 
 import os
@@ -12,8 +13,10 @@ import time
 import logging
 from unittest import TestCase
 from uuid import uuid4
+import json
 import boto3
 import requests
+
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -24,8 +27,14 @@ class TestApiGateway(TestCase):
     api_endpoint_outbox: str
     sqs_input: str
     sqs_output: str
-    interval_num = 5  # number of times to check if there is a message in the quque
-    interval_timeout = 1 # amoount of time to wait between each check
+    sqs_input_dlq: str
+    sqs_output_dlq: str
+
+    service_level_agreement = 5
+    # number of times to check if there is a message in the quque (can't be 0)
+    interval_num = 5
+    # amount of time to wait between each check
+    interval_timeout = int(service_level_agreement/interval_num)
 
     aws_region = os.environ.get("AWS_DEFAULT_REGION") or "us-east-1"
 
@@ -48,10 +57,10 @@ class TestApiGateway(TestCase):
         """
         stack_name = TestApiGateway.get_stack_name()
 
-        client = boto3.client("cloudformation")
+        cf_client = boto3.client("cloudformation")
 
         try:
-            response = client.describe_stacks(StackName=stack_name)
+            response = cf_client.describe_stacks(StackName=stack_name)
             logging.debug("Setup Stackname: %s", response)
         except Exception as error:
             raise ValueError(
@@ -63,22 +72,36 @@ class TestApiGateway(TestCase):
         stack_outputs = response["Stacks"][0]["Outputs"]
         api_outputs = [
             output for output in stack_outputs if output["OutputKey"] == "APIGatewayURL"]
-        sqs_input   = [
+        sqs_input = [
             output for output in stack_outputs if output["OutputKey"] == "SQSInputQueue"]
-        sqs_output  = [
+        sqs_output = [
             output for output in stack_outputs if output["OutputKey"] == "SQSOutputQueue"]
+        sqs_input_dlq = [
+            output for output in stack_outputs if output["OutputKey"] == "SQSInputQueueDLQ"]
+        sqs_output_dlq = [
+            output for output in stack_outputs if output["OutputKey"] == "SQSOutputQueueDLQ"]
 
-        self.assertTrue(
-            api_outputs, f"Cannot find output APIGatewayURL in stack {stack_name}")
+        # logging.debug("Setup StackOutput: %s", stack_output)
+
+        # self.assertTrue(
+        #     api_outputs, f"Cannot find output APIGatewayURL in stack {stack_name}")
+
         self.api_endpoint = api_outputs[0]["OutputValue"]
         self.api_endpoint_inbox = self.api_endpoint + "/inbox"
         self.api_endpoint_outbox = self.api_endpoint + "/outbox"
         self.sqs_input = sqs_input[0]["OutputValue"]
         self.sqs_output = sqs_output[0]["OutputValue"]
+        self.sqs_input_dlq = sqs_input_dlq[0]["OutputValue"]
+        self.sqs_output_dlq = sqs_output_dlq[0]["OutputValue"]
 
         logging.info("Setup APIGatewayURL: %s", self.api_endpoint)
-        logging.info("Setup APIGatewayURL: %s", self.api_endpoint_inbox)
-        logging.info("Setup APIGatewayURL: %s", self.api_endpoint_outbox)
+        logging.info("Setup APIGatewayURL_Inbox: %s", self.api_endpoint_inbox)
+        logging.info("Setup APIGatewayURL_Outbox: %s",
+                     self.api_endpoint_outbox)
+        logging.info("Setup SQSInputQueue: %s", self.sqs_input)
+        logging.info("Setup SQSOutputQueue: %s", self.sqs_output)
+        logging.info("Setup SQSInputQueueDLQ: %s", self.sqs_input_dlq)
+        logging.info("Setup SQSOutputQueueDLQ: %s", self.sqs_output_dlq)
 
         # Create a random postfix for the id's to use in the message
         # Using unique id's per unit test will isolate test data
@@ -94,63 +117,92 @@ class TestApiGateway(TestCase):
         # clean Input & output SQS by reading from the queue till its empty
         """
 
-        #cleaning input queue
+        # cleaning input queue
         client = boto3.client("sqs")
         response = {}
 
         response = client.get_queue_attributes(
             QueueUrl=self.sqs_input,
             AttributeNames=['ApproximateNumberOfMessages']
-            )
+        )
 
-        message_count = int(response['Attributes']['ApproximateNumberOfMessages'])
+        message_count = int(response['Attributes']
+                            ['ApproximateNumberOfMessages'])
         if message_count > 0:
             logging.debug("Cleaning input queue")
-            client.purge_queue(QueueUrl=self.sqs_input) #purging input queue
+            client.purge_queue(QueueUrl=self.sqs_input)  # purging input queue
 
         response = client.get_queue_attributes(
             QueueUrl=self.sqs_output,
             AttributeNames=['ApproximateNumberOfMessages']
-            )
+        )
 
-        message_count = int(response['Attributes']['ApproximateNumberOfMessages'])
+        message_count = int(response['Attributes']
+                            ['ApproximateNumberOfMessages'])
         if message_count > 0:
             logging.debug("Cleaning output queue")
-            client.purge_queue(QueueUrl=self.sqs_output) #purging output queue
+            # purging output queue
+            client.purge_queue(QueueUrl=self.sqs_output)
+
+        response = client.get_queue_attributes(
+            QueueUrl=self.sqs_input_dlq,
+            AttributeNames=['ApproximateNumberOfMessages']
+        )
+
+        message_count = int(response['Attributes']
+                            ['ApproximateNumberOfMessages'])
+        if message_count > 0:
+            logging.debug("Cleaning input dead letter queue")
+            # purging inputDLQ queue
+            client.purge_queue(QueueUrl=self.sqs_input_dlq)
+
+        response = client.get_queue_attributes(
+            QueueUrl=self.sqs_output_dlq,
+            AttributeNames=['ApproximateNumberOfMessages']
+        )
+
+        message_count = int(response['Attributes']
+                            ['ApproximateNumberOfMessages'])
+        if message_count > 0:
+            logging.debug("Cleaning output dead letter queue")
+            # purging output DLQ
+            client.purge_queue(QueueUrl=self.sqs_output_dlq)
 
     def test_api_gateway_200(self):
         """
         Call the API Gateway endpoint and check the response for a 200
         """
-        # Send Message to the Inbox API with Test Data
+        # Send Message to the Inbox API with Test Data, SQS SLA is 5 seconds
         response = requests.post(
             self.api_endpoint_inbox, json=self.message, timeout=5)
         self.assertEqual(response.status_code, 200)
         logging.info("Sent message to Inbox API: %s", self.message)
 
         # looping for the number of times to check if there is a message in the quque
-        msg_found=False
+        msg_found = False
         for i in range(self.interval_num):
-             # Get Message from Output Queue via OUTPUT api
-            print(f"Checking for message in the output queue {i+1} time out of {self.interval_num}")
+            # Get Message from Output Queue via OUTPUT api
+            print(
+                f"Checking for message in the output queue {i+1} time out of {self.interval_num}")
             response = requests.get(self.api_endpoint_outbox, timeout=5)
             if response.status_code == 200:
-                msg_found=True
+                msg_found = True
                 # Check if the sentmessage id is in the received message body
                 self.assertIn(self.message['id'],
                               response.json()['Messages'][0]['Body'])
                 logging.info("Response: %s, Response code: %s",
-                         response.json(), response.status_code)
+                             response.json(), response.status_code)
                 break
 
             # Sleep for interval_timeout before checking again
-            print (f"Sleeping for {self.interval_timeout} seconds before checking again")
+            print(f"Sleeping for {self.interval_timeout} seconds before checking again")
             time.sleep(self.interval_timeout)
 
             # Check if message was found in the output queue or raise fail test
             if (i == self.interval_num - 1) and (not msg_found):
                 logging.info("Message was not found in the output queue")
-                self.fail("Message was not found in the output queue")
+                self.fail(
+                    f"Message was not found in with in the SLA {self.service_level_agreement}")
 
     def test_api_gateway_404(self):
         """
@@ -163,3 +215,41 @@ class TestApiGateway(TestCase):
 
         logging.info("Response: %s, Response code: %s",
                      response.json(), response.status_code)
+
+    def test_malform_request(self):
+        """
+        This funciton will create a mallform message and send it to the APIGW,
+        The Process Lambda will send error message to the DLQ,
+        The this test will then check the DLQ to see if the message was received
+        """
+        client = boto3.client("sqs")
+        response = {}
+
+        malformed_message = {
+            "id": "TEST001" + self.id_postfix,
+            "message": "TMALFORMED_MASSAGE - this is a malformed message"
+        }
+
+        # Send Message to the Inbox API with Test Data, SQS SLA is 5 seconds
+        response = requests.post(
+            self.api_endpoint_inbox, data=malformed_message, timeout=5)
+        self.assertEqual(response.status_code, 200)
+        logging.info("Sent message to Inbox API: %s", malformed_message)
+
+        # Check the Dealetter Queue for any messages
+        for i in range(self.interval_num):
+            print(
+                f"Checking for message in the output queue {i+1} time out of {self.interval_num}")
+            response = client.get_queue_attributes(
+                QueueUrl=self.sqs_input_dlq,
+                AttributeNames=['ApproximateNumberOfMessages']
+            )
+            message_count = int(response['Attributes']
+                                ['ApproximateNumberOfMessages'])
+            if message_count > 0:
+                self.assertGreater(message_count, 0)
+                break
+
+            time.sleep(self.interval_timeout)   
+
+        self.assertGreater(message_count, 0)

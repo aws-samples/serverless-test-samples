@@ -98,15 +98,17 @@ Resources:
     Properties:
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt InputQueueDLQ.Arn
-        maxReceiveCount: 5
+        maxReceiveCount: 1
       MessageRetentionPeriod: 345600
+      VisibilityTimeout: 1
   OutputQueue:
     Type: AWS::SQS::Queue
     Properties:
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt OutputQueueDLQ.Arn
-        maxReceiveCount: 5
+        maxReceiveCount: 1
       MessageRetentionPeriod: 345600
+      VisibilityTimeout: 1
     Metadata:
       SamResourceId: ProcessOutputQueue
   ProcessInputQueue:
@@ -154,3 +156,9 @@ Outputs:
   SQSOutputQueue:
     Description: SQS Output Queue
     Value: !Ref OutputQueue
+  SQSInputQueueDLQ:
+    Description: SQS Input Dead letter Queue
+    Value: !Ref InputQueueDLQ
+  SQSOutputQueueDLQ:
+    Description: SQS Output Dead leter Queue
+    Value: !Ref OutputQueueDLQ
