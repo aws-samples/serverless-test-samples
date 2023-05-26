@@ -46,7 +46,7 @@ scan:
 	source ./venv/bin/activate &&  cfn_nag_scan --input-path template.yaml
 	source ./venv/bin/activate &&  pylint src/sample_lambda/*.py tests/unit/src/*.py
 
-cleanup:
+delete:
 	source ./venv/bin/activate && sam delete
 
 #############
