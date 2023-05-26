@@ -85,17 +85,19 @@ The [unit test tear-down](tests/unit/mock_test.py#L61-66) removes the mocked Dyn
 
 To run the unit test, execute the following
 ```shell
+# Run from the project directory serverless-test-samples/python-test-samples/apigw-lambda-dynamodb
 # Create and Activate a Python Virtual Environment
 # One-time setup
-apigw-lambda-dynamodb$ pip3 install virtualenv
-apigw-lambda-dynamodb$ python3 -m venv venv
-apigw-lambda-dynamodb$ source ./venv/bin/activate
+
+pip3 install virtualenv
+python3 -m venv venv
+source ./venv/bin/activate
 
 # install dependencies
-apigw-lambda-dynamodb$ pip3 install -r tests/requirements.txt
+pip3 install -r tests/requirements.txt
 
 # run unit tests with mocks
-apigw-lambda-dynamodb$ python3 -m pytest -s tests/unit  -v
+python3 -m pytest -s tests/unit  -v
 ```
 
 [Top](#contents)
@@ -107,8 +109,10 @@ apigw-lambda-dynamodb$ python3 -m pytest -s tests/unit  -v
 
 For integration tests, the full stack is deployed before testing:
 ```shell
-apigw-lambda-dynamodb$ sam build
-apigw-lambda-dynamodb$ sam deploy --guided
+# Run from the project directory serverless-test-samples/python-test-samples/apigw-lambda-dynamodb
+
+sam build
+sam deploy --guided
 ```
  
 The [integration test](tests/integration/test_api_gateway.py) setup determines both the [API endpoint](tests/integration/test_api_gateway.py#L50-53) and the name of the [DynamoDB table](tests/integration/test_api_gateway.py#L56-58) in the stack.  
@@ -120,10 +124,11 @@ The [integration test tear-down](tests/integration/test_api_gateway.py#L73-87) r
 To run the integration test, create the environment variable "AWS_SAM_STACK_NAME" with the name of the test stack, and execute the test.
 
 ```shell
+# Run from the project directory serverless-test-samples/python-test-samples/apigw-lambda-dynamodb
 # Set the environment variables AWS_SAM_STACK_NAME and (optionally)AWS_DEFAULT_REGION 
 # to match the name of the stack and the region where you will test
 
-apigw-lambda-dynamodb$  AWS_SAM_STACK_NAME=<stack-name> AWS_DEFAULT_REGION=<region_name> python -m pytest -s tests/integration -v
+AWS_SAM_STACK_NAME=<stack-name> AWS_DEFAULT_REGION=<region_name> python -m pytest -s tests/integration -v
 ```
 
 

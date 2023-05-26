@@ -32,20 +32,22 @@ test:
 	source ./venv/bin/activate &&  pytest -v --disable-socket -s tests/unit/src/
 
 build: ##=> Same as package except that we don't create a ZIP
-	source ./venv/bin/activate && sam build --use-container
+	source ./venv/bin/activate && sam build
 
 deploy:
-	source ./venv/bin/activate &&  sam build --use-container
+	source ./venv/bin/activate &&  sam build
 	source ./venv/bin/activate &&  sam deploy
 
 deploy.g:
-	source ./venv/bin/activate &&  sam build --use-container
+	source ./venv/bin/activate &&  sam build
 	source ./venv/bin/activate &&  sam deploy --guided
 
 scan:
 	source ./venv/bin/activate &&  cfn_nag_scan --input-path template.yaml
 	source ./venv/bin/activate &&  pylint src/sample_lambda/*.py tests/unit/src/*.py
 
+cleanup:
+	source ./venv/bin/activate && sam delete
 
 #############
 #  Helpers  #
