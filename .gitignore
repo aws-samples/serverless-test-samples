@@ -270,3 +270,10 @@ samconfig.toml
 *.DotSettings*
 # End of .NET ignores
 /dotnet-test-samples/hexagonal-architecture/src/GetStock/aws-lambda-tools-defaults.json
+
+
+**/node_modules
+**/package-lock.json
+**/cdk.out
+/typescript-test-samples/apigw-lambda-sqs-sns-datadog/resources/*.js
+/typescript-test-samples/apigw-lambda-sqs-sns-datadog/lib/*.js
