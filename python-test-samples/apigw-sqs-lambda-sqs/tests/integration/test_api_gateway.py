@@ -227,7 +227,7 @@ class TestApiGateway(TestCase):
 
         malformed_message = {
             "id": "TEST001" + self.id_postfix,
-            "message": "TMALFORMED_MASSAGE - this is a malformed message"
+            "message": "MALFORMED_MASSAGE - this is a malformed message"
         }
 
         # Send Message to the Inbox API with Test Data, SQS SLA is 5 seconds
@@ -236,7 +236,8 @@ class TestApiGateway(TestCase):
         self.assertEqual(response.status_code, 200)
         logging.info("Sent message to Inbox API: %s", malformed_message)
 
-        # Check the Dealetter Queue for any messages
+        # Check the Dealetter input Queue for any messages
+        # Process_input_lambda should deny, and then SQS will move the message to the DLQ
         for i in range(self.interval_num):
             print(
                 f"Checking for message in the output queue {i+1} time out of {self.interval_num}")

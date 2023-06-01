@@ -124,7 +124,7 @@ interval_num = 5  # number of times to check if there is a message in the queue.
 interval_timeout = 1 # amoount of time in sec to wait between each check.
 
 This may be usefell if the testing takes more than the define default time (5 retries every 1 sec= total of 5 sec). if your lambda [process_input_queue.py](src/process_input_queue/process_input_queue.py) is doing processing for than ~5 seconds, than it is recomanded to adapt this paraemters accordinely.
-
+*****TBD explain the DLQ and the malford message logic ************
 
 [Top](#contents)
 

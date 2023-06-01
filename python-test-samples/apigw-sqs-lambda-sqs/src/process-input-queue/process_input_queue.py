@@ -28,7 +28,14 @@ def lambda_handler(event, context) -> dict:
     for record in event['Records']:
         payload = record["body"]
         try:
-        # you can extend the lambda here to do more tests/processing as needed, and once completed send the result of the test to the output queue
+        
+          """  if("MALFORMED_MASSAGE" in payload):
+                return {
+                    'statusCode': 404,
+                    'body': json.dumps(message, indent=2)
+                }
+"""
+    # you can extend the lambda here to do more tests/processing as needed, and once completed send the result of the test to the output queue
             message = sqs_client.send_message(
                 QueueUrl=sqs_output_name, MessageBody=payload)
         except Exception as error:
