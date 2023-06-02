@@ -54,4 +54,4 @@ Event-driven architectures (EDA) are an architecture style that uses events and 
 ## AWS Partner Patterns
 |Partner|System Under Test|Language|Description|
 ---|---|---|---
-|Datadog|[API Gateway, Lambda, SQS, SNS](./[typescript-test-samples/kinesis-lambda-dynamodb](./typescript-test-samples/apigw-lambda-sqs-sns-datadog))|TypeScript|This example is about creating Synthetic Tests and Monitors with Datadog.|
+|Datadog|[API Gateway, Lambda, SQS, SNS](./typescript-test-samples/apigw-lambda-sqs-sns-datadog)|TypeScript|This example is about creating Synthetic Tests and Monitors with Datadog.|
