@@ -73,7 +73,7 @@ Resources:
       Handler: check_output_queue.lambda_handler
       Runtime: python3.9
       MemorySize: 128
-      Timeout: 30
+      Timeout: 5
       Tracing: Active
       Environment:
         Variables:
@@ -100,7 +100,7 @@ Resources:
         deadLetterTargetArn: !GetAtt InputQueueDLQ.Arn
         maxReceiveCount: 1
       MessageRetentionPeriod: 345600
-      VisibilityTimeout: 1
+      VisibilityTimeout: 5
   OutputQueue:
     Type: AWS::SQS::Queue
     Properties:
@@ -108,7 +108,7 @@ Resources:
         deadLetterTargetArn: !GetAtt OutputQueueDLQ.Arn
         maxReceiveCount: 1
       MessageRetentionPeriod: 345600
-      VisibilityTimeout: 1
+      VisibilityTimeout: 5
     Metadata:
       SamResourceId: ProcessOutputQueue
   ProcessInputQueue:
@@ -131,7 +131,7 @@ Resources:
             Queue: !GetAtt InputQueue.Arn
             BatchSize: 10
       MemorySize: 128
-      Timeout: 30
+      Timeout: 5
   InputQueueDLQ:
     Type: AWS::SQS::Queue
     Properties:
