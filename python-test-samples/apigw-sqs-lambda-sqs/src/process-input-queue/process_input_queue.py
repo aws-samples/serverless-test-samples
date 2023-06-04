@@ -27,14 +27,11 @@ def lambda_handler(event, context) -> dict:
     # Go over the events/records recieved from the input Q and send them to the output queue
     for record in event['Records']:
         payload = record["body"]
-        print(str(payload))
         logging.debug(str(payload))
         try:
+    #For TEST only purposes: if the test client is simulating an error then we are catching it and raising execption. it will be delivered to the DLQ.
             if("MALFORMED_MASSAGE" in payload):
-                return {
-                    'statusCode': 404,
-                    'body': json.dumps(payload, indent=2)
-                }
+                raise Exception("MALFORMED_MASSAGE")
 
    # you can extend the lambda here to do more tests/processing as needed, and once completed send the result of the test to the output queue
             message = sqs_client.send_message(QueueUrl=sqs_output_name, MessageBody=payload)
@@ -44,3 +41,4 @@ def lambda_handler(event, context) -> dict:
         'statusCode': 200,
         'body': json.dumps(message, indent=2)
     }
+
