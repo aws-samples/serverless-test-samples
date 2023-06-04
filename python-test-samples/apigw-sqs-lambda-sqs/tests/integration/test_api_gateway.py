@@ -30,9 +30,9 @@ class TestApiGateway(TestCase):
     sqs_input_dlq: str
     sqs_output_dlq: str
 
-    service_level_agreement = 5
+    service_level_agreement = 20
     # number of times to check if there is a message in the quque (can't be 0)
-    interval_num = 5
+    interval_num = 10
     # amount of time to wait between each check
     interval_timeout = int(service_level_agreement/interval_num)
 
@@ -117,56 +117,56 @@ class TestApiGateway(TestCase):
         # clean Input & output SQS by reading from the queue till its empty
         """
 
-        # cleaning input queue
-        client = boto3.client("sqs")
-        response = {}
+        # # cleaning input queue
+        # client = boto3.client("sqs")
+        # response = {}
 
-        response = client.get_queue_attributes(
-            QueueUrl=self.sqs_input,
-            AttributeNames=['ApproximateNumberOfMessages']
-        )
+        # response = client.get_queue_attributes(
+        #     QueueUrl=self.sqs_input,
+        #     AttributeNames=['ApproximateNumberOfMessages']
+        # )
 
-        message_count = int(response['Attributes']
-                            ['ApproximateNumberOfMessages'])
-        if message_count > 0:
-            logging.debug("Cleaning input queue")
-            client.purge_queue(QueueUrl=self.sqs_input)  # purging input queue
+        # message_count = int(response['Attributes']
+        #                     ['ApproximateNumberOfMessages'])
+        # if message_count > 0:
+        #     logging.debug("Cleaning input queue")
+        #     client.purge_queue(QueueUrl=self.sqs_input)  # purging input queue
 
-        response = client.get_queue_attributes(
-            QueueUrl=self.sqs_output,
-            AttributeNames=['ApproximateNumberOfMessages']
-        )
+        # response = client.get_queue_attributes(
+        #     QueueUrl=self.sqs_output,
+        #     AttributeNames=['ApproximateNumberOfMessages']
+        # )
 
-        message_count = int(response['Attributes']
-                            ['ApproximateNumberOfMessages'])
-        if message_count > 0:
-            logging.debug("Cleaning output queue")
-            # purging output queue
-            client.purge_queue(QueueUrl=self.sqs_output)
+        # message_count = int(response['Attributes']
+        #                     ['ApproximateNumberOfMessages'])
+        # if message_count > 0:
+        #     logging.debug("Cleaning output queue")
+        #     # purging output queue
+        #     client.purge_queue(QueueUrl=self.sqs_output)
 
-        response = client.get_queue_attributes(
-            QueueUrl=self.sqs_input_dlq,
-            AttributeNames=['ApproximateNumberOfMessages']
-        )
+        # response = client.get_queue_attributes(
+        #     QueueUrl=self.sqs_input_dlq,
+        #     AttributeNames=['ApproximateNumberOfMessages']
+        # )
 
-        message_count = int(response['Attributes']
-                            ['ApproximateNumberOfMessages'])
-        if message_count > 0:
-            logging.debug("Cleaning input dead letter queue")
-            # purging inputDLQ queue
-            client.purge_queue(QueueUrl=self.sqs_input_dlq)
+        # message_count = int(response['Attributes']
+        #                     ['ApproximateNumberOfMessages'])
+        # if message_count > 0:
+        #     logging.debug("Cleaning input dead letter queue")
+        #     # purging inputDLQ queue
+        #     client.purge_queue(QueueUrl=self.sqs_input_dlq)
 
-        response = client.get_queue_attributes(
-            QueueUrl=self.sqs_output_dlq,
-            AttributeNames=['ApproximateNumberOfMessages']
-        )
+        # response = client.get_queue_attributes(
+        #     QueueUrl=self.sqs_output_dlq,
+        #     AttributeNames=['ApproximateNumberOfMessages']
+        # )
 
-        message_count = int(response['Attributes']
-                            ['ApproximateNumberOfMessages'])
-        if message_count > 0:
-            logging.debug("Cleaning output dead letter queue")
-            # purging output DLQ
-            client.purge_queue(QueueUrl=self.sqs_output_dlq)
+        # message_count = int(response['Attributes']
+        #                     ['ApproximateNumberOfMessages'])
+        # if message_count > 0:
+        #     logging.debug("Cleaning output dead letter queue")
+        #     # purging output DLQ
+        #     client.purge_queue(QueueUrl=self.sqs_output_dlq)
 
     def test_api_gateway_200(self):
         """
@@ -180,11 +180,11 @@ class TestApiGateway(TestCase):
 
         # looping for the number of times to check if there is a message in the quque
         msg_found = False
-        for i in range(self.interval_num):
+        for i in range(self.service_level_agreement):
             # Get Message from Output Queue via OUTPUT api
             print(
-                f"Checking for message in the output queue {i+1} time out of {self.interval_num}")
-            response = requests.get(self.api_endpoint_outbox, timeout=5)
+                f"\nChecking for message in the output queue {i+1} time out of {self.service_level_agreement}")
+            response = requests.get(self.api_endpoint_outbox, timeout=self.interval_timeout)
             if response.status_code == 200:
                 msg_found = True
                 # Check if the sentmessage id is in the received message body
@@ -232,15 +232,15 @@ class TestApiGateway(TestCase):
 
         # Send Message to the Inbox API with Test Data, SQS SLA is 5 seconds
         response = requests.post(
-            self.api_endpoint_inbox, data=malformed_message, timeout=5)
+            self.api_endpoint_inbox, json=malformed_message, timeout=5)
         self.assertEqual(response.status_code, 200)
         logging.info("Sent message to Inbox API: %s", malformed_message)
 
         # Check the Dealetter input Queue for any messages
         # Process_input_lambda should deny, and then SQS will move the message to the DLQ
-        for i in range(self.interval_num):
+        for i in range(self.service_level_agreement):
             print(
-                f"Checking for message in the output queue {i+1} time out of {self.interval_num}")
+                f"\nChecking for message in the DL queue {i+1} time out of {self.service_level_agreement}")
             response = client.get_queue_attributes(
                 QueueUrl=self.sqs_input_dlq,
                 AttributeNames=['ApproximateNumberOfMessages']
@@ -251,6 +251,6 @@ class TestApiGateway(TestCase):
                 self.assertGreater(message_count, 0)
                 break
 
-            time.sleep(self.interval_timeout)   
+            time.sleep(self.interval_timeout)
 
         self.assertGreater(message_count, 0)

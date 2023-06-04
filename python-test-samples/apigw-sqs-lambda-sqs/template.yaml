@@ -3,7 +3,7 @@ Transform: AWS::Serverless-2016-10-31
 Description: SAM Template for apigw-sqs-lambda-sqs
 Globals:
   Function:
-    Timeout: 30
+    Timeout: 5
 Resources:
   Api:
     Type: AWS::Serverless::Api

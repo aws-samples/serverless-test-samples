@@ -4,7 +4,8 @@
 
 # The lambda is used as a trigger for the apigw-sqs-lambda-sqs example (POST request).
 # This handler accepts messages from the input queue and deliver it to the output queue.
-# This lambda can be enhanced to do further test processing as needed, and after processing is done, it will deliver the test result to the sqs output queue
+# This lambda can be enhanced to do further test processing as needed, and after processing is done, 
+# it will deliver the test result to the sqs output queue
 # The lambda uses OUTPUT_QUEUE_NAME environment variable to retrieve the name of the output queue.
 """
 
@@ -29,11 +30,13 @@ def lambda_handler(event, context) -> dict:
         payload = record["body"]
         logging.debug(str(payload))
         try:
-    #For TEST only purposes: if the test client is simulating an error then we are catching it and raising execption. it will be delivered to the DLQ.
-            if("MALFORMED_MASSAGE" in payload):
-                raise Exception("MALFORMED_MASSAGE")
+    #For TEST only purposes: if the test client is simulating an error
+    # then we are catching it and raising execption. it will be delivered to the DLQ.
+            if "MALFORMED_MASSAGE" in payload:
+                raise ValueError("MALFORMED_MASSAGE")
 
-   # you can extend the lambda here to do more tests/processing as needed, and once completed send the result of the test to the output queue
+    # you can extend the lambda here to do more tests/processing as needed,
+    # and once completed send the result of the test to the output queue
             message = sqs_client.send_message(QueueUrl=sqs_output_name, MessageBody=payload)
         except Exception as error:
             raise error
@@ -41,4 +44,3 @@ def lambda_handler(event, context) -> dict:
         'statusCode': 200,
         'body': json.dumps(message, indent=2)
     }
-
