@@ -18,7 +18,7 @@ sqs_client = boto3.client('sqs')
 
 def lambda_handler(event, context) -> dict:
     """
-    The main lambda handler. will be called by the API Gateway.
+    The main lambda handler. will be called by the SQS InputQueue.
     """
     # Retrieve the output Q name from the environment
     sqs_output_name = environ["OUTPUT_QUEUE_NAME"]
@@ -27,17 +27,17 @@ def lambda_handler(event, context) -> dict:
     # Go over the events/records recieved from the input Q and send them to the output queue
     for record in event['Records']:
         payload = record["body"]
+        print(str(payload))
+        logging.debug(str(payload))
         try:
-        
-          """  if("MALFORMED_MASSAGE" in payload):
+            if("MALFORMED_MASSAGE" in payload):
                 return {
                     'statusCode': 404,
-                    'body': json.dumps(message, indent=2)
+                    'body': json.dumps(payload, indent=2)
                 }
-"""
-    # you can extend the lambda here to do more tests/processing as needed, and once completed send the result of the test to the output queue
-            message = sqs_client.send_message(
-                QueueUrl=sqs_output_name, MessageBody=payload)
+
+   # you can extend the lambda here to do more tests/processing as needed, and once completed send the result of the test to the output queue
+            message = sqs_client.send_message(QueueUrl=sqs_output_name, MessageBody=payload)
         except Exception as error:
             raise error
     return {
