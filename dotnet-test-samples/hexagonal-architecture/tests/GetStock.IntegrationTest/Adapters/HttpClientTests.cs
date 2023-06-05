@@ -15,7 +15,7 @@ namespace GetStock.IntegrationTest.Adapters
         }
        
         [Fact]
-        public async Task GetCurrencies_passCurrenciesToConvert_ReturnRates()
+        public async Task GetCurrencies_With_CurrenciesToConvert_Should_ReturnRates()
         {
             var target = new CurrencyConverterHttpClient(_fixture.Client);
 
