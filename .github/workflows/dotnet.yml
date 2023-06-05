@@ -1,14 +1,17 @@
 # This workflow will build a .NET project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
-name: .NET
+name: .NET build and test
 
 on:
   push:
     paths:
       - "dotnet-test-samples/**"
+  workflow_dispatch:
+  
 permissions:
   contents: read
+  checks: write
 
 jobs:
   build:
@@ -21,9 +24,17 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 6.0.x
-    - name: Find all solutions
-      run: SLN_FILES=$(find dotnet-test-samples -type file -name "*.sln")    
+
     - name: Build
-      run: find dotnet-test-samples -type file -name "*.sln" -exec dotnet build {} \;
+      run: find dotnet-test-samples -name "*.sln" -exec dotnet build {} \;
     - name: Test
-      run: find dotnet-test-samples -type file -name "*Unit*.csproj" -exec dotnet test {} \
+      run: find dotnet-test-samples -name "*.sln" -exec dotnet test {} --filter "FullyQualifiedName~UnitTest" --logger "trx;LogFileName=test-results.trx" \;
+
+    - name: Test Report
+      uses: dorny/test-reporter@v1
+      if: always()
+      with:
+        name: .NET Test Report
+        path: "**/test-results.trx"                            
+        reporter: dotnet-trx
+        fail-on-error: true
