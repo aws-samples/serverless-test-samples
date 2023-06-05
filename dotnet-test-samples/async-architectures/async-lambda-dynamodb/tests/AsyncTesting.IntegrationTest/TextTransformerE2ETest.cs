@@ -86,13 +86,13 @@ public class TextTransformerE2ETest : IClassFixture<Setup>
         this.setup.CreatedFiles.Add(testFilename);
     }
 
-    private async Task<string> PollForProcessedMessage(string testFilename)
+    private async Task<string?> PollForProcessedMessage(string testFilename)
     {
         var pollAttempts = 0;
 
         while (pollAttempts < MAX_POLL_ATTEMPTS)
         {
-            this.outputHelper.WriteLine($"Poll attempt {pollAttempts}");
+            outputHelper.WriteLine($"Poll attempt {pollAttempts}");
             
             var result = await this.setup.DynamoDbClient.GetItemAsync(
                 this.setup.DestinationTableName,
