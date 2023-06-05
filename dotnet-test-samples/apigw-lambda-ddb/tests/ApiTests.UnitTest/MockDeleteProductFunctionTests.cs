@@ -10,7 +10,7 @@ namespace ApiTests.UnitTest;
 public class MockDeleteProductFunctionTests : FunctionTest<Function>
 {   
     [Fact]
-    public async Task DeleteProduct_ShouldReturnSuccess()
+    public async Task DeleteProduct_With_ProductInDb_Should_ReturnSuccess()
     {
         // arrange
         var request = new ApiRequestBuilder()
@@ -37,7 +37,7 @@ public class MockDeleteProductFunctionTests : FunctionTest<Function>
     [InlineData("POST")]
     [InlineData("PUT")]
     [InlineData("GET")]
-    public async Task TestLambdaHandler_ForNonDeleteRequests_ShouldReturn405(string httpMethod)
+    public async Task TestLambdaHandler_With_NonDeleteRequests_Should_Return405(string httpMethod)
     {
         // arrange
         var request = new ApiRequestBuilder()
@@ -56,7 +56,7 @@ public class MockDeleteProductFunctionTests : FunctionTest<Function>
     }
     
     [Fact]
-    public async Task DeleteProduct_ErrorInDeleteDataAccess_ShouldReturn500()
+    public async Task DeleteProduct_With_ErrorInDeleteDataAccess_Should_Return500()
     {
         // arrange
         var request = new ApiRequestBuilder()
@@ -79,7 +79,7 @@ public class MockDeleteProductFunctionTests : FunctionTest<Function>
     }
     
     [Fact]
-    public async Task DeleteProduct_TimeOut_ShouldReturn503()
+    public async Task DeleteProduct_With_TimeOut_Should_Return503()
     {
         // arrange
         var request = new ApiRequestBuilder()

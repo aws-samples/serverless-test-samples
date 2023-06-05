@@ -10,7 +10,7 @@ namespace GetStock.UnitTest.Domains
     public class StockLogicTests
     {
         [Fact]
-        public async Task RetrieveStockValues_StockFoundInDBNoCurrenciesInService_returnOnlyStockValueInUSD()
+        public async Task RetrieveStockValues_With_StockInDBNoCurrenciesInService_Should_ReturnOnlyStockValueInUSD()
         {
             using var fake = new AutoFake();
 
@@ -37,7 +37,7 @@ namespace GetStock.UnitTest.Domains
         }
 
         [Fact]
-        public async Task RetrieveStockValues_StockFoundInDbCurrenciesReturned_returnListOfCurrencyValues()
+        public async Task RetrieveStockValues_With_StockInDbCurrenciesReturnedFromSewrvice_Should_ReturnListOfCurrencyValues()
         {
             using var fake = new AutoFake();
 
@@ -72,7 +72,7 @@ namespace GetStock.UnitTest.Domains
         }
 
         [Fact]
-        public async Task RetrieveStockValuesAsync_StockNotFound_ReturnEmptyList()
+        public async Task RetrieveStockValues_With_StockNotFoundInDb_Should_ReturnEmptyList()
         {
             using var fake = new AutoFake();
 

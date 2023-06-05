@@ -10,7 +10,7 @@ namespace ApiTests.UnitTest;
 public class MockPutProductFunctionTests : FunctionTest<Function>
 {   
     [Fact]
-    public async Task PutProduct_WhenInserted_ShouldReturn201()
+    public async Task PutProduct_WithSuccsfulInsert_Should_Return201()
     {
         // arrange
         var product = default(Product);
@@ -39,7 +39,7 @@ public class MockPutProductFunctionTests : FunctionTest<Function>
     }
 
     [Fact]
-    public async Task PutProduct_WhenUpdated_ShouldReturn200()
+    public async Task PutProduct_WithSuccsfulUpdate_Should_Return200()
     {
         // arrange
         var product = default(Product);
@@ -67,7 +67,7 @@ public class MockPutProductFunctionTests : FunctionTest<Function>
     }
 
     [Fact]
-    public async Task PutProduct_WithEmptyBody_ShouldReturnBadRequest()
+    public async Task PutProduct_With_EmptyBody_Should_ReturnBadRequest()
     {
         // arrange
         var product = new ProductDTO("testid", "test product", 10);
@@ -88,7 +88,7 @@ public class MockPutProductFunctionTests : FunctionTest<Function>
     }
         
     [Fact]
-    public async Task PutProduct_WithMismatchingIds_ShouldReturnBadRequest()
+    public async Task PutProduct_With_MismatchingIds_Should_ReturnBadRequest()
     {
         // arrange
         var product = new ProductDTO("testid", "test product", 10);
@@ -114,7 +114,7 @@ public class MockPutProductFunctionTests : FunctionTest<Function>
     [InlineData("POST")]
     [InlineData("GET")]
     [InlineData("DELETE")]
-    public async Task TestLambdaHandler_ForNonPutRequests_ShouldReturn405(string httpMethod)
+    public async Task TestLambdaHandler_With_NonPutRequests_Should_Return405(string httpMethod)
     {
         // arrange
         var request = new ApiRequestBuilder()
@@ -132,7 +132,7 @@ public class MockPutProductFunctionTests : FunctionTest<Function>
     }
     
     [Fact]
-    public async Task PutProduct_ErrorInDataAccess_ShouldReturn500()
+    public async Task PutProduct_With_ErrorInDataAccess_Should_Return500()
     {
         // arrange
         var product = new ProductDTO("testid", "test product", 10);
@@ -158,7 +158,7 @@ public class MockPutProductFunctionTests : FunctionTest<Function>
     }
 
     [Fact]
-    public async Task PutProduct_TimeOut_ShouldReturn503()
+    public async Task PutProduct_With_TimeOut_Should_Return503()
     {
         // arrange
         var product = new ProductDTO("testid", "test product", 10);
