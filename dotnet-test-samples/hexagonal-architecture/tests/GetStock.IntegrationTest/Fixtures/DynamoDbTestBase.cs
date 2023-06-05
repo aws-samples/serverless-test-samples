@@ -1,37 +1,35 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 
-namespace GetStock.IntegrationTest.Fixtures
+namespace GetStock.IntegrationTest.Fixtures;
+
+public class DynamoDbTestBase : IClassFixture<DynamoDbFixture>, IDisposable
 {
-    public class DynamoDbTestBase : IClassFixture<DynamoDbFixture>, IDisposable
+    private const string _tableNamePrefix = "test-stocks";
+    protected string TableName { get; }
+    protected IAmazonDynamoDB Client { get; }
+
+    public DynamoDbTestBase(string tableNamePrefix, DynamoDbFixture fixture)
     {
-        private const string _tableNamePrefix = "test-stocks";
-        protected string TableName { get; }
-        protected IAmazonDynamoDB Client { get; }
+        TableName = $"{_tableNamePrefix}{Guid.NewGuid().ToString()}";
+        Client = fixture.Client;
 
-        public DynamoDbTestBase(string tableNamePrefix, DynamoDbFixture fixture)
+        var request = new CreateTableRequest
         {
-            TableName = $"{_tableNamePrefix}{Guid.NewGuid().ToString()}";
-            Client = fixture.Client;
-
-            var request = new CreateTableRequest
+            TableName = TableName,
+            AttributeDefinitions = new List<AttributeDefinition>
             {
-                TableName = TableName,
-                AttributeDefinitions = new List<AttributeDefinition>
-                {
-                    new("StockId", "S")
-                },
-                KeySchema = new List<KeySchemaElement> { new("StockId", Amazon.DynamoDBv2.KeyType.HASH) },
-                ProvisionedThroughput = new ProvisionedThroughput { ReadCapacityUnits = 1, WriteCapacityUnits = 1 }
-            };
+                new("StockId", "S")
+            },
+            KeySchema = new List<KeySchemaElement> { new("StockId", Amazon.DynamoDBv2.KeyType.HASH) },
+            ProvisionedThroughput = new ProvisionedThroughput { ReadCapacityUnits = 1, WriteCapacityUnits = 1 }
+        };
 
-            Client.CreateTableAsync(request).Wait();
-        }
+        Client.CreateTableAsync(request).Wait();
+    }
 
-        public void Dispose()
-        {
-            Client.DeleteTableAsync(TableName).Wait();
-        }
+    public void Dispose()
+    {
+        Client.DeleteTableAsync(TableName).Wait();
     }
 }
-

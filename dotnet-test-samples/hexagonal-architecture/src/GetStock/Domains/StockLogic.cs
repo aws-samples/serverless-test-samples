@@ -5,44 +5,43 @@ using GetStock.Domains.Models;
 using GetStock.Ports;
 using static GetStock.Utilities.CollectionUtils;
 
-namespace GetStock.Domains
+namespace GetStock.Domains;
+
+internal class StockLogic : IStockLogic
 {
-    internal class StockLogic : IStockLogic
+    private const string BaseCurrency = "EUR";
+    private static readonly string[] Currencies = new[] { "USD", "CAD", "AUD" };
+
+    private readonly Repository _repository;
+    private readonly CurrenciesService _currency;
+
+    public StockLogic(Repository repository, CurrenciesService currency)
     {
-        private const string BaseCurrency = "EUR";
-        private static readonly string[] Currencies = new[] { "USD", "CAD", "AUD" };
+        _repository = repository;
+        _currency = currency;
+    }
 
-        private readonly Repository _repository;
-        private readonly CurrenciesService _currency;
-
-        public StockLogic(Repository repository, CurrenciesService currency)
+    public async Task<StockWithCurrencies> RetrieveStockValuesAsync(string stockId)
+    {
+        try
         {
-            _repository = repository;
-            _currency = currency;
+            var stockValue = await _repository.GetStockValueAsync(stockId);
+
+            var currencyList = await _currency.GetCurrencyDataAsync(BaseCurrency, Currencies);
+            var currencyValues = new List<KeyValuePair<string, double>>(currencyList.Count + 1)
+            { 
+                ToPair(BaseCurrency, stockValue)
+            };
+
+            currencyValues.AddRange(currencyList.Select(currency => ToPair(currency.Key, stockValue * currency.Value)));
+
+            return new StockWithCurrencies(stockId, currencyValues);
         }
-
-        public async Task<StockWithCurrencies> RetrieveStockValuesAsync(string stockId)
+        catch (StockNotFoundException exc)
         {
-            try
-            {
-                var stockValue = await _repository.GetStockValueAsync(stockId);
-
-                var currencyList = await _currency.GetCurrencyDataAsync(BaseCurrency, Currencies);
-                var currencyValues = new List<KeyValuePair<string, double>>(currencyList.Count + 1)
-                { 
-                    ToPair(BaseCurrency, stockValue)
-                };
-
-                currencyValues.AddRange(currencyList.Select(currency => ToPair(currency.Key, stockValue * currency.Value)));
-
-                return new StockWithCurrencies(stockId, currencyValues);
-            }
-            catch (StockNotFoundException exc)
-            {
-                Logger.LogError(exc);
+            Logger.LogError(exc);
              
-                return new StockWithCurrencies(stockId, Array.Empty<KeyValuePair<string, double>>());
-            }
+            return new StockWithCurrencies(stockId, Array.Empty<KeyValuePair<string, double>>());
         }
     }
 }

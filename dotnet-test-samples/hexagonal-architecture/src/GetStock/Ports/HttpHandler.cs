@@ -1,27 +1,26 @@
 ﻿using GetStock.Domains;
 using GetStock.Domains.Models;
 
-namespace GetStock.Ports
+namespace GetStock.Ports;
+
+public interface IHttpHandler
 {
-    public interface IHttpHandler
+    Task<StockWithCurrencies> RetrieveStockValues(string stockId);
+}
+
+internal class HttpHandler : IHttpHandler
+{
+    private readonly IStockLogic _stockLogic;
+
+    public HttpHandler(IStockLogic stockLogic)
     {
-        Task<StockWithCurrencies> RetrieveStockValues(string stockId);
+        _stockLogic = stockLogic;
     }
 
-    internal class HttpHandler : IHttpHandler
+    public async Task<StockWithCurrencies> RetrieveStockValues(string stockId)
     {
-        private readonly IStockLogic _stockLogic;
+        var stockValue = await _stockLogic.RetrieveStockValuesAsync(stockId);
 
-        public HttpHandler(IStockLogic stockLogic)
-        {
-            _stockLogic = stockLogic;
-        }
-
-        public async Task<StockWithCurrencies> RetrieveStockValues(string stockId)
-        {
-            var stockValue = await _stockLogic.RetrieveStockValuesAsync(stockId);
-
-            return stockValue;
-        }
+        return stockValue;
     }
 }

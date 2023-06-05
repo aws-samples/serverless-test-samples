@@ -5,88 +5,87 @@ using GetStock.Domains;
 using GetStock.Domains.Models;
 using static GetStock.Utilities.CollectionUtils;
 
-namespace GetStock.UnitTest.Domains
+namespace GetStock.UnitTest.Domains;
+
+public class StockLogicTests
 {
-    public class StockLogicTests
+    [Fact]
+    public async Task RetrieveStockValues_With_StockInDBNoCurrenciesInService_Should_ReturnOnlyStockValueInUSD()
     {
-        [Fact]
-        public async Task RetrieveStockValues_With_StockInDBNoCurrenciesInService_Should_ReturnOnlyStockValueInUSD()
+        using var fake = new AutoFake();
+
+        var fakeStockDb = fake.Resolve<IStockDB>();
+        A.CallTo(() => fakeStockDb.GetStockValueAsync(A<string>._)).Returns(Task.FromResult(new StockData
         {
-            using var fake = new AutoFake();
+            StockId = "stock-1",
+            Value = 100
+        }));
 
-            var fakeStockDb = fake.Resolve<IStockDB>();
-            A.CallTo(() => fakeStockDb.GetStockValueAsync(A<string>._)).Returns(Task.FromResult(new StockData
-            {
-                StockId = "stock-1",
-                Value = 100
-            }));
+        var fakeCurrencyConverter = fake.Resolve<ICurrencyConverter>();
 
-            var fakeCurrencyConverter = fake.Resolve<ICurrencyConverter>();
+        IDictionary<string, double> emptyDictionary = new Dictionary<string, double>();
+        A.CallTo(() => fakeCurrencyConverter.GetCurrencies(A<string>._, An<IEnumerable<string>>._))
+            .Returns(Task.FromResult(emptyDictionary));
 
-            IDictionary<string, double> emptyDictionary = new Dictionary<string, double>();
-            A.CallTo(() => fakeCurrencyConverter.GetCurrencies(A<string>._, An<IEnumerable<string>>._))
-                .Returns(Task.FromResult(emptyDictionary));
+        var target = fake.Resolve<StockLogic>();
 
-            var target = fake.Resolve<StockLogic>();
+        var result = await target.RetrieveStockValuesAsync("stock-1");
 
-            var result = await target.RetrieveStockValuesAsync("stock-1");
+        var expected = new StockWithCurrencies("stock-1", new[] { ToPair("EUR", 100.0) });
 
-            var expected = new StockWithCurrencies("stock-1", new[] { ToPair("EUR", 100.0) });
+        result.Should().BeEquivalentTo(expected);
+    }
 
-            result.Should().BeEquivalentTo(expected);
-        }
+    [Fact]
+    public async Task RetrieveStockValues_With_StockInDbCurrenciesReturnedFromSewrvice_Should_ReturnListOfCurrencyValues()
+    {
+        using var fake = new AutoFake();
 
-        [Fact]
-        public async Task RetrieveStockValues_With_StockInDbCurrenciesReturnedFromSewrvice_Should_ReturnListOfCurrencyValues()
+        var fakeStockDb = fake.Resolve<IStockDB>();
+        A.CallTo(() => fakeStockDb.GetStockValueAsync(A<string>._)).Returns(Task.FromResult(new StockData
         {
-            using var fake = new AutoFake();
+            StockId = "stock-1",
+            Value = 100
+        }));
 
-            var fakeStockDb = fake.Resolve<IStockDB>();
-            A.CallTo(() => fakeStockDb.GetStockValueAsync(A<string>._)).Returns(Task.FromResult(new StockData
-            {
-                StockId = "stock-1",
-                Value = 100
-            }));
+        var fakeCurrencyConverter = fake.Resolve<ICurrencyConverter>();
 
-            var fakeCurrencyConverter = fake.Resolve<ICurrencyConverter>();
-
-            IDictionary<string, double> currency = new Dictionary<string, double>
-            {
-                {"USD", 2 }
-            };
-
-            A.CallTo(() => fakeCurrencyConverter.GetCurrencies(A<string>._, An<IEnumerable<string>>._))
-                .Returns(Task.FromResult(currency));
-
-            var target = fake.Resolve<StockLogic>();
-
-            var result = await target.RetrieveStockValuesAsync("stock-1");
-
-            var expected = new StockWithCurrencies("stock-1", new[]
-            {
-                ToPair("EUR", 100.0),
-                ToPair("USD", 200.0)
-            });
-
-            result.Should().BeEquivalentTo(expected);
-        }
-
-        [Fact]
-        public async Task RetrieveStockValues_With_StockNotFoundInDb_Should_ReturnEmptyList()
+        IDictionary<string, double> currency = new Dictionary<string, double>
         {
-            using var fake = new AutoFake();
+            {"USD", 2 }
+        };
 
-            var fakeStockDb = fake.Resolve<IStockDB>();
-            A.CallTo(() => fakeStockDb.GetStockValueAsync(A<string>._))
-                .Throws<StockNotFoundException>();
+        A.CallTo(() => fakeCurrencyConverter.GetCurrencies(A<string>._, An<IEnumerable<string>>._))
+            .Returns(Task.FromResult(currency));
 
-            var target = fake.Resolve<StockLogic>();
+        var target = fake.Resolve<StockLogic>();
 
-            var result = await target.RetrieveStockValuesAsync("stock-1");
+        var result = await target.RetrieveStockValuesAsync("stock-1");
 
-            var expected = new StockWithCurrencies("stock-1", Array.Empty<KeyValuePair<string, double>>());
+        var expected = new StockWithCurrencies("stock-1", new[]
+        {
+            ToPair("EUR", 100.0),
+            ToPair("USD", 200.0)
+        });
 
-            result.Should().BeEquivalentTo(expected);
-        }
+        result.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public async Task RetrieveStockValues_With_StockNotFoundInDb_Should_ReturnEmptyList()
+    {
+        using var fake = new AutoFake();
+
+        var fakeStockDb = fake.Resolve<IStockDB>();
+        A.CallTo(() => fakeStockDb.GetStockValueAsync(A<string>._))
+            .Throws<StockNotFoundException>();
+
+        var target = fake.Resolve<StockLogic>();
+
+        var result = await target.RetrieveStockValuesAsync("stock-1");
+
+        var expected = new StockWithCurrencies("stock-1", Array.Empty<KeyValuePair<string, double>>());
+
+        result.Should().BeEquivalentTo(expected);
     }
 }

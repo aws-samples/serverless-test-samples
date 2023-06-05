@@ -1,9 +1,8 @@
-﻿namespace GetStock.Adapters
+﻿namespace GetStock.Adapters;
+
+public interface IServiceConfiguration
 {
-    public interface IServiceConfiguration
-    {
-        string CurrencyBaseAddress { get; }
-        string DynamoDbTableName { get; }
-        string CurrencyApiKey { get; }
-    }
+    string CurrencyBaseAddress { get; }
+    string DynamoDbTableName { get; }
+    string CurrencyApiKey { get; }
 }

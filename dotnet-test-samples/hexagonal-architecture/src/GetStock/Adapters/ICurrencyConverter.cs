@@ -1,7 +1,6 @@
-﻿namespace GetStock.Adapters
+﻿namespace GetStock.Adapters;
+
+public interface ICurrencyConverter
 {
-    public interface ICurrencyConverter
-    {
-        Task<IDictionary<string, double>> GetCurrencies(string baseCurrency, IEnumerable<string> currencies);
-    }
+    Task<IDictionary<string, double>> GetCurrencies(string baseCurrency, IEnumerable<string> currencies);
 }

@@ -15,18 +15,7 @@ public static class DI
 {
     private static ServiceProvider? _serviceProvider;
 
-    public static ServiceProvider ServiceProvider
-    {
-        get
-        {
-            if (_serviceProvider == null)
-            {
-                _serviceProvider = InitializeServiceProvider();
-            }
-
-            return _serviceProvider;
-        }
-    }
+    public static ServiceProvider ServiceProvider => _serviceProvider ??= InitializeServiceProvider();
 
     private static ServiceProvider InitializeServiceProvider()
     {
@@ -44,7 +33,7 @@ public static class DI
 
 public class Functions
 {
-    private readonly IHttpHandler? _handler;
+    private readonly IHttpHandler _handler;
 
     public Functions()
     {

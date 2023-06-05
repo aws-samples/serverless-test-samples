@@ -1,9 +1,8 @@
 ﻿using GetStock.Adapters.Model;
 
-namespace GetStock.Adapters
+namespace GetStock.Adapters;
+
+public interface IStockDB
 {
-    public interface IStockDB
-    {
-        Task<StockData> GetStockValueAsync(string stockId);
-    }
+    Task<StockData> GetStockValueAsync(string stockId);
 }
