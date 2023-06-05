@@ -39,7 +39,7 @@ public class IntegrationTest : IClassFixture<Setup>, IDisposable
     }
 
     [Fact]
-    public async Task ListStorageAreas_ShouldReturnSuccess()
+    public async Task ListStorageAreas_Should_ReturnSuccess()
     {
         // arrange
 

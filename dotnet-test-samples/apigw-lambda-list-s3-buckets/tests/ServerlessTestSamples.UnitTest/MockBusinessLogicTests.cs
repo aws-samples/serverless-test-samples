@@ -11,7 +11,7 @@ public class MockBusinessLogicTests
     private ILogger<ListStorageAreasQueryHandler> Logger { get; } = Mock.Of<ILogger<ListStorageAreasQueryHandler>>();
 
     [Fact]
-    public async Task TestCoreBusinessLogicWithSuccessfulResponse_ShouldReturnStorageAreas()
+    public async Task TestCoreBusinessLogic_With_SuccessfulResponse_Should_ReturnStorageAreas()
     {
         // arrange
         var storage = new Mock<IStorageService>();
@@ -35,7 +35,7 @@ public class MockBusinessLogicTests
     }
 
     [Fact]
-    public async Task TestCoreBusinessLogicWithErrorStorageResponse_ShouldReturnEmptyList()
+    public async Task TestCoreBusinessLogic_With_ErrorStorageResponse_Should_ReturnEmptyList()
     {
         // arrange
         var storage = new Mock<IStorageService>();
@@ -53,7 +53,7 @@ public class MockBusinessLogicTests
     }
 
     [Fact]
-    public async Task TestCoreBusinessLogicWithStorageServiceException_ShouldReturnEmptyList()
+    public async Task TestCoreBusinessLogic_With_StorageServiceException_Should_ReturnEmptyList()
     {
         // arrange
         var storage = new Mock<IStorageService>();

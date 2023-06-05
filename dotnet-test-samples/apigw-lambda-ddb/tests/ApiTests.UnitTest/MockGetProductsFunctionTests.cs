@@ -11,7 +11,7 @@ namespace ApiTests.UnitTest;
 public class MockGetProductsFunctionTests : FunctionTest<Function>
 {
     [Fact]
-    public async Task GetProducts_ShouldReturnSuccess()
+    public async Task GetProducts_Should_ReturnSuccess()
     {
         // arrange
         var request = new ApiRequestBuilder()
@@ -35,7 +35,7 @@ public class MockGetProductsFunctionTests : FunctionTest<Function>
     }
 
     [Fact]
-    public async Task GetProducts_WhenDataAccessReturnsProducts_ShouldReturnInBody()
+    public async Task GetProducts_With_DataAccessReturnsProducts_Should_ReturnInBody()
     {
         // arrange
         var request = new ApiRequestBuilder()
@@ -68,7 +68,7 @@ public class MockGetProductsFunctionTests : FunctionTest<Function>
     [InlineData("POST")]
     [InlineData("PUT")]
     [InlineData("DELETE")]
-    public async Task TestLambdaHandler_ForNonGetRequests_ShouldReturn405(string httpMethod)
+    public async Task TestLambdaHandler_With_NonGetRequests_Should_Return405(string httpMethod)
     {
         // arrange
         var request = new ApiRequestBuilder()
@@ -89,7 +89,7 @@ public class MockGetProductsFunctionTests : FunctionTest<Function>
     }
 
     [Fact]
-    public async Task GetProducts_ErrorInDataAccess_ShouldReturn500()
+    public async Task GetProducts_With_ErrorInDataAccess_Should_Return500()
     {
         // arrange
         var request = new ApiRequestBuilder()
@@ -111,7 +111,7 @@ public class MockGetProductsFunctionTests : FunctionTest<Function>
     }
 
     [Fact]
-    public async Task GetProducts_TimeOut_ShouldReturn503()
+    public async Task GetProducts_With_TimeOut_Should_Return503()
     {
         // arrange
         var request = new ApiRequestBuilder()
