@@ -27,4 +27,4 @@ jobs:
     - name: Build
       run: find dotnet-test-samples -name "*.sln" -exec dotnet build {} \;
     - name: Test
-      run: find dotnet-test-samples -name "*Unit*.csproj" -exec dotnet test {} \
+      run: find dotnet-test-samples -name "*Unit*.csproj" -exec dotnet test {} \;
