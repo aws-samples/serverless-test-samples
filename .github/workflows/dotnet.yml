@@ -1,7 +1,7 @@
 # This workflow will build a .NET project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
-name: .NET
+name: .NET build and test
 
 on:
   push:
@@ -24,7 +24,7 @@ jobs:
       with:
         dotnet-version: 6.0.x
     - name: Find all solutions
-      run: SLN_FILES=$(find dotnet-test-samples -name "*.sln" -type file)    
+      run: SLN_FILES=$(find dotnet-test-samples -name "*.sln")    
     - name: Build
       run: find dotnet-test-samples -type file -name "*.sln" -exec dotnet build {} \;
     - name: Test
