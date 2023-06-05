@@ -34,7 +34,7 @@ jobs:
       uses: dorny/test-reporter@v1
       if: always()
       with:
-        name: DotNET Tests
+        name: .NET Test Report
         path: "**/test-results.trx"                            
         reporter: dotnet-trx
         fail-on-error: true
