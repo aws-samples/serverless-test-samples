@@ -15,7 +15,7 @@ public class StockDynamoDbTests : DynamoDbTestBase
     }
 
     [Fact]
-    public async Task GetStockValue_StockNotFound_ThrowStockNotFoundException()
+    public async Task GetStockValue_With_StockNotInDb_Should_ThrowStockNotFoundException()
     {
         var config = new TestServiceConfiguration
         {
@@ -28,7 +28,7 @@ public class StockDynamoDbTests : DynamoDbTestBase
     }
 
     [Fact]
-    public async Task GetStockValue_StockFound_ReturnStockData()
+    public async Task GetStockValue_With_StockInDb_Should_ReturnStockData()
     {
         var config = new TestServiceConfiguration
         {

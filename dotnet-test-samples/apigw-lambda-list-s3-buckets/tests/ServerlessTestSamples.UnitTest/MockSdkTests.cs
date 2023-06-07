@@ -32,7 +32,7 @@ public class MockSdkTests
         Options.Create(new JsonSerializerOptions(JsonSerializerDefaults.Web));
 
     [Fact]
-    public async Task TestLambdaHandlerWithValidS3Response_ShouldReturnSuccess()
+    public async Task TestLambdaHandler_With_ValidS3Response_Should_ReturnSuccess()
     {
         // arrange
         var s3 = new Mock<IAmazonS3>();
@@ -74,7 +74,7 @@ public class MockSdkTests
     }
 
     [Fact]
-    public async Task TestLambdaHandlerWithEmptyS3Response_ShouldReturnEmpty()
+    public async Task TestLambdaHandler_With_EmptyS3Response_Should_ReturnEmpty()
     {
         // arrange
         var s3 = new Mock<IAmazonS3>();
@@ -102,7 +102,7 @@ public class MockSdkTests
     }
 
     [Fact]
-    public async Task TestLambdaHandlerWithS3NullResponse_ShouldReturnEmpty()
+    public async Task TestLambdaHandler_With_S3NullResponse_Should_ReturnEmpty()
     {
         // arrange
         var s3 = new Mock<IAmazonS3>();
@@ -130,7 +130,7 @@ public class MockSdkTests
     }
 
     [Fact]
-    public async Task TestLambdaHandlerWithS3Exception_ShouldReturnEmpty()
+    public async Task TestLambdaHandler_With_S3Exception_Should_ReturnEmpty()
     {
         // arrange
         var s3 = new Mock<IAmazonS3>();

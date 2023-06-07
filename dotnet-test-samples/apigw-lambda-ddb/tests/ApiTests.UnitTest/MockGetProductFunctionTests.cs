@@ -11,7 +11,7 @@ namespace ApiTests.UnitTest;
 public class MockGetProductFunctionTests : FunctionTest<Function>
 {   
     [Fact]
-    public async Task GetProduct_ShouldReturnSuccess()
+    public async Task GetProduct_Should_ReturnSuccess()
     {
         // arrange
         var request = new ApiRequestBuilder()
@@ -42,7 +42,7 @@ public class MockGetProductFunctionTests : FunctionTest<Function>
     [InlineData("POST")]
     [InlineData("PUT")]
     [InlineData("DELETE")]
-    public async Task TestLambdaHandler_ForNonGetRequests_ShouldReturn405(string httpMethod)
+    public async Task TestLambdaHandler_WithNonGetRequests_Should_Return405(string httpMethod)
     {
         // arrange
         var request = new ApiRequestBuilder()
@@ -61,7 +61,7 @@ public class MockGetProductFunctionTests : FunctionTest<Function>
     }
     
     [Fact]
-    public async Task GetProduct_ErrorInDataAccess_ShouldReturn500()
+    public async Task GetProduct_With_ErrorInDataAccess_Should_Return500()
     {
         // arrange
         var request = new ApiRequestBuilder()
@@ -84,7 +84,7 @@ public class MockGetProductFunctionTests : FunctionTest<Function>
     }
 
     [Fact]
-    public async Task GetProduct_TimeOut_ShouldReturn503()
+    public async Task GetProduct_With_TimeOut_Should_Return503()
     {
         // arrange
         var request = new ApiRequestBuilder()
@@ -107,7 +107,7 @@ public class MockGetProductFunctionTests : FunctionTest<Function>
     }
 
     [Fact]
-    public async Task GetProduct_ProductNotFound_ShouldReturn404()
+    public async Task GetProduct_With_ProductNotFound_Should_Return404()
     {
         // arrange
         var request = new ApiRequestBuilder()

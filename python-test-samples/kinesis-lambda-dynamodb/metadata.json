@@ -1,0 +1,35 @@
+{
+    "title": "Kinesis with Lambda and DynamoDB",
+    "description": "This project contains unit and integration tests for a pattern using Kinesis, AWS Lambda and Amazon DynamoDB.",
+    "content_language": "English",
+    "language": "Python",
+    "type": ["Unit", "Integration"],
+    "diagram": ["/img/unit-test-description.png", "/img/system-under-test.png"],
+    "framework": "SAM",
+    "services": ["kinesis", "lambda", "dynamodb"],
+    "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
+    "pattern_source": "AWS",
+    "pattern_detail_tabs": [
+        {
+            "title": "Application Code",
+            "filepath": "/src/app.py"
+        },
+        {
+            "title": "Unit Tests",
+            "filepath": "/tests/unit/mock_test.py"
+        },
+        {
+            "title": "Integration Test",
+            "filepath": "/tests/integration/test_kinesis.py"
+        }
+    ],
+    "authors": [
+        {
+          "name": "Ramesh Mathikumar",
+          "image": "https://media.licdn.com/dms/image/C4D03AQFG1CMJbu2IgA/profile-displayphoto-shrink_800_800/0/1516610427291?e=1689811200&v=beta&t=pZKbM4umA14TFTEUsp2MXPQgLSTz1foJ2Bu7KS-BsMM",
+          "bio": "Senior DevOps Consultant at AWS",
+          "linkedin": "https://www.linkedin.com/in/ramesh-mathikumar-5118b816/"
+
+        }
+    ]
+}

@@ -1,0 +1,25 @@
+name: Improvement
+description: Suggest an improvement
+title: "[Improvement]: "
+labels: ["improvement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to suggest this improvement!
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Details
+      description: How can we get in touch with you if we need more info?
+      placeholder: ex. email@example.com
+    validations:
+      required: false
+  - type: textarea
+    id: description
+    attributes:
+      label: Suggested Improvement
+      description: Please describe the suggested improvement
+      placeholder: "Please provide a link to the location of the pattern and describe your suggested improvement"
+    validations:
+      required: true
