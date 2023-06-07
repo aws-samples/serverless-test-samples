@@ -32,7 +32,7 @@ class TestApiGateway(TestCase):
 
     service_level_agreement = 20
     # number of times to check if there is a message in the quque (can't be 0)
-    interval_num = 10
+    interval_num = 5
     # amount of time to wait between each check
     interval_timeout = int(service_level_agreement/interval_num)
 
@@ -111,62 +111,60 @@ class TestApiGateway(TestCase):
             "message": "This is a test message"
         }
 
-    def tearDown(self) -> None:
+    def teardown_class(self) -> None:
         """
         # For tear-down, remove any data injected for the tests
         # clean Input & output SQS by reading from the queue till its empty
         """
+        logging.info("Teardown Phase...")
 
-        # # cleaning input queue
-        # client = boto3.client("sqs")
-        # response = {}
+        # cleaning input queue
+        client = boto3.client("sqs")
+        response = {}
 
-        # response = client.get_queue_attributes(
-        #     QueueUrl=self.sqs_input,
-        #     AttributeNames=['ApproximateNumberOfMessages']
-        # )
+        response = client.get_queue_attributes(
+            QueueUrl=self.sqs_input,
+            AttributeNames=['ApproximateNumberOfMessages']
+        )
 
-        # message_count = int(response['Attributes']
-        #                     ['ApproximateNumberOfMessages'])
-        # if message_count > 0:
-        #     logging.debug("Cleaning input queue")
-        #     client.purge_queue(QueueUrl=self.sqs_input)  # purging input queue
+        message_count = int(response['Attributes']
+                            ['ApproximateNumberOfMessages'])
+        if message_count > 0:
+            logging.info("Cleaning input queue")
+            client.purge_queue(QueueUrl=self.sqs_input)  # purging input queue
 
-        # response = client.get_queue_attributes(
-        #     QueueUrl=self.sqs_output,
-        #     AttributeNames=['ApproximateNumberOfMessages']
-        # )
+        response = client.get_queue_attributes(
+            QueueUrl=self.sqs_output,
+            AttributeNames=['ApproximateNumberOfMessages']
+        )
 
-        # message_count = int(response['Attributes']
-        #                     ['ApproximateNumberOfMessages'])
-        # if message_count > 0:
-        #     logging.debug("Cleaning output queue")
-        #     # purging output queue
-        #     client.purge_queue(QueueUrl=self.sqs_output)
+        message_count = int(response['Attributes']
+                            ['ApproximateNumberOfMessages'])
+        if message_count > 0:
+            logging.info("Cleaning output queue")       # purging output queue
+            client.purge_queue(QueueUrl=self.sqs_output)
 
-        # response = client.get_queue_attributes(
-        #     QueueUrl=self.sqs_input_dlq,
-        #     AttributeNames=['ApproximateNumberOfMessages']
-        # )
+        response = client.get_queue_attributes( QueueUrl=self.sqs_input_dlq,
+            AttributeNames=['ApproximateNumberOfMessages']
+        )
 
-        # message_count = int(response['Attributes']
-        #                     ['ApproximateNumberOfMessages'])
-        # if message_count > 0:
-        #     logging.debug("Cleaning input dead letter queue")
-        #     # purging inputDLQ queue
-        #     client.purge_queue(QueueUrl=self.sqs_input_dlq)
+        message_count = int(response['Attributes']['ApproximateNumberOfMessages'])
+        if message_count > 0:
+            logging.info("Cleaning input DLQ")          # purging inputDLQ queue
+            client.purge_queue(QueueUrl=self.sqs_input_dlq)
 
-        # response = client.get_queue_attributes(
-        #     QueueUrl=self.sqs_output_dlq,
-        #     AttributeNames=['ApproximateNumberOfMessages']
-        # )
+        response = client.get_queue_attributes(QueueUrl=self.sqs_output_dlq,
+            AttributeNames=['ApproximateNumberOfMessages']
+        )
 
-        # message_count = int(response['Attributes']
-        #                     ['ApproximateNumberOfMessages'])
-        # if message_count > 0:
-        #     logging.debug("Cleaning output dead letter queue")
-        #     # purging output DLQ
-        #     client.purge_queue(QueueUrl=self.sqs_output_dlq)
+        message_count = int(response['Attributes']['ApproximateNumberOfMessages'])
+        if message_count > 0:
+            logging.info("Cleaning output DLQ")         # purging output DLQ
+            client.purge_queue(QueueUrl=self.sqs_output_dlq)
+        response = client.get_queue_attributes(
+            QueueUrl=self.sqs_input,
+            AttributeNames=['ApproximateNumberOfMessages']
+        )
 
     def test_api_gateway_200(self):
         """
@@ -183,7 +181,8 @@ class TestApiGateway(TestCase):
         for i in range(self.service_level_agreement):
             # Get Message from Output Queue via OUTPUT api
             print(
-                f"\nChecking for message in the output queue {i+1} time out of {self.service_level_agreement}")
+                f"\nChecking for message in the output queue {i+1} \
+                    time out of {self.service_level_agreement}")
             response = requests.get(self.api_endpoint_outbox, timeout=self.interval_timeout)
             if response.status_code == 200:
                 msg_found = True
@@ -216,11 +215,12 @@ class TestApiGateway(TestCase):
         logging.info("Response: %s, Response code: %s",
                      response.json(), response.status_code)
 
-    def test_malform_request(self):
+    def test_dead_letter_queue(self):
         """
         This funciton will create a mallform message and send it to the APIGW,
-        The Process Lambda will send error message to the DLQ,
-        The this test will then check the DLQ to see if the message was received
+        The Process Lambda will send error message to the Input Queue, 
+        hence the Queue will move the message to DLQ.
+        The test will check the DLQ to see if a message was received
         """
         client = boto3.client("sqs")
         response = {}
@@ -240,7 +240,8 @@ class TestApiGateway(TestCase):
         # Process_input_lambda should deny, and then SQS will move the message to the DLQ
         for i in range(self.service_level_agreement):
             print(
-                f"\nChecking for message in the DL queue {i+1} time out of {self.service_level_agreement}")
+                f"\nChecking for message in the DL queue {i+1} \
+                    time out of {self.service_level_agreement}")
             response = client.get_queue_attributes(
                 QueueUrl=self.sqs_input_dlq,
                 AttributeNames=['ApproximateNumberOfMessages']
