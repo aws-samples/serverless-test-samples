@@ -3,9 +3,10 @@ Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 SPDX-License-Identifier: MIT-0
 
 Set the environment variable AWS_SAM_STACK_NAME to the name of the stack you deploied
-> export AWS_SAM_STACK_NAME=<stack-name> 
-> python -m pytest -s tests/integration -v  
-> to see logs you can use: python -m pytest -s tests/integration --log-cli-level=20
+>>> export AWS_SAM_STACK_NAME=<stack-name> 
+>>> python -m pytest -s tests/integration -v
+or run the following to see also log info messages  
+>>> python -m pytest -s tests/integration --log-cli-level=20
 """
 
 import os
@@ -13,12 +14,11 @@ import time
 import logging
 from unittest import TestCase
 from uuid import uuid4
-import json
 import boto3
 import requests
 
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 class TestApiGateway(TestCase):
     """THe main test class for the API Gateway"""
@@ -61,7 +61,7 @@ class TestApiGateway(TestCase):
 
         try:
             response = cf_client.describe_stacks(StackName=stack_name)
-            logging.debug("Setup Stackname: %s", response)
+            logging.info("Setup Stackname: %s", response)
         except Exception as error:
             raise ValueError(
                 f"Cannot find stack {stack_name}. \n"
@@ -81,11 +81,6 @@ class TestApiGateway(TestCase):
         sqs_output_dlq = [
             output for output in stack_outputs if output["OutputKey"] == "SQSOutputQueueDLQ"]
 
-        # logging.debug("Setup StackOutput: %s", stack_output)
-
-        # self.assertTrue(
-        #     api_outputs, f"Cannot find output APIGatewayURL in stack {stack_name}")
-
         self.api_endpoint = api_outputs[0]["OutputValue"]
         self.api_endpoint_inbox = self.api_endpoint + "/inbox"
         self.api_endpoint_outbox = self.api_endpoint + "/outbox"
@@ -96,8 +91,7 @@ class TestApiGateway(TestCase):
 
         logging.info("Setup APIGatewayURL: %s", self.api_endpoint)
         logging.info("Setup APIGatewayURL_Inbox: %s", self.api_endpoint_inbox)
-        logging.info("Setup APIGatewayURL_Outbox: %s",
-                     self.api_endpoint_outbox)
+        logging.info("Setup APIGatewayURL_Outbox: %s", self.api_endpoint_outbox)
         logging.info("Setup SQSInputQueue: %s", self.sqs_input)
         logging.info("Setup SQSOutputQueue: %s", self.sqs_output)
         logging.info("Setup SQSInputQueueDLQ: %s", self.sqs_input_dlq)
@@ -114,9 +108,11 @@ class TestApiGateway(TestCase):
     def teardown_class(self) -> None:
         """
         # For tear-down, remove any data injected for the tests
-        # clean Input & output SQS by reading from the queue till its empty
+        # purge each queue in case they have messages inside them
+        # since purge can be done once every 60 sec, we start with 60 sec sleep
         """
         logging.info("Teardown Phase...")
+        time.sleep(60)
 
         # cleaning input queue
         client = boto3.client("sqs")
@@ -180,9 +176,8 @@ class TestApiGateway(TestCase):
         msg_found = False
         for i in range(self.service_level_agreement):
             # Get Message from Output Queue via OUTPUT api
-            print(
-                f"\nChecking for message in the output queue {i+1} \
-                    time out of {self.service_level_agreement}")
+            logging.info ("Checking for message in the output queue %s time out of %s"\
+                    ,i+1, self.service_level_agreement)
             response = requests.get(self.api_endpoint_outbox, timeout=self.interval_timeout)
             if response.status_code == 200:
                 msg_found = True
@@ -194,14 +189,13 @@ class TestApiGateway(TestCase):
                 break
 
             # Sleep for interval_timeout before checking again
-            print(f"Sleeping for {self.interval_timeout} seconds before checking again")
+            logging.info("Sleeping for %s seconds before checking again", self.interval_timeout)
             time.sleep(self.interval_timeout)
 
             # Check if message was found in the output queue or raise fail test
             if (i == self.interval_num - 1) and (not msg_found):
                 logging.info("Message was not found in the output queue")
-                self.fail(
-                    f"Message was not found in with in the SLA {self.service_level_agreement}")
+                self.fail("Message was not found in with in the SLA {self.service_level_agreement}")
 
     def test_api_gateway_404(self):
         """
@@ -239,9 +233,8 @@ class TestApiGateway(TestCase):
         # Check the Dealetter input Queue for any messages
         # Process_input_lambda should deny, and then SQS will move the message to the DLQ
         for i in range(self.service_level_agreement):
-            print(
-                f"\nChecking for message in the DL queue {i+1} \
-                    time out of {self.service_level_agreement}")
+            logging.info("\nChecking for message in the DL queue %s time out of %s"\
+                         ,i+1, self.service_level_agreement)
             response = client.get_queue_attributes(
                 QueueUrl=self.sqs_input_dlq,
                 AttributeNames=['ApproximateNumberOfMessages']
