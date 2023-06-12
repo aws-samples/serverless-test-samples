@@ -1,0 +1,1 @@
+docker run -d -p 8083:8083 --mount type=bind,readonly,source=/home/jomafe/serverless-test-samples/typescript-test-samples/step-functions-local/statemachine/test/MockConfigFile.json,destination=/home/StepFunctionsLocal/MockConfigFile.json -e SFN_MOCK_CONFIG="/home/StepFunctionsLocal/MockConfigFile.json" amazon/aws-stepfunctions-local
