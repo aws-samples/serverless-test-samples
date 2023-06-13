@@ -5,8 +5,8 @@
   "main": "src/app.js",
   "license": "MIT",
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.44.0",
-    "@aws-sdk/client-kinesis": "^3.306.0",
+    "@aws-sdk/client-dynamodb": "^3.351.0",
+    "@aws-sdk/client-kinesis": "^3.350.0",
     "@aws-sdk/lib-dynamodb": "^3.44.0",
     "@aws-sdk/util-dynamodb": "^3.306.0",
     "aws-lambda": "^1.0.7",
@@ -18,7 +18,7 @@
     "test:integration": "jest --selectProjects integration"
   },
   "devDependencies": {
-    "@aws-sdk/client-cloudformation": "^3.303.0",
+    "@aws-sdk/client-cloudformation": "^3.350.0",
     "@types/aws-lambda": "^8.10.92",
     "@types/jest": "^27.5.2",
     "@types/node": "^17.0.13",
