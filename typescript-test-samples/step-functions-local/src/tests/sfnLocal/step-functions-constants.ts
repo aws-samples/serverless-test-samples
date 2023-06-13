@@ -5,7 +5,6 @@ import path from 'path';
 const EVENT_FILE: string = path.join(__dirname, "../../../events/sfn_valid_input.json");
 
 export const StepFunctionsConstants = {
-    // SFN_LOCAL_IMAGE: DockerImageName = DockerImageName.parse("amazon/aws-stepfunctions-local");
     mockFileHostPath: path.join(__dirname, '../../../statemachine/test/MockConfigFile.json') as string,
     mockFileContainerPath: "/home/stepfunctionslocal/MockConfigFile.json",
     DUMMY_ROLE: "arn:aws:iam::123456789012:role/DummyRole",
