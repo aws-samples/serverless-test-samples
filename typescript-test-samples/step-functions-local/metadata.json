@@ -1,35 +1,31 @@
 {
-  "title": "Typescript Test Samples Starter Project",
-  "description": "This project contains automated test samples for serverless applications written in TypeScript. The project includes techniques for executing tests including mocking and testing in the cloud.",
+  "title": "Step Functions Local Testing",
+  "description": "This project shows a technique for testing an AWS Step Functions workflow in a local desktop environment",
   "content_language": "English",
   "language": "TypeScript",
-  "type": ["Unit","Integration"],
-  "diagram": "/img/system-under-test.png",
+  "type": ["Unit"],
+  "diagram": "/images/stepfunctions_local_test.png",
   "framework": "SAM",
-  "services": ["apigw", "lambda","dynamodb"],
+  "services": ["sfn"],
   "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
   "pattern_source": "AWS",
   "pattern_detail_tabs": [
       {
-          "title": "Application Code",
-          "filepath": "/list-buckets/app.ts"
+          "title": "Step Functions State Machine",
+          "filepath": "/statemachine/local_testing.asl.json"
       },
       {
           "title": "Unit Tests - Mock",
-          "filepath": "/list-buckets/tests/unit/list-buckets.test.ts"
-      },
-      {
-          "title": "Integration Tests",
-          "filepath": "/list-buckets/tests/integration/api.test.ts"
+          "filepath": "/src/tests/sfnLocal/step-functions-local.test.ts"
       }
   ],
   "authors": [
       {
-        "name": "Brian Krygsman",
-        "image": "https://avatars.githubusercontent.com/u/3408210?v=4",
+        "name": "Jordi Macià",
+        "image": "https://avatars.githubusercontent.com/u/40365634?v=4",
         "bio": "Senior Solutions Architect at AWS",
-        "linkedin": "https://www.linkedin.com/in/brian-krygsman/",
-        "twitter": "https://twitter.com/brnkrygs"
+        "linkedin": "https://www.linkedin.com/in/jordimacia/",
+        "twitter": "https://twitter.com/jmaciaferrer"
       }
   ]
 }
