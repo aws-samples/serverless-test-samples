@@ -7,7 +7,7 @@
   "author": "SAM CLI",
   "license": "MIT",
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.199.0",
+    "@aws-sdk/client-s3": "^3.350.0",
     "esbuild": "^0.14.14"
   },
   "scripts": {
