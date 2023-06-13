@@ -8,14 +8,14 @@
   "license": "MIT",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.199.0",
+    "@aws-sdk/client-sfn": "^3.350.0",
     "esbuild": "^0.14.14"
   },
   "scripts": {
     "lint": "eslint '*.ts' --quiet --fix",
     "compile": "tsc",
     "test": "jest",
-    "test:unit": "jest --selectProjects unit",
-    "test:integration": "jest --selectProjects integration"
+    "test:sfnLocal": "jest --selectProjects sfnLocal"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.92",

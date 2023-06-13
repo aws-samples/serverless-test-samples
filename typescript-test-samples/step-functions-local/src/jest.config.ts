@@ -4,7 +4,7 @@
  */
 
 export default {
-    projects: ['<rootDir>/jest.integration.config.ts', '<rootDir>/jest.unit.config.ts'],
+    projects: ['<rootDir>/jest.sfnLocal.config.ts'],
     transform: {
         '^.+\\.ts?$': 'esbuild-jest',
     },
@@ -13,5 +13,5 @@ export default {
     coverageDirectory: 'coverage',
     coverageProvider: 'v8',
     silent: true,
-    testMatch: ['**/tests/unit/*.test.ts', '**/tests/integration/*.test.ts'],
+    testMatch: ['**/tests/sfnLocal/*.test.ts'],
 };

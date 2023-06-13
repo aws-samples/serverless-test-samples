@@ -1,6 +1,6 @@
 module.exports = {
     displayName: 'unit',
-    testMatch: ['**/tests/unit/*.test.ts'],
+    testMatch: ['**/tests/sfnLocal/*.test.ts'],
     transform: {
         '^.+\\.ts?$': 'esbuild-jest',
     },
