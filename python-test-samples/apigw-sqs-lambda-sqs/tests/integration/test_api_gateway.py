@@ -31,7 +31,7 @@ class TestApiGateway(TestCase):
     sqs_output_dlq: str
 
     service_level_agreement = 20
-    # number of times to check if there is a message in the quque (can't be 0)
+    # number of times to check if there is a message in the queue (can't be 0)
     interval_num = 5
     # amount of time to wait between each check
     interval_timeout = int(service_level_agreement/interval_num)
