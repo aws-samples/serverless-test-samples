@@ -63,6 +63,8 @@ To use the SAM CLI, you need the following tools.
 * SAM CLI - [Install the SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
 * Python 3.9 - [Install Python 3.9](https://www.python.org/downloads/)
 
+    In case you are using AWS cloud9, currently the default Python version is 3.7. you can check [here](https://repost.aws/questions/QU14iutbqtSsm1gHwQwt02pA/upgrade-to-python-3-9-on-cloud-9) how to update it.
+
 [Top](#contents)
 
 
@@ -104,7 +106,7 @@ apigw-sqs-lambda-sqs$ sam deploy --guided
 
 The [integration test](tests/integration/test_api_gateway.py) setup determines the [API endpoint](tests/integration/test_api_gateway.py#L56).  
 
-The [integration test tear-down](tests/integration/test_api_gateway.py#L79) is not cleaning any data from the queues, it is recomanaded before running any tests to verify (via the console) that the SQS queues are empty, and if not, you can purge the existing messages and perform clean up.
+The [integration test tear-down](tests/integration/test_api_gateway.py#L108) removes any data injected for the tests and purges each queue in case they have messages inside them.
 
 To run the integration test, create the environment variable "AWS_SAM_STACK_NAME" with the name of the test stack, and execute the test.
 
@@ -117,14 +119,27 @@ apigw-sqs-lambda-sqs$ export AWS_SAM_STACK_NAME=<stack-name>
 apigw-sqs-lambda-sqs$ pip install -r tests/requirements.txt 
 apigw-sqs-lambda-sqs$ python -m pytest -s tests/integration -v 
 ```
-in the [test_api_gateway.py](tests/integration/test_api_gateway.py) file you can control the polling mechanism for checking the test result, using:
+in the [test_api_gateway.py](tests/integration/test_api_gateway.py#L33) file you can control the polling mechanism for checking the test results, using:
+```shell
+service_level_agreement = 20 # total time to check is 20 seconds
 
 interval_num = 5  # number of times to check if there is a message in the queue.
+```
 
-interval_timeout = 1 # amoount of time in sec to wait between each check.
+This may be usefell if the testing takes more than the define default time (5 retries every 4 sec= total of 20 sec). if your lambda [process_input_queue.py](src/process_input_queue/process_input_queue.py) is doing processing for more than ~5 seconds, than it is recomanded to adapt this paraemters accordinely.
 
-This may be usefell if the testing takes more than the define default time (5 retries every 1 sec= total of 5 sec). if your lambda [process_input_queue.py](src/process_input_queue/process_input_queue.py) is doing processing for than ~5 seconds, than it is recomanded to adapt this paraemters accordinely.
-*****TBD explain the DLQ and the malford message logic ************
+
+
+
+The [test_api_gateway.py](tests/integration/test_api_gateway.py) is running 3 tests:
+
+[test_api_gateway_200](tests/integration/test_api_gateway.py#L165) - sending a message via API GW, and checking the result in the output queue. If all went ok, then this test should pass successfuly.
+
+[test_api_gateway_404](tests/integration/test_api_gateway.py#L200) - this test is checking the output queue, and in case it is empty, return 404. this can be usefull if the SUT is doing some processing and we want to check in polling mode the result of the execution.
+
+[test_dead_letter_queue](tests/integration/test_api_gateway.py#L212) - sending a malformed message (e.g an error occured during the overall test) via API GW, and checking the result in the DLQ queue. This is showing a case where the SUT generated an error, in our case the lambda throws an execption
+
+
 
 [Top](#contents)
 
