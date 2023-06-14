@@ -5,7 +5,7 @@
 # Python: Amazon Api Gateway, AWS Lambda, Amazon SQS Example
 
 ## Introduction
-This project contains automated test sample code samples for serverless applications written in Python. The project demonstrates several techniques for executing tests in the cloud specifically when interacting with the AWS Lambda service. Based on current tooling, we recommend customers **focus on testing in the cloud** as much as possible. This example is designed to be used in a testing enviroment, not in a production enviroment. 
+This project contains automated test code samples for serverless applications written in Python. The project demonstrates several techniques for executing tests in the cloud specifically when interacting with the AWS Lambda service. Based on current tooling, we recommend customers **focus on testing in the cloud** as much as possible. This example is designed to be used in a testing enviroment, not in a production enviroment. 
 
 The project uses the [AWS Serverless Application Model](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) (SAM) CLI for configuration, testing and deployment. 
 
@@ -19,6 +19,7 @@ The project uses the [AWS Serverless Application Model](https://docs.aws.amazon.
   - [Sample project description](#sample-project-description)
   - [Testing Data Considerations](#testing-data-considerations)
   - [Run the Unit Test](#run-the-unit-test)
+  - [Clean up](#cleanup)
 ---
 
 ## Key Files in the Project
@@ -145,7 +146,7 @@ The [test_api_gateway.py](tests/integration/test_api_gateway.py) is running 3 te
 
 ---
 
-## Cleanup 
+## Clean up 
 
 In order to remove the deployed resource in the cloud, please run:
 ```shell
