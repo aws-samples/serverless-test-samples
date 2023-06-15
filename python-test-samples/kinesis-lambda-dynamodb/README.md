@@ -17,10 +17,21 @@ The project uses the [AWS Serverless Application Model](https://docs.aws.amazon.
 - [Python: Amazon Kinesis, AWS Lambda, Amazon DynamoDB Example](#python-amazon-kinesis-aws-lambda-amazon-dynamodb-example)
   - [Introduction](#introduction)
   - [Contents](#contents)
-  - [About this Pattern](#about-this-pattern)
   - [Key Files in the Project](#key-files-in-the-project)
-  - [Run the Unit Test](#run-the-unit-test)
-  - [Run the Integration Tests](#run-the-integration-tests)
+  - [About this Pattern](#about-this-pattern)
+    - [System Under Test (SUT)](#system-under-test-sut)
+    - [Goal](#goal)
+    - [Description](#description)
+  - [Top](#top)
+  - [About this Example](#about-this-example)
+  - [Top](#top-1)
+  - [Unit Test](#unit-test)
+    - [Unit Test description](#unit-test-description)
+    - [Run the Unit Test](#run-the-unit-test)
+  - [Integration Test](#integration-test)
+    - [Integration Test description](#integration-test-description)
+    - [Run the Integration Tests](#run-the-integration-tests)
+    - [Cleanup](#cleanup)
 ---
 
 ## Key Files in the Project
@@ -102,17 +113,19 @@ When you configure the Lambda ESM for Kinesis you specify a batch size. This bat
 In the [unit test](tests/unit/mock_test.py), all references and calls to the DynamoDB service are mocked using aws-sdk-client-mock client.
 To run the unit tests
 ``` shell
+# Run from the project directory serverless-test-samples/python-test-samples/kinesis-lambda-dynamodb
 # Create and Activate a Python Virtual Environment
 # One-time setup
-kinesis-lambda-dynamodb$ pip3 install virtualenv
-kinesis-lambda-dynamodb$ python3 -m venv venv
-kinesis-lambda-dynamodb$ source ./venv/bin/activate
+
+pip3 install virtualenv
+python3 -m venv venv
+source ./venv/bin/activate
 
 # install dependencies
-kinesis-lambda-dynamodb$ pip3 install -r tests/requirements.txt --use-pep517
+pip3 install -r tests/requirements.txt --use-pep517
 
 # run unit tests with mocks
-kinesis-lambda-dynamodb$ python3 -m pytest -s tests/unit  -v
+python3 -m pytest -s tests/unit  -v
 
 ```
 
@@ -133,8 +146,10 @@ In order to run integration tests in the cloud we will use an event listener pat
 
 For integration tests, deploy the full stack before testing:
 ```shell
-kinesis-lambda-dynamodb$ sam build
-kinesis-lambda-dynamodb$ sam deploy --guided
+# Run from the project directory serverless-test-samples/python-test-samples/kinesis-lambda-dynamodb
+
+sam build
+sam deploy --guided
 ```
 
 The [integration tests](tests/integration/test_kinesis.py) needs to be provided a single environment variable `AWS_SAM_STACK_NAME` - the AWS CloudFormation Stack name of the stack that was deployed using the `sam deploy` command.
@@ -142,10 +157,18 @@ The [integration tests](tests/integration/test_kinesis.py) needs to be provided 
 Set up the environment variables, replacing the `<PLACEHOLDERS>` with your values:
 
 ```shell
+# Run from the project directory serverless-test-samples/python-test-samples/kinesis-lambda-dynamodb
 # Set the environment variables AWS_SAM_STACK_NAME and (optionally)AWS_DEFAULT_REGION 
 # to match the name of the stack and the region where you will test
 
-kinesis-lambda-dynamodb$  AWS_SAM_STACK_NAME=<stack-name> AWS_DEFAULT_REGION=<region_name> python -m pytest -s tests/integration -v
+AWS_SAM_STACK_NAME=<stack-name> AWS_DEFAULT_REGION=<region_name> python -m pytest -s tests/integration -v
+```
+
+### Cleanup
+
+To remove the stack, use the command:
+```shell
+sam delete
 ```
 
 [Top](#contents)

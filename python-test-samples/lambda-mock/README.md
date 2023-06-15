@@ -9,6 +9,9 @@
 
 The project consists of an [Amazon API Gateway](https://aws.amazon.com/api-gateway/), an [AWS Lambda function](https://aws.amazon.com/lambda/), an [Amazon DynamoDB](https://aws.amazon.com/dynamodb/) table, and an [Amazon Simple Storage Service (S3)](https://aws.amazon.com/s3/) bucket. Although this project can be deployed, the focus of the code is to demonstrate local unit testing approaches using Python and mocking. This project demonstrates testing locally an AWS Lambda function handler replacing remote API calls with mocks. The Lambda function has optimizations for cold starts with global initializations, which are accomodated in the unit test. 
 
+See the blog [Unit Testing AWS Lambda with Python and Mock AWS Services](
+https://aws.amazon.com/blogs/devops/unit-testing-aws-lambda-with-python-and-mock-aws-services/) for more details and narrative on this example.
+
 ---
 
 ## Contents
@@ -89,6 +92,7 @@ The project Makefile contains helper commands for working with the project:
 * ```make coverage```: Run unit tests and provide a coverage report
 * ```make deploy```: Deploy the stack to an AWS Account
 * ```make deploy.g```: Deploy the stack to an AWS Account, prompting for stack parameters
+* ```make delete```: Remove the stack from AWS Account.  Note you will need to manually delete all the files in the S3 bucket to fully remove the stack.
 
 [Top](#contents)
 
