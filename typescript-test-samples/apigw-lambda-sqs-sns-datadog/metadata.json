@@ -1,0 +1,36 @@
+{
+  "title": "Typescript: Testing Serverless architectures with Datadog Synthetic Testing and Monitoring",
+  "description": "This example is about testing API Gateway, SNS, SQS, and Lambda with Synthetic API Tests and Monitors. It uses Datadog Synthetic Testing and Monitoring to add logging, metrics, distributed tracing,  and profiling.",
+  "content_language": "English",
+  "language": "TypeScript",
+  "type": ["Integration","Synthetic"],
+  "diagram": "/images/architecture.png",
+  "framework": "CDK",
+  "services": ["lambda","sqs","sns","apigw"],
+  "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
+  "pattern_source": "Datadog",
+  "pattern_detail_tabs": [
+      {
+          "title": "Publisher",
+          "filepath": "/resources/publisher.ts"
+      },
+      {
+          "title": "Worker",
+          "filepath": "/resources/worker.ts"
+      },
+      {
+          "title": "Synthetic Testing",
+          "filepath": "/README.md#synthetic-testing"
+      }
+  ],
+  "authors": [
+      {
+        "name": "AJ Stuyvenberg",
+        "image": "https://avatars.githubusercontent.com/u/1598537?v=4",
+        "bio": "Staff Engineer @DataDog, Serverless Hero",
+        "github": "astuyve",
+        "twitter": "astuyve",
+        "linkedin": "https://www.linkedin.com/in/aaron-stuyvenberg"
+      }
+  ]
+}
