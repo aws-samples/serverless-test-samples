@@ -1,6 +1,6 @@
 {
   "title": "Typescript: Testing Serverless architectures with Datadog Synthetic Testing and Monitoring",
-  "description": "This example is about creating Synthetic Tests and Monitors, to ensure Serverless services are functioning properly in a real, AWS environment. Datadog makes it easy to add logging, metrics, distributed tracing, profiling, and more to Serverless architectures built on AWS.",
+  "description": "This example is about testing API Gateway, SNS, SQS, and Lambda with Synthetic API Tests and Monitors. It uses Datadog Synthetic Testing and Monitoring to add logging, metrics, distributed tracing,  and profiling.",
   "content_language": "English",
   "language": "TypeScript",
   "type": ["Integration","Synthetic"],
@@ -27,7 +27,7 @@
       {
         "name": "AJ Stuyvenberg",
         "image": "https://avatars.githubusercontent.com/u/1598537?v=4",
-        "bio": "Engineering @DataDog, working on Serverless.",
+        "bio": "Staff Engineer @DataDog, Serverless Hero",
         "github": "astuyve",
         "twitter": "astuyve",
         "linkedin": "https://www.linkedin.com/in/aaron-stuyvenberg"
