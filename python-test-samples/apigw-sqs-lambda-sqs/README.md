@@ -24,7 +24,7 @@ The project uses the [AWS Serverless Application Model](https://docs.aws.amazon.
 
 ## Key Files in the Project
   - [process_input_queue.py](/python-test-samples/apigw-sqs-lambda-sqs/src/process-input-queue/process_input_queue.py) - Lambda handler code to read from input SQS queue, do some processing, and enqueue the processing results into the output SQS queue
-  - [check_output_queue.py](src/check_output_queue/check_output_queue.py) - Lambda handler code to read from output SQS queue the result of the processing
+  - [check_output_queue.py](/python-test-samples/apigw-sqs-lambda-sqs/src/check-output-queue/check_output_queue.py) - Lambda handler code to read from output SQS queue the result of the processing
   - [template.yaml](template.yaml) - SAM script for deployment
   - [test_api_gateway.py](tests/integration/test_api_gateway.py) - Integration test written in Python on a live stack deployed on AWS
    
@@ -127,7 +127,7 @@ service_level_agreement = 20 # total time to check is 20 seconds
 interval_num = 5  # number of times to check if there is a message in the queue.
 ```
 
-This may be usefell if the testing takes more than the define default time (5 retries every 4 sec= total of 20 sec). if your lambda [process_input_queue.py](src/process_input_queue/process_input_queue.py) is doing processing for more than ~5 seconds, than it is recomanded to adapt this paraemters accordinely.
+This may be usefell if the testing takes more than the define default time (5 retries every 4 sec= total of 20 sec). if your lambda [process_input_queue.py](src/process-input-queue/process_input_queue.py) is doing processing for more than ~5 seconds, than it is recomanded to adapt this paraemters accordinely.
 
 
 
