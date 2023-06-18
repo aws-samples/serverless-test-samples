@@ -5,7 +5,7 @@
 # Python: Amazon Api Gateway, AWS Lambda, Amazon SQS Example
 
 ## Introduction
-This project contains automated test code samples for serverless applications written in Python. The project demonstrates several techniques for executing tests in the cloud specifically when interacting with the AWS Lambda service. Based on current tooling, we recommend customers **focus on testing in the cloud** as much as possible. This example is designed to be used in a testing enviroment, not in a production enviroment. 
+This project contains automated test code samples for serverless applications written in Python. The project demonstrates several techniques for executing tests in the cloud specifically when interacting with SQS and AWS Lambda services. The main concept here is to be able to run tests from a local machine to a target system on the cloud, while the tests/messages and the thier results are being ingested by 2 SQS queues and 2 lambda functions. The lambda function [process_input_queue.py](/python-test-samples/apigw-sqs-lambda-sqs/src/process-input-queue/process_input_queue.py) (details below) can be extend by the user to do more processing as needed (system under test - SUT). Based on current tooling, we recommend customers **focus on testing in the cloud** as much as possible. This example is designed to be used in a testing enviroment, not in a production enviroment. 
 
 The project uses the [AWS Serverless Application Model](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) (SAM) CLI for configuration, testing and deployment. 
 
