@@ -3,7 +3,7 @@
     "description": "This project contains unit and integration tests for a pattern using API Gateway, AWS Lambda and Amazon SQS.",
     "content_language": "English",
     "language": "Python",
-    "type": ["Unit", "Integration"],
+    "type": ["Integration"],
     "diagram": "/img/architecture.png",
     "framework": "SAM",
     "services": ["apigw", "lambda", "sqs"],
@@ -28,7 +28,7 @@
           "name": "Yossi Chai",
           "image": "https://media.licdn.com/dms/image/C4D03AQETrlEUJKeRlQ/profile-displayphoto-shrink_200_200/0/1516253204174?e=1689811200&v=beta&t=h5rqk3yfURdUF1fJ7Q0GVJoT7qA0sWG7wm00Kox6jNU",
           "bio": "Senior Solutions Architect at AWS",
-          "linkedin": "https://www.linkedin.com/in/danyossi-chai/"
+          "linkedin": "https://www.linkedin.com/in/yossi-chai/"
         },
         {
             "name": "Guy Almog",
