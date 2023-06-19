@@ -75,9 +75,9 @@ The SAM CLI installs dependencies defined in `src/requirements.txt`, creates a d
 Use the following command to deploy your application package to AWS: 
 
 ``` bash
-# deploy your application to the AWS cloud
-apigw-sqs-lambda-sqs$ sam build
-apigw-sqs-lambda-sqs$ sam deploy --guided
+# deploy your application to the AWS cloud from the apigw-sqs-lambda-sqs directory
+sam build
+sam deploy --guided
 ```
 
 After running this command you will receive a series of prompts:
@@ -101,8 +101,9 @@ You can find your API Gateway Endpoint URL in the output values displayed after 
 
 For integration tests, it is assumed the full stack is already deployed before testing. if not, you can use the following commands to deploy (see [Prerequisites](#prerequisites) section):
 ```shell
-apigw-sqs-lambda-sqs$ sam build
-apigw-sqs-lambda-sqs$ sam deploy --guided
+# deploy your application to the AWS cloud from the apigw-sqs-lambda-sqs directory
+sam build
+sam deploy --guided
 ```
 
 The [integration test](tests/integration/test_api_gateway.py) setup determines the [API endpoint](tests/integration/test_api_gateway.py#L56).  
@@ -115,13 +116,14 @@ To run the integration test, create the environment variable "AWS_SAM_STACK_NAME
 # Set the environment variables AWS_SAM_STACK_NAME and (optionally)AWS_DEFAULT_REGION 
 # to match the name of the stack and the region where you will test
 # pip install will check the requirements file and will install needed packages to run the pytest. it is required only once for setting the enviroment
+# deploy your application to the AWS cloud from the apigw-sqs-lambda-sqs directory
 
-apigw-sqs-lambda-sqs$ export AWS_SAM_STACK_NAME=<stack-name>
-apigw-sqs-lambda-sqs$ pip3 install virtualenv
-apigw-sqs-lambda-sqs$ python3 -m venv venv
-apigw-sqs-lambda-sqs$ source venv/bin/activate
-apigw-sqs-lambda-sqs$ pip install -r tests/requirements.txt 
-apigw-sqs-lambda-sqs$ python3 -m pytest -s tests/integration -v 
+export AWS_SAM_STACK_NAME=<stack-name>
+pip3 install virtualenv
+python3 -m venv venv
+source venv/bin/activate
+pip install -r tests/requirements.txt 
+python3 -m pytest -s tests/integration -v 
 ```
 in the [test_api_gateway.py](tests/integration/test_api_gateway.py#L33) file you can control the polling mechanism for checking the test results, using:
 ```shell
@@ -151,8 +153,8 @@ The [test_api_gateway.py](tests/integration/test_api_gateway.py) is running 3 te
 
 ## Clean up 
 
-In order to remove the deployed resource in the cloud, please run:
+In order to remove the deployed resource in the cloud, please run from the apigw-sqs-lambda-sqs directory:
 ```shell
-apigw-sqs-lambda-sqs$ sam delete
+sam delete
 ```
 answer "yes" to the questions and it will delete the sam stack.
