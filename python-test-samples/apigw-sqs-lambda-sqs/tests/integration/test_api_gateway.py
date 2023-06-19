@@ -50,7 +50,7 @@ class TestApiGateway(TestCase):
         return stack_name
 
     @classmethod
-    def setUp(self) -> None:
+    def setUp(cls) -> None:
         """
         Based on the provided env variable AWS_SAM_STACK_NAME,
         We use the cloudformation API to retrieve the APIGW URL
@@ -81,27 +81,27 @@ class TestApiGateway(TestCase):
         sqs_output_dlq = [
             output for output in stack_outputs if output["OutputKey"] == "SQSOutputQueueDLQ"]
 
-        self.api_endpoint = api_outputs[0]["OutputValue"]
-        self.api_endpoint_inbox = self.api_endpoint + "/inbox"
-        self.api_endpoint_outbox = self.api_endpoint + "/outbox"
-        self.sqs_input = sqs_input[0]["OutputValue"]
-        self.sqs_output = sqs_output[0]["OutputValue"]
-        self.sqs_input_dlq = sqs_input_dlq[0]["OutputValue"]
-        self.sqs_output_dlq = sqs_output_dlq[0]["OutputValue"]
+        cls.api_endpoint = api_outputs[0]["OutputValue"]
+        cls.api_endpoint_inbox = cls.api_endpoint + "/inbox"
+        cls.api_endpoint_outbox = cls.api_endpoint + "/outbox"
+        cls.sqs_input = sqs_input[0]["OutputValue"]
+        cls.sqs_output = sqs_output[0]["OutputValue"]
+        cls.sqs_input_dlq = sqs_input_dlq[0]["OutputValue"]
+        cls.sqs_output_dlq = sqs_output_dlq[0]["OutputValue"]
 
-        logging.info("Setup APIGatewayURL: %s", self.api_endpoint)
-        logging.info("Setup APIGatewayURL_Inbox: %s", self.api_endpoint_inbox)
-        logging.info("Setup APIGatewayURL_Outbox: %s", self.api_endpoint_outbox)
-        logging.info("Setup SQSInputQueue: %s", self.sqs_input)
-        logging.info("Setup SQSOutputQueue: %s", self.sqs_output)
-        logging.info("Setup SQSInputQueueDLQ: %s", self.sqs_input_dlq)
-        logging.info("Setup SQSOutputQueueDLQ: %s", self.sqs_output_dlq)
+        logging.info("Setup APIGatewayURL: %s", cls.api_endpoint)
+        logging.info("Setup APIGatewayURL_Inbox: %s", cls.api_endpoint_inbox)
+        logging.info("Setup APIGatewayURL_Outbox: %s", cls.api_endpoint_outbox)
+        logging.info("Setup SQSInputQueue: %s", cls.sqs_input)
+        logging.info("Setup SQSOutputQueue: %s", cls.sqs_output)
+        logging.info("Setup SQSInputQueueDLQ: %s", cls.sqs_input_dlq)
+        logging.info("Setup SQSOutputQueueDLQ: %s", cls.sqs_output_dlq)
 
         # Create a random postfix for the id's to use in the message
         # Using unique id's per unit test will isolate test data
-        self.id_postfix = "_" + str(uuid4())
-        self.message = {
-            "id": "TEST001" + self.id_postfix,
+        cls.id_postfix = "_" + str(uuid4())
+        cls.message = {
+            "id": "TEST001" + cls.id_postfix,
             "message": "This is a test message"
         }
 
