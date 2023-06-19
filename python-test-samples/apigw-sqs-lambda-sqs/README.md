@@ -117,8 +117,11 @@ To run the integration test, create the environment variable "AWS_SAM_STACK_NAME
 # pip install will check the requirements file and will install needed packages to run the pytest. it is required only once for setting the enviroment
 
 apigw-sqs-lambda-sqs$ export AWS_SAM_STACK_NAME=<stack-name>
+apigw-sqs-lambda-sqs$ pip3 install virtualenv
+apigw-sqs-lambda-sqs$ python3 -m venv venv
+apigw-sqs-lambda-sqs$ source venv/bin/activate
 apigw-sqs-lambda-sqs$ pip install -r tests/requirements.txt 
-apigw-sqs-lambda-sqs$ python -m pytest -s tests/integration -v 
+apigw-sqs-lambda-sqs$ python3 -m pytest -s tests/integration -v 
 ```
 in the [test_api_gateway.py](tests/integration/test_api_gateway.py#L33) file you can control the polling mechanism for checking the test results, using:
 ```shell
