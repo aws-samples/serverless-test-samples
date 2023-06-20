@@ -115,14 +115,14 @@ To run the integration test, create the environment variable "AWS_SAM_STACK_NAME
 ```shell
 # Set the environment variables AWS_SAM_STACK_NAME and (optionally)AWS_DEFAULT_REGION 
 # to match the name of the stack and the region where you will test
-# pip install will check the requirements file and will install needed packages to run the pytest. it is required only once for setting the enviroment
+# pip3 install will check the requirements file and will install needed packages to run the pytest. it is required only once for setting the enviroment
 # deploy your application to the AWS cloud from the apigw-sqs-lambda-sqs directory
 
 export AWS_SAM_STACK_NAME=<stack-name>
 pip3 install virtualenv
 python3 -m venv venv
 source venv/bin/activate
-pip install -r tests/requirements.txt 
+pip3 install -r tests/requirements.txt 
 python3 -m pytest -s tests/integration -v 
 ```
 in the [test_api_gateway.py](tests/integration/test_api_gateway.py#L33) file you can control the polling mechanism for checking the test results, using:
