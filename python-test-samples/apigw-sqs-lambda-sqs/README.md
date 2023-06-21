@@ -124,6 +124,8 @@ python3 -m venv venv
 source venv/bin/activate
 pip3 install -r tests/requirements.txt 
 python3 -m pytest -s tests/integration -v 
+
+# For INFO debug log you can run: python -m pytest -s tests/integration --log-cli-level=20
 ```
 in the [test_api_gateway.py](tests/integration/test_api_gateway.py#L33) file you can control the polling mechanism for checking the test results, using:
 ```shell
