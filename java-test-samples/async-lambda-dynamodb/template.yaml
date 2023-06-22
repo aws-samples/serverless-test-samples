@@ -123,3 +123,22 @@ Resources:
                 Rules:
                   - Name: suffix
                     Value: '.txt'
+
+Outputs:
+  SourceBucketName:
+    Description: "Source bucket for asynchronous testing sample"
+    Value: !Ref SourceBucket
+
+  DestinationBucketName:
+    Description: "Destination bucket for asynchronous testing sample"
+    Value: !Ref DestinationBucket
+
+  TransformationHandlerFunctionName:
+    Condition: CreateTestResources
+    Description: "Lambda Function to listen for test results"
+    Value: !Ref TransformationHandlerFunction
+
+  RecordTrasnformationTable:
+    Condition: CreateTestResources
+    Description: "DynamoDB table to persist test results"
+    Value: !Ref RecordTrasnformationTable

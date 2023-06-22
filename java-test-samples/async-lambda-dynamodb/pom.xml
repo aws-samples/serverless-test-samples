@@ -48,10 +48,10 @@
             <artifactId>apache-client</artifactId>
         </dependency>
 
-        <dependency>
+        <!-- <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>url-connection-client</artifactId>
-        </dependency>
+        </dependency> -->
 
         <dependency>
             <groupId>com.amazonaws</groupId>
@@ -67,6 +67,11 @@
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-dynamodb</artifactId>
             <version>${aws.java.sdk.dynamodb.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>cloudformation</artifactId>
         </dependency>
 
         <dependency>
