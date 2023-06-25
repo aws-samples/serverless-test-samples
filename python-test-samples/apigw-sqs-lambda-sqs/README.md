@@ -38,7 +38,7 @@ The sample project allows a user to call an API endpoint (using /inbox) and gene
 
 ![Event Sequence](img/architecture.png)
 
-This project consists of an [API Gateway](https://aws.amazon.com/api-gateway/), two [AWS Lambda](https://aws.amazon.com/lambda) functions, and two [Amazon SQS](https://aws.amazon.com/sqs) standart queues which are using 2 DLQ queues accordinally for error handling.
+This project consists of an [API Gateway](https://aws.amazon.com/api-gateway/), two [AWS Lambda](https://aws.amazon.com/lambda) functions, and two [Amazon SQS](https://aws.amazon.com/sqs) standard queues which are using 2 DLQ queues accordinally for error handling.
 
 The Sequence is (corresponding steps 1-7  on the diagram): 
 
@@ -52,8 +52,6 @@ The Sequence is (corresponding steps 1-7  on the diagram):
 
 
 
-[Top](#contents)
-
 ---
 
 ## Prerequisites
@@ -66,15 +64,13 @@ To use the SAM CLI, you need the following tools.
 
     In case you are using AWS cloud9, currently the default Python version is 3.7. you can check [here](https://repost.aws/questions/QU14iutbqtSsm1gHwQwt02pA/upgrade-to-python-3-9-on-cloud-9) how to update it.
 
-[Top](#contents)
-
 
 ```
 The SAM CLI installs dependencies defined in `src/requirements.txt`, creates a deployment package, and saves it in the `.aws-sam/build` folder. [Read the documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-building.html).
 
 Use the following command to deploy your application package to AWS: 
 
-``` bash
+
 # deploy your application to the AWS cloud from the apigw-sqs-lambda-sqs directory
 sam build
 sam deploy --guided
@@ -86,25 +82,20 @@ After running this command you will receive a series of prompts:
 * **AWS Region**: The AWS region you want to deploy your app to.
 * **Confirm changes before deploy**: If set to yes, SAM CLI shows you any change sets for manual review before deployment. If set to no, the AWS SAM CLI will automatically deploy application changes.
 * **Allow SAM CLI IAM role creation**: Many AWS SAM templates, including this example, create AWS IAM roles required for the AWS Lambda function(s) included to access AWS services. By default, SAM CLI scopes these down to minimum required permissions. To deploy an AWS CloudFormation stack which creates or changes IAM roles, the `CAPABILITY_IAM` value for `capabilities` must be provided. If you don't provide permission through this prompt, you must explicitly pass `--capabilities CAPABILITY_IAM` to the `sam deploy` command.
-* **CheckOutputQueue may not have authorization defined, Is this okay?**:set to yes. since this is for testing only we can proceed without client autoriztion for API GW, but for production enviroment we do recommand to have it.
+* **CheckOutputQueue may not have authorization defined, Is this okay?**: set to "y". since this is for testing only we can proceed without client autoriztion for API GW, but for production enviroment we do recommand to have it.
 
 * **Save arguments to samconfig.toml**: If set to yes, SAM CLI saves your choices to a configuration file inside the project, so that in the future you can just re-run `sam deploy` without parameters to deploy changes to your application.
 
-You can find your API Gateway Endpoint URL in the output values displayed after deployment. Take note of this URL for use in the logging section below. On subsequent deploys you can run `sam deploy` without the `--guided` flag. [Read the documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-deploying.html).
-
-[Top](#contents)
+---
+## API GW Endpoint
+You can find your API Gateway Endpoint URL in the output values displayed after deployment (`"APIGatewayInputEndPoint"`). Take note of this URL for use in the logging section below. On subsequent deploys you can run `sam deploy` without the `--guided` flag. [Read the documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-deploying.html).
 
 ---
 
 ## Run the Integration Test
 [test_api_gateway.py](tests/integration/test_api_gateway.py) 
 
-For integration tests, it is assumed the full stack is already deployed before testing. if not, you can use the following commands to deploy (see [Prerequisites](#prerequisites) section):
-```shell
-# deploy your application to the AWS cloud from the apigw-sqs-lambda-sqs directory
-sam build
-sam deploy --guided
-```
+For the integration tests, it is assumed that the full stack is already deployed before testing. 
 
 The [integration test](tests/integration/test_api_gateway.py) setup determines the [API endpoint](tests/integration/test_api_gateway.py#L56).  
 
