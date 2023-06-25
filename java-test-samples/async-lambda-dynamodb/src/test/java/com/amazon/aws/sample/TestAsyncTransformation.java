@@ -4,18 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
-import com.amazonaws.services.dynamodbv2.document.DeleteItemOutcome;
-import com.amazonaws.services.dynamodbv2.document.DynamoDB;
-import com.amazonaws.services.dynamodbv2.document.Item;
-import com.amazonaws.services.dynamodbv2.document.Table;
 
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -25,6 +19,13 @@ import software.amazon.awssdk.services.cloudformation.model.DescribeStacksReques
 import software.amazon.awssdk.services.cloudformation.model.DescribeStacksResponse;
 import software.amazon.awssdk.services.cloudformation.model.Output;
 import software.amazon.awssdk.services.cloudformation.model.Stack;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.DeleteItemResponse;
+import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
+import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.DeleteObjectResponse;
@@ -38,7 +39,7 @@ public class TestAsyncTransformation {
 
     private static S3Client s3Client;
 
-    private static Table table;
+    private static DynamoDbClient dynamoDbClient;
 
     private static String sourceBucketName = null;
 
@@ -55,10 +56,7 @@ public class TestAsyncTransformation {
                 .httpClient(ApacheHttpClient.create())
                 .build();
 
-        AmazonDynamoDB amazonDynamoDB = AmazonDynamoDBClient.builder().build();
-
-        DynamoDB dynamoDB;
-        dynamoDB = new DynamoDB(amazonDynamoDB);
+        dynamoDbClient = DynamoDbClient.builder().build();
 
         String awsSamStackName = System.getProperty("AWS_SAM_STACK_NAME");
 
@@ -84,14 +82,6 @@ public class TestAsyncTransformation {
         }
         assertNotNull(sourceBucketName, "sourceBucketName may not be null");
         assertNotNull(destinationBucketName, "destinationBucketName may not be null");
-
-        if (recordTrasnformationTable != null) {
-            table = dynamoDB.getTable(recordTrasnformationTable);
-        }
-    }
-
-    @AfterAll
-    public static void runAfterAll() {
     }
 
     @Test
@@ -130,8 +120,14 @@ public class TestAsyncTransformation {
         assertNotNull(deleteObjectResponse, "deleteObjectResponse must not be null");
 
         if (recordTrasnformationTable != null) {
-            DeleteItemOutcome deleteItemOutcome = table.deleteItem("id", key);
-            assertNotNull(deleteItemOutcome, "deleteItemOutcome may not be null");
+            Map<String, AttributeValue> attributeValues = new HashMap<>();
+            attributeValues.put("id", AttributeValue.builder().s(key).build());
+
+            DeleteItemRequest deleteItemRequest = DeleteItemRequest.builder().tableName(recordTrasnformationTable)
+                    .key(attributeValues).build();
+
+            DeleteItemResponse deleteItemResponse = dynamoDbClient.deleteItem(deleteItemRequest);
+            assertNotNull(deleteItemResponse, "deleteItemResponse may not be null");
         }
     }
 
@@ -152,15 +148,17 @@ public class TestAsyncTransformation {
             GetObjectRequest getObjectRequest = GetObjectRequest.builder().bucket(bucket)
                     .key(key).build();
 
-            try {
-                ResponseBytes<GetObjectResponse> responseBytes = s3Client.getObjectAsBytes(getObjectRequest);
+            ResponseBytes<GetObjectResponse> responseBytes;
 
-                content = responseBytes.asUtf8String();
+            try {
+                responseBytes = s3Client.getObjectAsBytes(getObjectRequest);
             } catch (NoSuchKeyException noSuchKeyException) {
                 continue;
             } catch (Exception exception) {
                 break;
             }
+
+            content = responseBytes.asUtf8String();
         }
 
         return content;
@@ -180,12 +178,31 @@ public class TestAsyncTransformation {
 
             numberOfRetries++;
 
-            Item item = table.getItem("id", key, "content", null);
-            if (item == null) {
+            Map<String, AttributeValue> keyAttributeValues = new HashMap<>();
+            keyAttributeValues.put("id", AttributeValue.builder().s(key).build());
+
+            GetItemRequest getItemRequest = GetItemRequest.builder().tableName(recordTrasnformationTable)
+                    .key(keyAttributeValues).build();
+
+            GetItemResponse getItemResponse;
+
+            try {
+                getItemResponse = dynamoDbClient.getItem(getItemRequest);
+            } catch (DynamoDbException dynamoDbException) {
+                break;
+            }
+
+            if (!getItemResponse.hasItem()) {
                 continue;
             }
 
-            content = (String) item.get("content");
+            Map<String, AttributeValue> itemAttributeValues = getItemResponse.item();
+
+            if (itemAttributeValues.isEmpty()) {
+                continue;
+            }
+
+            content = itemAttributeValues.get("content").s();
         }
 
         return content;

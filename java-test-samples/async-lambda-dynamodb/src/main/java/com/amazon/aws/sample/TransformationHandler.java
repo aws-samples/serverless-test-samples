@@ -3,9 +3,6 @@ package com.amazon.aws.sample;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -19,6 +16,9 @@ import com.google.gson.GsonBuilder;
 
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.http.apache.ApacheHttpClient;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
@@ -27,7 +27,7 @@ public class TransformationHandler implements RequestHandler<S3Event, Map<String
 
     private static S3Client s3Client;
 
-    private static AmazonDynamoDB amazonDynamoDB;
+    private static DynamoDbClient dynamoDbClient;
 
     private static Gson gson;
 
@@ -38,7 +38,7 @@ public class TransformationHandler implements RequestHandler<S3Event, Map<String
                 .httpClient(ApacheHttpClient.create())
                 .build();
 
-        amazonDynamoDB = AmazonDynamoDBClient.builder().build();
+        dynamoDbClient = DynamoDbClient.builder().build();
 
         gson = new GsonBuilder().setPrettyPrinting().create();
 
@@ -84,10 +84,12 @@ public class TransformationHandler implements RequestHandler<S3Event, Map<String
             lambdaLogger.log(content);
 
             Map<String, AttributeValue> attributeValues = new HashMap<>();
-            attributeValues.put("id", new AttributeValue(s3ObjectEntity.getKey()));
-            attributeValues.put("content", new AttributeValue(content));
+            attributeValues.put("id", AttributeValue.builder().s(s3ObjectEntity.getKey()).build());
+            attributeValues.put("content", AttributeValue.builder().s(content).build());
 
-            amazonDynamoDB.putItem(recordTransformationTableName, attributeValues);
+            PutItemRequest putItemRequest = PutItemRequest.builder().tableName(recordTransformationTableName)
+                    .item(attributeValues).build();
+            dynamoDbClient.putItem(putItemRequest);
         }
 
         response.put("success", true);
