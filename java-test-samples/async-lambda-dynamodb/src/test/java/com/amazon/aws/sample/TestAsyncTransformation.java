@@ -10,6 +10,7 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -35,6 +36,7 @@ import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
+@EnabledIfEnvironmentVariable(named = "AWS_SAM_STACK_NAME", matches = ".*")
 public class TestAsyncTransformation {
 
     private static S3Client s3Client;
@@ -58,7 +60,7 @@ public class TestAsyncTransformation {
 
         dynamoDbClient = DynamoDbClient.builder().build();
 
-        String awsSamStackName = System.getProperty("AWS_SAM_STACK_NAME");
+        String awsSamStackName = System.getenv("AWS_SAM_STACK_NAME");
 
         DescribeStacksRequest describeStacksRequest = DescribeStacksRequest.builder().stackName(awsSamStackName)
                 .build();
