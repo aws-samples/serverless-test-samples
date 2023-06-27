@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@types/aws-lambda": "^8.10.114",
-    "aws-cdk-lib": "2.76.0",
+    "aws-cdk-lib": "2.80.0",
     "axios": "^1.4.0",
     "constructs": "^10.0.0",
     "datadog-cdk-constructs-v2": "^1.6.1",
