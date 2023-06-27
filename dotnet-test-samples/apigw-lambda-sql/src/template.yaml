@@ -1,0 +1,148 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  SAM Template for apigw-lambda-sql
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Parameters:
+  DBSqlConnectionStringSecretName:
+    Description: SQL Connection String
+    Type: String
+    Default: DBSqlConnectionString
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 1024
+    Architectures:
+      - arm64
+#    Layers:
+#      - arn:aws:lambda:us-west-2:345057560386:layer:AWS-Parameters-and-Secrets-Lambda-Extension-Arm64:4
+    Runtime: dotnet6
+    Tracing: Active
+    Environment:
+      Variables:
+        POWERTOOLS_LOG_LEVEL: Information
+        POWERTOOLS_LOGGER_LOG_EVENT: true
+        POWERTOOLS_LOGGER_CASE: PascalCase # Allowed values are: CamelCase, PascalCase and SnakeCase
+        POWERTOOLS_LOGGER_SAMPLE_RATE: 0
+        POWERTOOLS_METRICS_NAMESPACE: ExampleApi
+        SQL_CONNECTION_STRING_SECRET_NAME: !Ref DBSqlConnectionStringSecretName
+
+Resources:
+  #################################################################################
+  # Secrets
+  #################################################################################
+  DBSqlConnectionStringSecret:
+    Type: "AWS::SecretsManager::Secret"
+    Properties:
+      Name: !Ref DBSqlConnectionStringSecretName
+      Description: "SQL Connection String"
+  
+  #################################################################################
+  # API Gateway - Secure APIs at scale with CloudWatch Access Logs
+  #################################################################################
+  
+  # IAM Role with 'AmazonAPIGatewayPushToCloudWatchLogs' managed policy
+  CloudWatchRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          Action: 'sts:AssumeRole'
+          Effect: Allow
+          Principal:
+            Service: apigateway.amazonaws.com
+      Path: /
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs'
+  
+  # Specifies the IAM role that API Gateway uses to write API logs to Amazon CloudWatch Logs
+  ApiCWLRoleArn:
+    Type: AWS::ApiGateway::Account
+    Properties:
+      CloudWatchRoleArn: !GetAtt CloudWatchRole.Arn
+  
+  # REST API
+  ApiGatewayApi:
+    Type: AWS::Serverless::Api
+    DependsOn: ApiCWLRoleArn
+    Properties:
+      Name: !Sub ${AWS::StackName}-api
+      TracingEnabled: true
+      StageName: Dev
+      AccessLogSetting:
+        DestinationArn: !Sub ${ApiAccessLogGroup.Arn}
+        Format: "{ 'requestId':'$context.requestId', 'ip': '$context.identity.sourceIp', 'caller':'$context.identity.caller', 'user':'$context.identity.user','requestTime':'$context.requestTime', 'xrayTraceId':'$context.xrayTraceId', 'wafResponseCode':'$context.wafResponseCode', 'httpMethod':'$context.httpMethod','resourcePath':'$context.resourcePath', 'status':'$context.status','protocol':'$context.protocol', 'responseLength':'$context.responseLength' }"
+      MethodSettings:
+        - MetricsEnabled: True
+          ResourcePath: '/*'
+          HttpMethod: '*'
+      Cors:
+        AllowMethods: "'GET, POST, PUT, OPTIONS'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: "'*'"
+        MaxAge: "'500'"
+
+  # CloudWatch access log group
+  ApiAccessLogGroup:
+    Type: AWS::Logs::LogGroup
+    DependsOn: ApiGatewayApi
+    Properties:
+      LogGroupName: !Sub /aws/apigateway/${ApiGatewayApi}
+      RetentionInDays: 1
+
+  #################################################################################
+  # Lambda Functions
+  #################################################################################
+  GetEmployeeFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: ./ExampleApi/
+      Handler: ExampleApi::ExampleApi.Functions.GetEmployee::Handler
+      Environment:
+        Variables:
+          POWERTOOLS_SERVICE_NAME: !Sub ${AWS::StackName}-get-employee-function
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGatewayApi
+            Path: /employee/
+            Method: GET
+      Tags:
+        ApplicationName: ExampleApp 
+        Environment: Dev
+      Policies:
+        - AWSSecretsManagerGetSecretValuePolicy:
+            SecretArn: !Ref DBSqlConnectionStringSecret
+  
+  PutEmployeeFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: ./ExampleApi/
+      Handler: ExampleApi::ExampleApi.Functions.PutEmployee::Handler
+      Environment:
+        Variables:
+          POWERTOOLS_SERVICE_NAME: !Sub ${AWS::StackName}-put-employee-function
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGatewayApi
+            Path: /employee/
+            Method: PUT
+      Tags:
+        ApplicationName: ExampleApp
+        Environment: Dev
+      Policies:
+        - AWSSecretsManagerGetSecretValuePolicy:
+            SecretArn: !Ref DBSqlConnectionStringSecret
+
+#################################################################################
+# Outputs
+#################################################################################
+Outputs:
+  ApiUrl:
+    Description: "API Gateway endpoint URL"
+    Value: !Sub "https://${ApiGatewayApi}.execute-api.${AWS::Region}.amazonaws.com/Dev/"

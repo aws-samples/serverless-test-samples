@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <PackageId>ExampleApi.Repositories</PackageId>
+        <Authors>ExampleApi.Repositories</Authors>
+        <Company>ExampleApi.Repositories</Company>
+        <Product>ExampleApi.Repositories</Product>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.103.3" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.1" />
+        <PackageReference Include="Dapper" Version="2.0.123" />
+        <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
+        <PackageReference Include="AWSSDK.SecretsManager" Version="3.7.102.45" />
+        <PackageReference Include="AWS.Lambda.Powertools.Tracing" Version="1.1.0" />
+    </ItemGroup>
+
+</Project>

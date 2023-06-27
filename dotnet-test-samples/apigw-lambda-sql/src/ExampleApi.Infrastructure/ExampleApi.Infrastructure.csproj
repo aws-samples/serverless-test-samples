@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <PackageId>ExampleApi.Infrastructure</PackageId>
+        <Authors>ExampleApi.Infrastructure</Authors>
+        <Company>ExampleApi.Infrastructure</Company>
+        <Product>ExampleApi.Infrastructure</Product>
+    </PropertyGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="AWS.Lambda.Powertools.Logging" Version="1.1.0" />
+        <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.103.3" />
+        <PackageReference Include="Amazon.Lambda.Core" Version="2.1.0" />
+        <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.3.1" />
+        <PackageReference Include="AWSXRayRecorder.Handlers.AwsSdk" Version="2.12.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="7.0.0" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\ExampleApi.Repositories\ExampleApi.Repositories.csproj" />
+    </ItemGroup>
+
+</Project>
