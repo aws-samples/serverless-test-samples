@@ -11,26 +11,26 @@
     "cdk": "cdk"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.114",
+    "@types/aws-lambda": "^8.10.119",
     "@types/jest": "^27.5.2",
     "@types/node": "10.17.27",
     "@types/prettier": "2.6.0",
-    "@types/uuid": "^9.0.1",
+    "@types/uuid": "^9.0.2",
     "aws-cdk": "2.47.0",
-    "aws-sdk-client-mock": "^2.0.1",
-    "esbuild": "^0.17.18",
+    "aws-sdk-client-mock": "^2.2.0",
+    "esbuild": "^0.17.19",
     "jest": "^27.5.1",
-    "ts-jest": "^27.1.4",
+    "ts-jest": "^27.1.5",
     "ts-node": "^10.9.1",
-    "typescript": "^4.9.3"
+    "typescript": "^4.9.5"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.351.0",
-    "@aws-sdk/lib-dynamodb": "^3.44.0",
-    "aws-cdk-lib": "^2.80.0",
+    "@aws-sdk/client-dynamodb": "^3.360.0",
+    "@aws-sdk/lib-dynamodb": "^3.360.0",
+    "aws-cdk-lib": "^2.85.0",
     "aws-lambda": "^1.0.7",
-    "constructs": "^10.0.0",
-    "moment": "^2.29.1",
+    "constructs": "^10.2.61",
+    "moment": "^2.29.4",
     "source-map-support": "^0.5.21"
   }
 }
