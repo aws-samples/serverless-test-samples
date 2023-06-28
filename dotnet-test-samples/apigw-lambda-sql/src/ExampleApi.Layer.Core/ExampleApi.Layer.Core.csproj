@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+        <Company>ExampleApi.Layer.Core</Company>
+        <Company>Amazon Web Services Inc.</Company>
+        <Product>ExampleApp</Product>
+        <Authors>Leslie Daniel Raj</Authors>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Amazon.Lambda.APIGatewayEvents" Version="2.6.0" />
+        <PackageReference Include="Amazon.Lambda.Core" Version="2.1.0" />
+        <PackageReference Include="Amazon.Lambda.KinesisEvents" Version="2.0.0" />
+        <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.3.1" />
+        <PackageReference Include="AWS.Lambda.Powertools.Logging" Version="1.1.1" />
+        <PackageReference Include="AWS.Lambda.Powertools.Metrics" Version="1.3.1" />
+        <PackageReference Include="AWS.Lambda.Powertools.Tracing" Version="1.1.1" />
+        <PackageReference Include="AWSSDK.SecretsManager" Version="3.7.102.59" />
+    </ItemGroup>
+</Project>

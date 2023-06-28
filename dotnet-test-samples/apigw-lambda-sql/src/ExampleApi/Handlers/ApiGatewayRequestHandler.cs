@@ -102,7 +102,7 @@ public abstract class ApiGatewayRequestHandler<TInput, TOutput>
     /// </summary>
     /// <param name="parameters"></param>
     /// <returns>Deserialized TInput object</returns>
-    private TInput DeserializeParameters(IDictionary<string, string> parameters)
+    private static TInput DeserializeParameters(IDictionary<string, string> parameters)
     {
         var json = JsonSerializer.Serialize(parameters);
         return JsonSerializer.Deserialize<TInput>(json);
@@ -122,8 +122,8 @@ public abstract class ApiGatewayRequestHandler<TInput, TOutput>
             {
                 { "Content-Type", "application/json" },
                 {
-                    "Access-Control-Allow-Origin", request.Headers.ContainsKey("origin") 
-                        ? request.Headers["origin"] 
+                    "Access-Control-Allow-Origin", request.Headers.ContainsKey("origin")
+                        ? request.Headers["origin"]
                         : "*"
                 },
                 { "Access-Control-Allow-Credentials", "true" }

@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 using Amazon.Lambda.Core;
 using AWS.Lambda.Powertools.Logging;
 using AWS.Lambda.Powertools.Tracing;
+using ExampleApi.Handlers;
 using Microsoft.Extensions.DependencyInjection;
 using ExampleApi.Infrastructure;
 using ExampleApi.Infrastructure.Models;
-using ExampleApi.Handlers;
 using ExampleApi.Models;
 using ExampleApi.Repositories.Sql;
 

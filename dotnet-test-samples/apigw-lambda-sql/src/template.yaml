@@ -93,6 +93,40 @@ Resources:
       RetentionInDays: 1
 
   #################################################################################
+  # Lambda Function Layers
+  #################################################################################
+  LambdaLayerCore:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: !Sub ${AWS::StackName}-lambda-layer-core
+      Description: Core layer for lambda functions
+      ContentUri: ./ExampleApi.Layer.Core
+      CompatibleRuntimes:
+        - dotnet6
+    Metadata:
+      BuildMethod: dotnet6 # Required to have AWS SAM build this layer
+  LambdaLayerRepositories:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: !Sub ${AWS::StackName}-lambda-layer-repositories
+      Description: Repository layer for lambda functions
+      ContentUri: ./ExampleApi.Repositories
+      CompatibleRuntimes:
+        - dotnet6
+    Metadata:
+      BuildMethod: dotnet6 # Required to have AWS SAM build this layer
+  LambdaLayerInfrastructure:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: !Sub ${AWS::StackName}-lambda-layer-infrastructure
+      Description: Infrastructure layer for lambda functions
+      ContentUri: ./ExampleApi.Infrastructure
+      CompatibleRuntimes:
+        - dotnet6
+    Metadata:
+      BuildMethod: dotnet6 # Required to have AWS SAM build this layer
+
+  #################################################################################
   # Lambda Functions
   #################################################################################
   GetEmployeeFunction:
@@ -100,6 +134,10 @@ Resources:
     Properties:
       CodeUri: ./ExampleApi/
       Handler: ExampleApi::ExampleApi.Functions.GetEmployee::Handler
+      Layers:
+        - !Ref LambdaLayerCore
+        - !Ref LambdaLayerRepositories
+        - !Ref LambdaLayerInfrastructure
       Environment:
         Variables:
           POWERTOOLS_SERVICE_NAME: !Sub ${AWS::StackName}-get-employee-function
@@ -122,6 +160,10 @@ Resources:
     Properties:
       CodeUri: ./ExampleApi/
       Handler: ExampleApi::ExampleApi.Functions.PutEmployee::Handler
+      Layers:
+        - !Ref LambdaLayerCore
+        - !Ref LambdaLayerRepositories
+        - !Ref LambdaLayerInfrastructure
       Environment:
         Variables:
           POWERTOOLS_SERVICE_NAME: !Sub ${AWS::StackName}-put-employee-function
