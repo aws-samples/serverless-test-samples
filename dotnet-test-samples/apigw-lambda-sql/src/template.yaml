@@ -129,6 +129,32 @@ Resources:
   #################################################################################
   # Lambda Functions
   #################################################################################
+  GetHealthFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: ./ExampleApi/
+      Handler: ExampleApi::ExampleApi.Functions.GetHealth::Handler
+      Layers:
+        - !Ref LambdaLayerCore
+        - !Ref LambdaLayerRepositories
+        - !Ref LambdaLayerInfrastructure
+      Environment:
+        Variables:
+          POWERTOOLS_SERVICE_NAME: !Sub ${AWS::StackName}-get-health-function
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGatewayApi
+            Path: /health/
+            Method: GET
+      Tags:
+        ApplicationName: ExampleApp
+        Environment: Dev
+      Policies:
+        - AWSSecretsManagerGetSecretValuePolicy:
+            SecretArn: !Ref DBSqlConnectionStringSecret
+  
   GetEmployeeFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:

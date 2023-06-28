@@ -79,6 +79,7 @@ public abstract class ApiGatewayRequestHandler<TInput, TOutput>
 
             var input = RequestType switch
             {
+                RequestType.None => default,
                 RequestType.Querystring => DeserializeParameters(request.QueryStringParameters),
                 RequestType.Path => DeserializeParameters(request.PathParameters),
                 RequestType.Body => JsonSerializer.Deserialize<TInput>(request.Body),
