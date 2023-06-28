@@ -47,7 +47,7 @@ public class TestAsyncTransformation {
 
     private static String destinationBucketName = null;
 
-    private static String recordTrasnformationTable = null;
+    private static String recordTransformationTable = null;
 
     private static final String MESSAGE = "this message was created during an integration test";
     private static final String MESSAGE_TO_UPPER_CASE = MESSAGE.toUpperCase();
@@ -77,8 +77,8 @@ public class TestAsyncTransformation {
                     sourceBucketName = output.outputValue();
                 } else if ("DestinationBucketName".equals(output.outputKey())) {
                     destinationBucketName = output.outputValue();
-                } else if ("RecordTrasnformationTable".equals(output.outputKey())) {
-                    recordTrasnformationTable = output.outputValue();
+                } else if ("RecordTransformationTable".equals(output.outputKey())) {
+                    recordTransformationTable = output.outputValue();
                 }
             }
         }
@@ -101,8 +101,8 @@ public class TestAsyncTransformation {
                 String.format("contentFromDestinationBucketName must be %s instead of %s", MESSAGE_TO_UPPER_CASE,
                         contentFromDestinationBucketName));
 
-        if (recordTrasnformationTable != null) {
-            String contentFromRecordTransformationTable = getContentFromDynamoDB(recordTrasnformationTable, key);
+        if (recordTransformationTable != null) {
+            String contentFromRecordTransformationTable = getContentFromDynamoDB(recordTransformationTable, key);
             assertEquals(MESSAGE_TO_UPPER_CASE, contentFromRecordTransformationTable,
                     String.format("contentFromRecordTransformationTable must be %s instead of %s",
                             MESSAGE_TO_UPPER_CASE, contentFromRecordTransformationTable));
@@ -121,11 +121,11 @@ public class TestAsyncTransformation {
         deleteObjectResponse = s3Client.deleteObject(deleteObjectRequest);
         assertNotNull(deleteObjectResponse, "deleteObjectResponse must not be null");
 
-        if (recordTrasnformationTable != null) {
+        if (recordTransformationTable != null) {
             Map<String, AttributeValue> attributeValues = new HashMap<>();
             attributeValues.put("id", AttributeValue.builder().s(key).build());
 
-            DeleteItemRequest deleteItemRequest = DeleteItemRequest.builder().tableName(recordTrasnformationTable)
+            DeleteItemRequest deleteItemRequest = DeleteItemRequest.builder().tableName(recordTransformationTable)
                     .key(attributeValues).build();
 
             DeleteItemResponse deleteItemResponse = dynamoDbClient.deleteItem(deleteItemRequest);
@@ -183,7 +183,7 @@ public class TestAsyncTransformation {
             Map<String, AttributeValue> keyAttributeValues = new HashMap<>();
             keyAttributeValues.put("id", AttributeValue.builder().s(key).build());
 
-            GetItemRequest getItemRequest = GetItemRequest.builder().tableName(recordTrasnformationTable)
+            GetItemRequest getItemRequest = GetItemRequest.builder().tableName(recordTransformationTable)
                     .key(keyAttributeValues).build();
 
             GetItemResponse getItemResponse;

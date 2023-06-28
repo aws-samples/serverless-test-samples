@@ -47,7 +47,7 @@ Resources:
         IgnorePublicAcls: true
         RestrictPublicBuckets: true
 
-  RecordTrasnformationTable:
+  RecordTransformationTable:
     Type: AWS::DynamoDB::Table
     Condition: CreateTestResources
     Properties:
@@ -109,7 +109,7 @@ Resources:
             BucketName: 
               !Sub "async-lambda-dynamodb-destination-${AWS::AccountId}"
         - DynamoDBWritePolicy:
-            TableName: !Ref RecordTrasnformationTable
+            TableName: !Ref RecordTransformationTable
       Events:
         FileUpload:
           Type: S3
@@ -136,7 +136,7 @@ Outputs:
     Description: "Lambda Function to listen for test results"
     Value: !Ref TransformationHandlerFunction
 
-  RecordTrasnformationTable:
+  RecordTransformationTable:
     Condition: CreateTestResources
     Description: "DynamoDB table to persist test results"
-    Value: !Ref RecordTrasnformationTable
+    Value: !Ref RecordTransformationTable
