@@ -87,6 +87,9 @@ public class TransformationHandler implements RequestHandler<S3Event, Map<String
             attributeValues.put("id", AttributeValue.builder().s(s3ObjectEntity.getKey()).build());
             attributeValues.put("content", AttributeValue.builder().s(content).build());
 
+            String timeToLive = Long.toString((System.currentTimeMillis() / 1000l) + (5 * 60));
+            attributeValues.put("time_to_live", AttributeValue.builder().s(timeToLive).build());
+
             PutItemRequest putItemRequest = PutItemRequest.builder().tableName(recordTransformationTableName)
                     .item(attributeValues).build();
             dynamoDbClient.putItem(putItemRequest);

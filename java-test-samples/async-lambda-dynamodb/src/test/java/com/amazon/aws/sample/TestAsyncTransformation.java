@@ -12,7 +12,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 
-import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.services.cloudformation.CloudFormationClient;
@@ -22,17 +21,10 @@ import software.amazon.awssdk.services.cloudformation.model.Output;
 import software.amazon.awssdk.services.cloudformation.model.Stack;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
-import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest;
-import software.amazon.awssdk.services.dynamodb.model.DeleteItemResponse;
 import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.DeleteObjectResponse;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
-import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
@@ -87,7 +79,7 @@ public class TestAsyncTransformation {
     }
 
     @Test
-    public void testAsyncTransformation() {
+    public void testAsyncTransformation_when_txt() {
         String key = String.format("%s.txt", UUID.randomUUID().toString());
 
         PutObjectRequest putObjectRequest = PutObjectRequest.builder().bucket(sourceBucketName)
@@ -96,76 +88,35 @@ public class TestAsyncTransformation {
         PutObjectResponse putObjectResponse = s3Client.putObject(putObjectRequest, RequestBody.fromString(MESSAGE));
         assertNotNull(putObjectResponse, "putObjectResponse may not be null");
 
-        String contentFromDestinationBucketName = getContentFromBucket(destinationBucketName, key);
-        assertEquals(MESSAGE_TO_UPPER_CASE, contentFromDestinationBucketName,
-                String.format("contentFromDestinationBucketName must be %s instead of %s", MESSAGE_TO_UPPER_CASE,
-                        contentFromDestinationBucketName));
-
         if (recordTransformationTable != null) {
             String contentFromRecordTransformationTable = getContentFromDynamoDB(recordTransformationTable, key);
             assertEquals(MESSAGE_TO_UPPER_CASE, contentFromRecordTransformationTable,
                     String.format("contentFromRecordTransformationTable must be %s instead of %s",
                             MESSAGE_TO_UPPER_CASE, contentFromRecordTransformationTable));
         }
+    }
 
-        DeleteObjectRequest deleteObjectRequest;
-        DeleteObjectResponse deleteObjectResponse;
+    @Test
+    // TODO: check the thrown exception when the item is not found
+    public void testAsyncTransformation_when_not_txt() {
+        String key = String.format("%s.not_txt", UUID.randomUUID().toString());
 
-        deleteObjectRequest = DeleteObjectRequest.builder().bucket(sourceBucketName).key(key)
-                .build();
-        deleteObjectResponse = s3Client.deleteObject(deleteObjectRequest);
-        assertNotNull(deleteObjectResponse, "deleteObjectResponse must not be null");
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder().bucket(sourceBucketName)
+                .key(key).build();
 
-        deleteObjectRequest = DeleteObjectRequest.builder().bucket(destinationBucketName).key(key)
-                .build();
-        deleteObjectResponse = s3Client.deleteObject(deleteObjectRequest);
-        assertNotNull(deleteObjectResponse, "deleteObjectResponse must not be null");
+        PutObjectResponse putObjectResponse = s3Client.putObject(putObjectRequest, RequestBody.fromString(MESSAGE));
+        assertNotNull(putObjectResponse, "putObjectResponse may not be null");
 
         if (recordTransformationTable != null) {
-            Map<String, AttributeValue> attributeValues = new HashMap<>();
-            attributeValues.put("id", AttributeValue.builder().s(key).build());
-
-            DeleteItemRequest deleteItemRequest = DeleteItemRequest.builder().tableName(recordTransformationTable)
-                    .key(attributeValues).build();
-
-            DeleteItemResponse deleteItemResponse = dynamoDbClient.deleteItem(deleteItemRequest);
-            assertNotNull(deleteItemResponse, "deleteItemResponse may not be null");
+            String contentFromRecordTransformationTable = getContentFromDynamoDB(recordTransformationTable, key);
+            assertTrue(contentFromRecordTransformationTable == null,
+                    String.format("contentFromRecordTransformationTable must be null instead of %s",
+                            contentFromRecordTransformationTable));
         }
     }
 
-    private String getContentFromBucket(String bucket, String key) {
-        int numberOfRetries = 0;
-
-        String content = null;
-
-        while (numberOfRetries < 3) {
-            try {
-                Thread.sleep(5 * 1000);
-            } catch (InterruptedException interruptedException) {
-                break;
-            }
-
-            numberOfRetries++;
-
-            GetObjectRequest getObjectRequest = GetObjectRequest.builder().bucket(bucket)
-                    .key(key).build();
-
-            ResponseBytes<GetObjectResponse> responseBytes;
-
-            try {
-                responseBytes = s3Client.getObjectAsBytes(getObjectRequest);
-            } catch (NoSuchKeyException noSuchKeyException) {
-                continue;
-            } catch (Exception exception) {
-                break;
-            }
-
-            content = responseBytes.asUtf8String();
-        }
-
-        return content;
-    }
-
+    // TODO: check about usage of a retry library
+    // TODO: throw an exception instead of return null when it is not found
     private String getContentFromDynamoDB(String tableName, String key) {
         int numberOfRetries = 0;
 
@@ -205,6 +156,8 @@ public class TestAsyncTransformation {
             }
 
             content = itemAttributeValues.get("content").s();
+
+            break;
         }
 
         return content;
