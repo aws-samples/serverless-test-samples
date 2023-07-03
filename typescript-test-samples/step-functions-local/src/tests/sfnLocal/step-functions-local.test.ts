@@ -22,7 +22,7 @@ import {
 import { StepFunctionsConstants } from './step-functions-constants';
 
 // Modify if default timeout isn't enough
-// jest.setTimeout(10000);
+jest.setTimeout(20000);
 
 /**
  * Unit Tests
@@ -59,7 +59,7 @@ describe('lead-generation', () => {
                 endpoint: `http://${container.getHost()}:${container.getMappedPort(8083)}`
             });                
 
-            // Important to avoid non-deterministic behavior
+            // Important to avoid non-deterministic behavior, waiting for container to spin up
             await sleep(2);         
 
             // Create state machine
@@ -106,6 +106,8 @@ describe('lead-generation', () => {
             const historyResponse = await sfnClient.send(new GetExecutionHistoryCommand({
                 executionArn: executionResponse.executionArn
             }));
+
+            expect(historyResponse).toBeDefined();
 
             const results = historyResponse.events?.filter((event) => {
                 return ((event.type == "TaskStateExited") && (event.stateExitedEventDetails?.name == "CustomerAddedToFollowup"))
