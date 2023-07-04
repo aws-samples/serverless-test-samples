@@ -23,6 +23,7 @@
         <aws.lambda.java.events.version>3.11.2</aws.lambda.java.events.version>
 
         <junit5.version>5.8.1</junit5.version>
+        <resilience4j-retry.version>2.0.2</resilience4j-retry.version>
     </properties>
 
     <dependencyManagement>
@@ -84,6 +85,12 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>${junit5.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.github.resilience4j</groupId>
+            <artifactId>resilience4j-retry</artifactId>
+            <version>${resilience4j-retry.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
