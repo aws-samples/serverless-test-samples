@@ -38,13 +38,13 @@ The sample project allows a user to call an API endpoint (using /inbox) and gene
 
 ![Event Sequence](img/architecture.png)
 
-This project consists of an [API Gateway](https://aws.amazon.com/api-gateway/), two [AWS Lambda](https://aws.amazon.com/lambda) functions, and two [Amazon SQS](https://aws.amazon.com/sqs) standard queues which are using 2 DLQ queues accordinally for error handling.
+This project consists of an [API Gateway](https://aws.amazon.com/api-gateway/), two [AWS Lambda](https://aws.amazon.com/lambda) functions, and two [Amazon SQS](https://aws.amazon.com/sqs) standard queues which are using 2 DLQ queues accordingly for error handling.
 
 The Sequence is (corresponding steps 1-7  on the diagram): 
 
-1. User is using the test client to invoke an API call (POST /inbox) to send a message/job/test to be later on processed in the backend by the ProcessInputQueue lambda function.
+1. User is using the test client to invoke an API call (POST /inbox) to send a message/job/test to be processed later on in the backend by the ProcessInputQueue lambda function.
 2. API GW is sending the message payload into the InputQueue.
-3. InputQueue is triggering the ProcessInputQueue lambda function to process the message/job/test in the queue. this is where the lambda can be enhanced to do further processing/testing as needed by you. It's up to the user of this sample to decide what this lambda shuold eventualy do, as it can be extended and adapted to the testing needs. 
+3. InputQueue is triggering the ProcessInputQueue lambda function to process the message/job/test in the queue. This is where the lambda can be enhanced to do further processing/testing as needed by you. It's up to the user of this sample to decide what this lambda shuold eventually do, as it can be extended and adapted to the testing needs. 
 4. When the ProcessInputQueue lambda finished its processing, it sends the testing result to the OutputQueue (if needed - please adapt the result JSON/Message). The result will be kept in the queue until consumed by the User.
 5. User is using the test client to invoke an API call (GET /outbox) to receive the testing result/message of the test it issued on step 1.
 6. API GW is triggering the CheckOutputQueue lambda function to recieve the message from the OutputQueue.
@@ -76,13 +76,13 @@ sam build
 sam deploy --guided
 ```
 
-After running this command you will receive a series of prompts:
+After running this command You'll receive a series of prompts:
 
 * **Stack Name**: The name of the stack to deploy to CloudFormation. This should be unique to your account and region, and a good starting point would be something matching your project name. Use `apigw-sqs-lambda-sqs` as the stack name for this project. you'll need the stack name to run the Integration test.
 * **AWS Region**: The AWS region you want to deploy your app to.
 * **Confirm changes before deploy**: If set to yes, SAM CLI shows you any change sets for manual review before deployment. If set to no, the AWS SAM CLI will automatically deploy application changes.
 * **Allow SAM CLI IAM role creation**: Many AWS SAM templates, including this example, create AWS IAM roles required for the AWS Lambda function(s) included to access AWS services. By default, SAM CLI scopes these down to minimum required permissions. To deploy an AWS CloudFormation stack which creates or changes IAM roles, the `CAPABILITY_IAM` value for `capabilities` must be provided. If you don't provide permission through this prompt, you must explicitly pass `--capabilities CAPABILITY_IAM` to the `sam deploy` command.
-* **CheckOutputQueue may not have authorization defined, Is this okay?**: set to "y". since this is for testing only we can proceed without client autoriztion for API GW, but for production enviroment we do recommand to have it.
+* **CheckOutputQueue may not have authorization defined, Is this okay?**: set to "y". Since this is for testing only we can proceed without client autoriztion for API GW, but for production enviroment we do recommand to have it.
 
 * **Save arguments to samconfig.toml**: If set to yes, SAM CLI saves your choices to a configuration file inside the project, so that in the future you can just re-run `sam deploy` without parameters to deploy changes to your application.
 
@@ -125,7 +125,7 @@ service_level_agreement = 20 # total time to check is 20 seconds
 interval_num = 5  # number of times to check if there is a message in the queue.
 ```
 
-This may be usefell if the testing takes more than the define default time (5 retries every 4 sec= total of 20 sec). if your lambda [process_input_queue.py](src/process-input-queue/process_input_queue.py) is doing processing for more than ~5 seconds, than it is recomanded to adapt this paraemters accordinely.
+This may be useful if the testing takes more than the define default time (5 retries every 4 sec= total of 20 sec). If your lambda [process_input_queue.py](src/process-input-queue/process_input_queue.py) is doing processing for more than ~5 seconds, than it is recommended to adapt this parameters accordinely.
 
 
 
@@ -134,9 +134,9 @@ The [test_api_gateway.py](tests/integration/test_api_gateway.py) is running 3 te
 
 [test_api_gateway_200](tests/integration/test_api_gateway.py#L165) - sending a message via API GW, and checking the result in the output queue. If all went ok, then this test should pass successfuly.
 
-[test_api_gateway_404](tests/integration/test_api_gateway.py#L200) - this test is checking the output queue, and in case it is empty, return 404. this can be usefull if the SUT is doing some processing and we want to check in polling mode the result of the execution.
+[test_api_gateway_404](tests/integration/test_api_gateway.py#L200) - this test is checking the output queue, and in case it is empty, returns 404. This can be useful if the SUT is doing some processing and we want to check in polling mode the result of the execution.
 
-[test_dead_letter_queue](tests/integration/test_api_gateway.py#L212) - sending a malformed message (e.g an error occured during the overall test) via API GW, and checking the result in the DLQ queue. This is showing a case where the SUT generated an error, in our case the lambda throws an execption
+[test_dead_letter_queue](tests/integration/test_api_gateway.py#L212) - sending a malformed message (e.g an error occured during the overall test) via API GW, and checking the result in the DLQ queue. This is showing a case where the SUT generated an error, in our case the lambda throws an execption.
 
 
 
@@ -150,4 +150,4 @@ In order to remove the deployed resource in the cloud, please run from the apigw
 ```shell
 sam delete
 ```
-answer "yes" to the questions and it will delete the sam stack.
+Answer "yes" to the questions and it will delete the sam stack.
