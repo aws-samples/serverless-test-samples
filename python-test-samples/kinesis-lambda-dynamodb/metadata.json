@@ -4,7 +4,7 @@
     "content_language": "English",
     "language": "Python",
     "type": ["Unit", "Integration"],
-    "diagram": ["/img/unit-test-description.png", "/img/system-under-test.png"],
+    "diagram": "/img/unit-test-description.png",
     "framework": "SAM",
     "services": ["kinesis", "lambda", "dynamodb"],
     "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
