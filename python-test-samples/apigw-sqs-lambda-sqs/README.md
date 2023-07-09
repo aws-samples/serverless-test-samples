@@ -65,12 +65,11 @@ To use the SAM CLI, you need the following tools.
     In case you are using AWS cloud9, currently the default Python version is 3.7. you can check [here](https://repost.aws/questions/QU14iutbqtSsm1gHwQwt02pA/upgrade-to-python-3-9-on-cloud-9) how to update it.
 
 
-```
+
 The SAM CLI installs dependencies defined in `src/requirements.txt`, creates a deployment package, and saves it in the `.aws-sam/build` folder. [Read the documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-building.html).
 
 Use the following command to deploy your application package to AWS: 
-
-
+```shell
 # deploy your application to the AWS cloud from the apigw-sqs-lambda-sqs directory
 sam build
 sam deploy --guided
