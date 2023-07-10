@@ -5,7 +5,6 @@
   "language": "TypeScript",
   "type": ["Unit"],
   "diagram": "/images/stepfunctions_local_test.png",
-  "framework": "SAM",
   "services": ["sfn"],
   "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
   "pattern_source": "AWS",

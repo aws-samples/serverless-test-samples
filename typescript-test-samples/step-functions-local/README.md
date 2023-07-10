@@ -27,7 +27,6 @@ current applications.
   - [Key Files in the Project](#key-files-in-the-project)
 - [Sample project description](#sample-project-description)
 - [Unit Test](#unit-test)
-- [Integration Test](#integration-test)
 
 ---
 
