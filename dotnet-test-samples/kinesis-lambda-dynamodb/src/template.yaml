@@ -51,6 +51,8 @@ Resources:
             ParallelizationFactor: 2
             FunctionResponseTypes:
               - ReportBatchItemFailures
+            MaximumRecordAgeInSeconds: 1800
+            MaximumRetryAttempts: 3
             DestinationConfig:
               OnFailure:
                 Destination: !GetAtt EmployeeRecordsStreamDLQ.Arn
