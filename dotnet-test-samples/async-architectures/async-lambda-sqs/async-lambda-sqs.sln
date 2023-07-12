@@ -20,6 +20,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "S3Notifications.UnitTests",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "S3Notificatrions.TestUtilities", "tests\S3Notifications.TestUtilities\S3Notificatrions.TestUtilities.csproj", "{33A91439-4C1F-4F97-9BC2-F3003008F010}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "S3Notifications.integrationTests", "tests\S3Notifications.integrationTests\S3Notifications.integrationTests.csproj", "{5FF22FB1-FE5D-45A9-98DE-8B5492106CCB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,6 +44,10 @@ Global
 		{33A91439-4C1F-4F97-9BC2-F3003008F010}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33A91439-4C1F-4F97-9BC2-F3003008F010}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{33A91439-4C1F-4F97-9BC2-F3003008F010}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FF22FB1-FE5D-45A9-98DE-8B5492106CCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FF22FB1-FE5D-45A9-98DE-8B5492106CCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FF22FB1-FE5D-45A9-98DE-8B5492106CCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FF22FB1-FE5D-45A9-98DE-8B5492106CCB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -51,6 +57,7 @@ Global
 		{AE0182DD-A9F0-419D-89F5-F346AF920CD5} = {81458A7E-41B1-4553-AE5D-227E4E9A7D47}
 		{C3905C57-8269-41C1-AB11-B5BA39577C66} = {81458A7E-41B1-4553-AE5D-227E4E9A7D47}
 		{33A91439-4C1F-4F97-9BC2-F3003008F010} = {81458A7E-41B1-4553-AE5D-227E4E9A7D47}
+		{5FF22FB1-FE5D-45A9-98DE-8B5492106CCB} = {81458A7E-41B1-4553-AE5D-227E4E9A7D47}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6BE69204-644C-49EC-AE6A-E08CA582876F}

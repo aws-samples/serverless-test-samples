@@ -11,7 +11,7 @@ namespace S3Notifications;
 
 public class Function
 {
-    private const string QueueNameEnvKey = "QUEUE_NAME";
+    private const string QueueUrlEnvKey = "QUEUE_URL";
     private IAmazonSQS SqsClient { get; }
 
     /// <summary>
@@ -51,23 +51,21 @@ public class Function
 
         var message = new S3NotificationMessage(s3Event.S3.Bucket.Name, s3Event.S3.Object.Key, s3Event.EventName);
 
-        var queueName = Environment.GetEnvironmentVariable(QueueNameEnvKey);
+        var queueName = Environment.GetEnvironmentVariable(QueueUrlEnvKey);
         
         if (queueName == null)
         {
-            throw new ApplicationException($"{QueueNameEnvKey} was not set");
+            throw new ApplicationException($"{QueueUrlEnvKey} was not set");
         }
 
         return await SendMessageToQueue(queueName, message);
     }
 
-    private async Task<string> SendMessageToQueue(string? queueName, S3NotificationMessage message)
+    private async Task<string> SendMessageToQueue(string queueUrl, S3NotificationMessage message)
     {
-        var getQueueUrlResponse = await SqsClient.GetQueueUrlAsync(queueName);
-
         var jsonString = JsonSerializer.Serialize(message);
 
-        var sendMessageRequest = new SendMessageRequest(getQueueUrlResponse.QueueUrl, jsonString);
+        var sendMessageRequest = new SendMessageRequest(queueUrl, jsonString);
         var sendMessageResponse = await SqsClient.SendMessageAsync(sendMessageRequest);
 
         return sendMessageResponse.MessageId;

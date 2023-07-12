@@ -53,12 +53,12 @@ namespace S3Notifications.UnitTests
                 }.ToList()
             };
 
-            Environment.SetEnvironmentVariable("QUEUE_NAME", null);
+            Environment.SetEnvironmentVariable("QUEUE_URL", null);
 
             var exc = await Assert.ThrowsAsync<ApplicationException>(
                 async () => await function.FunctionHandler(s3Event, new TestLambdaContext()));
 
-            Assert.Equal("QUEUE_NAME was not set", exc.Message);
+            Assert.Equal("QUEUE_URL was not set", exc.Message);
         }
 
         [Fact]
@@ -78,14 +78,7 @@ namespace S3Notifications.UnitTests
                 }.ToList()
             };
 
-            Environment.SetEnvironmentVariable("QUEUE_NAME", "queue-1");
-
-            A.CallTo(() =>
-                    fakeSqsClient.GetQueueUrlAsync(A<GetQueueUrlRequest>._, A<CancellationToken>._))
-                .Returns(Task.FromResult(new GetQueueUrlResponse
-                {
-                    QueueUrl = "http://queue"
-                }));
+            Environment.SetEnvironmentVariable("QUEUE_URL", "http://queue");
 
             SendMessageRequest jsonResult = null;
             A.CallTo(() => fakeSqsClient.SendMessageAsync(A<SendMessageRequest>._, A<CancellationToken>._))
@@ -124,14 +117,7 @@ namespace S3Notifications.UnitTests
                 }.ToList()
             };
 
-            Environment.SetEnvironmentVariable("QUEUE_NAME", "queue-1");
-
-            A.CallTo(() =>
-                    fakeSqsClient.GetQueueUrlAsync(A<GetQueueUrlRequest>._, A<CancellationToken>._))
-                .Returns(Task.FromResult(new GetQueueUrlResponse
-                {
-                    QueueUrl = "http://queue"
-                }));
+            Environment.SetEnvironmentVariable("QUEUE_url", "http://queue");
 
             A.CallTo(() => fakeSqsClient.SendMessageAsync(A<SendMessageRequest>._, A<CancellationToken>._))
                 .Returns(Task.FromResult(new SendMessageResponse

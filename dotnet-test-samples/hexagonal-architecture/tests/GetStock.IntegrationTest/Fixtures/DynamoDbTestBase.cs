@@ -11,7 +11,7 @@ namespace GetStock.IntegrationTest.Fixtures
 
         public DynamoDbTestBase(string tableNamePrefix, DynamoDbFixture fixture)
         {
-            TableName = $"{_tableNamePrefix}{Guid.NewGuid().ToString()}";
+            TableName = $"{_tableNamePrefix}{Guid.NewGuid()}";
             Client = fixture.Client;
 
             var request = new CreateTableRequest

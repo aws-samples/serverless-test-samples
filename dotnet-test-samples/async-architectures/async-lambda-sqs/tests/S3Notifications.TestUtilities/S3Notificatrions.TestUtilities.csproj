@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <PackageReference Include="Amazon.Lambda.S3Events" Version="3.0.1" />
-    <PackageReference Include="FakeItEasy" Version="7.4.0" />
   </ItemGroup>
 
 </Project>
