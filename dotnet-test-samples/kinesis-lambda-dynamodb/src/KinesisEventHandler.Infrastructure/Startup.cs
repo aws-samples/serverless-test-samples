@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Amazon.DynamoDBv2;
+using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using KinesisEventHandler.Repositories;
 using KinesisEventHandler.Repositories.Models;
 using Microsoft.Extensions.Configuration;
@@ -17,6 +18,7 @@ public static class Startup
 
     private static void AddDefaultServices(IServiceCollection services)
     {
+        AWSSDKHandler.RegisterXRayForAllServices();
         var builder = new ConfigurationBuilder()
             .AddInMemoryCollection(
                 new Dictionary<string, string?>()
@@ -26,7 +28,7 @@ public static class Startup
             .AddEnvironmentVariables();
 
         IConfiguration configuration = builder.Build();
-
+        
         services.Configure<DynamoDbOptions>(configuration);
         services.TryAddSingleton(configuration);
         services.TryAddSingleton(static _ =>

@@ -31,7 +31,7 @@ public class ProcessEmployeeFunction : KinesisEventHandler<Employee>
         _employeeRepository = employeeRepository;
     }
 
-    [Tracing(SegmentName = "ProcessEmployeeFunction")]
+    [Tracing(SegmentName = "ProcessKinesisRecord")]
     public override async Task ProcessKinesisRecord(Employee record, ILambdaContext lambdaContext)
     {
         using var cts = lambdaContext.GetCancellationTokenSource();
@@ -39,7 +39,7 @@ public class ProcessEmployeeFunction : KinesisEventHandler<Employee>
         Logger.LogInformation($"{response}, {record}");
     }
 
-    [Tracing(SegmentName = "ProcessEmployeeFunction")]
+    [Tracing(SegmentName = "ValidateKinesisRecord")]
     public override Task<bool> ValidateKinesisRecord(Employee record)
     {
         if (record == null)
