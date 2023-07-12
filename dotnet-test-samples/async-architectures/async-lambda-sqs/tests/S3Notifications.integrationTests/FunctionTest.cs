@@ -41,4 +41,27 @@ public class FunctionTest : IClassFixture<SqsTestFixture>
 
         Assert.Equal(expected, result);
     }
+    
+    [Fact]
+    public async Task FunctionHandler_With_QueueNameSet_Should_ReturnMessageId()
+    {
+        var function = new Function(_fixture.SqsClient);
+
+        var s3Event = new S3Event
+        {
+            Records = new[]{
+                new S3EventNotificationRecordBuilder()
+                    .EventName("event-name")
+                    .BucketName("bucket-name")
+                    .ObjectKey("key-1")
+                    .Build()
+            }.ToList()
+        };
+
+        var result = await function.FunctionHandler(s3Event, new TestLambdaContext());
+
+        var message = await _fixture.GetNextMessage();
+        
+        Assert.Equal(message.MessageId, result);
+    }
 }

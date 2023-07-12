@@ -51,8 +51,10 @@ namespace S3Notifications.integrationTests.Fixtures
 
             Assert.NotNull(receiveMessageResponse);
             Assert.NotEmpty(receiveMessageResponse.Messages);
-
+            
             var message = receiveMessageResponse.Messages[0];
+            await SqsClient.DeleteMessageAsync(QueueUrl, message.ReceiptHandle);
+            
             return message;
         }
 
