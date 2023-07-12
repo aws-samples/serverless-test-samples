@@ -80,11 +80,11 @@ namespace S3Notifications.UnitTests
 
             Environment.SetEnvironmentVariable("QUEUE_URL", "http://queue");
 
-            SendMessageRequest jsonResult = null;
+            SendMessageRequest? jsonResult = null;
             A.CallTo(() => fakeSqsClient.SendMessageAsync(A<SendMessageRequest>._, A<CancellationToken>._))
                 .Invokes(call =>
                 {
-                    jsonResult = call.Arguments.Get<SendMessageRequest>(0);
+                    jsonResult = call?.Arguments?.Get<SendMessageRequest>(0);
                 })
                 .Returns(Task.FromResult(new SendMessageResponse
                 {
@@ -94,6 +94,7 @@ namespace S3Notifications.UnitTests
 
             await function.FunctionHandler(s3Event, new TestLambdaContext());
 
+            Assert.NotNull(jsonResult);
             var result = JsonSerializer.Deserialize<S3NotificationMessage>(jsonResult.MessageBody);
             var expected = new S3NotificationMessage("bucket-name", "key-1", "event-name");
 
@@ -117,7 +118,7 @@ namespace S3Notifications.UnitTests
                 }.ToList()
             };
 
-            Environment.SetEnvironmentVariable("QUEUE_url", "http://queue");
+            Environment.SetEnvironmentVariable("QUEUE_URL", "http://queue");
 
             A.CallTo(() => fakeSqsClient.SendMessageAsync(A<SendMessageRequest>._, A<CancellationToken>._))
                 .Returns(Task.FromResult(new SendMessageResponse
