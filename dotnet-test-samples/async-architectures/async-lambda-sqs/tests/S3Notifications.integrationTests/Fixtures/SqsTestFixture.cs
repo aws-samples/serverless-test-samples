@@ -40,13 +40,12 @@ namespace S3Notifications.integrationTests.Fixtures
             ReceiveMessageResponse? receiveMessageResponse = null;
             do
             {
+                await Task.Delay(1000);
                 receiveMessageResponse = await SqsClient.ReceiveMessageAsync(receiveMessageRequest);
                 if (receiveMessageResponse.Messages.Count != 0)
                 {
                     break;
                 }
-
-                await Task.Delay(1000);
             } while (count++ < 60);
 
             Assert.NotNull(receiveMessageResponse);
