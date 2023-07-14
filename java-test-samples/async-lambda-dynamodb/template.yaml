@@ -1,0 +1,145 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Parameters:
+  DeployTestResources:
+    Description: The parameter instructs the template whether or not to deploy test resources to your environment.
+    Default: "True"
+    Type: String
+    AllowedValues:
+      - "True"
+      - "False"
+    ConstraintDescription: Allowed values are True and False
+
+Conditions:
+  CreateTestResources: !Equals [!Ref DeployTestResources, "True"]
+
+Resources:
+  SourceBucket:
+    Type: AWS::S3::Bucket
+    UpdateReplacePolicy: Delete
+    Properties:
+      BucketName: 
+        !Sub "async-lambda-dynamodb-source-${AWS::AccountId}"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+        - ServerSideEncryptionByDefault:
+            SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  DestinationBucket:
+    Type: AWS::S3::Bucket
+    UpdateReplacePolicy: Delete
+    Properties:
+      BucketName:
+        !Sub "async-lambda-dynamodb-destination-${AWS::AccountId}"
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+        - ServerSideEncryptionByDefault:
+            SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  RecordTransformationTable:
+    Type: AWS::DynamoDB::Table
+    Condition: CreateTestResources
+    Properties:
+      TableName:
+        !Sub "async-lambda-dynamodb-record-transformation-${AWS::AccountId}"
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      TimeToLiveSpecification:
+        AttributeName: time_to_live
+        Enabled: true
+      ProvisionedThroughput:
+        ReadCapacityUnits: 2
+        WriteCapacityUnits: 2
+
+  ToUpperCaseHandlerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: java17
+      Handler: com.amazon.aws.sample.ToUpperCaseHandler::handleRequest
+      Timeout: 60
+      MemorySize: 1024
+      Environment:
+        Variables:
+          DESTINATION_BUCKET_NAME: !Sub "async-lambda-dynamodb-destination-${AWS::AccountId}"
+      Policies:
+        - S3ReadPolicy:
+            BucketName: 
+              !Sub "async-lambda-dynamodb-source-${AWS::AccountId}"
+        - S3WritePolicy:
+            BucketName: 
+              !Sub "async-lambda-dynamodb-destination-${AWS::AccountId}"
+      Events:
+        FileUpload:
+          Type: S3
+          Properties:
+            Bucket: !Ref SourceBucket
+            Events: s3:ObjectCreated:*
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: suffix
+                    Value: '.txt'
+
+
+  TransformationHandlerFunction:
+    Type: AWS::Serverless::Function
+    Condition: CreateTestResources
+    Properties:
+      Runtime: java17
+      Handler: com.amazon.aws.sample.TransformationHandler::handleRequest
+      Timeout: 60
+      MemorySize: 1024
+      Environment:
+        Variables:
+          RECORD_TRANSFORMATION_TABLE_NAME: !Sub "async-lambda-dynamodb-record-transformation-${AWS::AccountId}"
+      Policies:
+        - S3ReadPolicy:
+            BucketName: 
+              !Sub "async-lambda-dynamodb-destination-${AWS::AccountId}"
+        - DynamoDBWritePolicy:
+            TableName: !Ref RecordTransformationTable
+      Events:
+        FileUpload:
+          Type: S3
+          Properties:
+            Bucket: !Ref DestinationBucket
+            Events: s3:ObjectCreated:*
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: suffix
+                    Value: '.txt'
+
+Outputs:
+  SourceBucketName:
+    Description: "Source bucket for asynchronous testing sample"
+    Value: !Ref SourceBucket
+
+  DestinationBucketName:
+    Description: "Destination bucket for asynchronous testing sample"
+    Value: !Ref DestinationBucket
+
+  TransformationHandlerFunctionName:
+    Condition: CreateTestResources
+    Description: "Lambda Function to listen for test results"
+    Value: !Ref TransformationHandlerFunction
+
+  RecordTransformationTable:
+    Condition: CreateTestResources
+    Description: "DynamoDB table to persist test results"
+    Value: !Ref RecordTransformationTable
