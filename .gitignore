@@ -1,5 +1,7 @@
 
 # Created by https://www.gitignore.io/api/osx,linux,python,windows,pycharm,visualstudiocode
+### My ignores ###
+.aws-composer
 
 ### Linux ###
 *~
@@ -270,7 +272,6 @@ samconfig.toml
 *.DotSettings*
 # End of .NET ignores
 /dotnet-test-samples/hexagonal-architecture/src/GetStock/aws-lambda-tools-defaults.json
-
 
 **/node_modules
 **/package-lock.json

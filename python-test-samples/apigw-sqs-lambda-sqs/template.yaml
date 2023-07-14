@@ -1,0 +1,164 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: SAM Template for apigw-sqs-lambda-sqs
+Globals:
+  Function:
+    Timeout: 5
+Resources:
+  Api:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub
+        - ${ResourceName} From Stack ${AWS::StackName}
+        - ResourceName: Api
+      StageName: Prod
+      DefinitionBody:
+        openapi: '3.0'
+        info: {}
+        paths:
+          /inbox:
+            post:
+              x-amazon-apigateway-integration:
+                credentials: !GetAtt ApiProcessInputQueuesendmessageRole.Arn
+                httpMethod: POST
+                type: aws
+                uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:sqs:path/${AWS::AccountId}/${InputQueue.QueueName}
+                requestParameters:
+                  integration.request.header.Content-Type: '''application/x-www-form-urlencoded'''
+                requestTemplates:
+                  application/json: Action=SendMessage&MessageBody={"data":$input.body}
+                responses:
+                  default:
+                    statusCode: 200
+              responses:
+                '200':
+                  description: 200 response
+          /outbox:
+            get:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                type: aws_proxy
+                uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CheckOutputQueue.Arn}/invocations
+              responses: {}
+      EndpointConfiguration: REGIONAL
+      TracingEnabled: true
+  ApiProcessInputQueuesendmessageRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action:
+              - sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - apigateway.amazonaws.com
+        Version: '2012-10-17'
+      Path: /
+      Policies:
+        - PolicyDocument:
+            Statement:
+              - Action: sqs:SendMessage
+                Effect: Allow
+                Resource: !GetAtt InputQueue.Arn
+            Version: '2012-10-17'
+          PolicyName: ApiinboxsendmessagePolicy
+  CheckOutputQueue:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: !Sub
+        - Stack ${AWS::StackName} Function ${ResourceName}
+        - ResourceName: CheckOutputQueue
+      CodeUri: src/check-output-queue
+      Handler: check_output_queue.lambda_handler
+      Runtime: python3.9
+      MemorySize: 128
+      Timeout: 5
+      Tracing: Active
+      Environment:
+        Variables:
+          INPUT_QUEUE_NAME: !Ref InputQueue
+          OUTPUT_QUEUE_NAME: !Ref OutputQueue
+      Policies:
+        - AmazonSQSFullAccess
+      Events:
+        ApiGEToutbox:
+          Type: Api
+          Properties:
+            Path: /outbox
+            Method: GET
+            RestApiId: !Ref Api
+  CheckOutputQueueLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Retain
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${CheckOutputQueue}
+  InputQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt InputQueueDLQ.Arn
+        maxReceiveCount: 1
+      MessageRetentionPeriod: 345600
+      VisibilityTimeout: 5
+  OutputQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt OutputQueueDLQ.Arn
+        maxReceiveCount: 1
+      MessageRetentionPeriod: 345600
+      VisibilityTimeout: 5
+    Metadata:
+      SamResourceId: ProcessOutputQueue
+  ProcessInputQueue:
+    Type: AWS::Serverless::Function
+    Properties:
+      Tracing: Active
+      Policies:
+        - AWSXrayWriteOnlyAccess
+        - AmazonSQSFullAccess
+      CodeUri: src/process-input-queue
+      Handler: process_input_queue.lambda_handler
+      Runtime: python3.9
+      Environment:
+        Variables:
+          OUTPUT_QUEUE_NAME: !Ref OutputQueue
+      Events:
+        SampleSQSEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt InputQueue.Arn
+            BatchSize: 10
+      MemorySize: 128
+      Timeout: 5
+  InputQueueDLQ:
+    Type: AWS::SQS::Queue
+    Properties:
+      MessageRetentionPeriod: 345600
+  OutputQueueDLQ:
+    Type: AWS::SQS::Queue
+    Properties:
+      MessageRetentionPeriod: 345600
+Outputs:
+  APIGatewayURL:
+    Description: API Gateway EndPoint
+    Value: !Sub https://${Api}.execute-api.${AWS::Region}.amazonaws.com/Prod/
+  APIGatewayInputEndPoint:
+    Description: API Gateway EndPoint
+    Value: !Sub https://${Api}.execute-api.${AWS::Region}.amazonaws.com/Prod/inbox
+  APIGatewayOutputEndPoint:
+    Description: API Gateway EndPoint
+    Value: !Sub https://${Api}.execute-api.${AWS::Region}.amazonaws.com/Prod/outbox
+  SQSInputQueue:
+    Description: SQS Input Queue
+    Value: !Ref InputQueue
+  SQSOutputQueue:
+    Description: SQS Output Queue
+    Value: !Ref OutputQueue
+  SQSInputQueueDLQ:
+    Description: SQS Input Dead letter Queue
+    Value: !Ref InputQueueDLQ
+  SQSOutputQueueDLQ:
+    Description: SQS Output Dead leter Queue
+    Value: !Ref OutputQueueDLQ
