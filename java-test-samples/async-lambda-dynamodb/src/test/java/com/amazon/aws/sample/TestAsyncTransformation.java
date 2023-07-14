@@ -168,7 +168,7 @@ public class TestAsyncTransformation {
 
                 String contentFromRecordTransformationTable = callable.call();
 
-                assertEquals(contentFromRecordTransformationTable, contentFromRecordTransformationTable,
+                assertEquals(MESSAGE_TO_UPPER_CASE, contentFromRecordTransformationTable,
                         String.format("contentFromRecordTransformationTable must be %s instead of %s",
                                 MESSAGE_TO_UPPER_CASE, contentFromRecordTransformationTable));
             } catch (Exception exception) {
