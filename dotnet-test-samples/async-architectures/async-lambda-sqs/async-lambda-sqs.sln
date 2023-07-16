@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{521DD4B5-B08C-4AFC-8D93-3E5552DE2C2D}"
 	ProjectSection(SolutionItems) = preProject
 		template.yaml = template.yaml
+		Readme.md = Readme.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{5E136BA6-1662-401B-8D0D-0BA0595A942D}"

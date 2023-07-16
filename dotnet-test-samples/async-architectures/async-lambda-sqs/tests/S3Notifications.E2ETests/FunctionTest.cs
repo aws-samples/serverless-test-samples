@@ -1,9 +1,6 @@
 using System.Text.Json;
-using Amazon.Lambda.TestUtilities;
 using Amazon.S3;
 using Amazon.S3.Model;
-using Amazon.S3.Util;
-using Amazon.SQS.Model;
 using S3Notifications.integrationTests.Fixtures;
 using Xunit;
 

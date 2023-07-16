@@ -1,4 +1,19 @@
-# AWS Lambda Simple S3 Function Project
+# Asynchronous Integration Test with Amazon Simple Queue Service (SQS)
+You may use a variety of resource types to create the event listener for your asynchronous system under test ([more about event listeners](https://github.com/aws-samples/serverless-test-samples/tree/main/dotnet-test-samples/async-architectures#create-event-listeners-in-test-environments)).
+
+In this pattern polling is used to wait for a specific message  
+
+## Review the System Under Test
+
+The System Under Test (SUT) in this example is an asynchronous notification service. It contains a source S3 bucket that receives a file. A Lambda function is configured to be notified when the putObject event is executed on this bucket. the Lambda function then would queue a new notification message with the file's details in a SQS queue.
+
+![S3 to Lambda to SQS](../img/s3-lambda-sqs.png)
+
+Your goal is to test this asynchronous process. You will use the Lambda Event Listener and DynamoDB test pattern to test the process. You will deploy the following resources:
+
+* S3 Source Bucket
+* Lambda function 
+* SQS Destination queue
 
 This starter project consists of:
 * serverless.template - an AWS CloudFormation Serverless Application Model template file for declaring your Serverless functions and other AWS resources
@@ -11,34 +26,48 @@ The generated function handler responds to events on an Amazon S3 bucket. The ha
 
 After deploying your function you must configure an Amazon S3 bucket as an event source to trigger your Lambda function.
 
-## Here are some steps to follow from Visual Studio:
+## Prerequisites
+The SAM CLI is an extension of the AWS CLI that adds functionality for building and testing serverless applications. It contains features for building your appcation locally, deploying it to AWS, and emulating AWS services locally to support automated unit tests.
 
-To deploy your Serverless application, right click the project in Solution Explorer and select *Publish to AWS Lambda*.
+To use the SAM CLI, you need the following tools.
 
-To view your deployed application open the Stack View window by double-clicking the stack name shown beneath the AWS CloudFormation node in the AWS Explorer tree. The Stack View also displays the root URL to your published application.
+- SAM CLI - [Install the SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
+- .NET 6 - [Install .NET 6](https://dotnet.microsoft.com/en-us/download)
 
-## Here are some steps to follow to get started from the command line:
+## Build the project
 
-Once you have edited your template and code you can deploy your application using the [Amazon.Lambda.Tools Global Tool](https://github.com/aws/aws-extensions-for-dotnet-cli#aws-lambda-amazonlambdatools) from the command line.
-
-Install Amazon.Lambda.Tools Global Tools if not already installed.
 ```
-    dotnet tool install -g Amazon.Lambda.Tools
-```
-
-If already installed check if new version is available.
-```
-    dotnet tool update -g Amazon.Lambda.Tools
+dotnet build
 ```
 
-Execute unit tests
+## Deploy project resources to the cloud
+
 ```
-    cd "async-lambda-sqs/test/async-lambda-sqs.Tests"
-    dotnet test
+sam build
+sam deploy --guided
 ```
 
-Deploy function to AWS Lambda
+## Run the tests
+There are three types of tests in this solution:
+* S3Notification.UnitTests - unit tests that runs on local machine and do not need any environment setup
+* S3Notification.IntegrationTests - require AWS account, use the aws cli to configure region and certifications
+* S3Notification.E2ETests - system/end to end tests: before running tests you will need to run after deployment f the lambda function, ensure you set the two environment variables to the Stack Name and AWS Region used when deploying your resources to the cloud.
+
+### Windows
 ```
-    cd "async-lambda-sqs/src/async-lambda-sqs"
-    dotnet lambda deploy-serverless
+$env:AWS_SAM_STACK_NAME = ""
+$env:AWS_SAM_REGION_NAME = ""
+dotnet test tests\S3Notification.E2ETests\S3Notification.E2ETests.csproj
+```
+
+### Linux
+```
+export AWS_SAM_STACK_NAME=""
+export AWS_SAM_REGION_NAME=""
+dotnet test tests/S3Notification.E2ETests/S3Notification.E2ETests.csproj
+```
+
+## Cleanup
+```bash
+sam delete
 ```
