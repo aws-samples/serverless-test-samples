@@ -1,0 +1,39 @@
+{
+    "title": "Asynchronous Tests with Lambda and SQS",
+    "description": "This project shows how to test an asynchronous serverless workflow that triggers a lambda with SQS as backend service",
+    "content_language": "English",
+    "language": ".NET",
+    "type": ["Unit", "Integration", "End to end"],
+    "diagram": "../img/s3-lambda-sqs.png",
+    "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
+    "pattern_source": "AWS",
+    "framework": "SAM",
+    "services": ["S3", "lambda", "SQS"],
+    "pattern_detail_tabs": [
+        {
+            "title": "Application Code Example (GetStock Functions)",
+            "filepath": "/src/S3Notification/Functions.cs"
+        },
+        {
+            "title": "Unit Tests",
+            "filepath": "/tests/S3Notification.UnitTests/FunctionsTests.cs"
+        },
+        {
+            "title": "Integration Tests",
+            "filepath": "/tests/S3Notification.IntegrationTests/Usings.cs"
+        },
+        {
+            "title": "End to End Tests",
+            "filepath": "/tests/S3Notification.E2ETests/Usings.cs"
+        }       
+    ],
+    "authors": [
+        {
+          "name": "Dror Helper",          
+          "image": "https://media.licdn.com/dms/image/C4D03AQGbBwfXtx0Zmg/profile-displayphoto-shrink_200_200/0/1638988504464?e=1686182400&v=beta&t=5G7912InrYUbzHXPah-84eIDnh1j1UYQKIRFEENKmBs",
+          "bio": "Senior Microsoft Specialist Solution Architect at AWS",
+          "linkedin": "https://www.linkedin.com/in/drorhelper/",
+          "twitter": "https://twitter.com/dhelper"
+        }        
+    ]
+}
