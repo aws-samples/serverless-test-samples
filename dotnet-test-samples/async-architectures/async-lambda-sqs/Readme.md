@@ -1,12 +1,9 @@
 # Asynchronous Integration Test with Amazon Simple Queue Service (SQS)
 You may use a variety of resource types to create the event listener for your asynchronous system under test ([more about event listeners](https://github.com/aws-samples/serverless-test-samples/tree/main/dotnet-test-samples/async-architectures#create-event-listeners-in-test-environments)).
 
-In this pattern polling is used to wait for a specific message using long polling and busy loop  
-
+In this pattern polling is used to wait for a specific message using long polling and busy loop.
 ## Review the System Under Test
-
 The System Under Test (SUT) in this example is an asynchronous notification service. It contains a source S3 bucket that receives a file. A Lambda function is configured to be notified when the putObject event is executed on this bucket. the Lambda function then would queue a new notification message with the file's details in a SQS queue.
-
 ![S3 to Lambda to SQS](../img/s3-lambda-sqs.png)
 
 Your goal is to test this asynchronous process. Since the end result of this workflow is a message in SQS you do not need any additional resources.   
