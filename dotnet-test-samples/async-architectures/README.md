@@ -25,3 +25,4 @@ Although your architecture may be asynchronous, it is still useful to establish 
 |Project|Description|
 ---|---
 |[Lambda with DynamoDB](./async-lambda-dynamodb/)|You may use a variety of resource types to create the event listener for your asynchronous system under test. We recommend starting with AWS Lambda and Amazon DynamoDB. DynamoDB creates a persistent storage resource that can enable long running tests or an aggregate a set of results.|
+|[Lambda with SQS](./async-lambda-sqs/)|You may do not need to add a special event listener in case your asynchronous system contains a queue as the target of the lambda function. Since the existing queue is a persistant storage that can be used to verify the result of your end to end tests. 

@@ -1,7 +1,7 @@
 # Asynchronous Integration Test with Amazon Simple Queue Service (SQS)
 You may use a variety of resource types to create the event listener for your asynchronous system under test ([more about event listeners](https://github.com/aws-samples/serverless-test-samples/tree/main/dotnet-test-samples/async-architectures#create-event-listeners-in-test-environments)).
 
-In this pattern polling is used to wait for a specific message  
+In this pattern polling is used to wait for a specific message using long polling and busy loop  
 
 ## Review the System Under Test
 
@@ -9,7 +9,8 @@ The System Under Test (SUT) in this example is an asynchronous notification serv
 
 ![S3 to Lambda to SQS](../img/s3-lambda-sqs.png)
 
-Your goal is to test this asynchronous process. You will use the Lambda Event Listener and DynamoDB test pattern to test the process. You will deploy the following resources:
+Your goal is to test this asynchronous process. Since the end result of this workflow is a message in SQS you do not need any additional resources.   
+You will deploy the following resources:
 
 * S3 Source Bucket
 * Lambda function 
@@ -25,7 +26,6 @@ You may also have a test project depending on the options selected.
 The generated function handler responds to events on an Amazon S3 bucket. The handler receives the bucket and object key details in an S3Event instance and returns the content type of the object as the function output. Replace the body of this method, and parameters, to suit your needs.
 
 After deploying your function you must configure an Amazon S3 bucket as an event source to trigger your Lambda function.
-
 ## Prerequisites
 The SAM CLI is an extension of the AWS CLI that adds functionality for building and testing serverless applications. It contains features for building your appcation locally, deploying it to AWS, and emulating AWS services locally to support automated unit tests.
 
