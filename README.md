@@ -33,6 +33,7 @@ You can also find sample code in this repository for testing a variety of differ
 |[API Gateway, Lambda Authorizer, Lambda, DynamoDB](https://github.com/aws-samples/serverless-samples/tree/main/serverless-rest-api/javascript-http-sam) [External] | Node.js | 
 |[API Gateway, Lambda, DynamoDB](./java-test-samples/apigw-lambda-ddb)|Java|
 |[API Gateway, Lambda, DynamoDB](./dotnet-test-samples/apigw-lambda-ddb)|.NET|
+|[AppSync, DynamoDB](./java-test-samples/java-appsync-sam)|Java|
 
 ## Event-Driven Architectures
 Event-driven architectures (EDA) are an architecture style that uses events and asynchronous communication to loosely couple an application’s components. To learn more about several strategies for testing EDA's visit [this guide at Serverlessland.com](https://serverlessland.com/event-driven-architecture/testing-introduction).  
