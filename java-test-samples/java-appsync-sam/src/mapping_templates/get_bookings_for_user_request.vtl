@@ -1,0 +1,11 @@
+        {
+          "version" : "2018-05-29",
+          "operation" : "Query",
+          "query" : {
+              "expression": "userid = :userid",
+              "expressionValues" : {
+                  ":userid" : $util.dynamodb.toDynamoDBJson(${context.identity.sub})
+              }
+          },
+          "index": "useridGSI"
+        }

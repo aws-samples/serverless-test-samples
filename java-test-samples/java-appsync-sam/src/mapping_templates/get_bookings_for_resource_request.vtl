@@ -1,0 +1,12 @@
+        #set($resourceid = $util.defaultIfNullOrBlank($ctx.args.resourceid, $ctx.source.resourceid))
+        {
+          "version" : "2018-05-29",
+          "operation" : "Query",
+          "query" : {
+              "expression": "resourceid = :resourceid",
+              "expressionValues" : {
+                  ":resourceid" : $util.dynamodb.toDynamoDBJson($resourceid)
+              }
+          },
+          "index": "bookingsByResourceByTimeGSI"
+        }

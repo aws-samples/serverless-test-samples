@@ -1,0 +1,14 @@
+        #set($locationid = $util.defaultIfNullOrBlank($ctx.args.locationid, $util.autoId()))
+        {
+          "version" : "2018-05-29",
+          "operation" : "PutItem",
+          "key": {
+              "locationid": $util.dynamodb.toDynamoDBJson($locationid)
+          },
+          "attributeValues" : {
+              "name": $util.dynamodb.toDynamoDBJson($ctx.args.name),
+              "description": $util.dynamodb.toDynamoDBJson($ctx.args.description),
+              "imageUrl": $util.dynamodb.toDynamoDBJson($ctx.args.imageUrl),
+              "timestamp": $util.dynamodb.toDynamoDBJson($util.time.nowISO8601())
+          }
+        }
