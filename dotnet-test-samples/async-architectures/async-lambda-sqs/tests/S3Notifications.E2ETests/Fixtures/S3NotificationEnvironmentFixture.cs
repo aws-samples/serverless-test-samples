@@ -4,19 +4,18 @@ using Amazon.CloudFormation.Model;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.SQS;
-using Amazon.SQS.Model;
 using Xunit;
 
-namespace S3Notifications.integrationTests.Fixtures;
+namespace S3Notifications.E2ETests.Fixtures;
 
 public class S3NotificationEnvironmentFixture : IAsyncLifetime, IDisposable
 {
     private readonly RegionEndpoint _regionEndpoint;
     public IAmazonS3 S3Client { get; }
-    private IAmazonSQS SqsClient { get; }
+    public IAmazonSQS SqsClient { get; }
 
     public string BucketName { get; private set; } = null!;
-    private string SqsQueueUrl { get; set; } = null!;
+    internal string SqsQueueUrl { get; set; } = null!;
 
     public S3NotificationEnvironmentFixture()
     {
@@ -78,33 +77,4 @@ public class S3NotificationEnvironmentFixture : IAsyncLifetime, IDisposable
         await SqsClient.PurgeQueueAsync(SqsQueueUrl);
     }
     
-    public async Task<Message> GetNextMessage()
-    {
-        var receiveMessageRequest = new ReceiveMessageRequest
-        {
-            QueueUrl = SqsQueueUrl,
-            MaxNumberOfMessages = 1,
-            VisibilityTimeout = 1
-        };
-
-        int count = 0;
-        ReceiveMessageResponse? receiveMessageResponse = null;
-        do
-        {
-            await Task.Delay(1000);
-            receiveMessageResponse = await SqsClient.ReceiveMessageAsync(receiveMessageRequest);
-            if (receiveMessageResponse.Messages.Count != 0)
-            {
-                break;
-            }
-        } while (count++ < 300);
-
-        Assert.NotNull(receiveMessageResponse);
-        Assert.NotEmpty(receiveMessageResponse.Messages);
-            
-        var message = receiveMessageResponse.Messages[0];
-        await SqsClient.DeleteMessageAsync(SqsQueueUrl, message.ReceiptHandle);
-            
-        return message;
-    }
 }

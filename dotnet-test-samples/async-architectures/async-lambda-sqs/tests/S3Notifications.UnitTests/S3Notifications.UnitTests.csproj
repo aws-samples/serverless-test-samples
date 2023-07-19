@@ -25,7 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\S3Notifications\S3Notifications.csproj" />
-    <ProjectReference Include="..\S3Notifications.TestUtilities\S3Notificatrions.TestUtilities.csproj" />
+    <ProjectReference Include="..\S3Notifications.TestUtilities\S3Notifications.TestUtilities.csproj" />
   </ItemGroup>
 
 </Project>

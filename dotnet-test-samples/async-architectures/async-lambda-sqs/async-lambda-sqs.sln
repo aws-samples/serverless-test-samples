@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "S3Notifications.E2ETests", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "S3Notifications.UnitTests", "tests\S3Notifications.UnitTests\S3Notifications.UnitTests.csproj", "{C3905C57-8269-41C1-AB11-B5BA39577C66}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "S3Notificatrions.TestUtilities", "tests\S3Notifications.TestUtilities\S3Notificatrions.TestUtilities.csproj", "{33A91439-4C1F-4F97-9BC2-F3003008F010}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "S3Notifications.TestUtilities", "tests\S3Notifications.TestUtilities\S3Notifications.TestUtilities.csproj", "{33A91439-4C1F-4F97-9BC2-F3003008F010}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "S3Notifications.integrationTests", "tests\S3Notifications.integrationTests\S3Notifications.integrationTests.csproj", "{5FF22FB1-FE5D-45A9-98DE-8B5492106CCB}"
 EndProject

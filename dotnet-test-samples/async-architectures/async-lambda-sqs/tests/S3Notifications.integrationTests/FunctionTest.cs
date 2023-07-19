@@ -3,23 +3,27 @@ using S3Notifications.integrationTests.Fixtures;
 using S3Notificatrions.TestUtilities.Builders;
 using System.Text.Json;
 using Amazon.Lambda.TestUtilities;
+using Amazon.SQS;
+using S3Notifications.TestUtilities.Extensions;
 
 namespace S3Notifications.integrationTests;
 
 public class FunctionTest : IClassFixture<SqsTestFixture>
 {
-    private readonly SqsTestFixture _fixture;
+    private readonly IAmazonSQS _sqsClient;
+    private readonly string _fixtureQueueUrl;
 
     public FunctionTest(SqsTestFixture fixture)
     {
-        _fixture = fixture;
-        Environment.SetEnvironmentVariable("QUEUE_URL", fixture.QueueUrl);
+        _sqsClient = fixture.SqsClient;
+        _fixtureQueueUrl = fixture.QueueUrl;
+        Environment.SetEnvironmentVariable("QUEUE_URL", _fixtureQueueUrl);
     }
 
     [Fact]
     public async Task FunctionHandler_With_QueueNameSet_Should_QueueNewMessage()
     {
-        var function = new Function(_fixture.SqsClient);
+        var function = new Function(_sqsClient);
 
         var s3Event = new S3Event
         {
@@ -34,9 +38,8 @@ public class FunctionTest : IClassFixture<SqsTestFixture>
 
         await function.FunctionHandler(s3Event, new TestLambdaContext());
 
-        var message = await _fixture.GetNextMessage();
+        var result = await _sqsClient.GetNextMessage<S3NotificationMessage>(_fixtureQueueUrl);
             
-        var result = JsonSerializer.Deserialize<S3NotificationMessage>(message.Body);
         var expected = new S3NotificationMessage("bucket-name", "key-1", "event-name");
 
         Assert.Equal(expected, result);
@@ -45,7 +48,7 @@ public class FunctionTest : IClassFixture<SqsTestFixture>
     [Fact]
     public async Task FunctionHandler_With_QueueNameSet_Should_ReturnMessageId()
     {
-        var function = new Function(_fixture.SqsClient);
+        var function = new Function(_sqsClient);
 
         var s3Event = new S3Event
         {
@@ -60,7 +63,7 @@ public class FunctionTest : IClassFixture<SqsTestFixture>
 
         var result = await function.FunctionHandler(s3Event, new TestLambdaContext());
 
-        var message = await _fixture.GetNextMessage();
+        var message = await _sqsClient.GetNextSqsMessage(_fixtureQueueUrl);
         
         Assert.Equal(message.MessageId, result);
     }

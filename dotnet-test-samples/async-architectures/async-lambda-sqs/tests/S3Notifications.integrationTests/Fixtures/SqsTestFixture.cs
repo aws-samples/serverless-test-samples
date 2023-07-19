@@ -27,35 +27,5 @@ namespace S3Notifications.integrationTests.Fixtures
             SqsClient.DeleteQueueAsync(QueueUrl).Wait();
             SqsClient.Dispose();
         }
-        
-        public async Task<Message> GetNextMessage()
-        {
-            var receiveMessageRequest = new ReceiveMessageRequest
-            {
-                QueueUrl = QueueUrl,
-                MaxNumberOfMessages = 1
-            };
-
-            int count = 0;
-            ReceiveMessageResponse? receiveMessageResponse = null;
-            do
-            {
-                await Task.Delay(1000);
-                receiveMessageResponse = await SqsClient.ReceiveMessageAsync(receiveMessageRequest);
-                if (receiveMessageResponse.Messages.Count != 0)
-                {
-                    break;
-                }
-            } while (count++ < 60);
-
-            Assert.NotNull(receiveMessageResponse);
-            Assert.NotEmpty(receiveMessageResponse.Messages);
-            
-            var message = receiveMessageResponse.Messages[0];
-            await SqsClient.DeleteMessageAsync(QueueUrl, message.ReceiptHandle);
-            
-            return message;
-        }
-
     }
 }
