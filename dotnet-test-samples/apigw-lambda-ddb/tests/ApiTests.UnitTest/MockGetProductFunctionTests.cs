@@ -71,7 +71,8 @@ public class MockGetProductFunctionTests : FunctionTest<Function>
         
         var data = new Mock<IProductsDAO>();
 
-        data.Setup(d => d.GetProduct(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+        data
+            .Setup(d => d.GetProduct(It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new NullReferenceException());
         
         var function = new Function(data.Object, Logger, JsonOptions);
