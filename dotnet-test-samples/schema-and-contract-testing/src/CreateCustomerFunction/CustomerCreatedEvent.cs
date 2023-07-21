@@ -26,7 +26,7 @@ public class CustomerCreatedEventV1 : CustomerCreatedEvent
     public override string Type => "CustomerCreatedEventV1";
 }
 
-public class CustomerCreatedEventV2: CustomerCreatedEvent
+public class CustomerCreatedEventV2 : CustomerCreatedEvent
 {
     [JsonProperty("customerId")]
     public string? CustomerId { get; set; }
