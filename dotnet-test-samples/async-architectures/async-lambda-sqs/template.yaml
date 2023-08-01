@@ -1,0 +1,60 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Description: Template that creates a S3 bucket, SQS Queue and a Lambda function 
+  that will be invoked when new objects are upload to the bucket.
+  Then queue a new message with that file details 
+Globals:
+  Function:
+    MemorySize: 256
+    Architectures: [arm64]
+    Runtime: dotnet6
+    Timeout: 300
+    Tracing: Active
+Parameters: 
+  BucketName:
+    Type: String
+    Description: Name of S3 bucket to be created. 
+      The Lambda function will be invoked when new objects are upload to the bucket. 
+      If left blank a name will be generated.
+    MinLength: "0"    
+Conditions:
+  BucketNameGenerated:
+    !Equals [!Ref BucketName, ""] 
+Resources:
+  S3Function:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/S3Notifications
+      Handler: S3Notifications::S3Notifications.Function::FunctionHandler
+      Policies:
+        - AWSLambda_FullAccess
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action: sqs:SendMessage
+              Resource: !GetAtt NotificationQueue.Arn
+      Environment: 
+        Variables: 
+          QUEUE_URL: !Ref NotificationQueue
+      Events: 
+        NewS3Event:
+          Type: S3
+          Properties:
+            Bucket: !Ref MonitoredBucket
+            Events: 
+              - s3:ObjectCreated:*              
+  NotificationQueue:
+    Type: AWS::SQS::Queue    
+  MonitoredBucket:
+    Type: AWS::S3::Bucket
+    Properties: 
+      BucketName: 
+        !If [BucketNameGenerated, !Ref AWS::NoValue, !Ref BucketName]
+Outputs:
+  S3BucketName: 
+    Value: !Ref MonitoredBucket
+    Description: Bucket that will invoke the lambda function when new objects are created.
+  QueueUrl: 
+    Value: !Ref NotificationQueue
+    Description: Queue that would receive notification after S3 related events 
