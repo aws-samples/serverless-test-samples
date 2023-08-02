@@ -6,7 +6,7 @@
     "type": ["Integration"],
     "diagram": "/img/s3-lambda-s3.png",
     "framework": "SAM",
-    "services": ["apigw", "lambda", "dynamodb"],
+    "services": ["s3", "lambda", "dynamodb"],
     "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
     "pattern_source": "AWS",
     "pattern_detail_tabs": [

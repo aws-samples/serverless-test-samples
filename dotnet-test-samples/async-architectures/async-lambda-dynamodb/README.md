@@ -1,6 +1,8 @@
-[![.NET: 6.0](https://img.shields.io/badge/.NET-6.0-Green)](https://img.shields.io/badge/.NET-6.0-Green)
-[![AWS: Lambda](https://img.shields.io/badge/AWS-Lambda-blueviolet)](https://img.shields.io/badge/AWS-Lambda-blueviolet)
-[![test: integration](https://img.shields.io/badge/Test-Integration-yellow)](https://img.shields.io/badge/Test-Integration-yellow)
+[![.NET: 6.0](https://img.shields.io/badge/.NET-6.0-Green)]()
+[![AWS: Lambda](https://img.shields.io/badge/AWS-Lambda-blueviolet)]()
+[![Amazon: S3](https://img.shields.io/badge/Amazon-S3-blueviolet)]()
+[![Amazon: DynamoDB](https://img.shields.io/badge/Amazon-DynamoDB-blueviolet)]()
+[![test: integration](https://img.shields.io/badge/Test-Integration-yellow)]()
 
 # Asynchronous Integration Test with Lambda Event Listener and DynamoDB
 You may use a variety of resource types to create the event listener for your asynchronous system under test ([more about event listeners](https://github.com/aws-samples/serverless-test-samples/tree/main/dotnet-test-samples/async-architectures#create-event-listeners-in-test-environments)). We recommend starting with AWS Lambda and Amazon DynamoDB. DynamoDB creates a persistent storage resource that can enable long running tests or an aggregation of a set of results.

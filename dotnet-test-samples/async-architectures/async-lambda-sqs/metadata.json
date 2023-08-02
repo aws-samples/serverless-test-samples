@@ -8,7 +8,7 @@
     "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
     "pattern_source": "AWS",
     "framework": "SAM",
-    "services": ["S3", "lambda", "SQS"],
+    "services": ["s3", "lambda", "sqs"],
     "pattern_detail_tabs": [
         {
             "title": "Application Code Example (GetStock Functions)",
