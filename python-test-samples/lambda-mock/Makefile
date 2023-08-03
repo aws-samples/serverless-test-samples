@@ -1,4 +1,5 @@
 PIP ?= pip3
+export AWS_DEFAULT_REGION=us-east-1
 
 target:
 	$(info ${HELP_MESSAGE})
