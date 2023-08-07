@@ -1,18 +1,32 @@
-![Serverless Test Samples](./_img/main_header.png)
 
-This repository is designed to provide code samples and guidance for writing automated tests for serverless applications and event driven architectures.  
+[![test: unit](https://img.shields.io/badge/Test-Unit-blue)](https://img.shields.io/badge/Test-Unit-blue)
+[![test: integration](https://img.shields.io/badge/Test-Integration-yellow)](https://img.shields.io/badge/Test-Integration-yellow)
+[![.NET: 6](https://badgen.net/badge/Built%20With/.NET/blue9)](https://badgen.net/badge/Built%20With/.NET/blue9)
+[![Java: 11](https://badgen.net/badge/Built%20With/Java/blue9)](https://badgen.net/badge/Built%20With/Java/blue9)
+[![python: 3.9](https://badgen.net/badge/Built%20With/Python/blue9)](https://badgen.net/badge/Built%20With/Python/blue9)
+[![typescript: 4.5.5](https://badgen.net/badge/Built%20With/TypeScript/blue9)](https://badgen.net/badge/Built%20With/TypeScript/blue9)
+
+
+
+
+![Serverless Test Samples](./_img/main_header.png alt="")
+# Serverless Test Samples
+
+AWS guidance and examples for testing serverless and event driven applications.
+
 
 # Getting Started
-If you would are just getting started with serverless testing, we recommend you start by reading [our thoughts about this topic at Serverlessland](https://serverlessland.com/testing). 
+We recommend reviewing the companion website for this repository: [Serverlessland - Testing Serverless Applications](https://serverlessland.com/testing). 
 
-If you'd like to jump right into code you can begin with a starter project in your favorite language:
+If you'd like to jump right into code, you can begin with a starter project in your favorite language:
+
 - [Python starter](./python-test-samples/apigw-lambda)
 - [Java starter](./java-test-samples/apigw-lambda-list-s3-buckets)
 - [TypeScript starter](./typescript-test-samples/typescript-test-intro)
 - [.NET starter](./dotnet-test-samples/apigw-lambda-list-s3-buckets)
 
 # Language Directories
-The repository is divided into several language directories. If you would like to browse by language you can navigate to the main page of each directory.
+The repository is divided into several language directories. If you would like to browse by language, you can navigate to the main page of each language directory:
 
 - [Python main directory](./python-test-samples/)
 - [Java main directory](./java-test-samples/)
@@ -20,7 +34,7 @@ The repository is divided into several language directories. If you would like t
 - [.NET main directory](./dotnet-test-samples/)
 
 # Workload Types
-You can also find sample code in this repository for testing a variety of different types of workloads.
+This repository contains sample code for testing a variety of different types of workloads, including API's, Event-Driven Architectures, Service Orchestration, Data Processing, and AWS Partner Patterns.
 
 ## API's
 |System Under Test|Language|
@@ -56,3 +70,7 @@ Event-driven architectures (EDA) are an architecture style that uses events and 
 |Partner|System Under Test|Language|Description|
 ---|---|---|---
 |Datadog|[API Gateway, Lambda, SQS, SNS](./typescript-test-samples/apigw-lambda-sqs-sns-datadog)|TypeScript|This example is about creating Synthetic Tests and Monitors with Datadog.|
+
+# How do I contribute?
+
+See our [Contributing](./CONTRIBUTING.md) guide for more detail providing additions, enhancements, and edits.
