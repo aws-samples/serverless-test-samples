@@ -76,7 +76,16 @@ jobs:
             echo "Set to: $changed_pattern"
             cd $GITHUB_WORKSPACE/typescript-test-samples/$changed_pattern
             pwd
-            echo "Installing dependencies"
-            npm install
-            echo "Finished"
+            echo "Looking for package.json files"
+
+            while read changed_pattern_app; do 
+              echo "Found package.json at: $changed_pattern_app"
+              cd $GITHUB_WORKSPACE/typescript-test-samples/$changed_pattern/$changed_pattern_app
+              pwd
+              echo "Installing dependencies"
+              npm install
+              echo "Finished with $changed_pattern_app"
+            done < find ./* -type f -name "package.json"
+
+            echo "Finished with discovered package.json files"
           done < $GITHUB_WORKSPACE/changed_patterns.txt
