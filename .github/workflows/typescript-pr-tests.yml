@@ -78,14 +78,15 @@ jobs:
             pwd
             echo "Looking for package.json files"
 
-            while read changed_pattern_app; do 
+            find ./* -type f -name "package.json" | while read -d $'\0' changed_pattern_app
+            do
               echo "Found package.json at: $changed_pattern_app"
               cd $GITHUB_WORKSPACE/typescript-test-samples/$changed_pattern/$changed_pattern_app
               pwd
               echo "Installing dependencies"
               npm install
               echo "Finished with $changed_pattern_app"
-            done < find ./* -type f -name "package.json"
+            done < 
 
             echo "Finished with discovered package.json files"
           done < $GITHUB_WORKSPACE/changed_patterns.txt
