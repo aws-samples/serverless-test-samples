@@ -21,12 +21,15 @@ jobs:
       matrix:
         # Use all supported nodejs runtimes for lambda
         # https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html
-        node-version: [14.x,16.x,18.x]
+        #node-version: [14.x,16.x,18.x]
+        node-version: [18.x]
 
     name: TypeScript ${{ matrix.node-version }} Run Tests
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       # Figure out which sample we're working with
       # Do this by finding the files that differ between this
@@ -39,6 +42,7 @@ jobs:
       # uniq drops duplicates
       - name: Find Samples
         run: |
+          git status
           git --no-pager diff --name-only origin/main --output $HOME/changed_files.txt --relative=typescript-test-samples typescript-test-samples
           cat $HOME/changed_files.txt | awk -F '/' '{print($1)}' | uniq > $HOME/changed_patterns.txt
           
