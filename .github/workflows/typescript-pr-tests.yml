@@ -76,12 +76,13 @@ jobs:
             echo "Set to: $changed_pattern"
             cd $GITHUB_WORKSPACE/typescript-test-samples/$changed_pattern
             pwd
-            echo "Looking for package.json files"
 
-            find ./* -type f -name "package.json" | while read -d $'\0' changed_pattern_app
+            echo "Looking for package.json files"
+            find ./* -type f -name "package.json" | while read changed_pattern_app;
             do
               echo "Found package.json at: $changed_pattern_app"
-              cd $GITHUB_WORKSPACE/typescript-test-samples/$changed_pattern/$changed_pattern_app
+
+              cd $(dirname "$GITHUB_WORKSPACE/typescript-test-samples/$changed_pattern/$changed_pattern_app")
               pwd
               echo "Installing dependencies"
               npm install
