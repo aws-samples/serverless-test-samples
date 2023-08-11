@@ -28,12 +28,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: npm
-
       # Figure out which sample we're working with
       # Do this by finding the files that differ between this
       # branch and main (or better: PR target)
@@ -55,6 +49,12 @@ jobs:
 
           echo "Changed patterns:\n"
           cat $HOME/changed_patterns.txt
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
 
       - name: Install Dependencies
         run: |
