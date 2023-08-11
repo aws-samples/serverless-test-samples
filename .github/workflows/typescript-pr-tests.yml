@@ -86,7 +86,7 @@ jobs:
               echo "Installing dependencies"
               npm install
               echo "Finished with $changed_pattern_app"
-            done < 
+            done
 
             echo "Finished with discovered package.json files"
           done < $GITHUB_WORKSPACE/changed_patterns.txt
