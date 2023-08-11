@@ -10,6 +10,10 @@ on:
     paths:
       - "typescript-test-samples/**"
 
+  # Consider running on pull requests too
+  #   but, that might require a more complex
+  #   'changed files' dance
+
 permissions:
   contents: read
 
@@ -21,10 +25,9 @@ jobs:
       matrix:
         # Use all supported nodejs runtimes for lambda
         # https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html
-        #node-version: [14.x,16.x,18.x]
-        node-version: [18.x]
+        node-version: [14.x,16.x,18.x]
 
-    name: TypeScript ${{ matrix.node-version }} Run Tests
+    name: TypeScript ${{ matrix.node-version }} Run Unit Tests
 
     steps:
       - name: Check Out code
