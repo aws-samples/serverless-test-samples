@@ -85,7 +85,7 @@ jobs:
               cd $(dirname "$GITHUB_WORKSPACE/typescript-test-samples/$changed_pattern/$changed_pattern_app")
               pwd
               echo "Installing dependencies"
-              npm ci
+              npm install
               echo "Running Unit Tests"
               npm run test:unit
               echo "Finished with $changed_pattern_app"
