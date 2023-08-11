@@ -34,7 +34,9 @@ jobs:
 
       - name: Show Context
         run: |
-          echo $GITHUB_EVENT_PATH
+          echo "HOME: $HOME"
+          echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
+          echo "GITHUB_EVENT_PATH: $GITHUB_EVENT_PATH"
           cat $GITHUB_EVENT_PATH
           git status
 
