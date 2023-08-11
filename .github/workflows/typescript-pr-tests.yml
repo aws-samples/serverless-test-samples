@@ -86,6 +86,8 @@ jobs:
               pwd
               echo "Installing dependencies"
               npm install
+              echo "Running Unit Tests"
+              npm run test:unit
               echo "Finished with $changed_pattern_app"
             done
 
