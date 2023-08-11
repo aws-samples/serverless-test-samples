@@ -74,7 +74,7 @@ jobs:
           ls -l $GITHUB_WORKSPACE
           while read changed_pattern; do 
             echo "Set to: $changed_pattern"
-            cd $GITHUB_WORKSPACE/typescript-test-patterns/$changed_pattern
+            cd $GITHUB_WORKSPACE/typescript-test-samples/$changed_pattern
             pwd
             echo "Installing dependencies"
             npm install
