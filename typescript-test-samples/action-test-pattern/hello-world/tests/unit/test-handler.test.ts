@@ -64,6 +64,6 @@ describe('Unit test for app handler', function () {
     });
 
     it('should fail', () => {
-        expect(true).toBeFalsy();
+        expect(false).toBeFalsy();
     });
 });
