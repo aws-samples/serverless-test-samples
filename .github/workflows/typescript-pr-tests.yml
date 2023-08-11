@@ -42,6 +42,8 @@ jobs:
       # uniq drops duplicates
       - name: Find Samples
         run: |
+          echo $GITHUB_EVENT_PATH
+          cat $GITHUB_EVENT_PATH
           git status
           git --no-pager diff --name-only origin/main --output $HOME/changed_files.txt --relative=typescript-test-samples typescript-test-samples
           cat $HOME/changed_files.txt | awk -F '/' '{print($1)}' | uniq > $HOME/changed_patterns.txt
