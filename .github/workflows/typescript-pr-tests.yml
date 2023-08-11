@@ -5,14 +5,10 @@ on:
   # Allow manual runs
   workflow_dispatch:
 
-  # For testing, run on pushes to this temp branch
+  # For testing, run on pushes to typescript patterns
   push:
-    branches: [ "ts-action-test" ]
     paths:
-      - "python-test-samples/**"
-  #pull_request:
-    #branches: [ "main" ]
-      - "python-test-samples/**"
+      - "typescript-test-samples/**"
 
 permissions:
   contents: read
