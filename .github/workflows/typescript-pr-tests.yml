@@ -27,9 +27,17 @@ jobs:
     name: TypeScript ${{ matrix.node-version }} Run Tests
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Check Out code
+        uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: 0 # Required to get diff to work or it can't find main
+
+      - name: Show Context
+        run: |
+          echo $GITHUB_EVENT_PATH
+          cat $GITHUB_EVENT_PATH
+          git status
+
 
       # Figure out which sample we're working with
       # Do this by finding the files that differ between this
@@ -40,31 +48,33 @@ jobs:
       # cat feeds that file into awk
       # awk splits the line by '/' and saves the first segment
       # uniq drops duplicates
-      - name: Find Samples
+      - name: Find Changed Samples
         run: |
-          echo $GITHUB_EVENT_PATH
-          cat $GITHUB_EVENT_PATH
-          git status
-          git --no-pager diff --name-only origin/main --output $HOME/changed_files.txt --relative=typescript-test-samples typescript-test-samples
-          cat $HOME/changed_files.txt | awk -F '/' '{print($1)}' | uniq > $HOME/changed_patterns.txt
+          git --no-pager diff --name-only origin/main --output $GITHUB_WORKSPACE/changed_files.txt --relative=typescript-test-samples typescript-test-samples
+          cat $GITHUB_WORKSPACE/changed_files.txt | awk -F '/' '{print($1)}' | uniq > $GITHUB_WORKSPACE/changed_patterns.txt
           
-      - name: Show files changed
+      - name: Show Changed Samples
         run: |
-          echo "Changed files:"
-          cat $HOME/changed_files.txt
+          echo "Found these changed files:"
+          cat $GITHUB_WORKSPACE/changed_files.txt
 
-          echo "Changed patterns:"
-          cat $HOME/changed_patterns.txt
+          echo "Mapped changed files to these patterns:"
+          cat $GITHUB_WORKSPACE/changed_patterns.txt
 
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Install Dependencies
+      - name: Run Tests for Changed Samples
         run: |
-          npm install
-
-      - name: Run Sample Unit Tests
-        run: |
-          npm run test:unit
+          pwd
+          ls -l $GITHUB_WORKSPACE
+          while read changed_pattern; do 
+            echo "Set to: $changed_pattern"
+            cd $GITHUB_WORKSPACE/serverless-test-samples/typescript-test-patterns/$changed_pattern
+            pwd
+            echo "Installing dependencies"
+            npm install
+            echo "Finished"
+          done < $HOME/changed_patterns.txt
