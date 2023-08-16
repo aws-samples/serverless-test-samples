@@ -11,6 +11,7 @@
 #   Relocate Unicorns with changed locations
 #   Retire any Unicorns in the database not in the file
 #   If a Unicorn is RESERVED|RETIRED, do not modify it's entry - log/return an error
+#   Update the available Unicorn count statistic in DynamoDB.  (PK = AVAILABLE, Value = #)
 
 
 from os import environ
