@@ -75,6 +75,26 @@ public class SchemaTest extends BaseJsonSchemaValidatorTest
         Set<ValidationMessage> validationMessages2 = originSchema.validate(jsonNodeNewVersion);
         Assertions.assertFalse(validationMessages2.isEmpty());
     }
+
+    @Test
+    public void addDifferentStructureOfAddress() throws IOException{
+        JsonSchema originSchema = getJsonSchemaFromClasspath("schema/json/customerCreated-v1.0.0.json");
+        JsonSchema updatedSchema = getJsonSchemaFromClasspath("schema/json/customerCreated-v1.4.0.json");
+
+        JsonNode jsonNodeNewVersion = getJsonNodeFromClasspath("events/customerCreated-event-1.4.0.json");
+
+        originSchema.initializeValidators();
+        updatedSchema.initializeValidators();
+
+        // validate new json payload to its own schema
+        Set<ValidationMessage> validationMessages = updatedSchema.validate(jsonNodeNewVersion);
+        Assertions.assertTrue(validationMessages.isEmpty());
+
+        // check for backward compatibility to its original/old schema
+        // this should pass, but we need to call business validator in contract test later
+        Set<ValidationMessage> validationMessages2 = originSchema.validate(jsonNodeNewVersion);
+        Assertions.assertTrue(validationMessages2.isEmpty());
+    }
         
     
 }
