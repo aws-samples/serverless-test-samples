@@ -84,7 +84,7 @@ You can find your API Gateway Endpoint URL in the output values displayed after 
 [[top]](#python-test-samples-project)
 
 ## Working with events
-Testing event driven architectures often requires working with synthetic events. Developers are often defining their Events as JSON documents. Synthetic events are test data that represent AWS events such as a requests from API Gateway or messages from SQS. 
+Testing event driven architectures often requires working with synthetic events. Developers often define their Events as JSON documents. Synthetic events are test data that represent AWS events such as a requests from API Gateway or messages from SQS. 
 
 AWS Lambda always requires an event during invocation. This project includes a sample test event in the `events` folder. SAM provides the capability of generating additional synthetic events for a variety of AWS services. [Read the documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-cli-command-reference-sam-local-generate-event.html).
 
