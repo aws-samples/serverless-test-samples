@@ -14,20 +14,46 @@ import logging
 import json
 import boto3
 
-sqs_client = boto3.client('sqs')
-
-
 def lambda_handler(event, context) -> dict:
     """
     The main lambda handler. will be called by the SQS OutputQueue or by the SQS InputQueueDLQ.
     """
      # Retrieve the table name from the environment, and create a boto3 Table object
-    dynamodb_table_name = environ["DYNAMODB_TABLE_NAME"]
+    dynamodb_table_name = environ["TESTRESULTSTABLE_TABLE_NAME"]
     dynamodb_resource = boto3.resource('dynamodb')
     dynamodb_table = dynamodb_resource.Table(dynamodb_table_name)
     print(f"Using DynamoDB Table {dynamodb_table_name}.")
+    
+    # ***** debug only ******
+    # for record in event['Records']:
+        
+    #     payload = record["body"]
+    #     sqs_arn = record["eventSourceARN"]
+    #     print(str(sqs_arn))
+    #     print(str(payload))
+    #     parsed_data = json.loads(json.dumps(payload)) 
+    #     print(parsed_data)
+    #     payload_dict = json.loads(parsed_data)
+    #     id = payload_dict["data"]["id"]
+    #     message = payload_dict["data"]["message"]
+    #     print(id)
+    #     print(message)
+
+    # ***** debug only ******
 
     # Go over the events/records recieved from Q and write the results to DynamoDB table
     for record in event['Records']:
         payload = record["body"]
-        logging.debug(str(payload))
+        sqs_arn = record["eventSourceARN"]
+        print(str(sqs_arn))
+        print(str(payload))
+        payload_dict = json.loads(payload)
+        id = payload_dict["data"]["id"]
+        message = payload_dict["data"]["message"]      
+        dynamodb_table.put_item(Item={'id': id,'Queue_Name': sqs_arn, 'Message': message})
+        
+    return {
+        'statusCode': 200,
+    #    'body': json.dumps(message_dynamo, indent=2)
+    }
+
