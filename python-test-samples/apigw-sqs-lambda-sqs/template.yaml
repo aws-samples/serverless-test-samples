@@ -140,6 +140,56 @@ Resources:
     Type: AWS::SQS::Queue
     Properties:
       MessageRetentionPeriod: 345600
+  TestResultsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+    Metadata:
+      SamResourceId: DynamoDBTable  
+
+  WriteTestResult:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: !Sub
+        - Stack ${AWS::StackName} Function ${ResourceName}
+        - ResourceName: WriteTestResult
+      CodeUri: src/write-test-result
+      Handler: write_test_result.handler
+      Runtime: python3.9
+      MemorySize: 512
+      Timeout: 30
+      Tracing: Active
+      Environment:
+        Variables:
+          TESTRESULTSTABLE_TABLE_NAME: !Ref TestResultsTable
+          TESTRESULTSTABLE_TABLE_ARN: !GetAtt TestResultsTable.Arn
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TestResultsTable
+      Events:
+        OutputQueue:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt OutputQueue.Arn
+            BatchSize: 1
+        InputQueueDLQ:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt InputQueueDLQ.Arn
+            BatchSize: 1
+  WriteTestResultLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Retain
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${WriteTestResult}
 Outputs:
   APIGatewayURL:
     Description: API Gateway EndPoint
@@ -162,3 +212,7 @@ Outputs:
   SQSOutputQueueDLQ:
     Description: SQS Output Dead leter Queue
     Value: !Ref OutputQueueDLQ
+  DynamoDBTableName:
+    Description: "Test Results Table"
+    Value: !Ref DynamoDBTable
+  
