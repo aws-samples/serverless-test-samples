@@ -44,7 +44,9 @@ def lambda_handler(event, context) -> dict:
     # Go over the events/records recieved from Q and write the results to DynamoDB table
     for record in event['Records']:
         payload = record["body"]
-        sqs_arn = record["eventSourceARN"]
+        full_sqs_arn = record["eventSourceARN"]
+        print(str(full_sqs_arn))
+        sqs_arn = full_sqs_arn.split(":")[-1]
         print(str(sqs_arn))
         print(str(payload))
         payload_dict = json.loads(payload)
