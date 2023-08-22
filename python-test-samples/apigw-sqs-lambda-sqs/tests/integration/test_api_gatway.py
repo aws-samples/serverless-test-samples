@@ -114,17 +114,8 @@ class TestApiGateway(TestCase):
 
         # The following item, just a samole, and will be deleted in teardown #
         self.dynamodb_table.put_item(Item={"id": "TEST000" + self.id_postfix,
-                                      "QueueName": "NAME#",
+                                      "Queue_Name": "NAME#",
                                       "Message": self.test_time + " Init DB Record" })
-
-        # message_id = "TEST002" + self.id_postfix
-        # message_text = "MALFORMED_MASSAGE - this is a malformed message" + self.test_time
-        # message = {
-        #     "id": message_id,
-        #     "message": message_text,
-        #     "QueueName": self.sqs_input_dlq
-        # }
-        # self.dynamodb_table.put_item(Item=message)
 
     def teardown_class(self) -> None:
         """
