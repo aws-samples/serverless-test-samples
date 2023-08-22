@@ -103,12 +103,13 @@ The [integration test tear-down](tests/integration/test_api_gateway.py#L108) rem
 To run the integration test, create the environment variable "AWS_SAM_STACK_NAME" with the name of the test stack, and execute the test.
 
 ```shell
-# Set the environment variables AWS_SAM_STACK_NAME and (optionally)AWS_DEFAULT_REGION 
+# Set the environment variables AWS_SAM_STACK_NAME and AWS_DEFAULT_REGION 
 # to match the name of the stack and the region where you will test
 # pip3 install will check the requirements file and will install needed packages to run the pytest. it is required only once for setting the enviroment
 # deploy your application to the AWS cloud from the apigw-sqs-lambda-sqs directory
 
 export AWS_SAM_STACK_NAME=<stack-name>
+export AWS_DEFAULT_REGION=<region-of-test>
 pip3 install virtualenv
 python3 -m venv venv
 source venv/bin/activate
