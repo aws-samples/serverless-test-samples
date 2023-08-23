@@ -30,13 +30,13 @@ class TestApiGateway(TestCase):
     sqs_input_dlq: str
     sqs_output_dlq: str
 
-    service_level_agreement = 20
+    service_level_agreement = 10
     # number of times to check if there is a message in the queue (can't be 0)
     interval_num = 5
     # amount of time to wait between each check
     interval_timeout = int(service_level_agreement/interval_num)
 
-    sleep_interval = 10 # for simple sleep usecases
+    #sleep_interval = 1 # for simple sleep usecases
 
     aws_region = os.environ.get("AWS_DEFAULT_REGION") or "us-east-1"
 
@@ -112,7 +112,8 @@ class TestApiGateway(TestCase):
         self.dynamodb_resource = boto3.resource("dynamodb", region_name = self.aws_region)
         self.dynamodb_table = self.dynamodb_resource.Table(name=self.dynamodb_table_name)
 
-        # The following item, just a samole, and will be deleted in teardown #
+        # The following item, just a sample written dircetly to dynamodb
+        # for debug purpuses, and will be deleted in teardown phase
         # self.dynamodb_table.put_item(Item={"id": "TEST000" + self.id_postfix,
         #                               "Queue_Name": "NAME#",
         #                               "Message": self.test_time + " Init DB Record" })
@@ -124,7 +125,7 @@ class TestApiGateway(TestCase):
         # since purge can be done once every 60 sec, we start with 60 sec sleep
         """
         logging.info("Teardown Phase...")
-        
+
         # Take particular care to ensure these values are unique and identifiable as TEST data.
         logging.info("Teardown DynamoDB...")
 
@@ -187,9 +188,46 @@ class TestApiGateway(TestCase):
             AttributeNames=['ApproximateNumberOfMessages']
         )
 
+    @classmethod
+    def is_validate(self,id,message,queue) -> bool:
+        """ 
+        This function will validate the id, quque name, message against the dynamodb table
+        and will do so after several seconds sleep ( due to the nature of async messaging )
+        """
+        logging.info("Validating Message id: %s", id)
+
+        f_message_found = False
+
+        for i in range(self.service_level_agreement):
+            # Check that DynamoDB received the relevant message
+            id_items = self.dynamodb_table.query(
+                KeyConditionExpression=Key('id').eq(id))
+
+            if id_items["Count"] == 1:
+                f_message_found = True
+                break
+
+            # Sleep for interval_timeout before checking again
+            logging.info("Sleeping for %s seconds before checking again", self.interval_timeout)
+            time.sleep(self.interval_timeout)
+
+        if f_message_found == False:
+            logging.error("Message not found in DynamoDB, Hint: try to increase test timeout")
+            return False
+
+        if id_items["Items"][0]["Message"] != message:
+            logging.error("Message not matched")
+            return False
+
+        if id_items["Items"][0]["Queue_Name"] != queue:
+            logging.error("Queue Nane not matched")
+            return False
+
+        return True
+
     def test_positive_scenario(self):
         """
-        This is a positive test to verify that a valid message is going all the way to the output queue
+        This test verify that a valid message is going all the way to the output queue
         Call the API Gateway endpoint and check the response for a 200
         If the result is 200, check in the DynamoDB that the message arrived properly
         """
@@ -207,46 +245,12 @@ class TestApiGateway(TestCase):
         self.assertEqual(response.status_code, 200)
         logging.info("Sent message to Inbox API: %s", message)
 
-         # we sleep sleep interval before checking the DB and Queues
-        time.sleep(self.sleep_interval)
-
-        id_items = self.dynamodb_table.query(
-                KeyConditionExpression=Key('id').eq(message_id))
-        # Check that DynamoDB received the relevant message and from the relevant Queue
-        self.assertEqual(id_items["Count"], 1, "DB did not receive the message, Hint: check your sleep interval")
-        self.assertEqual(id_items["Items"][0]["Message"], message_text, "Wrong message received")
-        sqs_output = self.sqs_output.split("/")[-1] 
-        db_queue_name = id_items["Items"][0]["Queue_Name"].split(":")[-1]
-        self.assertEqual(db_queue_name, sqs_output, "Wrong Queue name.")
-
-        # # looping for the number of times to check if there is a message in the quque
-        # msg_found = False
-        # for i in range(self.service_level_agreement):
-        #     # Get Message from Output Queue via OUTPUT api
-        #     logging.info ("Checking for message in the output queue %s time out of %s"\
-        #             ,i+1, self.service_level_agreement)
-        #     response = requests.get(self.api_endpoint_outbox, timeout=self.interval_timeout)
-        #     if response.status_code == 200:
-        #         msg_found = True
-        #         # Check if the sentmessage id is in the received message body
-        #         self.assertIn(message['id'],
-        #                       response.json()['Messages'][0]['Body'])
-        #         logging.info("Response: %s, Response code: %s",
-        #                      response.json(), response.status_code)
-        #         break
-
-        #     # Sleep for interval_timeout before checking again
-        #     logging.info("Sleeping for %s seconds before checking again", self.interval_timeout)
-        #     time.sleep(self.interval_timeout)
-
-        #     # Check if message was found in the output queue or raise fail test
-        #     if (i == self.interval_num - 1) and (not msg_found):
-        #         logging.info("Message was not found in the output queue")
-        #         self.fail("Message was not found in with in the SLA {self.service_level_agreement}")
+        message_queue =  self.sqs_output.split("/")[-1]
+        self.assertTrue(self.is_validate(message_id,message_text,message_queue))
 
     def test_false_positive_scenario(self):
         """
-        This is a false positive test to verify that a valid message is going all the way to the output queue
+        This test verify that a valid message is going all the way to the output queue
         Call the API Gateway endpoint and check the response for a 200
         If the result is 200, check in the DynamoDB that the message arrived properly
         """
@@ -256,7 +260,7 @@ class TestApiGateway(TestCase):
         message_text = self.test_time + " This is a test_false_positive_scenario"
         message = {
             "id": message_id,
-            "message": message_text
+           "message": message_text
         }
 
         response = requests.post(
@@ -264,18 +268,8 @@ class TestApiGateway(TestCase):
         self.assertEqual(response.status_code, 200)
         logging.info("Sent message to Inbox API: %s", message)
 
-         # we sleep sleep interval before checking the DB and Queues
-        time.sleep(self.sleep_interval)
-
-        id_items = self.dynamodb_table.query(
-                KeyConditionExpression=Key('id').eq(message_id))
-        # Check that DynamoDB received the relevant message and from the relevant Queue
-        self.assertEqual(id_items["Count"], 1, "DB did not receive the message, Hint: check your sleep interval")
-        sqs_output = self.sqs_output.split("/")[-1] 
-        self.assertEqual(id_items["Items"][0]["Message"], message_text, "Wrong message received.")
-        db_queue_name = id_items["Items"][0]["Queue_Name"].split(":")[-1]
-        self.assertEqual(db_queue_name, sqs_output, "Wrong Queue name.")
-
+        message_queue =  self.sqs_output.split("/")[-1]
+        self.assertTrue(self.is_validate(message_id,message_text,message_queue))
 
     def test_exception_scenario(self):
         """
@@ -300,35 +294,5 @@ class TestApiGateway(TestCase):
         self.assertEqual(response.status_code, 200)
         logging.info("Sent message to Inbox API: %s", message)
 
-        # we sleep sleep interval before checking the DB and Queues
-        time.sleep(self.sleep_interval)
-
-        id_items = self.dynamodb_table.query(
-                KeyConditionExpression=Key('id').eq(message_id))
-        self.assertEqual(id_items["Count"], 1, "DB did not receive the message, Hint: check your sleep interval")
-        self.assertEqual(id_items["Items"][0]["Message"], message_text)
-
-        # in this test we expect that the message will arrive from input DLQ to the DynamoDB.
-        sqs_output = self.sqs_input_dlq.split("/")[-1] 
-        db_queue_name = id_items["Items"][0]["Queue_Name"].split(":")[-1]
-        self.assertEqual(db_queue_name, sqs_output,  "Wrong Queue name.")
-
-
-        # # Check the Dealetter input Queue for any messages
-        # # Process_input_lambda should deny, and then SQS will move the message to the DLQ
-        # for i in range(self.service_level_agreement):
-        #     logging.info("\nChecking for message in the DL queue %s time out of %s"\
-        #                  ,i+1, self.service_level_agreement)
-        #     response = client.get_queue_attributes(
-        #         QueueUrl=self.sqs_input_dlq,
-        #         AttributeNames=['ApproximateNumberOfMessages']
-        #     )
-        #     message_count = int(response['Attributes']
-        #                         ['ApproximateNumberOfMessages'])
-        #     if message_count > 0:
-        #         self.assertGreater(message_count, 0)
-        #         break
-
-        #     time.sleep(self.interval_timeout)
-
-        # self.assertGreater(message_count, 0)
+        message_queue =  self.sqs_input_dlq.split("/")[-1]
+        self.assertTrue(self.is_validate(message_id,message_text,message_queue))
