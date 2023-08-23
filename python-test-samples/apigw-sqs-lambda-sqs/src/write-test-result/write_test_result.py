@@ -23,24 +23,7 @@ def lambda_handler(event, context) -> dict:
     dynamodb_resource = boto3.resource('dynamodb')
     dynamodb_table = dynamodb_resource.Table(dynamodb_table_name)
     print(f"Using DynamoDB Table {dynamodb_table_name}.")
-    
-    # ***** debug only ******
-    # for record in event['Records']:
-        
-    #     payload = record["body"]
-    #     sqs_arn = record["eventSourceARN"]
-    #     print(str(sqs_arn))
-    #     print(str(payload))
-    #     parsed_data = json.loads(json.dumps(payload)) 
-    #     print(parsed_data)
-    #     payload_dict = json.loads(parsed_data)
-    #     id = payload_dict["data"]["id"]
-    #     message = payload_dict["data"]["message"]
-    #     print(id)
-    #     print(message)
-
-    # ***** debug only ******
-
+  
     # Go over the events/records recieved from Q and write the results to DynamoDB table
     for record in event['Records']:
         payload = record["body"]
@@ -56,6 +39,5 @@ def lambda_handler(event, context) -> dict:
         
     return {
         'statusCode': 200,
-    #    'body': json.dumps(message_dynamo, indent=2)
     }
 

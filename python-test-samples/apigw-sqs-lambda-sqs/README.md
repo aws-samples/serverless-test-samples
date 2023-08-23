@@ -25,6 +25,7 @@ The project uses the [AWS Serverless Application Model](https://docs.aws.amazon.
 ## Key Files in the Project
   - [process_input_queue.py](/python-test-samples/apigw-sqs-lambda-sqs/src/process-input-queue/process_input_queue.py) - Lambda handler code to read from input SQS queue, do some processing, and enqueue the processing results into the output SQS queue
   - [check_output_queue.py](/python-test-samples/apigw-sqs-lambda-sqs/src/check-output-queue/check_output_queue.py) - Lambda handler code to read from output SQS queue the result of the processing
+  - [write_test_result.py](/python-test-samples/apigw-sqs-lambda-sqs/src/write-test-result/write_test_result.py) - Lambda handler code that is triggered from the SQS OutputQueue or by the SQS InputQueueDLQ to update DynamoDB table with the test results
   - [template.yaml](template.yaml) - SAM script for deployment
   - [test_api_gateway.py](tests/integration/test_api_gateway.py) - Integration test written in Python on a live stack deployed on AWS
    
@@ -98,9 +99,9 @@ For the integration tests, it is assumed that the full stack is already deployed
 
 The [integration test](tests/integration/test_api_gateway.py) setup determines the [API endpoint](tests/integration/test_api_gateway.py#L56).  
 
-The [integration test tear-down](tests/integration/test_api_gateway.py#L108) removes any data injected for the tests and purges each queue in case they have messages inside them.
+The [integration test tear-down](tests/integration/test_api_gateway.py#L108) removes any data injected for the tests and purges each queue in case they have messages inside them. It also deletes tests results from the DynamoDB table.
 
-To run the integration test, create the environment variable "AWS_SAM_STACK_NAME" with the name of the test stack, and execute the test.
+To run the integration test, create the environment variable "AWS_SAM_STACK_NAME" with the name of the test stack, and execute the test. It is also important to assure that the AWS region is set properly in the enviroment (AWS_DEFAULT_REGION).
 
 ```shell
 # Set the environment variables AWS_SAM_STACK_NAME and AWS_DEFAULT_REGION 
