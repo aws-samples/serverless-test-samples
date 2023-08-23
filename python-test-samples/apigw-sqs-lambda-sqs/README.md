@@ -17,17 +17,16 @@ The project uses the [AWS Serverless Application Model](https://docs.aws.amazon.
   - [Contents](#contents)
   - [Key Files in the Project](#key-files-in-the-project)
   - [Sample project description](#sample-project-description)
-  - [Testing Data Considerations](#testing-data-considerations)
-  - [Run the Unit Test](#run-the-unit-test)
-  - [Clean up](#cleanup)
+  - [Prerequisites](#Prerequisites)
+  - [Run the Unit Test](#Run-the-Integration-Test)
+  - [Clean up](#Clean-up)
 ---
 
 ## Key Files in the Project
   - [process_input_queue.py](/python-test-samples/apigw-sqs-lambda-sqs/src/process-input-queue/process_input_queue.py) - Lambda handler code to read from input SQS queue, do some processing, and enqueue the processing results into the output SQS queue
-  - [check_output_queue.py](/python-test-samples/apigw-sqs-lambda-sqs/src/check-output-queue/check_output_queue.py) - Lambda handler code to read from output SQS queue the result of the processing
   - [write_test_result.py](/python-test-samples/apigw-sqs-lambda-sqs/src/write-test-result/write_test_result.py) - Lambda handler code that is triggered from the SQS OutputQueue or by the SQS InputQueueDLQ to update DynamoDB table with the test results
   - [template.yaml](template.yaml) - SAM script for deployment
-  - [test_api_gateway.py](tests/integration/test_api_gateway.py) - Integration test written in Python on a live stack deployed on AWS
+  - [test_api_gateway.py](/python-test-samples/apigw-sqs-lambda-sqs/tests/integration/test_api_gatway.py) - Integration test written in Python on a live stack deployed on AWS
    
 [Top](#contents)
 
@@ -35,21 +34,21 @@ The project uses the [AWS Serverless Application Model](https://docs.aws.amazon.
 
 ## Sample project description
 
-The sample project allows a user to call an API endpoint (using /inbox) and generate a custom "test/hello" message. The user can also track the result of the processing of it in the cloud (using /outbox). The following diagram demonstatred the architecture and flow. The following diagram has been created using the [AWS Application Composer](https://aws.amazon.com/application-composer/), which can help you visually design and build serverless applications quickly.
+The sample project allows a user to call an API endpoint (using /inbox) and generate a custom "test/hello" message so it can trigger a test. Each test result is stored on a DynamoDB table. The following diagram demonstatred the architecture and flow. The following diagram has been created using the [AWS Application Composer](https://aws.amazon.com/application-composer/), which can help you visually design and build serverless applications quickly.
 
 ![Event Sequence](img/architecture.png)
 
-This project consists of an [API Gateway](https://aws.amazon.com/api-gateway/), two [AWS Lambda](https://aws.amazon.com/lambda) functions, and two [Amazon SQS](https://aws.amazon.com/sqs) standard queues which are using 2 DLQ queues accordingly for error handling.
+This project consists of an [API Gateway](https://aws.amazon.com/api-gateway/), two [AWS Lambda](https://aws.amazon.com/lambda) functions, two [Amazon SQS](https://aws.amazon.com/sqs) standard queues which are using 2 DLQ queues accordingly for error handling and a [DynamoDB](https://aws.amazon.com/dynamodb) table.
 
 The Sequence is (corresponding steps 1-7  on the diagram): 
 
 1. User is using the test client to invoke an API call (POST /inbox) to send a message/job/test to be processed later on in the backend by the ProcessInputQueue lambda function.
 2. API GW is sending the message payload into the InputQueue.
 3. InputQueue is triggering the ProcessInputQueue lambda function to process the message/job/test in the queue. This is where the lambda can be enhanced to do further processing/testing as needed by you. It's up to the user of this sample to decide what this lambda shuold eventually do, as it can be extended and adapted to the testing needs. 
-4. When the ProcessInputQueue lambda finished its processing, it sends the testing result to the OutputQueue (if needed - please adapt the result JSON/Message). The result will be kept in the queue until consumed by the User.
-5. User is using the test client to invoke an API call (GET /outbox) to receive the testing result/message of the test it issued on step 1.
-6. API GW is triggering the CheckOutputQueue lambda function to recieve the message from the OutputQueue.
-7. CheckOutputQueue lambda function is receiving the the message from the OutputQueue and delivers it back to the test client via the API GW.
+4. When the ProcessInputQueue lambda finished its processing, it sends the testing result to the OutputQueue (if needed - please adapt the result JSON/Message). This triggers the [write_test_result.py](/python-test-samples/apigw-sqs-lambda-sqs/src/write-test-result/write_test_result.py) lambda function which writes the result in the DynamoDB table.
+5. User is using the test client to check the testing result/message of the test it issued on step 1.
+6. API query for the test result is issued to the DynamoDB.
+7. DynamoDB returns the result which is stored on the table.
 
 
 
@@ -93,13 +92,13 @@ You can find your API Gateway Endpoint URL in the output values displayed after 
 ---
 
 ## Run the Integration Test
-[test_api_gateway.py](tests/integration/test_api_gateway.py) 
+[test_api_gateway.py](/python-test-samples/apigw-sqs-lambda-sqs/tests/integration/test_api_gatway.py)
 
 For the integration tests, it is assumed that the full stack is already deployed before testing. 
 
-The [integration test](tests/integration/test_api_gateway.py) setup determines the [API endpoint](tests/integration/test_api_gateway.py#L56).  
+The integration test setup determines the [API endpoint](/python-test-samples/apigw-sqs-lambda-sqs/tests/integration/test_api_gatway.py#L60).  
 
-The [integration test tear-down](tests/integration/test_api_gateway.py#L108) removes any data injected for the tests and purges each queue in case they have messages inside them. It also deletes tests results from the DynamoDB table.
+The [integration test tear-down](/python-test-samples/apigw-sqs-lambda-sqs/tests/integration/test_api_gatway.py#L120) removes any data injected for the tests and purges each queue in case they have messages inside them. It also deletes tests results from the DynamoDB table.
 
 To run the integration test, create the environment variable "AWS_SAM_STACK_NAME" with the name of the test stack, and execute the test. It is also important to assure that the AWS region is set properly in the enviroment (AWS_DEFAULT_REGION).
 
@@ -119,25 +118,23 @@ python3 -m pytest -s tests/integration -v
 
 # For INFO debug log you can run: python -m pytest -s tests/integration --log-cli-level=20
 ```
-in the [test_api_gateway.py](tests/integration/test_api_gateway.py#L33) file you can control the polling mechanism for checking the test results, using:
+in the [test_api_gateway.py](/python-test-samples/apigw-sqs-lambda-sqs/tests/integration/test_api_gatway.py#L39) file you can control the sleep_interval (defulat is 10 seconds) for checking the test results, using:
 ```shell
-service_level_agreement = 20 # total time to check is 20 seconds
-
-interval_num = 5  # number of times to check if there is a message in the queue.
+sleep_interval  # number of seconds to wait for test completion before checking its result in the DynamoDB.
 ```
 
-This may be useful if the testing takes more than the define default time (5 retries every 4 sec= total of 20 sec). If your lambda [process_input_queue.py](src/process-input-queue/process_input_queue.py) is doing processing for more than ~5 seconds, than it is recommended to adapt this parameters accordinely.
+This may be useful if the testing takes more than the define default time. If your lambda [process_input_queue.py](src/process-input-queue/process_input_queue.py) is doing processing for more than ~10 seconds, than it is recommended to adapt this parameters accordinely.
 
 
 
 
-The [test_api_gateway.py](tests/integration/test_api_gateway.py) is running 3 tests:
+The [test_api_gateway.py](/python-test-samples/apigw-sqs-lambda-sqs/tests/integration/test_api_gatway.py) is running 3 tests:
 
-[test_api_gateway_200](tests/integration/test_api_gateway.py#L165) - sending a message via API GW, and checking the result in the output queue. If all went ok, then this test should pass successfuly.
+[test_positive_scenario](/python-test-samples/apigw-sqs-lambda-sqs/tests/integration/test_api_gatway.py#L190) - sending a message/test via API GW for a positive scenerio, and checking the result in DynamoDB table. If all went ok, then this test should pass successfuly.
 
-[test_api_gateway_404](tests/integration/test_api_gateway.py#L200) - this test is checking the output queue, and in case it is empty, returns 404. This can be useful if the SUT is doing some processing and we want to check in polling mode the result of the execution.
+[test_false_positive_scenario](/python-test-samples/apigw-sqs-lambda-sqs/tests/integration/test_api_gatway.py#L247) - sending a message/test via API GW for a false positive scenerio, and checking the result in DynamoDB table. If all went ok, then this test should pass successfuly. This test is usefull for testing a wrong input to the SUT and expecting an error message to be generated by the it (simulated by the process_input_queue lambda)
 
-[test_dead_letter_queue](tests/integration/test_api_gateway.py#L212) - sending a malformed message (e.g an error occured during the overall test) via API GW, and checking the result in the DLQ queue. This is showing a case where the SUT generated an error, in our case the lambda throws an execption.
+[test_exception_scenario](/python-test-samples/apigw-sqs-lambda-sqs/tests/integration/test_api_gatway.py#L280) - sending a malformed message (e.g an error occured during the overall test) via API GW, and checking the result in DynamoDB table. If all went ok, then this test should pass successfuly. This test is usefull for testing a case where to the SUT had an unexpected exception in its processing. In this case, the SQS InputQueue will deliver the message to the SQS InputQueueDLQ dead letter queue, which will trigger the [write_test_result.py](/python-test-samples/apigw-sqs-lambda-sqs/src/write-test-result/write_test_result.py) lambda to write the exception result to the DynamoDB table.
 
 
 

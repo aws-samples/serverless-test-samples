@@ -33,13 +33,6 @@ Resources:
               responses:
                 '200':
                   description: 200 response
-          /outbox:
-            get:
-              x-amazon-apigateway-integration:
-                httpMethod: POST
-                type: aws_proxy
-                uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CheckOutputQueue.Arn}/invocations
-              responses: {}
       EndpointConfiguration: REGIONAL
       TracingEnabled: true
   ApiProcessInputQueuesendmessageRole:
@@ -63,36 +56,6 @@ Resources:
                 Resource: !GetAtt InputQueue.Arn
             Version: '2012-10-17'
           PolicyName: ApiinboxsendmessagePolicy
-  CheckOutputQueue:
-    Type: AWS::Serverless::Function
-    Properties:
-      Description: !Sub
-        - Stack ${AWS::StackName} Function ${ResourceName}
-        - ResourceName: CheckOutputQueue
-      CodeUri: src/check-output-queue
-      Handler: check_output_queue.lambda_handler
-      Runtime: python3.9
-      MemorySize: 128
-      Timeout: 5
-      Tracing: Active
-      Environment:
-        Variables:
-          INPUT_QUEUE_NAME: !Ref InputQueue
-          OUTPUT_QUEUE_NAME: !Ref OutputQueue
-      Policies:
-        - AmazonSQSFullAccess
-      Events:
-        ApiGEToutbox:
-          Type: Api
-          Properties:
-            Path: /outbox
-            Method: GET
-            RestApiId: !Ref Api
-  CheckOutputQueueLogGroup:
-    Type: AWS::Logs::LogGroup
-    DeletionPolicy: Retain
-    Properties:
-      LogGroupName: !Sub /aws/lambda/${CheckOutputQueue}
   InputQueue:
     Type: AWS::SQS::Queue
     Properties:
@@ -109,8 +72,7 @@ Resources:
         maxReceiveCount: 1
       MessageRetentionPeriod: 345600
       VisibilityTimeout: 5
-    Metadata:
-      SamResourceId: ProcessOutputQueue
+   
   ProcessInputQueue:
     Type: AWS::Serverless::Function
     Properties:
@@ -132,7 +94,6 @@ Resources:
             BatchSize: 10
       MemorySize: 128
       Timeout: 5
-  
   WriteTestResult:
     Type: AWS::Serverless::Function
     Properties:
@@ -165,7 +126,6 @@ Resources:
     DeletionPolicy: Retain
     Properties:
       LogGroupName: !Sub /aws/lambda/${WriteTestResult}
-  
   InputQueueDLQ:
     Type: AWS::SQS::Queue
     Properties:
@@ -187,9 +147,7 @@ Resources:
       StreamSpecification:
         StreamViewType: NEW_AND_OLD_IMAGES
     Metadata:
-      SamResourceId: DynamoDBTable  
-
-  
+      SamResourceId: DynamoDBTable
 Outputs:
   APIGatewayURL:
     Description: API Gateway EndPoint
@@ -197,9 +155,6 @@ Outputs:
   APIGatewayInputEndPoint:
     Description: API Gateway EndPoint
     Value: !Sub https://${Api}.execute-api.${AWS::Region}.amazonaws.com/Prod/inbox
-  APIGatewayOutputEndPoint:
-    Description: API Gateway EndPoint
-    Value: !Sub https://${Api}.execute-api.${AWS::Region}.amazonaws.com/Prod/outbox
   SQSInputQueue:
     Description: SQS Input Queue
     Value: !Ref InputQueue
@@ -215,4 +170,3 @@ Outputs:
   DynamoDBTableName:
     Description: Test Results Table
     Value: !Ref TestResultsTable
-  
