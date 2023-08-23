@@ -124,8 +124,7 @@ class TestApiGateway(TestCase):
         # since purge can be done once every 60 sec, we start with 60 sec sleep
         """
         logging.info("Teardown Phase...")
-        # time.sleep(60)
-
+        
         # Take particular care to ensure these values are unique and identifiable as TEST data.
         logging.info("Teardown DynamoDB...")
 
@@ -138,7 +137,9 @@ class TestApiGateway(TestCase):
                 for item in id_items["Items"]:
                     self.dynamodb_table.delete_item(Key={"id":item["id"]})
 
-        # cleaning input queue
+        # cleaning SQS queues
+        logging.info("Teardown SQS...")
+
         client = boto3.client("sqs")
         response = {}
 
