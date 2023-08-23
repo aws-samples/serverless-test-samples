@@ -36,7 +36,7 @@ class TestApiGateway(TestCase):
     # amount of time to wait between each check
     interval_timeout = int(service_level_agreement/interval_num)
 
-    #sleep_interval = 1 # for simple sleep usecases
+    
 
     aws_region = os.environ.get("AWS_DEFAULT_REGION") or "us-east-1"
 
