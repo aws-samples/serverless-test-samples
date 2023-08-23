@@ -60,7 +60,7 @@ The SAM CLI extends the AWS CLI that adds functionality for building and testing
 To use the SAM CLI, you need the following tools.
 
 * SAM CLI - [Install the SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
-* Python 3.9 - [Install Python 3.9](https://www.python.org/downloads/)
+* Python 3.9 and above - [Install Python 3.9](https://www.python.org/downloads/)
 
     In case you are using AWS cloud9, currently the default Python version is 3.7. you can check [here](https://repost.aws/questions/QU14iutbqtSsm1gHwQwt02pA/upgrade-to-python-3-9-on-cloud-9) how to update it.
 
@@ -98,9 +98,9 @@ For the integration tests, it is assumed that the full stack is already deployed
 
 The integration test setup determines the [API endpoint](./tests/integration/test_api_gatway.py#L60).  
 
-The [integration test tear-down](./tests/integration/test_api_gatway.py#L120) removes any data injected for the tests and purges each queue in case they have messages inside them. It also deletes tests results from the DynamoDB table.
+The [integration test tear-down](./tests/integration/test_api_gatway.py#L121) removes any data injected for the tests and purges each queue in case they have messages inside them. It also deletes tests results from the DynamoDB table.
 
-To run the integration test, create the environment variable "AWS_SAM_STACK_NAME" with the name of the test stack, and execute the test. It is also important to assure that the AWS region is set properly in the enviroment (AWS_DEFAULT_REGION).
+To run the integration test, create the environment variable "AWS_SAM_STACK_NAME" with the name of the test stack, and execute the test. It is also important to assure that the AWS region is set properly in the enviroment "AWS_DEFAULT_REGION".
 
 ```shell
 # Set the environment variables AWS_SAM_STACK_NAME and AWS_DEFAULT_REGION 
@@ -118,7 +118,7 @@ python3 -m pytest -s tests/integration -v
 
 # For INFO debug log you can run: python -m pytest -s tests/integration --log-cli-level=20
 ```
-in the [test_api_gateway.py](./tests/integration/test_api_gatway.py#L39) file you can control the polling mechanism for checking the test results, using:
+in the [test_api_gateway.py](./tests/integration/test_api_gatway.py#L33) file you can control the polling mechanism for checking the test results, using:
 ```shell
 service_level_agreement = 10 # total time to check is 10 seconds
 
