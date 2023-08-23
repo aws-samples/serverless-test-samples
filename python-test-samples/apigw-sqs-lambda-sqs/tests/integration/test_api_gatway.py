@@ -68,7 +68,7 @@ class TestApiGateway(TestCase):
 
         try:
             response = cf_client.describe_stacks(StackName=stack_name)
-            logging.info("Setup Stackname: %s", response)
+            #logging.info("Setup Stackname: %s", response)
         except Exception as error:
             raise ValueError(
                 f"Cannot find stack {stack_name}. \n"
@@ -113,9 +113,9 @@ class TestApiGateway(TestCase):
         self.dynamodb_table = self.dynamodb_resource.Table(name=self.dynamodb_table_name)
 
         # The following item, just a samole, and will be deleted in teardown #
-        self.dynamodb_table.put_item(Item={"id": "TEST000" + self.id_postfix,
-                                      "Queue_Name": "NAME#",
-                                      "Message": self.test_time + " Init DB Record" })
+        # self.dynamodb_table.put_item(Item={"id": "TEST000" + self.id_postfix,
+        #                               "Queue_Name": "NAME#",
+        #                               "Message": self.test_time + " Init DB Record" })
 
     def teardown_class(self) -> None:
         """
@@ -129,11 +129,10 @@ class TestApiGateway(TestCase):
         # Take particular care to ensure these values are unique and identifiable as TEST data.
         logging.info("Teardown DynamoDB...")
 
-        for test_id in ["TEST000", "TEST001" ,"TEST002"]:
+        for test_id in ["TEST000", "TEST001" ,"TEST002", "TEST003"]:
             message_id = test_id + self.id_postfix
             id_items = self.dynamodb_table.query(
                 KeyConditionExpression=Key('id').eq(message_id))
-            # print( f"ddd -> {id_items}")
 
             if "Items" in id_items:
                 for item in id_items["Items"]:
@@ -187,15 +186,16 @@ class TestApiGateway(TestCase):
             AttributeNames=['ApproximateNumberOfMessages']
         )
 
-    def test_api_gateway_200(self):
+    def test_positive_scenario(self):
         """
+        This is a positive test to verify that a valid message is going all the way to the output queue
         Call the API Gateway endpoint and check the response for a 200
         If the result is 200, check in the DynamoDB that the message arrived properly
         """
         # Send Message to the Inbox API with Test Data, SQS SLA is 5 seconds
 
         message_id = "TEST001" + self.id_postfix
-        message_text = self.test_time + " This is a test message"
+        message_text = self.test_time + " This is a test_positive_scenario"
         message = {
             "id": message_id,
             "message": message_text
@@ -212,10 +212,11 @@ class TestApiGateway(TestCase):
         id_items = self.dynamodb_table.query(
                 KeyConditionExpression=Key('id').eq(message_id))
         # Check that DynamoDB received the relevant message and from the relevant Queue
-        self.assertEqual(id_items["Count"], 1)
+        self.assertEqual(id_items["Count"], 1, "DB did not receive the message, Hint: check your sleep interval")
+        self.assertEqual(id_items["Items"][0]["Message"], message_text, "Wrong message received")
         sqs_output = self.sqs_output.split("/")[-1] 
         db_queue_name = id_items["Items"][0]["Queue_Name"].split(":")[-1]
-        self.assertEqual(db_queue_name, sqs_output)
+        self.assertEqual(db_queue_name, sqs_output, "Wrong Queue name.")
 
         # # looping for the number of times to check if there is a message in the quque
         # msg_found = False
@@ -242,18 +243,51 @@ class TestApiGateway(TestCase):
         #         logging.info("Message was not found in the output queue")
         #         self.fail("Message was not found in with in the SLA {self.service_level_agreement}")
 
-
-    def test_dead_letter_queue(self):
+    def test_false_positive_scenario(self):
         """
-        This funciton will create a mallform message and send it to the APIGW,
-        The Process Lambda will send error message to the Input Queue, 
+        This is a false positive test to verify that a valid message is going all the way to the output queue
+        Call the API Gateway endpoint and check the response for a 200
+        If the result is 200, check in the DynamoDB that the message arrived properly
+        """
+        # Send Message to the Inbox API with Test Data, SQS SLA is 5 seconds
+
+        message_id = "TEST002" + self.id_postfix
+        message_text = self.test_time + " This is a test_false_positive_scenario"
+        message = {
+            "id": message_id,
+            "message": message_text
+        }
+
+        response = requests.post(
+            self.api_endpoint_inbox, json=message, timeout=5)
+        self.assertEqual(response.status_code, 200)
+        logging.info("Sent message to Inbox API: %s", message)
+
+         # we sleep sleep interval before checking the DB and Queues
+        time.sleep(self.sleep_interval)
+
+        id_items = self.dynamodb_table.query(
+                KeyConditionExpression=Key('id').eq(message_id))
+        # Check that DynamoDB received the relevant message and from the relevant Queue
+        self.assertEqual(id_items["Count"], 1, "DB did not receive the message, Hint: check your sleep interval")
+        sqs_output = self.sqs_output.split("/")[-1] 
+        self.assertEqual(id_items["Items"][0]["Message"], message_text, "Wrong message received.")
+        db_queue_name = id_items["Items"][0]["Queue_Name"].split(":")[-1]
+        self.assertEqual(db_queue_name, sqs_output, "Wrong Queue name.")
+
+
+    def test_exception_scenario(self):
+        """
+        This test simulate unexpected exception in the process lambda (SUT)
+        The funciton create a mallform message and send it to the APIGW,
+        The Process Lambda will raise error exception and won't process the message, 
         hence the Queue will move the message to DLQ.
         The test will check the DLQ to see if a message was received
         """
         #response = {}
 
-        message_id = "TEST002" + self.id_postfix
-        message_text = self.test_time + " MALFORMED_MASSAGE - this is a malformed message"
+        message_id = "TEST003" + self.id_postfix
+        message_text = self.test_time + " MALFORMED_MASSAGE - this is a test_exception_scenario"
         message = {
             "id": message_id,
             "message": message_text
@@ -270,12 +304,13 @@ class TestApiGateway(TestCase):
 
         id_items = self.dynamodb_table.query(
                 KeyConditionExpression=Key('id').eq(message_id))
-        self.assertEqual(id_items["Count"], 1)
+        self.assertEqual(id_items["Count"], 1, "DB did not receive the message, Hint: check your sleep interval")
         self.assertEqual(id_items["Items"][0]["Message"], message_text)
+
         # in this test we expect that the message will arrive from input DLQ to the DynamoDB.
         sqs_output = self.sqs_input_dlq.split("/")[-1] 
         db_queue_name = id_items["Items"][0]["Queue_Name"].split(":")[-1]
-        self.assertEqual(db_queue_name, sqs_output)
+        self.assertEqual(db_queue_name, sqs_output,  "Wrong Queue name.")
 
 
         # # Check the Dealetter input Queue for any messages
