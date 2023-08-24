@@ -31,6 +31,7 @@ class TestApiGateway(TestCase):
     sqs_output_dlq: str
 
     service_level_agreement = 10
+
     # number of times to check if there is a message in the queue (can't be 0)
     interval_num = 5
     # amount of time to wait between each check
@@ -198,7 +199,7 @@ class TestApiGateway(TestCase):
 
         f_message_found = False
 
-        for i in range(self.service_level_agreement):
+        for i in range(self.interval_num):
             # Check that DynamoDB received the relevant message
             id_items = self.dynamodb_table.query(
                 KeyConditionExpression=Key('id').eq(id))
@@ -237,7 +238,8 @@ class TestApiGateway(TestCase):
         message_text = self.test_time + " This is a test_positive_scenario"
         message = {
             "id": message_id,
-            "message": message_text
+            "message": message_text,
+            "type": "TEST"
         }
 
         response = requests.post(
@@ -260,7 +262,8 @@ class TestApiGateway(TestCase):
         message_text = self.test_time + " This is a test_false_positive_scenario"
         message = {
             "id": message_id,
-           "message": message_text
+            "message": message_text,
+            "type": "TEST"
         }
 
         response = requests.post(
@@ -285,7 +288,8 @@ class TestApiGateway(TestCase):
         message_text = self.test_time + " MALFORMED_MASSAGE - this is a test_exception_scenario"
         message = {
             "id": message_id,
-            "message": message_text
+            "message": message_text,
+            "type": "TEST"
         }
 
         # Send Message to the Inbox API with Test Data, SQS SLA is 5 seconds

@@ -116,11 +116,17 @@ Resources:
           Properties:
             Queue: !GetAtt OutputQueue.Arn
             BatchSize: 10
+            FilterCriteria:
+              Filters:
+                - Pattern: {   "body": { "data": { "type": ["TEST"]  }}}
         InputQueueDLQ:
           Type: SQS
           Properties:
             Queue: !GetAtt InputQueueDLQ.Arn
             BatchSize: 10
+            FilterCriteria:
+              Filters:
+                - Pattern: {   "body": { "data": { "type": ["TEST"]  }}}
   WriteTestResultLogGroup:
     Type: AWS::Logs::LogGroup
     DeletionPolicy: Retain
