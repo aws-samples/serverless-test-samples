@@ -37,8 +37,6 @@ class TestApiGateway(TestCase):
     # amount of time to wait between each check
     interval_timeout = int(service_level_agreement/interval_num)
 
-    
-
     aws_region = os.environ.get("AWS_DEFAULT_REGION") or "us-east-1"
 
     # Create a random postfix for the id's to use in the message
@@ -233,13 +231,15 @@ class TestApiGateway(TestCase):
         If the result is 200, check in the DynamoDB that the message arrived properly
         """
         # Send Message to the Inbox API with Test Data, SQS SLA is 5 seconds
+        # The "type":TEST field is used, for filtering purposes,
+        # and to distinguish from other production messages
 
         message_id = "TEST001" + self.id_postfix
         message_text = self.test_time + " This is a test_positive_scenario"
         message = {
             "id": message_id,
             "message": message_text,
-            "type": "TEST"
+            "type": "TEST"      
         }
 
         response = requests.post(
@@ -257,6 +257,8 @@ class TestApiGateway(TestCase):
         If the result is 200, check in the DynamoDB that the message arrived properly
         """
         # Send Message to the Inbox API with Test Data, SQS SLA is 5 seconds
+        # The "type":TEST field is used, for filtering purposes,
+        # and to distinguish from other production messages
 
         message_id = "TEST002" + self.id_postfix
         message_text = self.test_time + " This is a test_false_positive_scenario"
@@ -282,7 +284,8 @@ class TestApiGateway(TestCase):
         hence the Queue will move the message to DLQ.
         The test will check the DLQ to see if a message was received
         """
-        #response = {}
+        # The "type":TEST field is used, for filtering purposes,
+        # and to distinguish from other production messages
 
         message_id = "TEST003" + self.id_postfix
         message_text = self.test_time + " MALFORMED_MASSAGE - this is a test_exception_scenario"
