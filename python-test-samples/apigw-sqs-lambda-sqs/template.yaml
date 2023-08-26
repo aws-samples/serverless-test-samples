@@ -4,6 +4,19 @@ Description: SAM Template for apigw-sqs-lambda-sqs
 Globals:
   Function:
     Timeout: 5
+Parameters:
+  EnvType:
+    Description: Environment type.
+    Default: test
+    Type: String
+    AllowedValues:
+      - prod
+      - test
+    ConstraintDescription: must specify prod or test.
+Conditions:
+  CreateTestResources: !Equals 
+    - !Ref EnvType
+    - test
 Resources:
   Api:
     Type: AWS::Serverless::Api
@@ -72,7 +85,14 @@ Resources:
         maxReceiveCount: 1
       MessageRetentionPeriod: 345600
       VisibilityTimeout: 5
-   
+  InputQueueDLQ:
+    Type: AWS::SQS::Queue
+    Properties:
+      MessageRetentionPeriod: 345600
+  OutputQueueDLQ:
+    Type: AWS::SQS::Queue
+    Properties:
+      MessageRetentionPeriod: 345600 
   ProcessInputQueue:
     Type: AWS::Serverless::Function
     Properties:
@@ -96,6 +116,7 @@ Resources:
       Timeout: 5
   WriteTestResult:
     Type: AWS::Serverless::Function
+    Condition: CreateTestResources
     Properties:
       CodeUri: src/write-test-result
       Handler: write_test_result.lambda_handler
@@ -129,19 +150,13 @@ Resources:
                 - Pattern: '{   "body": { "data": { "type": ["TEST"]  }}}'
   WriteTestResultLogGroup:
     Type: AWS::Logs::LogGroup
+    Condition: CreateTestResources
     DeletionPolicy: Retain
     Properties:
       LogGroupName: !Sub /aws/lambda/${WriteTestResult}
-  InputQueueDLQ:
-    Type: AWS::SQS::Queue
-    Properties:
-      MessageRetentionPeriod: 345600
-  OutputQueueDLQ:
-    Type: AWS::SQS::Queue
-    Properties:
-      MessageRetentionPeriod: 345600
   TestResultsTable:
     Type: AWS::DynamoDB::Table
+    Condition: CreateTestResources
     Properties:
       AttributeDefinitions:
         - AttributeName: id
@@ -174,5 +189,6 @@ Outputs:
     Description: SQS Output Dead leter Queue
     Value: !Ref OutputQueueDLQ
   DynamoDBTableName:
+    Condition: CreateTestResources
     Description: Test Results Table
     Value: !Ref TestResultsTable
