@@ -137,58 +137,9 @@ class TestApiGateway(TestCase):
                 for item in id_items["Items"]:
                     self.dynamodb_table.delete_item(Key={"id":item["id"]})
 
-        # cleaning SQS queues
-        logging.info("Teardown SQS...")
-
-        client = boto3.client("sqs")
-        response = {}
-
-        response = client.get_queue_attributes(
-            QueueUrl=self.sqs_input,
-            AttributeNames=['ApproximateNumberOfMessages']
-        )
-
-        message_count = int(response['Attributes']
-                            ['ApproximateNumberOfMessages'])
-        if message_count > 0:
-            logging.info("Cleaning input queue")
-            client.purge_queue(QueueUrl=self.sqs_input)  # purging input queue
-
-        response = client.get_queue_attributes(
-            QueueUrl=self.sqs_output,
-            AttributeNames=['ApproximateNumberOfMessages']
-        )
-
-        message_count = int(response['Attributes']
-                            ['ApproximateNumberOfMessages'])
-        if message_count > 0:
-            logging.info("Cleaning output queue")       # purging output queue
-            client.purge_queue(QueueUrl=self.sqs_output)
-
-        response = client.get_queue_attributes( QueueUrl=self.sqs_input_dlq,
-            AttributeNames=['ApproximateNumberOfMessages']
-        )
-
-        message_count = int(response['Attributes']['ApproximateNumberOfMessages'])
-        if message_count > 0:
-            logging.info("Cleaning input DLQ")          # purging inputDLQ queue
-            client.purge_queue(QueueUrl=self.sqs_input_dlq)
-
-        response = client.get_queue_attributes(QueueUrl=self.sqs_output_dlq,
-            AttributeNames=['ApproximateNumberOfMessages']
-        )
-
-        message_count = int(response['Attributes']['ApproximateNumberOfMessages'])
-        if message_count > 0:
-            logging.info("Cleaning output DLQ")         # purging output DLQ
-            client.purge_queue(QueueUrl=self.sqs_output_dlq)
-        response = client.get_queue_attributes(
-            QueueUrl=self.sqs_input,
-            AttributeNames=['ApproximateNumberOfMessages']
-        )
 
     @classmethod
-    def is_validate(self,id,message,queue) -> bool:
+    def is_validate(self,m_id,message,queue) -> bool:
         """ 
         This function will validate the id, quque name, message against the dynamodb table
         and will do so after several seconds sleep ( due to the nature of async messaging )
@@ -200,7 +151,7 @@ class TestApiGateway(TestCase):
         for i in range(self.interval_num):
             # Check that DynamoDB received the relevant message
             id_items = self.dynamodb_table.query(
-                KeyConditionExpression=Key('id').eq(id))
+                KeyConditionExpression=Key('id').eq(m_id))
 
             if id_items["Count"] == 1:
                 f_message_found = True
@@ -210,7 +161,7 @@ class TestApiGateway(TestCase):
             logging.info("Sleeping for %s seconds before checking again", self.interval_timeout)
             time.sleep(self.interval_timeout)
 
-        if f_message_found == False:
+        if f_message_found is False:
             logging.error("Message not found in DynamoDB, Hint: try to increase test timeout")
             return False
 
