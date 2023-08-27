@@ -129,7 +129,7 @@ Resources:
           TESTRESULTSTABLE_TABLE_NAME: !Ref TestResultsTable
           TESTRESULTSTABLE_TABLE_ARN: !GetAtt TestResultsTable.Arn
       Policies:
-        - DynamoDBCrudPolicy:
+        - DynamoDBWritePolicy:
             TableName: !Ref TestResultsTable
       Events:
         OutputQueue:

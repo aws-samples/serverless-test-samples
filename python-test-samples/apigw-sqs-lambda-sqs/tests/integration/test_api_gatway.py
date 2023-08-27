@@ -229,11 +229,12 @@ class TestApiGateway(TestCase):
 
     def test_exception_scenario(self):
         """
-        This test simulate unexpected exception in the process lambda (SUT)
-        The funciton create a mallform message and send it to the APIGW,
-        The Process Lambda will raise error exception and won't process the message, 
-        hence the Queue will move the message to DLQ.
-        The test will check the DLQ to see if a message was received
+        This test replicates an unforeseen exception within the process lambda 
+        (System Under Test or SUT). The function generates a corrupted message and
+        attemptstransmits it to the API Gateway (APIGW). As a result, the Process Lambda 
+        triggers an error exception and does not handle the message. Consequently, the message is 
+        redirected to the Dead Letter Queue (DLQ) by the Queue mechanism. The objective of the test
+        is to inspect the DLQ and confirm whether the message was successfully received there."
         """
         # The "type":TEST field is used, for filtering purposes,
         # and to distinguish from other production messages
