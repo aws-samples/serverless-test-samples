@@ -139,7 +139,7 @@ class TestApiGateway(TestCase):
 
 
     @classmethod
-    def is_validate(self,m_id,message,queue) -> bool:
+    def is_valid(self,m_id,message,queue) -> bool:
         """ 
         This function will validate the id, quque name, message against the dynamodb table
         and will do so after several seconds sleep ( due to the nature of async messaging )
@@ -180,11 +180,11 @@ class TestApiGateway(TestCase):
         This test verify that a valid message is going all the way to the output queue
         Call the API Gateway endpoint and check the response for a 200
         If the result is 200, check in the DynamoDB that the message arrived properly
-        """
+
         # Send Message to the Inbox API with Test Data, SQS SLA is 5 seconds
         # The "type":TEST field is used, for filtering purposes,
         # and to distinguish from other production messages
-
+        """
         message_id = "TEST001" + self.id_postfix
         message_text = self.test_time + " This is a test_positive_scenario"
         message = {
@@ -199,18 +199,20 @@ class TestApiGateway(TestCase):
         logging.info("Sent message to Inbox API: %s", message)
 
         message_queue =  self.sqs_output.split("/")[-1]
-        self.assertTrue(self.is_validate(message_id,message_text,message_queue))
+        self.assertTrue(self.is_valid(message_id,message_text,message_queue))
 
     def test_false_positive_scenario(self):
         """
         This test verify that a valid message is going all the way to the output queue
-        Call the API Gateway endpoint and check the response for a 200
+        Call the API Gateway endpoint and check the response for a 200, 
+        it distinguish from th first test by the message itself, so we can make sure that 
+        we recevei the correct message to the correct message id.
         If the result is 200, check in the DynamoDB that the message arrived properly
-        """
+
         # Send Message to the Inbox API with Test Data, SQS SLA is 5 seconds
         # The "type":TEST field is used, for filtering purposes,
         # and to distinguish from other production messages
-
+        """
         message_id = "TEST002" + self.id_postfix
         message_text = self.test_time + " This is a test_false_positive_scenario"
         message = {
@@ -225,7 +227,7 @@ class TestApiGateway(TestCase):
         logging.info("Sent message to Inbox API: %s", message)
 
         message_queue =  self.sqs_output.split("/")[-1]
-        self.assertTrue(self.is_validate(message_id,message_text,message_queue))
+        self.assertTrue(self.is_valid(message_id,message_text,message_queue))
 
     def test_exception_scenario(self):
         """
@@ -254,4 +256,4 @@ class TestApiGateway(TestCase):
         logging.info("Sent message to Inbox API: %s", message)
 
         message_queue =  self.sqs_input_dlq.split("/")[-1]
-        self.assertTrue(self.is_validate(message_id,message_text,message_queue))
+        self.assertTrue(self.is_valid(message_id,message_text,message_queue))
