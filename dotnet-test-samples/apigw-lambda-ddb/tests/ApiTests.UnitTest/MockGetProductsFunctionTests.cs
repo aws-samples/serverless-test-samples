@@ -1,10 +1,10 @@
 using Amazon.Lambda.TestUtilities;
 using FluentAssertions;
 using GetProducts;
-using Moq;
 using ServerlessTestApi.Core.DataAccess;
 using ServerlessTestApi.Core.Models;
 using System.Text.Json;
+using FakeItEasy;
 
 namespace ApiTests.UnitTest;
 
@@ -17,11 +17,13 @@ public class MockGetProductsFunctionTests : FunctionTest<Function>
         var request = new ApiRequestBuilder()
             .WithHttpMethod(HttpMethod.Get)
             .Build();
-        var data = new Mock<IProductsDAO>();
+        var fakeProductDao = A.Fake<IProductsDAO>();
 
-        data.Setup(d => d.GetAllProducts(It.IsAny<CancellationToken>())).ReturnsAsync(new ProductWrapper(new()));
+        A.CallTo(() => fakeProductDao.GetAllProducts(A<CancellationToken>._))
+            .Returns(Task.FromResult(
+                new ProductWrapper(new List<ProductDTO>())));
 
-        var function = new Function(data.Object, Logger, JsonOptions);
+        var function = new Function(fakeProductDao, Logger, JsonOptions);
 
         // act
         var response = await function.FunctionHandler(request, new TestLambdaContext());
@@ -43,15 +45,16 @@ public class MockGetProductsFunctionTests : FunctionTest<Function>
             .Build();
 
         var expected = new ProductWrapper(
-            new(capacity: 1)
+            new List<ProductDTO>(capacity: 1)
             {
                 new("testid", "test product", 10),
             });
-        var data = new Mock<IProductsDAO>();
+        var fakeProductDao = A.Fake<IProductsDAO>();
 
-        data.Setup(d => d.GetAllProducts(It.IsAny<CancellationToken>())).ReturnsAsync(expected);
+        A.CallTo(() => fakeProductDao.GetAllProducts(A<CancellationToken>._))
+            .Returns(Task.FromResult(expected));
 
-        var function = new Function(data.Object, Logger, JsonOptions);
+        var function = new Function(fakeProductDao, Logger, JsonOptions);
 
         // act
         var response = await function.FunctionHandler(request, new TestLambdaContext());
@@ -75,11 +78,12 @@ public class MockGetProductsFunctionTests : FunctionTest<Function>
             .WithHttpMethod(httpMethod)
             .Build();
 
-        var data = new Mock<IProductsDAO>();
+        var fakeProductDao = A.Fake<IProductsDAO>();
 
-        data.Setup(d => d.GetAllProducts(It.IsAny<CancellationToken>())).ReturnsAsync(new ProductWrapper(new()));
+        A.CallTo(() => fakeProductDao.GetAllProducts(A<CancellationToken>._))
+            .Returns(Task.FromResult(new ProductWrapper(new List<ProductDTO>())));
 
-        var function = new Function(data.Object, Logger, JsonOptions);
+        var function = new Function(fakeProductDao, Logger, JsonOptions);
 
         // act
         var result = await function.FunctionHandler(request, new TestLambdaContext());
@@ -96,12 +100,12 @@ public class MockGetProductsFunctionTests : FunctionTest<Function>
             .WithHttpMethod(HttpMethod.Get)
             .Build();
 
-        var data = new Mock<IProductsDAO>();
+        var fakeProductDao = A.Fake<IProductsDAO>();
 
-        data.Setup(d => d.GetAllProducts(It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new NullReferenceException());
+        A.CallTo(() => fakeProductDao.GetAllProducts(A<CancellationToken>._))
+            .Throws<NullReferenceException>();
 
-        var function = new Function(data.Object, Logger, JsonOptions);
+        var function = new Function(fakeProductDao, Logger, JsonOptions);
 
         // act
         var response = await function.FunctionHandler(request, new TestLambdaContext());
@@ -118,12 +122,12 @@ public class MockGetProductsFunctionTests : FunctionTest<Function>
             .WithHttpMethod(HttpMethod.Get)
             .Build();
 
-        var data = new Mock<IProductsDAO>();
+        var fakeProductDao = A.Fake<IProductsDAO>();
 
-        data.Setup(d => d.GetAllProducts(It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new TaskCanceledException());
+        A.CallTo(() => fakeProductDao.GetAllProducts(A<CancellationToken>._))
+            .Throws<TaskCanceledException>();
 
-        var function = new Function(data.Object, Logger, JsonOptions);
+        var function = new Function(fakeProductDao, Logger, JsonOptions);
 
         // act
         var response = await function.FunctionHandler(request, new TestLambdaContext());

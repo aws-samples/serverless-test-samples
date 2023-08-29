@@ -133,7 +133,7 @@ public async Task PutProduct_WithValidBody_ShouldReturnSuccess()
     var jsonOptions = Options.Create(new JsonSerializerOptions(JsonSerializerDefaults.Web));
     var dao = new Mock<ProductsDAO>();
 
-    dao.Setup(d => d.PutProduct(It.IsAny<Product>(), It.IsAny<CancellationToken>()))
+    dao.Setup(d => d.PutProduct(A<Product>._, A<CancellationToken>._))
        .Callback((Product p, CancellationToken ct) => product = p))
        .ReturnsAsync(UpsertResult.Inserted);
     

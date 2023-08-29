@@ -1,6 +1,6 @@
 using Amazon.Lambda.TestUtilities;
+using FakeItEasy;
 using FluentAssertions;
-using Moq;
 using PutProduct;
 using ServerlessTestApi.Core.DataAccess;
 using ServerlessTestApi.Core.Models;
@@ -21,21 +21,24 @@ public class MockPutProductFunctionTests : FunctionTest<Function>
             .WithPathParameter("id", dto.Id)
             .Build();
         
-        var data = new Mock<IProductsDAO>();
+        var fakeProductDao = A.Fake<IProductsDAO>();
 
-        data.Setup(d => d.PutProduct(It.IsAny<Product>(), It.IsAny<CancellationToken>()))
-            .Callback((Product p, CancellationToken ct) => product = p)
-            .ReturnsAsync(UpsertResult.Inserted);
+
+        A.CallTo(() => fakeProductDao.PutProduct(A<Product>._, A<CancellationToken>._))
+            .Invokes(ctx => product = ctx.Arguments.Get<Product>(0))
+            .Returns(Task.FromResult(UpsertResult.Inserted));
         
-        var function = new Function(data.Object, Logger, JsonOptions);
+        var function = new Function(fakeProductDao, Logger, JsonOptions);
 
         // act
         var response = await function.FunctionHandler(request, new TestLambdaContext());
 
         // assert
-        response.StatusCode.Should().Be(201);
-        response.Headers["Location"].Should().Be("https://localhost/dev/testid");
-        product.Should().BeEquivalentTo(dto);
+        Assert.Multiple(
+            () => response.StatusCode.Should().Be(201),
+            () => response.Headers["Location"].Should().Be("https://localhost/dev/testid"),
+            () => product.Should().BeEquivalentTo(dto)
+            );
     }
 
     [Fact]
@@ -50,13 +53,13 @@ public class MockPutProductFunctionTests : FunctionTest<Function>
             .WithPathParameter("id", dto.Id)
             .Build();
 
-        var data = new Mock<IProductsDAO>();
+        var fakeProductDao = A.Fake<IProductsDAO>();
 
-        data.Setup(d => d.PutProduct(It.IsAny<Product>(), It.IsAny<CancellationToken>()))
-            .Callback((Product p, CancellationToken ct) => product = p)
-            .ReturnsAsync(UpsertResult.Updated);
+        A.CallTo(() => fakeProductDao.PutProduct(A<Product>._, A<CancellationToken>._))
+            .Invokes(ctx => product = ctx.Arguments.Get<Product>(0))
+            .Returns(Task.FromResult(UpsertResult.Updated));
 
-        var function = new Function(data.Object, Logger, JsonOptions);
+        var function = new Function(fakeProductDao, Logger, JsonOptions);
 
         // act
         var response = await function.FunctionHandler(request, new TestLambdaContext());
@@ -76,15 +79,16 @@ public class MockPutProductFunctionTests : FunctionTest<Function>
             .WithPathParameter("id", product.Id)
             .Build();
         
-        var data = new Mock<IProductsDAO>();
-        var function = new Function(data.Object, Logger, JsonOptions);
+        var fakeProductDao = A.Fake<IProductsDAO>();
+        var function = new Function(fakeProductDao, Logger, JsonOptions);
 
         // act
         var response = await function.FunctionHandler(request, new TestLambdaContext());
 
         // assert
         response.StatusCode.Should().Be(400);
-        data.Verify(d => d.PutProduct(It.IsAny<Product>(), It.IsAny<CancellationToken>()), Times.Never);
+        
+        A.CallTo(() => fakeProductDao.PutProduct(A<Product>._, A<CancellationToken>._)).MustNotHaveHappened();
     }
         
     [Fact]
@@ -98,8 +102,8 @@ public class MockPutProductFunctionTests : FunctionTest<Function>
             .WithBody(product)
             .Build();
         
-        var data = new Mock<IProductsDAO>();
-        var function = new Function(data.Object, Logger, JsonOptions);
+        var fakeProductDao = A.Fake<IProductsDAO>();
+        var function = new Function(fakeProductDao, Logger, JsonOptions);
 
         // act
         var response = await function.FunctionHandler(request, new TestLambdaContext());
@@ -107,7 +111,8 @@ public class MockPutProductFunctionTests : FunctionTest<Function>
         // assert
         response.StatusCode.Should().Be(400);
         response.Body.Should().Be("Product ID in the body does not match path parameter");
-        data.Verify(d => d.PutProduct(It.IsAny<Product>(), It.IsAny<CancellationToken>()), Times.Never);
+        
+        A.CallTo(() => fakeProductDao.PutProduct(A<Product>._, A<CancellationToken>._)).MustNotHaveHappened();
     }
     
     [Theory]
@@ -121,8 +126,8 @@ public class MockPutProductFunctionTests : FunctionTest<Function>
             .WithHttpMethod(httpMethod)
             .Build();
         
-        var data = new Mock<IProductsDAO>();
-        var function = new Function(data.Object, Logger, JsonOptions);
+        var fakeProductDao = A.Fake<IProductsDAO>();
+        var function = new Function(fakeProductDao, Logger, JsonOptions);
 
         // act
         var response = await function.FunctionHandler(request, new TestLambdaContext());
@@ -143,12 +148,12 @@ public class MockPutProductFunctionTests : FunctionTest<Function>
             .WithBody(product)
             .Build();
         
-        var data = new Mock<IProductsDAO>();
+        var fakeProductDao = A.Fake<IProductsDAO>();
 
-        data.Setup(d => d.PutProduct(It.IsAny<Product>(), It.IsAny<CancellationToken>()))
+        A.CallTo(() => fakeProductDao.PutProduct(A<Product>._, A<CancellationToken>._))
             .ThrowsAsync(new NullReferenceException());
 
-        var function = new Function(data.Object, Logger, JsonOptions);
+        var function = new Function(fakeProductDao, Logger, JsonOptions);
 
         // act
         var response = await function.FunctionHandler(request, new TestLambdaContext());
@@ -169,12 +174,12 @@ public class MockPutProductFunctionTests : FunctionTest<Function>
             .WithBody(product)
             .Build();
 
-        var data = new Mock<IProductsDAO>();
+        var fakeProductDao = A.Fake<IProductsDAO>();
 
-        data.Setup(d => d.PutProduct(It.IsAny<Product>(), It.IsAny<CancellationToken>()))
+        A.CallTo(() => fakeProductDao.PutProduct(A<Product>._, A<CancellationToken>._))
             .ThrowsAsync(new TaskCanceledException());
 
-        var function = new Function(data.Object, Logger, JsonOptions);
+        var function = new Function(fakeProductDao, Logger, JsonOptions);
 
         // act
         var response = await function.FunctionHandler(request, new TestLambdaContext());
