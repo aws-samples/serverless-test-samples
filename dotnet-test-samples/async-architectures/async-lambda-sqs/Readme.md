@@ -1,3 +1,10 @@
+[![.NET: 6.0](https://img.shields.io/badge/.NET-6.0-Green)]()
+[![AWS: Lambda](https://img.shields.io/badge/AWS-Lambda-blueviolet)]()
+[![Amazon: S3](https://img.shields.io/badge/Amazon-S3-blueviolet)]()
+[![Amazon: SQS](https://img.shields.io/badge/Amazon-SQS-blueviolet)]()
+[![test: unit](https://img.shields.io/badge/Test-Unit-blue)]()
+[![test: integration](https://img.shields.io/badge/Test-Integration-yellow)]()
+
 # Asynchronous Integration Test with Amazon Simple Queue Service (SQS)
 You may use a variety of resource types to create the event listener for your asynchronous system under test ([more about event listeners](https://github.com/aws-samples/serverless-test-samples/tree/main/dotnet-test-samples/async-architectures#create-event-listeners-in-test-environments)).
 

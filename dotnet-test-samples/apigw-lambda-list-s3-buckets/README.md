@@ -1,3 +1,10 @@
+[![.NET: 6.0](https://img.shields.io/badge/.NET-6.0-Green)]()
+[![AWS: Lambda](https://img.shields.io/badge/AWS-Lambda-blueviolet)]()
+[![Amazon: Api Gateway](https://img.shields.io/badge/Amazon-API%20Gateway-blueviolet)]()
+[![Amazon: S3](https://img.shields.io/badge/Amazon-S3-blueviolet)]()
+[![test: unit](https://img.shields.io/badge/Test-Unit-blue)]()
+[![test: integration](https://img.shields.io/badge/Test-Integration-yellow)]()
+
 # .NET Test Samples Starter Project
 
 This project contains automated test sample code samples for serverless applications. The project uses the [AWS Serverless Application Model](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) (SAM) CLI for configuration, testing and deployment. 

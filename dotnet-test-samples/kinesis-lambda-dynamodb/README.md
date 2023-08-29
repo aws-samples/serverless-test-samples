@@ -1,9 +1,9 @@
-[![Built with: .Net 6](https://img.shields.io/badge/Microsoft-.Net%206-blue?style=plastic&logo=microsoft)](https://learn.microsoft.com/en-us/dotnet/core/introduction)
-[![AWS: Kinesis](https://img.shields.io/badge/Amazon-Kinesis-blueviolet?style=plastic&logo=amazonaws)]()
-[![AWS: Lambda](https://img.shields.io/badge/AWS-Lambda-orange?style=plastic&logo=amazonaws)]()
-[![AWS: DynamoDB](https://img.shields.io/badge/Amazon-DynamoDB-darkblue?style=plastic&logo=amazonaws)]()
-[![test: unit](https://img.shields.io/badge/Test-Unit-blue?style=plastic&logo=)]()
-[![test: integration](https://img.shields.io/badge/Test-Integration-yellow?style=plastic&logo=)]()
+[![.NET: 6.0](https://img.shields.io/badge/.NET-6.0-Green)](https://img.shields.io/badge/.NET-6.0-Green)
+[![AWS: Lambda](https://img.shields.io/badge/AWS-Lambda-blueviolet)]()
+[![AWS: Kinesis](https://img.shields.io/badge/AWS-Kinesis-blueviolet)]()
+[![AWS: DynamoDB](https://img.shields.io/badge/Amazon-DynamoDB-blueviolet)]()
+[![test: unit](https://img.shields.io/badge/Test-Unit-blue)]()
+[![test: integration](https://img.shields.io/badge/Test-Integration-yellow)]()
 
 ## Amazon Kinesis Data Streams, AWS Lambda Function & Amazon DynamoDB
 
