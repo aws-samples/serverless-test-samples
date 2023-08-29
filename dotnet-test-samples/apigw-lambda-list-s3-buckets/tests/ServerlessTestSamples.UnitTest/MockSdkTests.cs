@@ -6,12 +6,12 @@ using Amazon.XRay.Recorder.Core;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Moq;
 using ServerlessTestSamples.Core.Queries;
 using ServerlessTestSamples.Integrations;
 using ServerlessTestSamples.UnitTest.Models;
 using System.Net;
 using System.Text.Json;
+using FakeItEasy;
 
 namespace ServerlessTestSamples.UnitTest;
 
@@ -23,10 +23,10 @@ public class MockSdkTests
         AWSXRayRecorder.InitializeInstance();
         AWSXRayRecorder.Instance.BeginSegment("UnitTests");
     }
+    
+    private ILogger<Function> Logger { get; } = A.Fake<ILogger<Function>>();
 
-    private ILogger<Function> Logger { get; } = Mock.Of<ILogger<Function>>();
-
-    private ILogger<ListStorageAreasQueryHandler> HandlerLogger { get; } = Mock.Of<ILogger<ListStorageAreasQueryHandler>>();
+    private ILogger<ListStorageAreasQueryHandler> HandlerLogger { get; } = A.Fake<ILogger<ListStorageAreasQueryHandler>>();
 
     private IOptions<JsonSerializerOptions> JsonOptions { get; } =
         Options.Create(new JsonSerializerOptions(JsonSerializerDefaults.Web));
@@ -35,21 +35,21 @@ public class MockSdkTests
     public async Task TestLambdaHandler_With_ValidS3Response_Should_ReturnSuccess()
     {
         // arrange
-        var s3 = new Mock<IAmazonS3>();
+        var fakeS3 = A.Fake<IAmazonS3>();
 
-        s3.Setup(p => p.ListBucketsAsync(It.IsAny<CancellationToken>()))
-          .ReturnsAsync(new ListBucketsResponse()
+        A.CallTo(() => fakeS3.ListBucketsAsync(A<CancellationToken>._))
+          .Returns(Task.FromResult(new ListBucketsResponse()
           {
-              Buckets = new()
+              Buckets = new List<S3Bucket>
               {
                   new(){ BucketName = "bucket1" },
                   new(){ BucketName = "bucket2" },
                   new(){ BucketName = "bucket3" },
               },
               HttpStatusCode = HttpStatusCode.OK,
-          });
+          }));
 
-        var storageService = new S3StorageService(s3.Object);
+        var storageService = new S3StorageService(fakeS3);
         var handler = new ListStorageAreasQueryHandler(storageService, HandlerLogger);
         var function = new Function(handler, Logger, JsonOptions);
 
@@ -77,16 +77,16 @@ public class MockSdkTests
     public async Task TestLambdaHandler_With_EmptyS3Response_Should_ReturnEmpty()
     {
         // arrange
-        var s3 = new Mock<IAmazonS3>();
+        var fakeS3 = A.Fake<IAmazonS3>();
 
-        s3.Setup(p => p.ListBucketsAsync(It.IsAny<CancellationToken>()))
-          .ReturnsAsync(new ListBucketsResponse()
+        A.CallTo(() => fakeS3.ListBucketsAsync(A<CancellationToken>._))
+          .Returns(Task.FromResult(new ListBucketsResponse
           {
-              Buckets = new(),
+              Buckets = new List<S3Bucket>(),
               HttpStatusCode = HttpStatusCode.OK,
-          });
+          }));
 
-        var storageService = new S3StorageService(s3.Object);
+        var storageService = new S3StorageService(fakeS3);
         var handler = new ListStorageAreasQueryHandler(storageService, HandlerLogger);
         var function = new Function(handler, Logger, JsonOptions);
 
@@ -105,16 +105,16 @@ public class MockSdkTests
     public async Task TestLambdaHandler_With_S3NullResponse_Should_ReturnEmpty()
     {
         // arrange
-        var s3 = new Mock<IAmazonS3>();
+        var fakeS3 = A.Fake<IAmazonS3>();
 
-        s3.Setup(p => p.ListBucketsAsync(It.IsAny<CancellationToken>()))
-          .ReturnsAsync(new ListBucketsResponse()
+        A.CallTo(() => fakeS3.ListBucketsAsync(A<CancellationToken>._))
+          .Returns(Task.FromResult(new ListBucketsResponse
           {
               Buckets = null,
               HttpStatusCode = HttpStatusCode.BadRequest,
-          });
+          }));
 
-        var storageService = new S3StorageService(s3.Object);
+        var storageService = new S3StorageService(fakeS3);
         var handler = new ListStorageAreasQueryHandler(storageService, HandlerLogger);
         var function = new Function(handler, Logger, JsonOptions);
 
@@ -133,12 +133,12 @@ public class MockSdkTests
     public async Task TestLambdaHandler_With_S3Exception_Should_ReturnEmpty()
     {
         // arrange
-        var s3 = new Mock<IAmazonS3>();
+        var fakeS3 = A.Fake<IAmazonS3>();
 
-        s3.Setup(p => p.ListBucketsAsync(It.IsAny<CancellationToken>()))
-          .ThrowsAsync(new AmazonS3Exception("Mock S3 failure"));
+        A.CallTo(() => fakeS3.ListBucketsAsync(A<CancellationToken>._))
+          .Throws(new AmazonS3Exception("Mock S3 failure"));
 
-        var storageService = new S3StorageService(s3.Object);
+        var storageService = new S3StorageService(fakeS3);
         var handler = new ListStorageAreasQueryHandler(storageService, HandlerLogger);
         var function = new Function(handler, Logger, JsonOptions);
 

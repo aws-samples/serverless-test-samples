@@ -239,7 +239,7 @@ public async Task TestCoreBusinessLogicWithSuccessfulResponse_ShouldReturnStorag
 {
     var mockStorageService = new Mock<IStorageService>();
     
-    mockStorageService.Setup(s => s.ListStorageAreas(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+    mockStorageService.Setup(s => s.ListStorageAreas(A<string>(), A<CancellationToken>()))
                       .ReturnsAsync(new List<string>()
                        {
                            "bucket1",
@@ -266,7 +266,7 @@ public async Task TestCoreBusinessLogicWithSuccessfulResponse_ShouldReturnStorag
 
 Using Moq, it is possible to create a Mock implementation of any object. Once mocked, it is possible to setup how different methods will be invoked.
 
-In this example, a mock implementation of the ListStorageAreas is added that will be invoked. The It.IsAny<string>() line determines which parameters will cause this mock to be invoked. In this case, if any string is passed into the method this mock will be invoked. The ReturnsAsync method then allows us to define what will be be returned by the mock. In this instance, we are returning a hardcoded list of strings.
+In this example, a mock implementation of the ListStorageAreas is added that will be invoked. The A<string>() line determines which parameters will cause this mock to be invoked. In this case, if any string is passed into the method this mock will be invoked. The ReturnsAsync method then allows us to define what will be be returned by the mock. In this instance, we are returning a hardcoded list of strings.
 
 When the ListStorageAreasQueryHandler is initialised the instance of our mock storage service is passed in.
 
@@ -284,7 +284,7 @@ public async Task TestLambdaHandlerWithValidS3Response_ShouldReturnSuccess()
 {
     var mockedS3Client = new Mock<IAmazonS3>();
     
-    mockedS3Client.Setup(p => p.ListBucketsAsync(It.IsAny<CancellationToken>()))
+    mockedS3Client.Setup(p => p.ListBucketsAsync(A<CancellationToken>()))
                   .ReturnsAsync(new ListBucketsResponse()
                    {
                        Buckets = new List<S3Bucket>()
@@ -330,7 +330,7 @@ public async Task TestLambdaHandlerWithS3Exception_ShouldReturnEmpty()
 {
     var mockedS3Client = new Mock<IAmazonS3>();
     
-    mockedS3Client.Setup(p => p.ListBucketsAsync(It.IsAny<CancellationToken>()))
+    mockedS3Client.Setup(p => p.ListBucketsAsync(A<CancellationToken>()))
                   .ThrowsAsync(new AmazonS3Exception("Mock S3 failure"));
     
     var storageService = new S3StorageService(mockedS3Client.Object);
