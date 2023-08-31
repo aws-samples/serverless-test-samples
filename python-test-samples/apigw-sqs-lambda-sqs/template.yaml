@@ -4,6 +4,19 @@ Description: SAM Template for apigw-sqs-lambda-sqs
 Globals:
   Function:
     Timeout: 5
+Parameters:
+  EnvType:
+    Description: Environment type.
+    Default: test
+    Type: String
+    AllowedValues:
+      - prod
+      - test
+    ConstraintDescription: must specify prod or test.
+Conditions:
+  CreateTestResources: !Equals 
+    - !Ref EnvType
+    - test
 Resources:
   Api:
     Type: AWS::Serverless::Api
@@ -33,13 +46,6 @@ Resources:
               responses:
                 '200':
                   description: 200 response
-          /outbox:
-            get:
-              x-amazon-apigateway-integration:
-                httpMethod: POST
-                type: aws_proxy
-                uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CheckOutputQueue.Arn}/invocations
-              responses: {}
       EndpointConfiguration: REGIONAL
       TracingEnabled: true
   ApiProcessInputQueuesendmessageRole:
@@ -63,36 +69,6 @@ Resources:
                 Resource: !GetAtt InputQueue.Arn
             Version: '2012-10-17'
           PolicyName: ApiinboxsendmessagePolicy
-  CheckOutputQueue:
-    Type: AWS::Serverless::Function
-    Properties:
-      Description: !Sub
-        - Stack ${AWS::StackName} Function ${ResourceName}
-        - ResourceName: CheckOutputQueue
-      CodeUri: src/check-output-queue
-      Handler: check_output_queue.lambda_handler
-      Runtime: python3.9
-      MemorySize: 128
-      Timeout: 5
-      Tracing: Active
-      Environment:
-        Variables:
-          INPUT_QUEUE_NAME: !Ref InputQueue
-          OUTPUT_QUEUE_NAME: !Ref OutputQueue
-      Policies:
-        - AmazonSQSFullAccess
-      Events:
-        ApiGEToutbox:
-          Type: Api
-          Properties:
-            Path: /outbox
-            Method: GET
-            RestApiId: !Ref Api
-  CheckOutputQueueLogGroup:
-    Type: AWS::Logs::LogGroup
-    DeletionPolicy: Retain
-    Properties:
-      LogGroupName: !Sub /aws/lambda/${CheckOutputQueue}
   InputQueue:
     Type: AWS::SQS::Queue
     Properties:
@@ -109,8 +85,14 @@ Resources:
         maxReceiveCount: 1
       MessageRetentionPeriod: 345600
       VisibilityTimeout: 5
-    Metadata:
-      SamResourceId: ProcessOutputQueue
+  InputQueueDLQ:
+    Type: AWS::SQS::Queue
+    Properties:
+      MessageRetentionPeriod: 345600
+  OutputQueueDLQ:
+    Type: AWS::SQS::Queue
+    Properties:
+      MessageRetentionPeriod: 345600 
   ProcessInputQueue:
     Type: AWS::Serverless::Function
     Properties:
@@ -132,14 +114,61 @@ Resources:
             BatchSize: 10
       MemorySize: 128
       Timeout: 5
-  InputQueueDLQ:
-    Type: AWS::SQS::Queue
+  WriteTestResult:
+    Type: AWS::Serverless::Function
+    Condition: CreateTestResources
     Properties:
-      MessageRetentionPeriod: 345600
-  OutputQueueDLQ:
-    Type: AWS::SQS::Queue
+      CodeUri: src/write-test-result
+      Handler: write_test_result.lambda_handler
+      Runtime: python3.9
+      MemorySize: 128
+      Timeout: 5
+      Tracing: Active
+      Environment:
+        Variables:
+          TESTRESULTSTABLE_TABLE_NAME: !Ref TestResultsTable
+          TESTRESULTSTABLE_TABLE_ARN: !GetAtt TestResultsTable.Arn
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref TestResultsTable
+      Events:
+        OutputQueue:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt OutputQueue.Arn
+            BatchSize: 10
+            FilterCriteria:
+              Filters:
+                - Pattern: '{   "body": { "data": { "type": ["TEST"]  }}}'
+        InputQueueDLQ:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt InputQueueDLQ.Arn
+            BatchSize: 10            
+            FilterCriteria:
+              Filters:
+                - Pattern: '{   "body": { "data": { "type": ["TEST"]  }}}'
+  WriteTestResultLogGroup:
+    Type: AWS::Logs::LogGroup
+    Condition: CreateTestResources
+    DeletionPolicy: Retain
     Properties:
-      MessageRetentionPeriod: 345600
+      LogGroupName: !Sub /aws/lambda/${WriteTestResult}
+  TestResultsTable:
+    Type: AWS::DynamoDB::Table
+    Condition: CreateTestResources
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+    Metadata:
+      SamResourceId: DynamoDBTable
 Outputs:
   APIGatewayURL:
     Description: API Gateway EndPoint
@@ -147,9 +176,6 @@ Outputs:
   APIGatewayInputEndPoint:
     Description: API Gateway EndPoint
     Value: !Sub https://${Api}.execute-api.${AWS::Region}.amazonaws.com/Prod/inbox
-  APIGatewayOutputEndPoint:
-    Description: API Gateway EndPoint
-    Value: !Sub https://${Api}.execute-api.${AWS::Region}.amazonaws.com/Prod/outbox
   SQSInputQueue:
     Description: SQS Input Queue
     Value: !Ref InputQueue
@@ -162,3 +188,7 @@ Outputs:
   SQSOutputQueueDLQ:
     Description: SQS Output Dead leter Queue
     Value: !Ref OutputQueueDLQ
+  DynamoDBTableName:
+    Condition: CreateTestResources
+    Description: Test Results Table
+    Value: !Ref TestResultsTable
