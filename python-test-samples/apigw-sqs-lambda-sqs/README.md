@@ -36,7 +36,7 @@ The project uses the [AWS Serverless Application Model](https://docs.aws.amazon.
 
 The sample project allows a user to call an API endpoint (using /inbox) and generate a custom "test/hello" message so it can trigger a test. Each test result is stored on a DynamoDB table. The following diagram demonstrated the architecture and flow. The following diagram has been created using the [AWS Application Composer](https://aws.amazon.com/application-composer/), which can help you visually design and build serverless applications quickly.
 
-![Event Sequence](img/architecture.png)
+![Event Sequence](img/architecture.PNG)
 
 This project consists of an [API Gateway](https://aws.amazon.com/api-gateway/), two [AWS Lambda](https://aws.amazon.com/lambda) functions, two [Amazon SQS](https://aws.amazon.com/sqs) standard queues which are using 2 DLQ queues accordingly for error handling and a [DynamoDB](https://aws.amazon.com/dynamodb) table.
 
