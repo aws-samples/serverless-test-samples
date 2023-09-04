@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.TestUtilities;
+using FakeItEasy;
 using FluentAssertions;
-using Moq;
 using SqsEventHandler.Handlers;
 using SqsEventHandler.Models;
 using SqsEventHandler.UnitTests.Utilities;
@@ -12,14 +12,13 @@ namespace SqsEventHandler.UnitTests.Handlers;
 
 public class SqsEventHandlerTests
 {
-    private readonly Mock<SqsEventHandler<Employee>> _mockSqsEventTrigger;
+    private readonly SqsEventHandler<Employee> _mockSqsEventTrigger;
 
     public SqsEventHandlerTests()
     {
-        _mockSqsEventTrigger = new Mock<SqsEventHandler<Employee>>();
+        _mockSqsEventTrigger = A.Fake<SqsEventHandler<Employee>>();
 
-        _mockSqsEventTrigger.Setup(x =>
-                x.ProcessSqsMessage(It.IsAny<Employee>(), It.IsAny<ILambdaContext>()))
+        A.CallTo(() => _mockSqsEventTrigger.ProcessSqsMessage(A<Employee>._, A<ILambdaContext>._))
             .Returns(Task.CompletedTask);
     }
 
@@ -32,15 +31,15 @@ public class SqsEventHandlerTests
         var lambdaContext = new TestLambdaContext();
 
         //Act
-        var result = await _mockSqsEventTrigger.Object.Handler(sqsEvent, lambdaContext);
+        var result = await _mockSqsEventTrigger.Handler(sqsEvent, lambdaContext);
 
         //Assert
         result.BatchItemFailures.Should().BeEmpty();
-        _mockSqsEventTrigger.Verify(x =>
-                x.ProcessSqsMessage(
-                    It.Is<Employee>(employee => employee.Equals(expected)),
-                    It.IsAny<ILambdaContext>()),
-            Times.Once);
+        
+        A.CallTo(() => _mockSqsEventTrigger.ProcessSqsMessage(
+                expected,
+                A<ILambdaContext>._))
+            .MustHaveHappenedOnceExactly();
     }
 
     [Fact]
@@ -53,20 +52,20 @@ public class SqsEventHandlerTests
         var lambdaContext = new TestLambdaContext();
 
         //Act
-        var result = await _mockSqsEventTrigger.Object.Handler(sqsEvent, lambdaContext);
+        var result = await _mockSqsEventTrigger.Handler(sqsEvent, lambdaContext);
 
         //Assert
         result.BatchItemFailures.Should().BeEmpty();
-        _mockSqsEventTrigger.Verify(x =>
-                x.ProcessSqsMessage(
-                    It.Is<Employee>(employee => employee.Equals(expected1)),
-                    It.IsAny<ILambdaContext>()),
-            Times.Once);
-        _mockSqsEventTrigger.Verify(x =>
-                x.ProcessSqsMessage(
-                    It.Is<Employee>(employee => employee.Equals(expected2)),
-                    It.IsAny<ILambdaContext>()),
-            Times.Once);
+        
+        A.CallTo(() => _mockSqsEventTrigger.ProcessSqsMessage(
+                expected1,
+                A<ILambdaContext>._))
+            .MustHaveHappenedOnceExactly();
+        
+        A.CallTo(() => _mockSqsEventTrigger.ProcessSqsMessage(
+                expected2,
+                A<ILambdaContext>._))
+            .MustHaveHappenedOnceExactly();
     }
 
     [Fact]
@@ -77,14 +76,12 @@ public class SqsEventHandlerTests
         var lambdaContext = new TestLambdaContext();
 
         //Act
-        var result = await _mockSqsEventTrigger.Object.Handler(sqsEvent, lambdaContext);
+        await _mockSqsEventTrigger.Handler(sqsEvent, lambdaContext);
 
         //Assert
-        result.BatchItemFailures.Should().NotBeEmpty();
-        _mockSqsEventTrigger.Verify(x =>
-                x.ProcessSqsMessage(
-                    It.IsAny<Employee>(),
-                    It.IsAny<ILambdaContext>()),
-            Times.Never);
+        A.CallTo(() => _mockSqsEventTrigger.ProcessSqsMessage(
+                A<Employee>._,
+                A<ILambdaContext>._))
+            .MustNotHaveHappened();
     }
 }

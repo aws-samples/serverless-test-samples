@@ -129,13 +129,12 @@ The system under test here is completely abstracted from any cloud resources.
 public Task ProcessEmployeeFunction_Should_ExecuteSuccessfully()
 {
     //Arrange
-    var repository = new Mock<IDynamoDbRepository<EmployeeDto>>();
+    var fakeRepository = A.Fake<IDynamoDbRepository<EmployeeDto>>();
 
-    repository.Setup(x =>
-            x.PutItemAsync(It.IsAny<EmployeeDto>(), It.IsAny<CancellationToken>()))
-        .ReturnsAsync(UpsertResult.Inserted);
+    A.CallTo(() => fakeRepository.PutItemAsync(A<EmployeeDto>._, A<CancellationToken>._))
+        .Returns(Task.FromResult(UpsertResult.Inserted));
 
-    var sut = new ProcessEmployeeFunction(repository.Object);
+    var sut = new ProcessEmployeeFunction(fakeRepository);
     var employee = new EmployeeBuilder().Build();
     var context = new TestLambdaContext();
 
@@ -150,7 +149,7 @@ public Task ProcessEmployeeFunction_Should_ExecuteSuccessfully()
 
 #### [SqsEventHandlerTests.cs](./tests/SqsEventHandler.UnitTests/Handlers/SqsEventHandlerTests.cs)
 The goal of these tests is to run a unit test on the SqsEventTrigger which implements the handler method of the Lambda function.
-It uses [Moq](https://github.com/moq/moq4) for the mocking framework. The `ProcessSqsMessage` method is mocked.
+It uses [FakeItEasy](https://github.com/FakeItEasy/FakeItEasy) for the mocking framework. The `ProcessSqsMessage` method is faked.
 
 ```c#
 [Fact]
@@ -162,7 +161,7 @@ public async Task SqsEventHandler_Should_CallProcessSqsMessageOnce()
     var lambdaContext = new TestLambdaContext();
 
     //Act
-    var result = await _mockSqsEventTrigger.Object.Handler(sqsEvent, lambdaContext);
+    var result = await _mockSqsEventTrigger.Handler(sqsEvent, lambdaContext);
 
     //Assert
     result.BatchItemFailures.Should().BeEmpty();

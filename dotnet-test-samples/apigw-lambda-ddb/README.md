@@ -114,7 +114,7 @@ curl -X POST https://{ApiUrl}/dev/a-unique-product-id -H "Content-Type: applicat
 The source code for this sample includes automated unit and integration tests. [xUnit](https://xunit.net/) is the primary test framework used to write these tests. A few other libraries and frameworks are used depending on the test case pattern. Please see below.
 
 ### Unit Tests ([MockPutProductFunctionTests.cs](tests/ApiTests.UnitTest/MockPutProductFunctionTests.cs))
-The goal of these tests is to run a unit test on the handler method of the Lambda functions. It uses [Moq](https://github.com/moq/moq4) for the mocking framework. The `ProductsDAO` interface is mocked.
+The goal of these tests is to run a unit test on the handler method of the Lambda functions. It uses [FakeItEasy](https://github.com/FakeItEasy/FakeItEasy) for the mocking framework. The `ProductsDAO` interface is faked.
 
 ```c#
 [Fact]
@@ -129,15 +129,14 @@ public async Task PutProduct_WithValidBody_ShouldReturnSuccess()
         .WithPathParameter("id", testProduct.Id)
         .Build();
     
-    var logger = Mock.Of<ILogger<Function>>();
+    var logger = A.Fake<ILogger<Function>>();
     var jsonOptions = Options.Create(new JsonSerializerOptions(JsonSerializerDefaults.Web));
-    var dao = new Mock<ProductsDAO>();
+    var fakeDao = A.Fake<ProductsDAO>();
 
-    dao.Setup(d => d.PutProduct(It.IsAny<Product>(), It.IsAny<CancellationToken>()))
-       .Callback((Product p, CancellationToken ct) => product = p))
-       .ReturnsAsync(UpsertResult.Inserted);
+    A.CallTo(() => fakeDao.PutProduct(A<Product>._, A<CancellationToken>._))
+       .Returns(Task.FromResult(UpsertResult.Inserted));
     
-    var function = new Function(dao.Object, logger, jsonOptions);
+    var function = new Function(fakeDao, logger, jsonOptions);
 
     // act
     var response = await function.FunctionHandler(apiRequest, new TestLambdaContext());
@@ -145,7 +144,9 @@ public async Task PutProduct_WithValidBody_ShouldReturnSuccess()
     // assert
     response.StatusCode.Should().Be(201);
     response.Headers["Location"].Should().Be("https://localhost/dev/testid")
-    dao.Verify(d => d.PutProduct(product), Times.Once);
+
+    A.CallTo(() => fakeDao..PutProduct(testProduct))
+    .MustHaveHappened();
 }
 ```
 

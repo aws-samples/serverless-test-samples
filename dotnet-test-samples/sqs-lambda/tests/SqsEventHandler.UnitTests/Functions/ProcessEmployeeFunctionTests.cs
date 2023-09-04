@@ -2,8 +2,9 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.Lambda.TestUtilities;
+using Amazon.Runtime.SharedInterfaces;
 using FluentAssertions;
-using Moq;
+using FakeItEasy;
 using SqsEventHandler.Functions;
 using SqsEventHandler.Repositories;
 using SqsEventHandler.Repositories.Mappers;
@@ -19,13 +20,12 @@ public class ProcessEmployeeFunctionTests
     public Task ProcessEmployeeFunction_Should_ExecuteSuccessfully()
     {
         //Arrange
-        var repository = new Mock<IDynamoDbRepository<EmployeeDto>>();
+        var fakeRepository = A.Fake<IDynamoDbRepository<EmployeeDto>>();
 
-        repository.Setup(x =>
-                x.PutItemAsync(It.IsAny<EmployeeDto>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(UpsertResult.Inserted);
+        A.CallTo(() => fakeRepository.PutItemAsync(A<EmployeeDto>._, A<CancellationToken>._))
+            .Returns(Task.FromResult(UpsertResult.Inserted));
 
-        var sut = new ProcessEmployeeFunction(repository.Object);
+        var sut = new ProcessEmployeeFunction(fakeRepository);
         var employee = new EmployeeBuilder().Build();
         var context = new TestLambdaContext();
 
@@ -41,18 +41,17 @@ public class ProcessEmployeeFunctionTests
     public async Task ProcessEmployeeFunction_Should_NotThrowArgumentNullException()
     {
         //Arrange
-        var repository = new Mock<IDynamoDbRepository<EmployeeDto>>();
+        var fakeRepository = A.Fake<IDynamoDbRepository<EmployeeDto>>();
 
-        repository.Setup(x =>
-                x.PutItemAsync(It.IsAny<EmployeeDto>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(UpsertResult.Inserted);
+        A.CallTo(() => fakeRepository.PutItemAsync(A<EmployeeDto>._, A<CancellationToken>._))
+            .Returns(Task.FromResult(UpsertResult.Inserted));
 
-        var sut = new ProcessEmployeeFunction(repository.Object);
+        var sut = new ProcessEmployeeFunction(fakeRepository);
         var employee = new EmployeeBuilder().Build();
         var context = new TestLambdaContext();
 
         //Act & Assert
-        await sut.Invoking(x => sut.ProcessSqsMessage(employee, context))
+        await sut.Invoking(_ => sut.ProcessSqsMessage(employee, context))
             .Should()
             .NotThrowAsync<ArgumentNullException>();
     }
@@ -61,18 +60,17 @@ public class ProcessEmployeeFunctionTests
     public async Task ProcessEmployeeFunction_Should_ThrowArgumentNullException()
     {
         //Arrange
-        var repository = new Mock<IDynamoDbRepository<EmployeeDto>>();
+        var fakeRepository = A.Fake<IDynamoDbRepository<EmployeeDto>>();
 
-        repository.Setup(x =>
-                x.PutItemAsync(It.IsAny<EmployeeDto>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(UpsertResult.Inserted);
+        A.CallTo(() => fakeRepository.PutItemAsync(A<EmployeeDto>._, A<CancellationToken>._))
+            .Returns(Task.FromResult(UpsertResult.Inserted));
 
-        var sut = new ProcessEmployeeFunction(repository.Object);
+        var sut = new ProcessEmployeeFunction(fakeRepository);
         var employee = new EmployeeBuilder().WithEmployeeId(null);
         var context = new TestLambdaContext();
 
         //Act & Assert
-        await sut.Invoking(x => sut.ProcessSqsMessage(employee, context))
+        await sut.Invoking(_ => sut.ProcessSqsMessage(employee, context))
             .Should()
             .ThrowAsync<ArgumentNullException>()
             .WithMessage("Value cannot be null. (Parameter 'EmployeeId')");

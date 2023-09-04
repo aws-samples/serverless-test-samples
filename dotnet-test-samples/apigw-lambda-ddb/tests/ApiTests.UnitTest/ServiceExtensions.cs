@@ -1,7 +1,7 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
+using FakeItEasy;
 using Microsoft.Extensions.DependencyInjection;
-using Moq;
 using ServerlessTestApi.Infrastructure.DataAccess;
 
 namespace ApiTests.UnitTest;
@@ -10,30 +10,38 @@ public static class ServiceExtensions
 {
     public static IServiceCollection AddMockServices(this IServiceCollection services)
     {
-        return services.AddSingleton(NewMockDynamoDB);
+        return services.AddSingleton(CreateFakeDynamoDb);
     }
 
-    private static IAmazonDynamoDB NewMockDynamoDB(IServiceProvider serviceProvider)
+    private static IAmazonDynamoDB CreateFakeDynamoDb(IServiceProvider serviceProvider)
     {
         var item = ProductMapper.ProductToDynamoDb(new("testid", "Test Product", 10));
-        var dynamoDb = new Mock<IAmazonDynamoDB>();
+        var fakeDynamoDb = A.Fake<IAmazonDynamoDB>();
 
-        dynamoDb.Setup(ddb => ddb.ScanAsync(It.IsAny<ScanRequest>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ScanResponse() { Items = new(capacity: 1) { item } });
+        A.CallTo(() => 
+                fakeDynamoDb.ScanAsync(A<ScanRequest>._, A<CancellationToken>._))
+                .Returns(
+                    Task.FromResult(
+                    new ScanResponse { Items = new(capacity: 1) { item } }));
 
-        dynamoDb.Setup(p => p.GetItemAsync(It.IsAny<GetItemRequest>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new GetItemResponse()
+        
+        A.CallTo(() => 
+                fakeDynamoDb.GetItemAsync(A<GetItemRequest>._, A<CancellationToken>._))
+                .Returns(Task.FromResult(
+                    new GetItemResponse()
                 {
                     IsItemSet = true,
                     Item = item,
-                });
+                }));
 
-        dynamoDb.Setup(p => p.PutItemAsync(It.IsAny<string>(), It.IsAny<Dictionary<string, AttributeValue>>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new PutItemResponse());
+        A.CallTo(() => 
+                fakeDynamoDb.PutItemAsync(A<string>._, A<Dictionary<string, AttributeValue>>._, A<CancellationToken>._))
+                .Returns(Task.FromResult(new PutItemResponse()));
 
-        dynamoDb.Setup(p => p.DeleteItemAsync(It.IsAny<string>(), It.IsAny<Dictionary<string, AttributeValue>>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new DeleteItemResponse());
+        A.CallTo(() => 
+                fakeDynamoDb.DeleteItemAsync(A<string>._, A<Dictionary<string, AttributeValue>>._, A<CancellationToken>._))
+                .Returns(Task.FromResult(new DeleteItemResponse()));
 
-        return dynamoDb.Object;
+        return fakeDynamoDb;
     }
 }

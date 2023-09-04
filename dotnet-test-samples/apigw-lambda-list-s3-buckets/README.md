@@ -227,7 +227,7 @@ Lambda functions frequently call other AWS or 3rd party services. Mock framework
 
 This project demonstrates how to run tests on both our core business logic, and also for unit testing our Lambda function code itself.
 
-The project uses [xUnit](https://xunit.net/) as the test framework and [Moq](https://github.com/moq/moq4) to provide mocking.
+The project uses [xUnit](https://xunit.net/) as the test framework and [FakeItEasy](https://github.com/FakeItEasy/FakeItEasy) to provide mocking.
 
 ### Testing Business Logic
 
@@ -237,9 +237,9 @@ Business logic tests can be found in the [MockBusinessLogicTests.cs](./tests/Ser
 [Fact]
 public async Task TestCoreBusinessLogicWithSuccessfulResponse_ShouldReturnStorageAreas()
 {
-    var mockStorageService = new Mock<IStorageService>();
+    var fakeStorageService = A.Fake<IStorageService>();
     
-    mockStorageService.Setup(s => s.ListStorageAreas(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+    A.CallTo(() => fakeStorageService.ListStorageAreas(A<string>._, A<CancellationToken>._))
                       .ReturnsAsync(new List<string>()
                        {
                            "bucket1",
@@ -247,7 +247,7 @@ public async Task TestCoreBusinessLogicWithSuccessfulResponse_ShouldReturnStorag
                            "bucket3",
                        });
     
-    var queryHandler = new ListStorageAreasQueryHandler(mockStorageService.Object);
+    var queryHandler = new ListStorageAreasQueryHandler(fakeStorageService);
     var queryResult = await queryHandler.Handle(new ListStorageAreasQuery()
     {
         FilterPrefix = string.Empty,
@@ -264,11 +264,11 @@ public async Task TestCoreBusinessLogicWithSuccessfulResponse_ShouldReturnStorag
 }
 ```
 
-Using Moq, it is possible to create a Mock implementation of any object. Once mocked, it is possible to setup how different methods will be invoked.
+Using FakeItEasy, it is possible to create a fake implementation of any object. Once created, it is possible to setup the different methods behavior.
 
-In this example, a mock implementation of the ListStorageAreas is added that will be invoked. The It.IsAny<string>() line determines which parameters will cause this mock to be invoked. In this case, if any string is passed into the method this mock will be invoked. The ReturnsAsync method then allows us to define what will be be returned by the mock. In this instance, we are returning a hardcoded list of strings.
+In this example, a mock implementation of the ListStorageAreas is added that will be invoked. The A<string>._ line determines which parameters will cause this mock to be invoked. In this case, if any string is passed into the method this mock will be invoked. The ReturnsAsync method then allows us to define what will be be returned by the mock. In this instance, we are returning a hardcoded list of strings.
 
-When the ListStorageAreasQueryHandler is initialised the instance of our mock storage service is passed in.
+When the ListStorageAreasQueryHandler is initialized the instance of our mock storage service is passed in.
 
 ### Mocking integrations
 
@@ -282,10 +282,10 @@ This is a useful approach, but can be brittle as the AWS API's change regularly.
 [Fact]
 public async Task TestLambdaHandlerWithValidS3Response_ShouldReturnSuccess()
 {
-    var mockedS3Client = new Mock<IAmazonS3>();
+    var fakeS3Client = A.Fake<IAmazonS3>();
     
-    mockedS3Client.Setup(p => p.ListBucketsAsync(It.IsAny<CancellationToken>()))
-                  .ReturnsAsync(new ListBucketsResponse()
+    A.CallTo(() => fakeS3Client.ListBucketsAsync(A<CancellationToken>._))
+                  .Returns(Task.FromResult(new ListBucketsResponse()
                    {
                        Buckets = new List<S3Bucket>()
                        {
@@ -294,14 +294,14 @@ public async Task TestLambdaHandlerWithValidS3Response_ShouldReturnSuccess()
                            new S3Bucket(){ BucketName = "bucket3" },
                        },
                        HttpStatusCode = HttpStatusCode.OK,
-                   });
+                   }));
     
-    var storageService = new S3StorageService(mockedS3Client.Object);
+    var storageService = new S3StorageService(fakeS3Client.Object);
     var jsonOptions = Options.Create(new JsonSerializerOptions(JsonSerializerDefaults.Web));
     var handler = new ListStorageAreasQueryHandler(
         storageService,
-        Mock.Of<ILogger<ListStorageAreasQueryHandler>());
-    var function = new Function(handler, Mock.Of<ILogger<Function>(), jsonOptions);
+        A.Fake<ILogger<ListStorageAreasQueryHandler>());
+    var function = new Function(handler, A.Fake<ILogger<Function>(), jsonOptions);
 
     var result = await function.Handler(new APIGatewayProxyRequest(), new TestLambdaContext());
 
@@ -322,23 +322,23 @@ public async Task TestLambdaHandlerWithValidS3Response_ShouldReturnSuccess()
 }
 ```
 
-Another useful feature of Moq is the ability to test exceptions. In the below example, instead of mocking the response of the method call an Exception is thrown. This allows a test to be written to understand what would happen if the S3 SDK threw an exception.  
+Another useful feature of FakeItEasy is the ability to test exceptions. In the below example, instead of mocking the response of the method call an Exception is thrown. This allows a test to be written to understand what would happen if the S3 SDK threw an exception.  
 
 ```c#
 [Fact]
 public async Task TestLambdaHandlerWithS3Exception_ShouldReturnEmpty()
 {
-    var mockedS3Client = new Mock<IAmazonS3>();
+    var fakeS3Client = A.Fake<IAmazonS3>();
     
-    mockedS3Client.Setup(p => p.ListBucketsAsync(It.IsAny<CancellationToken>()))
-                  .ThrowsAsync(new AmazonS3Exception("Mock S3 failure"));
+    A.CallTo(() => fakeS3Client.ListBucketsAsync(A<CancellationToken>._))
+                  .Throws(new AmazonS3Exception("Fake S3 failure"));
     
-    var storageService = new S3StorageService(mockedS3Client.Object);
+    var storageService = new S3StorageService(fakeS3Client.Object);
     var jsonOptions = Options.Create(new JsonSerializerOptions(JsonSerializerDefaults.Web));
     var handler = new ListStorageAreasQueryHandler(
         storageService,
-        Mock.Of<ILogger<ListStorageAreasQueryHandler>());
-    var function = new Function(handler, Mock.Of<ILogger<Function>(), jsonOptions);
+        A.Fake<ILogger<ListStorageAreasQueryHandler>());
+    var function = new Function(handler, A.Fake<ILogger<Function>(), jsonOptions);
 
     var result = await function.Handler(new APIGatewayProxyRequest(), new TestLambdaContext());
 

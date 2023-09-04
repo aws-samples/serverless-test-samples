@@ -131,31 +131,29 @@ The system under test here is completely abstracted from any cloud resources.
 
 ```c#
 [Fact]
-public Task ProcessEmployeeFunction_With_ValidEmployeeRecord_Should_ProcessKinesisRecordSuccessfully()
+public async Task ProcessEmployeeFunction_With_ValidEmployeeRecord_Should_ProcessKinesisRecordSuccessfully()
 {
     //Arrange
-    var repository = new Mock<IDynamoDbRepository<EmployeeDto>>();
+    var fakeRepository = A.Fake<IDynamoDbRepository<EmployeeDto>>();
 
-    repository.Setup(x =>
-            x.PutItemAsync(It.IsAny<EmployeeDto>(), It.IsAny<CancellationToken>()))
-        .ReturnsAsync(UpsertResult.Inserted);
+    A.CallTo(() => fakeRepository.PutItemAsync(A<EmployeeDto>._, A<CancellationToken>._))
+        .Returns(Task.FromResult(UpsertResult.Inserted));
 
-    var sut = new ProcessEmployeeFunction(repository.Object);
+    var sut = new ProcessEmployeeFunction(fakeRepository);
     var employee = new EmployeeBuilder().Build();
     var context = new TestLambdaContext();
 
     //Act
-    var taskResult = sut.ProcessKinesisRecord(employee, context);
+    var taskResult = await sut.ProcessKinesisRecord(employee, context);
 
     //Assert
     Assert.True(taskResult.IsCompleted);
-    return Task.CompletedTask;
 }
 ```
 
 #### [KinesisEventHandlerTests.cs](./tests/KinesisEventHandler.UnitTests/Handlers/KinesisEventHandlerTests.cs)
 The goal of these tests is to run a unit test on the KinesisEventHandler which implements the handler method of the Lambda function.
-It uses [Moq](https://github.com/moq/moq4) for the mocking framework. The `PutItemAsync` method in `IDynamoDbRepository` is mocked.
+It uses [FakeItEasy](https://github.com/FakeItEasy/FakeItEasy) for the mocking framework. The `PutItemAsync` method in `IDynamoDbRepository` is faked.
 
 ```c#
 [Fact]
@@ -178,11 +176,12 @@ public async Task KinesisEventHandler_With_N_Records_Should_CallProcessKinesisRe
 
     //Assert
     result.BatchItemFailures.Should().BeEmpty();
-    _mockKinesisEventTrigger.Verify(x =>
-            x.ProcessKinesisRecord(
-                It.IsAny<Employee>(),
-                It.IsAny<ILambdaContext>()),
-        Times.Exactly(randomNumber));
+
+    A.CallTo(() => _mockKinesisEventTrigger.ProcessKinesisRecord(
+                A<Employee>._,
+                A<ILambdaContext>._))
+        .MustHaveHappened
+        Times.Exactly(randomNumber, Times.Exactly);
 }
 ```
 
