@@ -7,9 +7,7 @@
 [![typescript: 4.5.5](https://badgen.net/badge/Built%20With/TypeScript/blue9)](https://badgen.net/badge/Built%20With/TypeScript/blue9)
 
 
-
-
-![Serverless Test Samples](./_img/main_header.png alt="")
+![Serverless Test Samples](./_img/main_header.png)
 # Serverless Test Samples
 
 AWS guidance and examples for testing serverless and event driven applications.
