@@ -6,7 +6,7 @@
 from os import environ
 import boto3
 import json
-
+from boto3.dynamodb.conditions import Key
 from aws_xray_sdk.core import patch_all
 
 from aws_lambda_powertools.utilities.data_classes import APIGatewayProxyEvent
@@ -27,15 +27,35 @@ def lambda_handler(event: APIGatewayProxyEvent, context: LambdaContext) -> dict:
 
     # Retrieve the table name from the environment, and create a boto3 Table object
     dynamodb_table_name = environ["DYNAMODB_TABLE_NAME"]
-    dynamodb_resource = boto3.resource('dynamodb')
-    dynamodb_table = dynamodb_resource.Table(dynamodb_table_name)
+    dynamodb_index_name = environ["DYNAMODB_INDEX_NAME"]
+    dynamodb_table = boto3.resource('dynamodb').Table(dynamodb_table_name)
     
     # Add Logic Here
     # All inline so it has to be fixed :-)
 
+    location = event["pathParameters"]["location"]
+
+    if event.get("queryStringParameters") is not None:
+        page_token = event["queryStringParameters"].get("page_token")
+    else:
+        page_token = None
+
+    if page_token is None:
+        response = dynamodb_table.query(IndexName=dynamodb_index_name, 
+                                        KeyConditionExpression=Key('LOCATION').eq(location))
+    else:
+        response = dynamodb_table.query(IndexName=dynamodb_index_name, 
+                                KeyConditionExpression=Key('LOCATION').eq(location),
+                                ExclusiveStartKey=json.loads(page_token))
+
+    items_list = [ {"Name": item["PK"],"Location":item["LOCATION"],"Status":item["STATUS"]}
+                   for item in response['Items']]
+    
+    last_key = response.get("LastEvaluatedKey","END")
+
     status_code = 200
-    body_payload = { "unicorn_list" : [ { "Name": "Unicorn A", "Location": "Florida", "Status": "AVAILABLE" } ],
-                     "page_token" : "None" }
+    body_payload = { "unicorn_list" : items_list,
+                     "page_token" : last_key }
     
     return {
         "statusCode": status_code,

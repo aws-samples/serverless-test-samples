@@ -13,6 +13,7 @@
 
 from os import environ
 import boto3
+from boto3.dynamodb.conditions import Key
 
 from aws_xray_sdk.core import patch_all
 
@@ -31,12 +32,27 @@ def lambda_handler(event: APIGatewayProxyEvent, context: LambdaContext) -> dict:
     dynamodb_table_name = environ["DYNAMODB_TABLE_NAME"]
     dynamodb_resource = boto3.resource('dynamodb')
     dynamodb_table = dynamodb_resource.Table(dynamodb_table_name)
-    
-    # Add Logic Here
-    # All inline so it has to be fixed :-)
 
-    status_code = 200
-    body_payload = "OK"   
+    unicorn_to_checkout = event["pathParameters"]["uname"]
+    
+    # Creating the DynamoDB Table Resource  
+    response = dynamodb_table.get_item( Key={'PK': unicorn_to_checkout})
+    if "Item" not in response or response['Item']['STATUS'] != "AVAILABLE":
+        status_code = 400
+        body_payload = f"{unicorn_to_checkout} Not Available"
+    else:
+        response = dynamodb_table.update_item(
+                Key={'PK': unicorn_to_checkout},
+                UpdateExpression='SET #s = :val1',
+                ExpressionAttributeValues={
+                    ':val1': 'RESERVED'
+                },
+                ExpressionAttributeNames={
+                    "#s":"STATUS"
+                }
+            ) 
+        status_code = 200
+        body_payload = "OK"
         
     return {
         "statusCode": status_code,
