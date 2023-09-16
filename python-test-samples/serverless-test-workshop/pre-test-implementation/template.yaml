@@ -97,8 +97,8 @@ Resources:
         Checkout:
           Type: Api 
           Properties:
-            Path: /checkout/{uname}
-            Method: get
+            Path: /checkout
+            Method: post
 
   GetInventoryFunction:
     Type: AWS::Serverless::Function 
@@ -130,7 +130,10 @@ Resources:
             - method.request.querystring.page_token:
                 Required: false
                 Caching: false
-
+            - method.request.querystring.available:
+                Required: false
+                Caching: false
+            
 
   GetSignedUrlForInventoryFilePost:
     Type: AWS::Serverless::Function 

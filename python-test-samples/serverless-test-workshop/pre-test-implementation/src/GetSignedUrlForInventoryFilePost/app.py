@@ -1,3 +1,4 @@
+"""
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
 
@@ -7,13 +8,14 @@
 # Logic to implement:
 #   Create a path/key with a datetime stamp in it
 #   Generate and return a signed URL for the bucket/key
+"""
 
 from os import environ
-import boto3
 import json
 import logging
 import uuid
 from datetime import datetime
+import boto3
 from botocore.exceptions import ClientError
 from aws_xray_sdk.core import patch_all
 
@@ -50,7 +52,7 @@ def create_presigned_post(bucket_name, object_name,
                                                      ExpiresIn=expiration)
     except ClientError as err_client:
         logging.error(err_client)
-        raise(err_client)
+        raise err_client
 
     # The response contains the presigned URL and required fields
     return response
@@ -58,10 +60,13 @@ def create_presigned_post(bucket_name, object_name,
 
 @validator(outbound_schema=OUTPUT_SCHEMA)
 def lambda_handler(event: APIGatewayProxyEvent, context: LambdaContext) -> dict:
+    """
+    API Gateway Event Handler
+    """
 
     # Retrieve the bucket name from the environment, and create a boto3 s3 resource
     s3_bucket_name = environ["S3_BUCKET_NAME"]
-    
+
     # Business Logic that should be tested: Compute an upload file name
     # Create a prefix for year/month/day, and name the file unicorn_load_DATETIME_UUID.csv
     datetime_stamp = datetime.now().strftime('%Y%m%dT%H%M%S')
@@ -69,12 +74,12 @@ def lambda_handler(event: APIGatewayProxyEvent, context: LambdaContext) -> dict:
     unique_id = str(uuid.uuid4())
     file_key = f"{file_prefix}/unicorn_load_{datetime_stamp}_{unique_id}.csv"
 
-     
+
     # Retrieve Pre-Signed URL for a POST operation
     pre_signed_url = create_presigned_post(s3_bucket_name, file_key)
 
     status_code = 200
-        
+
     return {
         "statusCode": status_code,
         "body": json.dumps(pre_signed_url)

@@ -1,3 +1,3 @@
-aws-xray-sdk
+aws_xray_sdk
 aws_lambda_powertools
 fastjsonschema
