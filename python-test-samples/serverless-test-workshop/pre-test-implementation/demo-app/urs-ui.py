@@ -45,13 +45,18 @@ def get_inventory(api_endpoint_url: str, fetch_loc: str, available_only = False)
     :param: available_only - boolean, if true, returns only available unicorns
     :return: List of unicorn (dictionaries)
     """
-    inventory_url = f"{api_endpoint_url}/list/{fetch_loc}"
-    if available_only:
-        inventory_url = inventory_url + "?available=True"
+    try:
+        inventory_url = f"{api_endpoint_url}/list/{fetch_loc}"
+        if available_only:
+            inventory_url = inventory_url + "?available=True"
 
-    # TODO: Pagination
-    response = requests.get(inventory_url, timeout=120)
-    return response.json()["unicorn_list"]
+        # TODO: Pagination
+        response = requests.get(inventory_url, timeout=120)
+        return response.json()["unicorn_list"]
+    except Exception as err:
+        print(err)
+        st.write("No Unicorns Found.")
+        return []
 
 def reserve_unicorn(api_endpoint_url: str, unicorn_name: str, unicorn_reserve_for : str) -> bool:
     """
@@ -66,11 +71,30 @@ def reserve_unicorn(api_endpoint_url: str, unicorn_name: str, unicorn_reserve_fo
     response = requests.post(inventory_url, timeout=120, data=post_payload)
     return response.ok
 
-# Retrieve Application Settings
-with open("config.json","r",encoding="utf-8") as f:
-    app_config = json.load(f)
-api_endpoint = app_config["api_endpoint"]
-location_list = app_config["location_list"]
+def get_locations(api_endpoint_url: str) -> list:
+    """
+    Get the list of unicorn locations
+    :param: api_endpoint_url - the endpoint of the API Gateway
+    :return: Array of locations
+    """
+    try:    
+        location_list_url = f"{api_endpoint_url}/locations"
+        response = requests.get(location_list_url, timeout=120)
+        return response.json()["locations"]
+    except Exception as err:
+        print(err)
+        return []
+
+# Retrieve Application Endpoint
+if os.path.isfile("config.json"):
+    with open("config.json","r",encoding="utf-8") as f:
+        app_config = json.load(f)
+    api_endpoint = app_config["api_endpoint"]
+
+else:
+    api_endpoint = "https://{APIGATEWAYID}.execute-api.{REGION}.amazonaws.com/Prod/"
+
+location_list = get_locations(api_endpoint)
 
 # Generate the Application Title
 col1, col2 = st.columns([1, 4])
@@ -104,6 +128,17 @@ with reserve_tab:
 
 # Administration Tab
 with admin_tab:
+    # Api Gateway Setup
+    new_api_endpoint = st.text_input("API Endpoint:", 
+                  value=api_endpoint, 
+                  max_chars=2048
+    )
+    if st.button("Save API Endpoint"):
+        endpoint_json = {"api_endpoint": new_api_endpoint}
+        with open("config.json","w",encoding="utf-8") as out_file:
+            json.dump(endpoint_json, out_file)
+            st.write("Configuration saved, refresh browser to take effect.")
+    
     # File picker for uploading to the unicorn inventory
     uploaded_file = st.file_uploader("Choose a CSV file for the Unicorn Inventory.", type=["csv"])
     if uploaded_file is not None:

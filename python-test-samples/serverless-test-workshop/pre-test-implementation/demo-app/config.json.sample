@@ -1,4 +1,0 @@
-{
-    "api_endpoint" : "https://YOURAPIGATEWAY.execute-api.us-east-1.amazonaws.com/Prod/",
-    "location_list" : ["US","CAN"]
-}

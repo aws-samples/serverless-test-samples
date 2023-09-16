@@ -53,6 +53,7 @@ def lambda_handler(event: S3Event, context: LambdaContext) -> dict:
     data = s3_client.get_object(Bucket=bucket, Key=key)
     contents = data['Body'].read().decode()
     count = 0
+    location_set = set()
     for entry in contents.split("\n"):
         print(f"Add {entry}")
         if "Unicorn" not in entry:
@@ -66,7 +67,19 @@ def lambda_handler(event: S3Event, context: LambdaContext) -> dict:
                 }
             )
             status_code = response['ResponseMetadata']['HTTPStatusCode']
+            location_set.add(unicorn_location)
             count += 1
+    
+    # Post a list of locations for the pick list
+    location_list = [x for x in sorted(location_set)]
+    response = dynamodb_table.put_item(
+        Item={
+            'PK': "LOCATION#LIST",
+            'LOCATIONS': location_list
+        }
+    )
+    status_code = response['ResponseMetadata']['HTTPStatusCode']
+
 
     return {
         "statusCode": status_code,

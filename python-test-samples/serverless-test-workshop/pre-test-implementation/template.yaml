@@ -106,7 +106,7 @@ Resources:
       Tracing: Active
       Policies:
         - AWSXrayWriteOnlyAccess
-        - DynamoDBCrudPolicy:
+        - DynamoDBReadPolicy:
             TableName: !Ref UnicornInventoryTable
       CodeUri: src/GetInventory/
       Handler: app.lambda_handler
@@ -134,6 +134,31 @@ Resources:
                 Required: false
                 Caching: false
             
+  GetLocations:
+    Type: AWS::Serverless::Function 
+    Properties:
+      Tracing: Active
+      Policies:
+        - AWSXrayWriteOnlyAccess
+        - DynamoDBReadPolicy:
+            TableName: !Ref UnicornInventoryTable
+      CodeUri: src/GetLocations/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Architectures:
+        - arm64
+      Environment:
+        Variables:
+          DYNAMODB_TABLE_NAME:
+            Ref: UnicornInventoryTable
+      Events:
+        Checkout:
+          Type: Api 
+          Properties:
+            Path: /locations
+            Method: get
+            RequestParameters:
+            - method.request.header.Authorization
 
   GetSignedUrlForInventoryFilePost:
     Type: AWS::Serverless::Function 
