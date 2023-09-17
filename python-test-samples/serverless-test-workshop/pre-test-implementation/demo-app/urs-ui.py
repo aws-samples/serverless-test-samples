@@ -4,12 +4,8 @@
 # This is a demo Unicorn Reservation System front-end web application.
 # To run:
 #   1. Install the dependencies: pip3 install -r requirements.txt
-#   2. Create a file "config.json" specifying api_endpoint and location_list.
-#        a. api_endpoint will be the URL for the Api Gateway stage, output from
-#             the cloudformation stack.
-#        b. location_list is an array of unique locations that are in the data file
-#   3. Run the command:  streamlit run urs-ui.py --server.port 8080
-#   4. The UI will be available in the browser
+#   2. Run the command:  streamlit run urs-ui.py --server.port 8080
+#   3. The UI will be available in the browser
 """
 import json
 import os
