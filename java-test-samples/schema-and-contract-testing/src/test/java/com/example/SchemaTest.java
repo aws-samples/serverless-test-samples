@@ -13,11 +13,9 @@ import com.networknt.schema.ValidationMessage;
 /**
  * Unit test for simple App.
  */
-public class SchemaTest extends BaseJsonSchemaValidatorTest
-{
+public class SchemaTest extends BaseJsonSchemaValidatorTest{
     @Test
-    public void addAdditionalOptionalAttribute() throws IOException
-    {
+    public void addAdditionalOptionalAttribute() throws IOException{
         JsonSchema originSchema = getJsonSchemaFromClasspath("schema/json/customerCreated-v1.0.0.json");
         JsonSchema updatedSchema = getJsonSchemaFromClasspath("schema/json/customerCreated-v1.1.0.json");
 
