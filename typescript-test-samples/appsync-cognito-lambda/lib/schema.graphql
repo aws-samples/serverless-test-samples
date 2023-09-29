@@ -1,0 +1,7 @@
+type randomMessageResponse {
+    message: String!
+}
+
+type Query {
+    getRandomMessage: randomMessageResponse!
+}
