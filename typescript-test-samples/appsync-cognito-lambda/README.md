@@ -20,7 +20,7 @@ The project uses [AWS CDK] for Infrastructure as Code.
 -   [About this Pattern](#about-this-pattern)
 -   [About this Example](#about-this-example)
     -   [Key Files in the Project](#key-files-in-the-project)
--   [Run the Integration Test](#run-the-integration-test)
+-   [Run the Integration Tests](#run-the-integration-tests)
 
 ---
 
@@ -55,7 +55,7 @@ This project consists of an [AppSync GraphQL API](https://aws.amazon.com/appsync
 
 ### Deployment
 
-[integration-handler.test.ts](tests/integration/integ-handler.test.ts)
+[integration-handler.test.ts](tests/integration/integration-handler.test.ts)
 
 For integration tests, deploy the full stack before testing:
 
@@ -68,7 +68,7 @@ Deploying the stack will output three variables: the AppSync URL, the Cognito Us
 
 ### Environment setup
 
-The [integration tests](src/tests/integration/integration-handler.test.ts) need three environment variables.
+The [integration tests](tests/integration/integration-handler.test.ts) need three environment variables.
 
 1. The `APPSYNC_URL` is the URL of AppSync
 2. The `COGNITO_USER_POOL_ID` is the User Pool ID of Cognito
