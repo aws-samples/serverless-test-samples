@@ -28,7 +28,7 @@ The project uses [AWS CDK] for Infrastructure as Code.
 
 ### System Under Test (SUT)
 
-The SUT in this pattern is a synchronous AWS Appsync API with an AWS Lambda data source, authenticated by provided by Amazon Cognito.
+The SUT in this pattern is a synchronous AWS Appsync API with an AWS Lambda data source, authenticated by Amazon Cognito.
 
 ![Architecture](images/architecture.png)
 
