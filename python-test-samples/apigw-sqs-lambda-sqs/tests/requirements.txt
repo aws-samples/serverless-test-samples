@@ -1,5 +1,0 @@
-pytest
-boto3
-moto
-uuid
-requests

@@ -1,3 +1,0 @@
-aws-lambda-powertools
-pydantic
-fastjsonschema
