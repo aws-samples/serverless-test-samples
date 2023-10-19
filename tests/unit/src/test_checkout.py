@@ -16,12 +16,13 @@ import yaml
 import boto3
 from boto3.dynamodb.conditions import Key
 import moto
+sys.path.insert(0,'./src/Checkout')
+print(sys.path)
 
-sys.path.append('./src/Checkout')
-from src.Checkout.schemas import OUTPUT_SCHEMA                     # pylint: disable=wrong-import-position
+from schemas import OUTPUT_SCHEMA                     # pylint: disable=wrong-import-position
 
 # Import the handler under test
-from src.Checkout import app
+import app
 
 # Mock the DynamoDB Service during the test
 @moto.mock_dynamodb
