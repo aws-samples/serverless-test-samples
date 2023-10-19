@@ -12,6 +12,7 @@ Globals:
       - arm64
     Runtime: dotnet6
     Tracing: Active
+    KmsKeyArn: !Ref MyKMSKey
     Environment:
       Variables:
         POWERTOOLS_LOG_LEVEL: Information
@@ -19,24 +20,138 @@ Globals:
         POWERTOOLS_LOGGER_CASE: PascalCase # Allowed values are: CamelCase, PascalCase and SnakeCase
         POWERTOOLS_LOGGER_SAMPLE_RATE: 0
         POWERTOOLS_METRICS_NAMESPACE: KinesisEventHandler
+#    VpcConfig:
+#      SecurityGroupIds:
+#        - !Ref MySecurityGroup
+#      SubnetIds:
+#        - !Ref MySubnetA
+#        - !Ref MySubnetB
 
 Resources:
+  #################################################################################
+  # VPC For Lambda
+  #################################################################################
+#  MyVpc:
+#    Type: AWS::EC2::VPC
+#    Properties:
+#      CidrBlock: "10.0.0.0/26"
+#      Tags:
+#        - Key: Name
+#          Value: !Sub ${AWS::StackName}-vpc
+#  MySecurityGroup:
+#    Type: AWS::EC2::SecurityGroup
+#    Properties:
+#      GroupDescription: "EFS + Lambda on SAM Security Group"
+#      VpcId: !Ref MyVpc
+#      SecurityGroupEgress:
+#        - CidrIp: "0.0.0.0/0"
+#          FromPort: 0
+#          ToPort: 65535
+#          IpProtocol: tcp
+#      SecurityGroupIngress:
+#        - CidrIp: "0.0.0.0/0"
+#          FromPort: 0
+#          ToPort: 65535
+#          IpProtocol: tcp
+#      Tags:
+#        - Key: Name
+#          Value: !Sub ${AWS::StackName}-sg
+#  MySubnetA:
+#    Type: AWS::EC2::Subnet
+#    Properties:
+#      VpcId: !Ref MyVpc
+#      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+#      MapPublicIpOnLaunch: false
+#      CidrBlock: "10.0.0.0/27"
+#      Tags:
+#        - Key: Name
+#          Value: !Sub ${AWS::StackName}-subnet-a
+#  MySubnetB:
+#    Type: AWS::EC2::Subnet
+#    Properties:
+#      VpcId: !Ref MyVpc
+#      AvailabilityZone: !Select [ 1, !GetAZs '' ]
+#      MapPublicIpOnLaunch: false
+#      CidrBlock: "10.0.0.32/27"
+#      Tags:
+#        - Key: Name
+#          Value: !Sub ${AWS::StackName}-subnet-b
+#  MyRouteTableA:
+#    Type: 'AWS::EC2::RouteTable'
+#    Properties:
+#      VpcId: !Ref MyVpc
+#      Tags:
+#        - Key: Name
+#          Value: !Sub ${AWS::StackName}-rt-a
+#  MyRouteTableB:
+#    Type: 'AWS::EC2::RouteTable'
+#    Properties:
+#      VpcId: !Ref MyVpc
+#      Tags:
+#        - Key: Name
+#          Value: !Sub ${AWS::StackName}-rt-b
+#  MyRouteTableAssociationA:
+#    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+#    Properties:
+#      SubnetId: !Ref MySubnetA
+#      RouteTableId: !Ref MyRouteTableA
+#  MyRouteTableAssociationB:
+#    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+#    Properties:
+#      SubnetId: !Ref MySubnetB
+#      RouteTableId: !Ref MyRouteTableB
+  #################################################################################
+  # KMS Keys for Encryption
+  #################################################################################
+  MyKMSKey:
+    Type: 'AWS::KMS::Key'
+    Properties:
+      Description: An example symmetric encryption KMS key
+      EnableKeyRotation: true
+      PendingWindowInDays: 20
+      KeyPolicy:
+        Version: 2012-10-17
+        Id: key-default-1
+        Statement:
+          - Sid: Allow use of the key
+            Effect: Allow
+            Principal:
+              Service: 'arn:aws:iam::111122223333:user/Bob'
+            Action:
+              - 'kms:DescribeKey'
+              - 'kms:Encrypt'
+              - 'kms:Decrypt'
+              - 'kms:ReEncrypt*'
+              - 'kms:GenerateDataKey'
+              - 'kms:GenerateDataKeyWithoutPlaintext'
+            Resource: '*'
+  #################################################################################
+  # Kinesis Stream & Consumer
+  #################################################################################
   EmployeeRecordsStream:
     Type: AWS::Kinesis::Stream
     Properties:
       Name: EmployeeRecordsStream
       RetentionPeriodHours: 48
       ShardCount: 2
+      StreamEncryption:
+        EncryptionType: KMS
+        KeyId: !Ref MyKMSKey
   EmployeeRecordsStreamConsumer:
     Type: "AWS::Kinesis::StreamConsumer"
     Properties:
       StreamARN: !GetAtt EmployeeRecordsStream.Arn
       ConsumerName: "EmployeeRecordsStreamConsumer"
+  #################################################################################
+  # Lambdas
+  #################################################################################
   ProcessEmployeeFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       CodeUri: ./KinesisEventHandler/
       Handler: KinesisEventHandler::KinesisEventHandler.Functions.ProcessEmployeeFunction::Handler
+      ReservedConcurrentExecutions: 2
+      KmsKeyArn: !Ref MyKMSKey
       Environment:
         Variables:
           POWERTOOLS_SERVICE_NAME: process-employee-stream-function
@@ -63,13 +178,21 @@ Resources:
             StreamName: !Ref EmployeeRecordsStreamConsumer
         - SQSSendMessagePolicy:
             QueueName: !GetAtt EmployeeRecordsStreamDLQ.QueueName
-
+        - KMSDecryptPolicy:
+            KeyId: !Ref MyKMSKey
+  
   EmployeeRecordsStreamDLQ:
     Type: AWS::SQS::Queue
-
+    Properties:
+      KmsMasterKeyId: !Ref MyKMSKey
+  #################################################################################
+  # DynamoDB
+  #################################################################################
   EmployeeStreamTable:
     Type: AWS::DynamoDB::Table
     Properties:
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
       AttributeDefinitions:
         - AttributeName: employee_id
           AttributeType: S
@@ -81,7 +204,14 @@ Resources:
           KeyType: HASH
       StreamSpecification:
         StreamViewType: NEW_AND_OLD_IMAGES
+      SSESpecification:
+        SSEEnabled: true
+        SSEType: KMS
+        KMSMasterKeyId: !Ref MyKMSKey
 
+#################################################################################
+# Outputs
+#################################################################################
 Outputs:
   EmployeeRecordsStream:
     Description: "Kinesis Stream that accepts Employee Records for Processing"
@@ -89,9 +219,6 @@ Outputs:
   ProcessEmployeeFunction:
     Description: "Process Employee Function ARN"
     Value: !GetAtt ProcessEmployeeFunction.Arn
-  ProcessEmployeeFunctionIamRole:
-    Description: "Implicit IAM Role created for Process Employee Function"
-    Value: !GetAtt ProcessEmployeeFunctionRole.Arn
   EmployeeStreamTableName:
     Description: "Employee Stream Table Name"
     Value: !Ref EmployeeStreamTable
