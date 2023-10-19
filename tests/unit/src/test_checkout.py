@@ -16,6 +16,9 @@ import yaml
 import boto3
 from boto3.dynamodb.conditions import Key
 import moto
+from aws_xray_sdk.core import xray_recorder
+xray_recorder.begin_segment("Mock Segment")
+
 sys.path.insert(0,'./src/Checkout')
 print(sys.path)
 
@@ -105,6 +108,7 @@ class TestSampleLambdaWithDynamoDB(TestCase):
         and DynamoDB is mocked for the entire class, this test will 
         implicitly use the mocked DynamoDB table we created in setUp.
         """
+        print("test happy path-----------")
 
         test_event = self.load_test_event("sampleEvent")
         print(f"TEST EVENT: {test_event}")
@@ -126,6 +130,7 @@ class TestSampleLambdaWithDynamoDB(TestCase):
             self.assertEqual( item["STATUS"], "RESERVED")
  
     def test_lambda_handler_not_that_happy_path(self):
+        
             """
             This is not the happy path
 
@@ -134,7 +139,6 @@ class TestSampleLambdaWithDynamoDB(TestCase):
             implicitly use the mocked DynamoDB table we created in setUp.
             Check the test_lambda_handler_happy_path, what is the difference with this assertion?
             """
-
             test_event = self.load_test_event("sampleEvent")
             print(f"TEST EVENT: {test_event}")
             
@@ -146,7 +150,7 @@ class TestSampleLambdaWithDynamoDB(TestCase):
 
             # Verify the log entries
             id_items = self.mock_dynamodb_table.query(
-                KeyConditionExpression=Key('PK').eq('TESTCOW')
+                KeyConditionExpression=Key('PK').eq('TESTUNICORN2')
             )
             # TIP! We didn't reserve this unicorn....
             # Check the log entry item
