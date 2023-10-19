@@ -86,7 +86,7 @@ Resources:
             TableName: !Ref UnicornInventoryTable
       CodeUri: src/Checkout/
       Handler: app.lambda_handler
-      Runtime: python3.9
+      Runtime: python3.11
       Architectures:
         - arm64
       Environment:
@@ -110,7 +110,7 @@ Resources:
             TableName: !Ref UnicornInventoryTable
       CodeUri: src/GetInventory/
       Handler: app.lambda_handler
-      Runtime: python3.9
+      Runtime: python3.11
       Architectures:
         - arm64
       Environment:
@@ -144,7 +144,7 @@ Resources:
             TableName: !Ref UnicornInventoryTable
       CodeUri: src/GetLocations/
       Handler: app.lambda_handler
-      Runtime: python3.9
+      Runtime: python3.11
       Architectures:
         - arm64
       Environment:
@@ -170,7 +170,7 @@ Resources:
             BucketName: !Sub "unicorn-inv-${AWS::StackName}-${AWS::AccountId}"
       CodeUri: src/GetSignedUrlForInventoryFilePost/
       Handler: app.lambda_handler
-      Runtime: python3.9
+      Runtime: python3.11
       Architectures:
         - arm64
       Environment:
@@ -195,7 +195,7 @@ Resources:
             TableName: !Ref UnicornInventoryTable
       CodeUri: src/InventoryProcessing/
       Handler: app.lambda_handler
-      Runtime: python3.9
+      Runtime: python3.11
       Architectures:
         - arm64
       Environment:
