@@ -72,7 +72,7 @@ class TestApiGateway(TestCase):
                                       "SK": "123",
                                       "data": "Unit Test Name Data",
                                       "LOCATION":"US"})
-                                    
+                                        
 
 
     def tearDown(self) -> None:
@@ -97,6 +97,18 @@ class TestApiGateway(TestCase):
         """
         response = requests.get(self.api_endpoint + '/locations') 
         self.assertEqual(response.status_code, requests.codes.ok)
+
+
+    def fail_locations_response(self):
+        """""
+        this response have a country that doesn't exists in the api response
+        """
+        response = requests.get(self.api_endpoint + '/locations') 
+        responseJson=json.loads(response.content.decode('ASCII'))
+        print(responseJson)
+        locationExists= "MX" in responseJson["message"]
+        self.assertTrue(locationExists)
+
 
     def test_api_gateway_404(self):
         """
