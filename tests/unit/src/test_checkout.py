@@ -74,6 +74,10 @@ class TestSampleLambdaWithDynamoDB(TestCase):
                                                  "LOCATION": "US",
                                                  "STATUS": "AVAILABLE",
                                                  })
+        self.mock_dynamodb_table.put_item(Item={"PK": "TESTUNICORN2",
+                                                 "LOCATION": "US",
+                                                 "STATUS": "AVAILABLE",
+                                                 })
 
     def read_sam_template(self, sam_template_fn : str = "template.yaml" ) -> dict:
         """
@@ -120,7 +124,35 @@ class TestSampleLambdaWithDynamoDB(TestCase):
         for item in id_items["Items"]:
             self.assertEqual( item["PK"] , "TESTUNICORN")
             self.assertEqual( item["STATUS"], "RESERVED")
+ 
+    def test_lambda_handler_not_that_happy_path(self):
+            """
+            This is not the happy path
 
+            Since the environment variable DYNAMODB_TABLE_NAME is set 
+            and DynamoDB is mocked for the entire class, this test will 
+            implicitly use the mocked DynamoDB table we created in setUp.
+            Check the test_lambda_handler_happy_path, what is the difference with this assertion?
+            """
+
+            test_event = self.load_test_event("sampleEvent")
+            print(f"TEST EVENT: {test_event}")
+            
+            test_return = app.lambda_handler(event=test_event,context=None)
+            print(f"TEST RETURN: {test_return}")
+            
+            self.assertEqual(test_return["statusCode"] , 200)
+            self.assertEqual(test_return["body"] , "OK")
+
+            # Verify the log entries
+            id_items = self.mock_dynamodb_table.query(
+                KeyConditionExpression=Key('PK').eq('TESTCOW')
+            )
+            # TIP! We didn't reserve this unicorn....
+            # Check the log entry item
+            for item in id_items["Items"]:
+                self.assertEqual( item["PK"] , "TESTUNICORN2")
+                self.assertEqual( item["STATUS"], "RESERVED")
       
     def tearDown(self) -> None:
         """
