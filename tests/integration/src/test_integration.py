@@ -66,11 +66,11 @@ class TestApiGateway(TestCase):
 
 
         # Seed the DynamoDB Table with Test Data
+        
         dynamodb_resource = boto3.resource("dynamodb", region_name = self.aws_region)
         dynamodb_table = dynamodb_resource.Table(name=self.dynamodb_table_name)
         dynamodb_table.put_item(Item={"PK": "TEST_UNI" + self.id_postfix, 
-                                      "SK": "123",
-                                      "data": "Unit Test Name Data",
+                                      "STATUS": "AVAILABLE",
                                       "LOCATION":"US"})
                                         
 
@@ -89,7 +89,7 @@ class TestApiGateway(TestCase):
             )
             if "Items" in id_items:
                 for item in id_items["Items"]:
-                    dynamodb_table.delete_item(Key={"PK":item["TEST_UNI"],"SK":item["123"]})
+                    dynamodb_table.delete_item(Key={"PK":item["TEST_UNI"]+ self.id_postfix})
 
     def test_api_gateway_200(self):
         """
@@ -106,7 +106,7 @@ class TestApiGateway(TestCase):
         response = requests.get(self.api_endpoint + '/locations') 
         responseJson=json.loads(response.content.decode('ASCII'))
         print(responseJson)
-        locationExists= "MX" in responseJson["message"]
+        locationExists= "MX" in responseJson["locations"]
         self.assertTrue(locationExists)
 
 
@@ -116,5 +116,4 @@ class TestApiGateway(TestCase):
         """    
         response = requests.get(self.api_endpoint + 'locaciones')  
         responseJson=json.loads(response.content.decode('ASCII'))
-        print(responseJson)
         self.assertEqual(responseJson["message"], "Missing Authentication Token")
