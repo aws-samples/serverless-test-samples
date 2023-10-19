@@ -7,6 +7,7 @@ from uuid import uuid4
 from boto3.dynamodb.conditions import Key
 import boto3
 import requests
+import json
 
 """
 Set the environment variable AWS_SAM_STACK_NAME 
@@ -34,7 +35,7 @@ class TestApiGateway(TestCase):
     def setUp(self) -> None:
         """
         Based on the provided env variable AWS_SAM_STACK_NAME,
-        We use the cloudformation API to retrieve the HelloPersonApi URL and the DynamoDB Table Name
+        We use the cloudformation API to retrieve the GetInventory URL and the DynamoDB Table Name
         We also seed the DynamoDB Table for the test
         """
         stack_name = TestApiGateway.get_stack_name()
@@ -48,10 +49,10 @@ class TestApiGateway(TestCase):
                 f"Cannot find stack {stack_name}. \n" f'Please make sure stack with the name "{stack_name}" exists.'
             ) from e
 
-        # HelloPersonApi
+        # locationsApi
         stack_outputs = response["Stacks"][0]["Outputs"]
-        api_outputs = [output for output in stack_outputs if output["OutputKey"] == "HelloPersonApi"]
-        self.assertTrue(api_outputs, f"Cannot find output HelloPersonApi in stack {stack_name}")
+        api_outputs = [output for output in stack_outputs if output["OutputKey"] == "ApiEndpoint"]
+        self.assertTrue(api_outputs, f"Cannot find output locations in stack {stack_name}")
         self.api_endpoint = api_outputs[0]["OutputValue"]
 
         # DynamoDBTableName
@@ -67,9 +68,11 @@ class TestApiGateway(TestCase):
         # Seed the DynamoDB Table with Test Data
         dynamodb_resource = boto3.resource("dynamodb", region_name = self.aws_region)
         dynamodb_table = dynamodb_resource.Table(name=self.dynamodb_table_name)
-        dynamodb_table.put_item(Item={"PK": "TEST001" + self.id_postfix, 
-                                      "SK": "NAME#",
-                                      "data": "Unit Test Name Data"})
+        dynamodb_table.put_item(Item={"PK": "TEST_UNI" + self.id_postfix, 
+                                      "SK": "123",
+                                      "data": "Unit Test Name Data",
+                                      "LOCATION":"US"})
+                                    
 
 
     def tearDown(self) -> None:
@@ -86,18 +89,20 @@ class TestApiGateway(TestCase):
             )
             if "Items" in id_items:
                 for item in id_items["Items"]:
-                    dynamodb_table.delete_item(Key={"PK":item["PK"],"SK":item["SK"]})
+                    dynamodb_table.delete_item(Key={"PK":item["TEST_UNI"],"SK":item["123"]})
 
     def test_api_gateway_200(self):
         """
         Call the API Gateway endpoint and check the response for a 200
         """
-        response = requests.get(self.api_endpoint.replace("{id}","TEST001" + self.id_postfix))
+        response = requests.get(self.api_endpoint + '/locations') 
         self.assertEqual(response.status_code, requests.codes.ok)
 
     def test_api_gateway_404(self):
         """
         Call the API Gateway endpoint and check the response for a 404 (id not found)
         """    
-        response = requests.get(self.api_endpoint.replace("{id}","TEST002" + self.id_postfix))
-        self.assertEqual(response.status_code, requests.codes.not_found)
+        response = requests.get(self.api_endpoint + 'locaciones')  
+        responseJson=json.loads(response.content.decode('ASCII'))
+        print(responseJson)
+        self.assertEqual(responseJson["message"], "Missing Authentication Token")
