@@ -99,7 +99,7 @@ class TestApiGateway(TestCase):
         self.assertEqual(response.status_code, requests.codes.ok)
 
 
-    def fail_locations_response(self):
+    def test_locations_response(self):
         """""
         this response have a country that doesn't exists in the api response
         """
