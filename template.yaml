@@ -1,7 +1,7 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
 
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: SAM Template for serverless-test-workshop
 
@@ -11,9 +11,8 @@ Globals:
     Timeout: 30
 
 Resources:
-
   # DynamoDB Resource https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html
-  
+
   # This single-table DynamoDB design has a generic Partition Key (PK) and Sort Key (RK), and the item fields
   # are dependent on the item type:
   #  "Unicorn Items"  :  PK = {id}, SK = "LOCATION", STATUS = "AVAILABLE|RESERVED|RETIRED"
@@ -24,23 +23,23 @@ Resources:
     UpdateReplacePolicy: Delete
     Properties:
       AttributeDefinitions:
-      - AttributeName: PK
-        AttributeType: S
-      - AttributeName: LOCATION
-        AttributeType: S
-      - AttributeName: STATUS
-        AttributeType: S
+        - AttributeName: PK
+          AttributeType: S
+        - AttributeName: LOCATION
+          AttributeType: S
+        - AttributeName: STATUS
+          AttributeType: S
       KeySchema:
-      - AttributeName: PK
-        KeyType: HASH
+        - AttributeName: PK
+          KeyType: HASH
       GlobalSecondaryIndexes:
         - IndexName: "GSI_LOCATION"
-          KeySchema: 
+          KeySchema:
             - AttributeName: "LOCATION"
               KeyType: "HASH"
             - AttributeName: "STATUS"
               KeyType: "RANGE"
-          Projection: 
+          Projection:
             ProjectionType: "ALL"
       BillingMode: PAY_PER_REQUEST
       SSESpecification:
@@ -48,19 +47,17 @@ Resources:
     Metadata:
       SamResourceId: UnicornInventoryTable
 
-
- # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+  # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
   UnicornInventoryBucket:
     Type: AWS::S3::Bucket
     UpdateReplacePolicy: Delete
     Properties:
-      BucketName:
-        !Sub "unicorn-inv-${AWS::StackName}-${AWS::AccountId}"
+      BucketName: !Sub "unicorn-inv-${AWS::StackName}-${AWS::AccountId}"
       BucketEncryption:
         ServerSideEncryptionConfiguration:
-        - ServerSideEncryptionByDefault:
-            SSEAlgorithm: AES256
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true
@@ -71,13 +68,12 @@ Resources:
     Metadata:
       SamResourceId: SampleBucket
 
-
- # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
- # The Lambda function supports the /request-url-for-inventory endpoint
- # The function returns a signed url for uploading a Unicorn inventory to S3
+  # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+  # The Lambda function supports the /request-url-for-inventory endpoint
+  # The function returns a signed url for uploading a Unicorn inventory to S3
 
   CheckoutFunction:
-    Type: AWS::Serverless::Function 
+    Type: AWS::Serverless::Function
     Properties:
       Tracing: Active
       Policies:
@@ -95,13 +91,13 @@ Resources:
             Ref: UnicornInventoryTable
       Events:
         Checkout:
-          Type: Api 
+          Type: Api
           Properties:
             Path: /checkout
             Method: post
 
   GetInventoryFunction:
-    Type: AWS::Serverless::Function 
+    Type: AWS::Serverless::Function
     Properties:
       Tracing: Active
       Policies:
@@ -117,25 +113,24 @@ Resources:
         Variables:
           DYNAMODB_TABLE_NAME:
             Ref: UnicornInventoryTable
-          DYNAMODB_INDEX_NAME:
-            "GSI_LOCATION"
+          DYNAMODB_INDEX_NAME: "GSI_LOCATION"
       Events:
         Checkout:
-          Type: Api 
+          Type: Api
           Properties:
             Path: /list/{location}
             Method: get
             RequestParameters:
-            - method.request.header.Authorization
-            - method.request.querystring.page_token:
-                Required: false
-                Caching: false
-            - method.request.querystring.available:
-                Required: false
-                Caching: false
-            
+              - method.request.header.Authorization
+              - method.request.querystring.page_token:
+                  Required: false
+                  Caching: false
+              - method.request.querystring.available:
+                  Required: false
+                  Caching: false
+
   GetLocations:
-    Type: AWS::Serverless::Function 
+    Type: AWS::Serverless::Function
     Properties:
       Tracing: Active
       Policies:
@@ -153,15 +148,15 @@ Resources:
             Ref: UnicornInventoryTable
       Events:
         Checkout:
-          Type: Api 
+          Type: Api
           Properties:
             Path: /locations
             Method: get
             RequestParameters:
-            - method.request.header.Authorization
+              - method.request.header.Authorization
 
   GetSignedUrlForInventoryFilePost:
-    Type: AWS::Serverless::Function 
+    Type: AWS::Serverless::Function
     Properties:
       Tracing: Active
       Policies:
@@ -178,13 +173,13 @@ Resources:
           S3_BUCKET_NAME: !Sub "unicorn-inv-${AWS::StackName}-${AWS::AccountId}"
       Events:
         Checkout:
-          Type: Api 
+          Type: Api
           Properties:
             Path: /geturl
             Method: get
 
   InventoryProcessing:
-    Type: AWS::Serverless::Function 
+    Type: AWS::Serverless::Function
     Properties:
       Tracing: Active
       Policies:
@@ -204,12 +199,12 @@ Resources:
             Ref: UnicornInventoryTable
       Events:
         FilePostingToS3:
-          Type: S3 
+          Type: S3
           Properties:
             Bucket: !Ref UnicornInventoryBucket
             Events:
-              - 's3:ObjectCreated:*'
-    
+              - "s3:ObjectCreated:*"
+
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
@@ -223,4 +218,6 @@ Outputs:
   UnicornInventoryBucket:
     Description: "Unicorn Inventory Buckets"
     Value: !Ref UnicornInventoryBucket
-
+  GetInventoryFunction:
+    Description: "Name of the Lambda function required in the 'Invoke a Lambda function in the cloud' section."
+    Value: !Ref GetInventoryFunction
