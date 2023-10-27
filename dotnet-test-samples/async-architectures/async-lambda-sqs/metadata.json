@@ -1,39 +1,49 @@
 {
-    "title": "Asynchronous Tests with Lambda and SQS",
-    "description": "This project shows how to test an asynchronous serverless workflow that triggers a lambda with SQS as backend service",
+    "title": "Asynchronous tests with Lambda and SQS",
+    "description": "This project shows how to test an asynchronous serverless workflow that triggers a Lambda function with SQS",
     "content_language": "English",
     "language": ".NET",
-    "type": ["Unit", "Integration", "End to end"],
-    "diagram": "../img/s3-lambda-sqs.png",
+    "type": [
+        "Unit",
+        "Integration",
+        "End to end"
+    ],
+    "diagram": "/assets/external/testing-patterns/dotnet-test-samples/async-architectures/img/s3-lambda-sqs.png",
     "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
     "pattern_source": "AWS",
     "framework": "SAM",
-    "services": ["s3", "lambda", "sqs"],
+    "services": [
+        "s3",
+        "lambda",
+        "sqs"
+    ],
     "pattern_detail_tabs": [
         {
             "title": "Application Code Example (GetStock Functions)",
-            "filepath": "/src/S3Notification/Functions.cs"
+            "filepath": "/src/S3Notifications/Function.cs"
         },
         {
             "title": "Unit Tests",
-            "filepath": "/tests/S3Notification.UnitTests/FunctionsTests.cs"
+            "filepath": "/tests/S3Notifications.UnitTests/FunctionTest.cs"
         },
         {
             "title": "Integration Tests",
-            "filepath": "/tests/S3Notification.IntegrationTests/Usings.cs"
+            "filepath": "/tests/S3Notifications.IntegrationTests/FunctionTest.cs"
         },
         {
             "title": "End to End Tests",
-            "filepath": "/tests/S3Notification.E2ETests/Usings.cs"
-        }       
+            "filepath": "/tests/S3Notifications.E2ETests/FunctionTest.cs"
+        }
     ],
     "authors": [
         {
-          "name": "Dror Helper",          
-          "image": "https://media.licdn.com/dms/image/C4D03AQGbBwfXtx0Zmg/profile-displayphoto-shrink_200_200/0/1638988504464?e=1686182400&v=beta&t=5G7912InrYUbzHXPah-84eIDnh1j1UYQKIRFEENKmBs",
-          "bio": "Senior Microsoft Specialist Solution Architect at AWS",
-          "linkedin": "https://www.linkedin.com/in/drorhelper/",
-          "twitter": "https://twitter.com/dhelper"
-        }        
-    ]
+            "name": "Dror Helper",
+            "bio": "Senior Microsoft Specialist Solution Architect at AWS",
+            "linkedin": "drorhelper",
+            "twitter": "https://twitter.com/dhelper"
+        }
+    ],
+    "rootFolder": "async-architectures",
+    "folderName": "async-lambda-sqs",
+    "path": "dotnet-test-samples/async-architectures/async-lambda-sqs"
 }
