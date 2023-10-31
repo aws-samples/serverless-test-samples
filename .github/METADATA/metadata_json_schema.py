@@ -37,7 +37,7 @@ METADATA = {
             "type": "string",
             "title": "Repository Programming Language",
             "examples": [".NET","Python"],
-            "pattern": ".NET|Java|Python|Typescript|GO|Rust",
+            "pattern": ".NET|Java|Python|Typescript|GO|Rust|Custom|Node.js|PHP",
             "maxLength": 60,
             "minLength": 3
         },
@@ -66,7 +66,7 @@ METADATA = {
             "type": "string",
             "title": "Deployment Framework for the pattern",
             "examples": ["SAM"],
-            "pattern": "SAM|Cloudformation|CDK",
+            "pattern": "CDK|SAM|Amplify|CloudFormation|Serverless Framework",
             "maxLength": 60,
             "minLength": 3
         },      
@@ -74,7 +74,7 @@ METADATA = {
             "$id": "#/properties/services",
             "type": "array",
             "title": "AWS Services used in the pattern",
-            "examples": [["apigw","lambda","dynamodb"]],
+            "examples": [["AWS Lambda","Amazon API Gateway","Amazon DynamoDB"]],
             "minItems": 1,
             "uniqueItems": True,
             "items": {
