@@ -16,72 +16,35 @@
 """
 
 from os import environ
-import boto3
 from aws_xray_sdk.core import patch_all
-
-from aws_lambda_powertools.utilities.data_classes import S3Event
 from aws_lambda_powertools.utilities.typing import LambdaContext
 from aws_lambda_powertools.utilities.validation import validator
 
 from schemas import OUTPUT_SCHEMA
 patch_all()
 
+from os import environ
+import boto3,os ,json
 
-
-@validator(outbound_schema=OUTPUT_SCHEMA)
-def lambda_handler(event: S3Event, context: LambdaContext) -> dict:
-    """
-    S3 Event Handler
-    """
-
-    # Retrieve the table name from the environment, and create a boto3 Table object
-    dynamodb_table_name = environ["DYNAMODB_TABLE_NAME"]
-    dynamodb_resource = boto3.resource('dynamodb')
-    dynamodb_table = dynamodb_resource.Table(dynamodb_table_name)
-
-    s3_client = boto3.client('s3')
-    # Iterates through all the objects, doing the pagination for you. Each obj
-    # is an ObjectSummary, so it doesn't contain the body. You'll need to call
-    # get to get the whole body.
-
-    # Get the object from the event and show its content type
-    bucket = event['Records'][0]['s3']['bucket']['name']
-    key = event['Records'][0]['s3']['object']['key']
-
-    print(f"processing {bucket}/{key}")
-    status_code = 200
-    data = s3_client.get_object(Bucket=bucket, Key=key)
-    contents = data['Body'].read().decode()
-    count = 0
-    location_set = set()
-    for entry in contents.split("\n"):
-        print(f"Add {entry}")
-        if "Unicorn" not in entry:
-            (unicorn_name, unicorn_location) = entry.strip().split(",")
-
-            response = dynamodb_table.put_item(
-                Item={
-                    'PK': unicorn_name,
-                    'LOCATION': unicorn_location,
-                    'STATUS' : "AVAILABLE"
-                }
-            )
-            status_code = response['ResponseMetadata']['HTTPStatusCode']
-            location_set.add(unicorn_location)
-            count += 1
+sf=boto3.client('stepfunctions') 
+def lambda_handler(event, context) :
+    records = event['Records']
+    print(records)
+    s3_records = filter(lambda record: record['eventSource'] == 'aws:s3', records)
+    object_created_records = filter(lambda record: record['eventName'].startswith('ObjectCreated'), s3_records)
+    for record in object_created_records:
+        key = record['s3']['object']['key']
+        bucket=record['s3']['bucket']['name']
+    sfInput={}
+    sfInput['bucket']=bucket
+    sfInput['key']=key
+    print(sfInput)
     
-    # Post a list of locations for the pick list
-    location_list = [x for x in sorted(location_set)]
-    response = dynamodb_table.put_item(
-        Item={
-            'PK': "LOCATION#LIST",
-            'LOCATIONS': location_list
-        }
-    )
-    status_code = response['ResponseMetadata']['HTTPStatusCode']
-
+    response = sf.start_execution(
+        stateMachineArn = os.environ["SF_ARN"],
+        input = json.dumps(sfInput))
 
     return {
-        "statusCode": status_code,
-        "body": f"{count} unicorns uploaded."
+        "statusCode": 200,
+        "body": "running state machine."
     }

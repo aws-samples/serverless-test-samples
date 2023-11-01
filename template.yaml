@@ -83,8 +83,6 @@ Resources:
       CodeUri: src/Checkout/
       Handler: app.lambda_handler
       Runtime: python3.11
-      Architectures:
-        - arm64
       Environment:
         Variables:
           DYNAMODB_TABLE_NAME:
@@ -107,8 +105,6 @@ Resources:
       CodeUri: src/GetInventory/
       Handler: app.lambda_handler
       Runtime: python3.11
-      Architectures:
-        - arm64
       Environment:
         Variables:
           DYNAMODB_TABLE_NAME:
@@ -140,8 +136,6 @@ Resources:
       CodeUri: src/GetLocations/
       Handler: app.lambda_handler
       Runtime: python3.11
-      Architectures:
-        - arm64
       Environment:
         Variables:
           DYNAMODB_TABLE_NAME:
@@ -166,8 +160,6 @@ Resources:
       CodeUri: src/GetSignedUrlForInventoryFilePost/
       Handler: app.lambda_handler
       Runtime: python3.11
-      Architectures:
-        - arm64
       Environment:
         Variables:
           S3_BUCKET_NAME: !Sub "unicorn-inv-${AWS::StackName}-${AWS::AccountId}"
@@ -177,6 +169,39 @@ Resources:
           Properties:
             Path: /geturl
             Method: get
+  FileValidator:
+    Type: AWS::Serverless::Function
+    Properties:
+      Tracing: Active
+      CodeUri: src/FileValidator/
+      Handler: app.lambda_handler
+      Runtime: python3.11
+      Policies:
+        - AWSXrayWriteOnlyAccess
+        - S3ReadPolicy:
+            BucketName: !Sub "unicorn-inv-${AWS::StackName}-${AWS::AccountId}"
+      
+  SFProcessFile:
+    Type: AWS::Serverless::StateMachine # More info about State Machine Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-statemachine.html
+    Properties:
+      DefinitionUri: src/FileProcesor/StateMachine.asl.json
+      DefinitionSubstitutions:
+        ValidateCSVFile: !GetAtt FileValidator.Arn
+        UnicornTable: !Ref UnicornInventoryTable
+      Policies:
+        - LambdaInvokePolicy:
+            FunctionName: !Ref FileValidator
+        - DynamoDBCrudPolicy:
+            TableName: !Ref UnicornInventoryTable
+        - S3ReadPolicy:
+            BucketName: !Sub "unicorn-inv-${AWS::StackName}-${AWS::AccountId}"
+        - Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action: states:StartExecution
+              Resource: "*"
+          
+            
 
   InventoryProcessing:
     Type: AWS::Serverless::Function
@@ -188,15 +213,18 @@ Resources:
             BucketName: !Sub "unicorn-inv-${AWS::StackName}-${AWS::AccountId}"
         - DynamoDBCrudPolicy:
             TableName: !Ref UnicornInventoryTable
+        - StepFunctionsExecutionPolicy:
+            StateMachineName: !GetAtt SFProcessFile.Name
       CodeUri: src/InventoryProcessing/
       Handler: app.lambda_handler
       Runtime: python3.11
-      Architectures:
-        - arm64
+
       Environment:
         Variables:
           DYNAMODB_TABLE_NAME:
             Ref: UnicornInventoryTable
+          SF_ARN:
+            Ref: SFProcessFile
       Events:
         FilePostingToS3:
           Type: S3

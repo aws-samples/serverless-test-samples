@@ -1,0 +1,74 @@
+{
+  "Comment": "A description of my state machine",
+  "StartAt": "File Analysis",
+  "States": {
+    "File Analysis": {
+      "Type": "Map",
+      "ItemProcessor": {
+        "ProcessorConfig": {
+          "Mode": "DISTRIBUTED",
+          "ExecutionType": "STANDARD"
+        },
+        "StartAt": "Validate Unicorn File",
+        "States": {
+          "Validate Unicorn File": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::lambda:invoke",
+            "OutputPath": "$.Payload",
+            "Parameters": {
+              "Payload.$": "$",
+              "FunctionName": "${ValidateCSVFile}"
+            },
+            "Retry": [
+              {
+                "ErrorEquals": [
+                  "Lambda.ServiceException",
+                  "Lambda.AWSLambdaException",
+                  "Lambda.SdkClientException",
+                  "Lambda.TooManyRequestsException"
+                ],
+                "IntervalSeconds": 1,
+                "MaxAttempts": 3,
+                "BackoffRate": 2
+              }
+            ],
+            "Next": "DynamoDB PutItem"
+          },
+          "DynamoDB PutItem": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::aws-sdk:dynamodb:putItem",
+            "Parameters": {
+              "TableName":"${UnicornTable}",
+              "Item": {
+                "PK": {
+                  "S.$": "$.unicorn_name"
+                },
+                "LOCATION": {
+                  "S.$": "$.LOCATION"
+                },
+                "STATUS": {
+                  "S.$": "$.STATUS"
+                }
+              }
+            },
+            "End": true
+          }
+        }
+      },
+      "ItemReader": {
+        "Resource": "arn:aws:states:::s3:getObject",
+        "ReaderConfig": {
+          "InputType": "CSV",
+          "CSVHeaderLocation": "FIRST_ROW"
+        },
+        "Parameters": {
+          "Bucket.$": "$.bucket",
+          "Key.$": "$.key"
+        }
+      },
+      "MaxConcurrency": 10,
+      "Label": "FileAnalysis",
+      "End": true
+    }
+  }
+}
