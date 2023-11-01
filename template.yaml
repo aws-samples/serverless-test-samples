@@ -180,6 +180,21 @@ Resources:
         - AWSXrayWriteOnlyAccess
         - S3ReadPolicy:
             BucketName: !Sub "unicorn-inv-${AWS::StackName}-${AWS::AccountId}"
+  CreateLocations:
+    Type: AWS::Serverless::Function
+    Properties:
+      Tracing: Active
+      CodeUri: src/CreateLocations/
+      Handler: app.lambda_handler
+      Runtime: python3.11
+      Environment:
+        Variables:
+          DYNAMODB_TABLE_NAME:
+            Ref: UnicornInventoryTable
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref UnicornInventoryTable
+  
       
   SFProcessFile:
     Type: AWS::Serverless::StateMachine # More info about State Machine Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-statemachine.html
@@ -188,7 +203,10 @@ Resources:
       DefinitionSubstitutions:
         ValidateCSVFile: !GetAtt FileValidator.Arn
         UnicornTable: !Ref UnicornInventoryTable
+        CreateLocations: !GetAtt CreateLocations.Arn
       Policies:
+        - LambdaInvokePolicy:
+            FunctionName: !Ref CreateLocations
         - LambdaInvokePolicy:
             FunctionName: !Ref FileValidator
         - DynamoDBCrudPolicy:
