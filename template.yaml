@@ -256,7 +256,7 @@ Outputs:
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
   ApiEndpoint:
-    Description: "API Gateway endpoint URL for Prod stage for Hello Person function"
+    Description: "API Gateway endpoint URL, set this in the Demo UI: Administration tab, API Endpoint"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
   DynamoDBTableName:
     Description: "Unicorn Inventory DynamoDB table name"

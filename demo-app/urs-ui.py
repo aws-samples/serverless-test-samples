@@ -14,6 +14,31 @@ import requests
 import streamlit as st
 
 
+# Initialize Contexts
+if 'api_endpoint_url' not in st.session_state:
+    if os.path.isfile("config.json"):
+        with open("config.json","r",encoding="utf-8") as f:
+            app_config = json.load(f)
+        st.session_state['api_endpoint_url'] = app_config["api_endpoint"].strip()
+    else:
+        st.session_state['api_endpoint_url'] = "https://{APIGATEWAYID}.execute-api.{REGION}.amazonaws.com/Prod/"
+
+if 'unicorn_art' not in st.session_state:
+    with open("_img/unicorn_art.md","r",encoding="utf-8") as f:
+        st.session_state['unicorn_art'] = f.read()
+
+def update_api_endpoint():
+    """
+    Endpoint has changes, save it for next run
+    """
+    endpoint_json = {"api_endpoint": st.session_state['api_endpoint_url'].strip()}
+    with open("config.json","w",encoding="utf-8") as out_file:
+        json.dump(endpoint_json, out_file)
+        st.write("API Endpoint saved, refresh browser to take effect.")
+
+
+# Retrieve Application Endpoint
+
 def upload_file_to_s3(api_endpoint_url: str, file_to_upload: str) -> str:
     """
     Upload a data file to S3
@@ -80,21 +105,13 @@ def get_locations(api_endpoint_url: str) -> list:
     except Exception as err:
         print(err)
         return []
+    
 
-# Retrieve Application Endpoint
-if os.path.isfile("config.json"):
-    with open("config.json","r",encoding="utf-8") as f:
-        app_config = json.load(f)
-    api_endpoint = app_config["api_endpoint"]
-
-else:
-    api_endpoint = "https://{APIGATEWAYID}.execute-api.{REGION}.amazonaws.com/Prod/"
-
-location_list = get_locations(api_endpoint)
+location_list = get_locations(st.session_state['api_endpoint_url'])
 
 # Generate the Application Title
 col1, col2 = st.columns([1, 4])
-col1.image("_img/unicorn.png", width=100)
+col1.markdown(st.session_state['unicorn_art'])
 col2.header('Unicorn Reservation System (URS)', divider='rainbow')
 col2.write("""*Reserving Happy Unicorns Around the World!*""")
 
@@ -104,18 +121,18 @@ listing_tab, reserve_tab, admin_tab = st.tabs(["Listing", "Reserve", "Administra
 # Listing Tab
 with listing_tab:
     location_listing = st.radio("Pick a location for the Unicorn listing:", location_list)
-    u_inv = get_inventory(api_endpoint, location_listing)
+    u_inv = get_inventory(st.session_state['api_endpoint_url'], location_listing)
     st.table(u_inv)
 
 # Reserve Tab
 with reserve_tab:
     location_res = st.radio("Pick a location for Unicorn reservations:", location_list)
-    u_list = [ u["Name"] for u in get_inventory(api_endpoint, location_res, True ) ]
+    u_list = [ u["Name"] for u in get_inventory(st.session_state['api_endpoint_url'], location_res, True ) ]
     if len(u_list) > 0:
         unicorn_to_reserve = st.selectbox('Which Unicorn would you like to reserve?', u_list)
         reserve_for = st.text_input("Reserve Unicorn for:")
         if st.button(f"Reserve {unicorn_to_reserve}"):
-            if reserve_unicorn(api_endpoint, unicorn_to_reserve, reserve_for):
+            if reserve_unicorn(st.session_state['api_endpoint_url'], unicorn_to_reserve, reserve_for):
                 st.write(f"Unicorn Reserved: {unicorn_to_reserve}")
             else:
                 st.write(f"Error reserving Unicorn {unicorn_to_reserve}!")
@@ -125,15 +142,11 @@ with reserve_tab:
 # Administration Tab
 with admin_tab:
     # Api Gateway Setup
-    new_api_endpoint = st.text_input("API Endpoint:", 
-                  value=api_endpoint, 
-                  max_chars=2048
+    new_api_endpoint = st.text_input("API Endpoint (Hit Return to Apply):", 
+                  max_chars=2048,
+                  key="api_endpoint_url",
+                  on_change=update_api_endpoint
     )
-    if st.button("Save API Endpoint"):
-        endpoint_json = {"api_endpoint": new_api_endpoint}
-        with open("config.json","w",encoding="utf-8") as out_file:
-            json.dump(endpoint_json, out_file)
-            st.write("Configuration saved, refresh browser to take effect.")
     
     # File picker for uploading to the unicorn inventory
     uploaded_file = st.file_uploader("Choose a CSV file for the Unicorn Inventory.", type=["csv"])
@@ -142,5 +155,5 @@ with admin_tab:
         string_data = uploaded_file.getvalue().decode("utf-8")
         with open(TEMP_FILE_NAME,"w",encoding="utf-8") as out_file:
             out_file.write(string_data)
-        st.write(upload_file_to_s3(api_endpoint, TEMP_FILE_NAME))
+        st.write(upload_file_to_s3(st.session_state['api_endpoint_url'], TEMP_FILE_NAME))
         os.remove(TEMP_FILE_NAME)

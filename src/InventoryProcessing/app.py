@@ -14,20 +14,21 @@
 #   If a Unicorn is RESERVED|RETIRED, do not modify it's entry - log/return an error
 #   Update the available Unicorn count statistic in DynamoDB.  (PK = AVAILABLE, Value = #)
 """
-
-from os import environ
+import boto3
+import os
+import json
 from aws_xray_sdk.core import patch_all
+from aws_lambda_powertools.utilities.data_classes import S3Event
 from aws_lambda_powertools.utilities.typing import LambdaContext
 from aws_lambda_powertools.utilities.validation import validator
 
 from schemas import OUTPUT_SCHEMA
 patch_all()
+ikk
+sf=boto3.client('stepfunctions')
 
-from os import environ
-import boto3,os,json
-
-sf=boto3.client('stepfunctions') 
-def lambda_handler(event, context) :
+@validator(outbound_schema=OUTPUT_SCHEMA)
+def lambda_handler(event: S3Event, context: LambdaContext) :
     records = event['Records']
     print(records)
     s3_records = filter(lambda record: record['eventSource'] == 'aws:s3', records)
@@ -43,8 +44,8 @@ def lambda_handler(event, context) :
     response = sf.start_execution(
         stateMachineArn = os.environ["SF_ARN"],
         input = json.dumps(sfInput))
-
+    
     return {
         "statusCode": 200,
-        "body": "running state machine."
+        "body": json.dumps(response)
     }

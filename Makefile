@@ -39,6 +39,9 @@ scan:
 	source ./venv/bin/activate &&  cfn_nag_scan --input-path template.yaml
 	source ./venv/bin/activate &&  pylint src/sample_lambda/*.py tests/unit/src/*.py
 
+run-ui:
+	source ./venv/bin/activate && cd ./demo-app && streamlit run urs-ui.py --server.port 8080 &
+
 delete:
 	source ./venv/bin/activate && sam delete
 

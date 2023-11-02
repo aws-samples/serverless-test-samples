@@ -9,8 +9,13 @@
           "Mode": "DISTRIBUTED",
           "ExecutionType": "STANDARD"
         },
-        "StartAt": "Validate Unicorn File",
+        "StartAt": "Simulate a Longer Running Workflow",
         "States": {
+          "Simulate a Longer Running Workflow": {
+              "Type": "Wait",
+              "Seconds": 5,
+              "Next": "Validate Unicorn File"
+          },
           "Validate Unicorn File": {
             "Type": "Task",
             "Resource": "arn:aws:states:::lambda:invoke",
