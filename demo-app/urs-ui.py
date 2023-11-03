@@ -54,9 +54,9 @@ def upload_file_to_s3(api_endpoint_url: str, file_to_upload: str) -> str:
                                       data=response.json()['fields'],
                                       files=files)
     if http_response.ok:
-        return "Data file written to S3."
+        return "Data file written to S3.  Wait 20 seconds and refresh browser."
     else:
-        return "Data file not written to S3."
+        return "ERROR: Data file not written to S3."
 
 def get_inventory(api_endpoint_url: str, fetch_loc: str, available_only = False) -> list:
     """
