@@ -15,35 +15,35 @@ all: clean build
 
 install: checkOSDependencies
 	${PIP} install virtualenv
-	python3 -m venv venv
-	source ./venv/bin/activate && ${PIP} install -r demo-app/requirements.txt
+	python3 -m venv .venv
+	source ./.venv/bin/activate && ${PIP} install -r demo-app/requirements.txt
 
 shell:
-	source ./venv/bin/activate
+	source ./.venv/bin/activate
 
 deps:
-	source ./venv/bin/activate && ${PIP} install -r tests/requirements.txt
+	source ./.venv/bin/activate && ${PIP} install -r tests/requirements.txt
 
 build: ##=> Same as package except that we don't create a ZIP
-	source ./venv/bin/activate && sam build
+	source ./.venv/bin/activate && sam build
 
 deploy:
-	source ./venv/bin/activate &&  sam build
-	source ./venv/bin/activate &&  sam deploy
+	source ./.venv/bin/activate &&  sam build
+	source ./.venv/bin/activate &&  sam deploy
 
 deploy.g:
-	source ./venv/bin/activate &&  sam build
-	source ./venv/bin/activate &&  sam deploy --guided
+	source ./.venv/bin/activate &&  sam build
+	source ./.venv/bin/activate &&  sam deploy --guided
 
 scan:
-	source ./venv/bin/activate &&  cfn_nag_scan --input-path template.yaml
-	source ./venv/bin/activate &&  pylint src/sample_lambda/*.py tests/unit/src/*.py
+	source ./.venv/bin/activate &&  cfn_nag_scan --input-path template.yaml
+	source ./.venv/bin/activate &&  pylint src/sample_lambda/*.py tests/unit/src/*.py
 
 run-ui:
-	source ./venv/bin/activate && cd ./demo-app && streamlit run urs-ui.py --server.port 8080 &
+	source ./.venv/bin/activate && cd ./demo-app && streamlit run urs-ui.py --server.port 8080 &
 
 delete:
-	source ./venv/bin/activate && sam delete
+	source ./.venv/bin/activate && sam delete
 
 #############
 #  Helpers  #

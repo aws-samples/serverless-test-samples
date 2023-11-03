@@ -1,5 +1,12 @@
-import boto3
+"""
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+
+Compile a unique list of sorted Unicorn Locations.
+"""
 import os
+import boto3
+
 
 def lambda_handler(event, _):
     """
@@ -18,10 +25,13 @@ def lambda_handler(event, _):
         'PK': "LOCATION#LIST"
         }
     )
+
+    location_set = set()
+    for l in locations:
+        location_set.add(l)
     if "Item" in response:
-        locations.append(response["Item"]["LOCATIONS"])
-    
-    location_set = set(locations)
+        for l in response["Item"]["LOCATIONS"]:
+            location_set.add(l)
     location_list_sorted = [x for x in sorted(location_set)]
 
     response = table.put_item(
