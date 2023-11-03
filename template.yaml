@@ -65,6 +65,9 @@ Resources:
         RestrictPublicBuckets: true
       VersioningConfiguration:
         Status: Enabled
+      NotificationConfiguration:
+        EventBridgeConfiguration:
+          EventBridgeEnabled: True
     Metadata:
       SamResourceId: SampleBucket
 
@@ -169,6 +172,7 @@ Resources:
           Properties:
             Path: /geturl
             Method: get
+
   FileValidator:
     Type: AWS::Serverless::Function
     Properties:
@@ -180,6 +184,7 @@ Resources:
         - AWSXrayWriteOnlyAccess
         - S3ReadPolicy:
             BucketName: !Sub "unicorn-inv-${AWS::StackName}-${AWS::AccountId}"
+  
   CreateLocations:
     Type: AWS::Serverless::Function
     Properties:
@@ -195,11 +200,12 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: !Ref UnicornInventoryTable
   
-      
+  # More info about State Machine Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-statemachine.html
   SFProcessFile:
-    Type: AWS::Serverless::StateMachine # More info about State Machine Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-statemachine.html
+    Type: AWS::Serverless::StateMachine
     Properties:
-      DefinitionUri: src/FileProcesor/StateMachine.asl.json
+      Name: !Sub "${AWS::StackName}-SFProcessFile-${AWS::AccountId}"
+      DefinitionUri: src/FileProcessor/StateMachine.asl.json
       DefinitionSubstitutions:
         ValidateCSVFile: !GetAtt FileValidator.Arn
         UnicornTable: !Ref UnicornInventoryTable
@@ -213,43 +219,23 @@ Resources:
             TableName: !Ref UnicornInventoryTable
         - S3ReadPolicy:
             BucketName: !Sub "unicorn-inv-${AWS::StackName}-${AWS::AccountId}"
-        - Version: 2012-10-17
-          Statement:
-            - Effect: Allow
-              Action: states:StartExecution
-              Resource: "*"
-          
-            
-
-  InventoryProcessing:
-    Type: AWS::Serverless::Function
-    Properties:
-      Tracing: Active
-      Policies:
-        - AWSXrayWriteOnlyAccess
-        - S3ReadPolicy:
-            BucketName: !Sub "unicorn-inv-${AWS::StackName}-${AWS::AccountId}"
-        - DynamoDBCrudPolicy:
-            TableName: !Ref UnicornInventoryTable
         - StepFunctionsExecutionPolicy:
-            StateMachineName: !GetAtt SFProcessFile.Name
-      CodeUri: src/InventoryProcessing/
-      Handler: app.lambda_handler
-      Runtime: python3.11
-
-      Environment:
-        Variables:
-          DYNAMODB_TABLE_NAME:
-            Ref: UnicornInventoryTable
-          SF_ARN:
-            Ref: SFProcessFile
+            StateMachineName: !Sub "${AWS::StackName}-SFProcessFile-${AWS::AccountId}"
       Events:
-        FilePostingToS3:
-          Type: S3
+        NewInventoryFileInS3:
+          Type: EventBridgeRule
           Properties:
-            Bucket: !Ref UnicornInventoryBucket
-            Events:
-              - "s3:ObjectCreated:*"
+            EventBusName: default
+            Pattern:
+              source:
+                - aws.s3
+              detail-type:
+                - Object Created
+              detail:
+                bucket:
+                  name:
+                    - !Ref UnicornInventoryBucket
+
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
@@ -262,7 +248,7 @@ Outputs:
     Description: "Unicorn Inventory DynamoDB table name"
     Value: !Ref UnicornInventoryTable
   UnicornInventoryBucket:
-    Description: "Unicorn Inventory Buckets"
+    Description: "Unicorn Inventory Bucket Name"
     Value: !Ref UnicornInventoryBucket
   GetInventoryFunction:
     Description: "Name of the Lambda function required in the 'Invoke a Lambda function in the cloud' section."

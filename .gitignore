@@ -268,6 +268,7 @@ samconfig.toml
 **/obj/*
 launchSettings.json
 samconfig.toml
+demo-app/config.json
 .dcignore
 *.DotSettings*
 # End of .NET ignores

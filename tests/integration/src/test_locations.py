@@ -16,7 +16,7 @@ to match the name of the stack you will test
 AWS_SAM_STACK_NAME=<stack-name> python -m pytest -s tests/integration -v
 """
 
-class TestApiGateway(TestCase):
+class TestLocations(TestCase):
     api_endpoint: str
 
     aws_region = os.environ.get("AWS_DEFAULT_REGION") or "us-east-1"
@@ -38,7 +38,7 @@ class TestApiGateway(TestCase):
         We use the cloudformation API to retrieve the GetInventory URL and the DynamoDB Table Name
         We also seed the DynamoDB Table for the test
         """
-        stack_name = TestApiGateway.get_stack_name()
+        stack_name = TestLocations.get_stack_name()
 
         client = boto3.client("cloudformation")
 
@@ -60,18 +60,21 @@ class TestApiGateway(TestCase):
         self.assertTrue(dynamodb_outputs, f"Cannot find output DynamoDBTableName in stack {stack_name}")
         self.dynamodb_table_name = dynamodb_outputs[0]["OutputValue"] 
 
-        # Create a random postfix for the id's to prevent data collions between tests
+        # Create a random postfix for the id's to prevent data collisions between tests
         # Using unique id's per unit test will isolate test data
-        self.id_postfix = "_" + str(uuid4())
+        # Use this id in all test data values or artifacts
 
+        self.id_postfix = "_" + str(uuid4())
+        self.test_unicorn = f"TEST_UNI{self.id_postfix}"
+        self.test_location = f"TEST_LOC{self.id_postfix}"
 
         # Seed the DynamoDB Table with Test Data
         
         dynamodb_resource = boto3.resource("dynamodb", region_name = self.aws_region)
         dynamodb_table = dynamodb_resource.Table(name=self.dynamodb_table_name)
-        dynamodb_table.put_item(Item={"PK": "TEST_UNI" + self.id_postfix, 
+        dynamodb_table.put_item(Item={"PK": self.test_unicorn, 
                                       "STATUS": "AVAILABLE",
-                                      "LOCATION":"US"})
+                                      "LOCATION": self.test_location})
                                         
 
 
@@ -83,13 +86,13 @@ class TestApiGateway(TestCase):
         dynamodb_resource = boto3.resource("dynamodb", region_name = self.aws_region)
         dynamodb_table = dynamodb_resource.Table(name=self.dynamodb_table_name)
 
-        for id in ["TEST001" + self.id_postfix,"TEST002" + self.id_postfix]:
+        for id in [self.test_unicorn]:
             id_items = dynamodb_table.query(
                 KeyConditionExpression=Key('PK').eq(id)
             )
             if "Items" in id_items:
                 for item in id_items["Items"]:
-                    dynamodb_table.delete_item(Key={"PK":item["TEST_UNI"]+ self.id_postfix})
+                    dynamodb_table.delete_item(Key={"PK": item["PK"]})
 
     def test_api_gateway_200(self):
         """
@@ -102,6 +105,7 @@ class TestApiGateway(TestCase):
     def test_locations_response(self):
         """""
         this response have a country that doesn't exists in the api response
+        you will have to fix this test!
         """
         response = requests.get(self.api_endpoint + '/locations') 
         responseJson=json.loads(response.content.decode('ASCII'))
@@ -114,6 +118,6 @@ class TestApiGateway(TestCase):
         """
         Call the API Gateway endpoint and check the response for a 404 (id not found)
         """    
-        response = requests.get(self.api_endpoint + 'locaciones')  
+        response = requests.get(self.api_endpoint + 'incorrectxxlocationsxxincorrect')  
         responseJson=json.loads(response.content.decode('ASCII'))
         self.assertEqual(responseJson["message"], "Missing Authentication Token")

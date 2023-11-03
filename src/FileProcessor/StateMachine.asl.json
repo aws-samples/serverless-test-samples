@@ -46,7 +46,7 @@
               "TableName":"${UnicornTable}",
               "Item": {
                 "PK": {
-                  "S.$": "$.unicorn_name"
+                  "S.$": "$.PK"
                 },
                 "LOCATION": {
                   "S.$": "$.LOCATION"
@@ -56,7 +56,8 @@
                 }
               }
             },
-            "End": true
+            "End": true,
+            "ResultPath": null
           }
         }
       },
@@ -67,8 +68,8 @@
           "CSVHeaderLocation": "FIRST_ROW"
         },
         "Parameters": {
-          "Bucket.$": "$.bucket",
-          "Key.$": "$.key"
+          "Bucket.$": "$.detail.bucket.name",
+          "Key.$": "$.detail.object.key"
         }
       },
       "MaxConcurrency": 10,

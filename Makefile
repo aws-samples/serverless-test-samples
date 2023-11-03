@@ -64,6 +64,8 @@ define HELP_MESSAGE
 	deps      Install project dependencies locally
 	scan	  Run code scanning tools
 
+	run-ui    Run the demonstration User Interface
+
 	clean     Cleans up local build artifacts and environment
 	delete    Delete stack from AWS
 
