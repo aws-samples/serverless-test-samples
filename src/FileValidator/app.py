@@ -7,10 +7,10 @@ Validate a Unicorn name, assign an initial status, and convert data format
 import random
 from aws_xray_sdk.core import patch_all
 from aws_lambda_powertools.utilities.validation import validator
-from schemas import INPUT_SCHEMA, OUTPUT_SCHEMA
+#from schemas import INPUT_SCHEMA, OUTPUT_SCHEMA
 patch_all()
 
-@validator(inbound_schema=INPUT_SCHEMA, outbound_schema=OUTPUT_SCHEMA)
+# @validator(inbound_schema=INPUT_SCHEMA, outbound_schema=OUTPUT_SCHEMA)
 def lambda_handler(event, _):
     """
     Reformat the record and add a random initial status.
