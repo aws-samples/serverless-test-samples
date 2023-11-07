@@ -1,6 +1,6 @@
 {
     "title": "Java Starter Project with Spock",
-    "description": "This project contains unit, and integration tests for a pattern using API Gateway, AWS Lambda and Amazon S3.",
+    "description": "This project contains unit, and integration tests using Spock for a pattern using API Gateway, AWS Lambda and Amazon S3.",
     "content_language": "English",
     "language": "Java",
     "type": ["Unit", "Integration"],
