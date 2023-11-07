@@ -141,34 +141,31 @@ apigw-lambda-list-s3-buckets$ mvn test
 [[top]](#api-gateway-to-lambda-to-list-s3-buckets)
 
 ## Run a unit test using a mock framework
-You can use mocking frameworks like [Mockito](https://site.mockito.org/) to mock the service calls that are being done in the Lambda function.
-[`AppWithMockTest.java`](./src/test/java/com/example/AppWithMockTest.java) covers this example:
+You can use Spock to mock the service calls that are being done in the Lambda function.
+[`AppWithMockSpec.groovy`](./src/test/groovy/com/example/AppWithMockSpec.groovy) covers this example:
 
-```java
-@ExtendWith(MockitoExtension.class)
-public class AppWithMockTest { 
-  private static S3Client s3Client;
+```groovy
+class AppWithMockSpec  extends Specification {
 
-  @BeforeEach
-  public void setup() {
-    s3Client = mock(S3Client.class);
-    Bucket bucket = mock(Bucket.class);
-    when(bucket.name()).thenReturn("foo");
-    lenient().when(s3Client.listBuckets())
-      .thenReturn(ListBucketsResponse.builder().buckets(bucket).build());
-  }
 
-  @Test
-  public void successfulResponse() {
-    App app = new App(s3Client);
-    APIGatewayProxyResponseEvent result = app.handleRequest(null, null);
-    assertEquals(200, result.getStatusCode().intValue());
-    assertEquals("text/plain", result.getHeaders().get("Content-Type"));
-    String content = result.getBody();
-    assertNotNull(content);
-    assertTrue(content.length() > 0);
-    assertEquals("foo", content);
-  }
+    def mockS3Client = Mock(S3Client)
+    def app = new App(mockS3Client)
+
+    def "returns a list of buckets"() {
+        given: "a bucket exists"
+        1 * mockS3Client.listBuckets() >> listWithBucket()
+
+        when: "a request is received"
+        def request =  getRequestFromFile()
+        def responseEvent = app.handleRequest(request, null)
+
+        then: "a list of buckets is returned"
+        def responseBody = new JsonSlurper().parseText(responseEvent.getBody()) as List
+        responseBody.size() >= 1
+
+        and: "the first item is the example bucket"
+        responseBody.first() == TEST_BUCKET_NAME
+    }
 }
 ```
 
