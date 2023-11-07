@@ -74,10 +74,20 @@ Event-driven architectures (EDA) are an architecture style that uses events and 
 |---|---|---|
 |[Kinesis Data Stream, Lambda](./typescript-test-samples/kinesis-lambda-dynamodb)|TypeScript|This project shows a technique for testing a streaming data processing system.|
 |[Kinesis Data Stream, Lambda, DynamoDB](./dotnet-test-samples/kinesis-lambda-dynamodb)|.NET|This pattern creates an AWS Lambda function that consumes messages from an Amazon Kinesis Data Streams and dumps them to Amazon DynamoDB using SAM and .NET 6.|
+
 ## AWS Partner Patterns
 | Partner |System Under Test|Language|Description|
 |---|---|---|---|
 | Datadog |[API Gateway, Lambda, SQS, SNS](./typescript-test-samples/apigw-lambda-sqs-sns-datadog)|TypeScript|This example is about creating Synthetic Tests and Monitors with Datadog.|
+
+## Test Containers
+[Testcontainers](https://testcontainers.com/) is an open source framework for providing throwaway, lightweight instances of databases, message brokers, web browsers, or just about anything that can run in a Docker container. These tests demonstrate how you can utilize this as part of your testing frameworks to startup, initialize and tear down emulated resources.
+
+Emulation is not a replacement for testing against actual cloud resources, and integration tests will always run against deployed versions of your applications. However, the emulation of certain services like DynamoDB can provide fast feedback loops on your local machine.
+
+|System Under Test|Language|Description|
+|---|---|---|
+|[API Gateway, Lambda, DynamoDB](./dotnet-test-samples/test-containers)|.NET|This example demonstrates how you can simplify local testing and emulation using the TestContainers project.|
 
 # How do I contribute?
 
