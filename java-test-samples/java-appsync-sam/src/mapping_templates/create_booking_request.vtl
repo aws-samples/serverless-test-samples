@@ -1,0 +1,14 @@
+        #set($bookingid = $util.defaultIfNullOrBlank($ctx.args.bookingid, $util.autoId()))
+        {
+          "version" : "2018-05-29",
+          "operation" : "PutItem",
+          "key": {
+              "bookingid": $util.dynamodb.toDynamoDBJson($bookingid)
+          },
+          "attributeValues" : {
+              "resourceid": $util.dynamodb.toDynamoDBJson($ctx.args.resourceid),
+              "userid": $util.dynamodb.toDynamoDBJson(${context.identity.sub}),
+              "starttimeepochtime": $util.dynamodb.toDynamoDBJson($ctx.args.starttimeepochtime),
+              "timestamp": $util.dynamodb.toDynamoDBJson($util.time.nowISO8601())
+          }
+        }

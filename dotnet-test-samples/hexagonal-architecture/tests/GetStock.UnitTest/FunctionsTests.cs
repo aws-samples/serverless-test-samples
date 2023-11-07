@@ -8,7 +8,7 @@ namespace GetStock.UnitTest;
 public class FunctionsTests
 {
     [Fact]
-    public void GetStockById_stockIdNotInPath_returnFailure()
+    public void GetStockById_With_PathMissingStockId_Should_ReturnFailure()
     {
         using var autoFake = new AutoFake();
 
@@ -24,7 +24,7 @@ public class FunctionsTests
     }
 
     [Fact]
-    public void GetStockById_stockIdInPath_callFunctionHandler()
+    public void GetStockById_With_StockIdInPath_Should_CallFunctionHandler()
     {
         using var autoFake = new AutoFake();
 

@@ -1,0 +1,100 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  SAM Template for kinesis-lambda-dynamodb
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 1024
+    Architectures:
+      - arm64
+    Runtime: dotnet6
+    Tracing: Active
+    Environment:
+      Variables:
+        POWERTOOLS_LOG_LEVEL: Information
+        POWERTOOLS_LOGGER_LOG_EVENT: true
+        POWERTOOLS_LOGGER_CASE: PascalCase # Allowed values are: CamelCase, PascalCase and SnakeCase
+        POWERTOOLS_LOGGER_SAMPLE_RATE: 0
+        POWERTOOLS_METRICS_NAMESPACE: KinesisEventHandler
+
+Resources:
+  EmployeeRecordsStream:
+    Type: AWS::Kinesis::Stream
+    Properties:
+      Name: EmployeeRecordsStream
+      RetentionPeriodHours: 48
+      ShardCount: 2
+  EmployeeRecordsStreamConsumer:
+    Type: "AWS::Kinesis::StreamConsumer"
+    Properties:
+      StreamARN: !GetAtt EmployeeRecordsStream.Arn
+      ConsumerName: "EmployeeRecordsStreamConsumer"
+  ProcessEmployeeFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: ./KinesisEventHandler/
+      Handler: KinesisEventHandler::KinesisEventHandler.Functions.ProcessEmployeeFunction::Handler
+      Environment:
+        Variables:
+          POWERTOOLS_SERVICE_NAME: process-employee-stream-function
+          EMPLOYEE_TABLE_NAME: !Ref EmployeeStreamTable
+      Events:
+        KinesisRecords:
+          Type: Kinesis
+          Properties:
+            Stream: !GetAtt EmployeeRecordsStreamConsumer.ConsumerARN
+            BatchSize: 10
+            StartingPosition: TRIM_HORIZON
+            ParallelizationFactor: 2
+            FunctionResponseTypes:
+              - ReportBatchItemFailures
+            MaximumRecordAgeInSeconds: 1800
+            MaximumRetryAttempts: 3
+            DestinationConfig:
+              OnFailure:
+                Destination: !GetAtt EmployeeRecordsStreamDLQ.Arn
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref EmployeeStreamTable
+        - KinesisStreamReadPolicy:
+            StreamName: !Ref EmployeeRecordsStreamConsumer
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt EmployeeRecordsStreamDLQ.QueueName
+
+  EmployeeRecordsStreamDLQ:
+    Type: AWS::SQS::Queue
+
+  EmployeeStreamTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: employee_id
+          AttributeType: S
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      KeySchema:
+        - AttributeName: employee_id
+          KeyType: HASH
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+
+Outputs:
+  EmployeeRecordsStream:
+    Description: "Kinesis Stream that accepts Employee Records for Processing"
+    Value: !Ref EmployeeRecordsStream
+  ProcessEmployeeFunction:
+    Description: "Process Employee Function ARN"
+    Value: !GetAtt ProcessEmployeeFunction.Arn
+  ProcessEmployeeFunctionIamRole:
+    Description: "Implicit IAM Role created for Process Employee Function"
+    Value: !GetAtt ProcessEmployeeFunctionRole.Arn
+  EmployeeStreamTableName:
+    Description: "Employee Stream Table Name"
+    Value: !Ref EmployeeStreamTable
+  EmployeeRecordsStreamDLQ:
+    Description: "Employee Record Stream DLQ"
+    Value: !Ref EmployeeRecordsStreamDLQ

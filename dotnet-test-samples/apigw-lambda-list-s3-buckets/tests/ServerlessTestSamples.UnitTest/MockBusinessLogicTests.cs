@@ -1,6 +1,6 @@
+using FakeItEasy;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
-using Moq;
 using ServerlessTestSamples.Core.Queries;
 using ServerlessTestSamples.Core.Services;
 
@@ -8,24 +8,24 @@ namespace ServerlessTestSamples.UnitTest;
 
 public class MockBusinessLogicTests
 {
-    private ILogger<ListStorageAreasQueryHandler> Logger { get; } = Mock.Of<ILogger<ListStorageAreasQueryHandler>>();
+    private ILogger<ListStorageAreasQueryHandler> Logger { get; } = A.Fake<ILogger<ListStorageAreasQueryHandler>>();
 
     [Fact]
-    public async Task TestCoreBusinessLogicWithSuccessfulResponse_ShouldReturnStorageAreas()
+    public async Task TestCoreBusinessLogic_With_SuccessfulResponse_Should_ReturnStorageAreas()
     {
         // arrange
-        var storage = new Mock<IStorageService>();
+        var fakeStorageService = A.Fake<IStorageService>();
 
-        storage.Setup(ss => ss.ListStorageAreas(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-               .ReturnsAsync(new ListStorageAreasResult(
+        A.CallTo(() => fakeStorageService.ListStorageAreas(A<string>._, A<CancellationToken>._))
+            .Returns(Task.FromResult(new ListStorageAreasResult(
                    new List<string>()
                    {
                        "bucket1",
                        "bucket2",
                        "bucket3",
-                   }));
+                   })));
 
-        var handler = new ListStorageAreasQueryHandler(storage.Object, Logger);
+        var handler = new ListStorageAreasQueryHandler(fakeStorageService, Logger);
 
         // act
         var result = await handler.Handle(new() { FilterPrefix = string.Empty }, default);
@@ -35,15 +35,18 @@ public class MockBusinessLogicTests
     }
 
     [Fact]
-    public async Task TestCoreBusinessLogicWithErrorStorageResponse_ShouldReturnEmptyList()
+    public async Task TestCoreBusinessLogic_With_ErrorStorageResponse_Should_ReturnEmptyList()
     {
         // arrange
-        var storage = new Mock<IStorageService>();
+        var fakeStorageService = A.Fake<IStorageService>();
 
-        storage.Setup(p => p.ListStorageAreas(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-               .ReturnsAsync(() => new ListStorageAreasResult(Enumerable.Empty<string>(), false, "Failure retrieving storage data"));
+        A.CallTo(() => fakeStorageService.ListStorageAreas(A<string>._, A<CancellationToken>._))
+               .Returns(
+                   Task.FromResult(
+                       new ListStorageAreasResult(Enumerable.Empty<string>(), 
+                           false, "Failure retrieving storage data")));
 
-        var handler = new ListStorageAreasQueryHandler(storage.Object, Logger);
+        var handler = new ListStorageAreasQueryHandler(fakeStorageService, Logger);
 
         // act
         var result = await handler.Handle(new() { FilterPrefix = string.Empty }, default);
@@ -53,15 +56,16 @@ public class MockBusinessLogicTests
     }
 
     [Fact]
-    public async Task TestCoreBusinessLogicWithStorageServiceException_ShouldReturnEmptyList()
+    public async Task TestCoreBusinessLogic_With_StorageServiceException_Should_ReturnEmptyList()
     {
         // arrange
-        var storage = new Mock<IStorageService>();
+        var fakeStorageService = A.Fake<IStorageService>();
 
-        storage.Setup(p => p.ListStorageAreas(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-               .ThrowsAsync(new Exception());
+        A.CallTo(() => 
+        fakeStorageService.ListStorageAreas(A<string>._, A<CancellationToken>._))
+               .Throws<Exception>();
 
-        var handler = new ListStorageAreasQueryHandler(storage.Object, Logger);
+        var handler = new ListStorageAreasQueryHandler(fakeStorageService, Logger);
 
         // act
         var result = await handler.Handle(new() { FilterPrefix = string.Empty }, default);

@@ -5,7 +5,7 @@ namespace GetStock.UnitTest
     public class CurrencyConverterTests
     {
         [Fact]
-        public async Task GetCurrencies_returnFailure_returnEmptyList()
+        public async Task GetCurrencies_With_FailureReturnedFromClient_Should_ReturnEmptyList()
         {
             var fakeClient = A.Fake<IHttpClient>();
             A.CallTo(() => fakeClient.GetAsync(A<string>._))
@@ -29,7 +29,7 @@ namespace GetStock.UnitTest
         }
 
         [Fact]
-        public async Task GetCurrencies_returnSuccessWithJsonString_returnDeserializedValues()
+        public async Task GetCurrencies_With_ValidJsonStringReturnedFromClient_Should_ReturnDeserializedValues()
         {
             var response = new HttpResponseMessage();
             var fakeClient = A.Fake<IHttpClient>();
@@ -57,7 +57,7 @@ namespace GetStock.UnitTest
         }
 
         [Fact]
-        public async Task GetCurrencies_returnSuccessWithMultipleValues_returnAllValues()
+        public async Task GetCurrencies_With_MultipleValuesReturnedFromClient_Should_ReturnAllValues()
         {
             var response = new HttpResponseMessage();
             var fakeClient = A.Fake<IHttpClient>();

@@ -1,7 +1,7 @@
 [![typescript: 4.5.5](https://badgen.net/badge/Built%20With/TypeScript/blue9)](https://badgen.net/badge/Built%20With/TypeScript/blue9)
 [![test: unit](https://img.shields.io/badge/Test-Unit-blue)](https://img.shields.io/badge/Test-Unit-blue)
 
-# Typescript: Schema and Contract testing for Event-Driven Architectures
+# Typescript: Schema and Contract Testing for Event-Driven Architectures
 
 ---
 
@@ -27,7 +27,7 @@
 
 ## Introduction
 
-Event driven architectures decouple producers and consumers at the infrastructure layer, but these resources may still be coupled at the application layer by the event contract. Consumers may write business logic that expects events to conform to specific schemas. If schemas change over time the consumer code may fail. Creating automated tests that validate event schemas can help increase the quality of your systems and prevent breaking changes. 
+Event driven architectures decouple producers and consumers at the infrastructure layer, but these resources may still be coupled at the application layer by the event contract. Consumers may write business logic that expects events to conform to specific schemas. If schemas change over time the consumer code may fail. Creating automated tests that validate event schemas can help increase the quality of your systems and prevent breaking changes.
 
 ## Schema Testing
 
@@ -49,7 +49,7 @@ The diagram below shows an example of how schema tests may run as part of a prod
 
 ### Schema Test Limitations
 
-Schema tests have two limitations worth mentioning. 
+Schema tests have two limitations worth mentioning.
 
 First, schemas are inherently ambiguous as they do not capture business requirements. They may not express that a particular combination of fields is invalid, or they may not explicitly state the dependencies between fields. For example, when you create an AWS Lambda function, the `runtime` property is mandatory for zip packaging formats, but this field is not required for container image packaging formats. The schema for the Lambda `create-function` API payload will not convey this requirement. If an event consumer makes invalid assumptions about a new version of the payload, its business logic may fail even if there are technically no breaking schema changes.
 
@@ -73,7 +73,7 @@ To identify the side effects of non-breaking schema changes on consumer applicat
 
 ### Description
 
-Contract testing uses sample events provided by producers to validate consumer side business logic and to provide a stronger guarantee of preventing breaking changes. Contract tests are owned by consumers. 
+Contract testing uses sample events provided by producers to validate consumer side business logic and to provide a stronger guarantee of preventing breaking changes. Contract tests are owned by consumers.
 
 Consider the following example. In a schema test, changing the format of an `address` field from a full address to a street address only and then adding new event fields like `country`, `city`, `state` and `postcode` would not produce a failure. These schema changes would be considered to be backward compatible, since the changes only add new elements. In contrast, a consumer test expecting a full address in the `address` field would fail and notify us that this change is actually not backward compatible.
 

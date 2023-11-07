@@ -1,0 +1,22 @@
+          #set ($UserPoolAdminGroupName="apiAdmins")
+          #set($isAdmin = "false")
+          #foreach ($group in $context.identity.claims.get("cognito:groups"))
+            #if ($group == $UserPoolAdminGroupName)
+              #set($isAdmin = "true")
+            #end
+          #end
+          {
+            "version" : "2018-05-29",
+            "operation" : "DeleteItem",
+            "key": {
+                "bookingid": $util.dynamodb.toDynamoDBJson($ctx.args.bookingid)
+            }
+          #if($isAdmin == "false")
+            , "condition" : {
+              "expression": "userid = :userid",
+              "expressionValues" : {
+                  ":userid" : $util.dynamodb.toDynamoDBJson($context.identity.sub)
+              }
+            }
+          #end
+          }

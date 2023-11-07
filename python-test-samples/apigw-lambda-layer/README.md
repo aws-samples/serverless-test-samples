@@ -94,19 +94,23 @@ In the unit test for the Lambda function, the layer is patched and not re-tested
 
 To run the unit tests:
 
-```bash
+```shell
 
+# Run from the project directory serverless-test-samples/python-test-samples/apigw-lambda-layer
 # install dependencies
-apigw-lambda-layer$ pip3 install virtualenv
-apigw-lambda-layer$ python3 -m venv venv
-apigw-lambda-layer$ source venv/bin/activate
-apigw-lambda-layer$ pip3 install -r tests/requirements.txt
+
+pip3 install virtualenv
+python3 -m venv venv
+source venv/bin/activate
+pip3 install -r tests/requirements.txt
 
 # run Lambda layer unit tests with mocks
-apigw-lambda-layer$ python3 -m pytest -s tests/unit/mock_test_samplecodelayer.py -v
+
+python3 -m pytest -s tests/unit/mock_test_samplecodelayer.py -v
 
 # run Lambda function unit tests with patched layer
-apigw-lambda-layer$ python3 -m pytest -s tests/unit/mock_test_samplelambda.py -v
+
+python3 -m pytest -s tests/unit/mock_test_samplelambda.py -v
 ```
 
 [Top](#contents)

@@ -1,17 +1,17 @@
 using Amazon.Lambda.TestUtilities;
 using FluentAssertions;
 using GetProduct;
-using Moq;
 using ServerlessTestApi.Core.DataAccess;
 using ServerlessTestApi.Core.Models;
 using System.Text.Json;
+using FakeItEasy;
 
 namespace ApiTests.UnitTest;
 
 public class MockGetProductFunctionTests : FunctionTest<Function>
 {   
     [Fact]
-    public async Task GetProduct_ShouldReturnSuccess()
+    public async Task GetProduct_Should_ReturnSuccess()
     {
         // arrange
         var request = new ApiRequestBuilder()
@@ -20,12 +20,12 @@ public class MockGetProductFunctionTests : FunctionTest<Function>
             .Build();
 
         var expected = new ProductDTO("testid", "test product", 10);
-        var data = new Mock<IProductsDAO>();
+        var fakeProductDao = A.Fake<IProductsDAO>();
 
-        data.Setup(d => d.GetProduct(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(expected);
+        A.CallTo(() => fakeProductDao.GetProduct(A<string>._, A<CancellationToken>._))
+            .Returns(Task.FromResult<ProductDTO?>(expected));
         
-        var function = new Function(data.Object, Logger, JsonOptions);
+        var function = new Function(fakeProductDao, Logger, JsonOptions);
 
         // act
         var response = await function.FunctionHandler(request, new TestLambdaContext());
@@ -42,7 +42,7 @@ public class MockGetProductFunctionTests : FunctionTest<Function>
     [InlineData("POST")]
     [InlineData("PUT")]
     [InlineData("DELETE")]
-    public async Task TestLambdaHandler_ForNonGetRequests_ShouldReturn405(string httpMethod)
+    public async Task TestLambdaHandler_WithNonGetRequests_Should_Return405(string httpMethod)
     {
         // arrange
         var request = new ApiRequestBuilder()
@@ -50,8 +50,8 @@ public class MockGetProductFunctionTests : FunctionTest<Function>
             .WithHttpMethod(httpMethod)
             .Build();
         
-        var data = new Mock<IProductsDAO>();
-        var function = new Function(data.Object, Logger, JsonOptions);
+        var fakeProductDao = A.Fake<IProductsDAO>();
+        var function = new Function(fakeProductDao, Logger, JsonOptions);
 
         // act
         var response = await function.FunctionHandler(request, new TestLambdaContext());
@@ -61,7 +61,7 @@ public class MockGetProductFunctionTests : FunctionTest<Function>
     }
     
     [Fact]
-    public async Task GetProduct_ErrorInDataAccess_ShouldReturn500()
+    public async Task GetProduct_With_ErrorInDataAccess_Should_Return500()
     {
         // arrange
         var request = new ApiRequestBuilder()
@@ -69,12 +69,12 @@ public class MockGetProductFunctionTests : FunctionTest<Function>
             .WithHttpMethod(HttpMethod.Get)
             .Build();
         
-        var data = new Mock<IProductsDAO>();
+        var fakeProductDao = A.Fake<IProductsDAO>();
 
-        data.Setup(d => d.GetProduct(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new NullReferenceException());
+        A.CallTo(() => fakeProductDao.GetProduct(A<string>._, A<CancellationToken>._))
+            .Throws<NullReferenceException>();
         
-        var function = new Function(data.Object, Logger, JsonOptions);
+        var function = new Function(fakeProductDao, Logger, JsonOptions);
 
         // act
         var response = await function.FunctionHandler(request, new TestLambdaContext());
@@ -84,7 +84,7 @@ public class MockGetProductFunctionTests : FunctionTest<Function>
     }
 
     [Fact]
-    public async Task GetProduct_TimeOut_ShouldReturn503()
+    public async Task GetProduct_With_TimeOut_Should_Return503()
     {
         // arrange
         var request = new ApiRequestBuilder()
@@ -92,12 +92,12 @@ public class MockGetProductFunctionTests : FunctionTest<Function>
             .WithHttpMethod(HttpMethod.Get)
             .Build();
 
-        var data = new Mock<IProductsDAO>();
+        var fakeProductDao = A.Fake<IProductsDAO>();
 
-        data.Setup(d => d.GetProduct(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new TaskCanceledException());
+        A.CallTo(() => fakeProductDao.GetProduct(A<string>._, A<CancellationToken>._))
+            .Throws<TaskCanceledException>();
 
-        var function = new Function(data.Object, Logger, JsonOptions);
+        var function = new Function(fakeProductDao, Logger, JsonOptions);
 
         // act
         var response = await function.FunctionHandler(request, new TestLambdaContext());
@@ -107,7 +107,7 @@ public class MockGetProductFunctionTests : FunctionTest<Function>
     }
 
     [Fact]
-    public async Task GetProduct_ProductNotFound_ShouldReturn404()
+    public async Task GetProduct_With_ProductNotFound_Should_Return404()
     {
         // arrange
         var request = new ApiRequestBuilder()
@@ -115,12 +115,12 @@ public class MockGetProductFunctionTests : FunctionTest<Function>
             .WithPathParameter("id", "123456")
             .Build();
         
-        var data = new Mock<IProductsDAO>();
+        var fakeProductDao = A.Fake<IProductsDAO>();
 
-        data.Setup(d => d.GetProduct(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(() => null);
+        A.CallTo(() => fakeProductDao.GetProduct(A<string>._, A<CancellationToken>._))
+            .Returns(Task.FromResult<ProductDTO?>(null));
         
-        var function = new Function(data.Object, Logger, JsonOptions);
+        var function = new Function(fakeProductDao, Logger, JsonOptions);
 
         // act
         var response = await function.FunctionHandler(request, new TestLambdaContext());

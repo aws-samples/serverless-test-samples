@@ -1,0 +1,7 @@
+        {
+          "version" : "2018-05-29",
+          "operation" : "DeleteItem",
+          "key": {
+              "locationid": $util.dynamodb.toDynamoDBJson($ctx.args.locationid)
+          }
+        }

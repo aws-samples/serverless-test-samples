@@ -1,8 +1,8 @@
 ﻿using Amazon.XRay.Recorder.Core;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Moq;
 using System.Text.Json;
+using FakeItEasy;
 
 namespace ApiTests.UnitTest;
 
@@ -18,5 +18,5 @@ public abstract class FunctionTest<TFunc>
     protected IOptions<JsonSerializerOptions> JsonOptions { get; } =
         Options.Create(new JsonSerializerOptions(JsonSerializerDefaults.Web));
 
-    protected ILogger<TFunc> Logger { get; } = Mock.Of<ILogger<TFunc>>();
+    protected ILogger<TFunc> Logger { get; } = A.Fake<ILogger<TFunc>>();
 }

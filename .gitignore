@@ -1,5 +1,7 @@
 
 # Created by https://www.gitignore.io/api/osx,linux,python,windows,pycharm,visualstudiocode
+### My ignores ###
+.aws-composer
 
 ### Linux ###
 *~
@@ -125,7 +127,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
 lib64/
 parts/
 sdist/
@@ -263,7 +264,6 @@ samconfig.toml
 
 # .NET Ignores
 **/.idea/*
-**/bin/*
 **/.vs/*
 **/obj/*
 launchSettings.json
@@ -272,3 +272,9 @@ samconfig.toml
 *.DotSettings*
 # End of .NET ignores
 /dotnet-test-samples/hexagonal-architecture/src/GetStock/aws-lambda-tools-defaults.json
+
+**/node_modules
+**/package-lock.json
+**/cdk.out
+/typescript-test-samples/apigw-lambda-sqs-sns-datadog/resources/*.js
+/typescript-test-samples/apigw-lambda-sqs-sns-datadog/lib/*.js

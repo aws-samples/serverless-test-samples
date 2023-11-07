@@ -1,0 +1,9 @@
+pytest
+pytest-mock
+boto3
+moto
+aws_lambda_powertools
+aws-xray-sdk
+fastjsonschema
+pyyaml
+uuid

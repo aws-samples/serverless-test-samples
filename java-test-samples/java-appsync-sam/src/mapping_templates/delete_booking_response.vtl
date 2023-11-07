@@ -1,0 +1,9 @@
+        #if ( $ctx.error )
+          #if ( $ctx.error.type.equals("DynamoDB:ConditionalCheckFailedException") )
+            $util.error("User is not authorized to perform this action.", "Unauthorized")
+          #else
+            $util.error($ctx.error.message, $ctx.error.type)
+          #end
+        #else
+          $utils.toJson($ctx.args.bookingid)
+        #end

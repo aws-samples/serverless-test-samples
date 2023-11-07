@@ -1,7 +1,8 @@
+using System.ComponentModel;
 using Amazon.Lambda.TestUtilities;
 using DeleteProduct;
+using FakeItEasy;
 using FluentAssertions;
-using Moq;
 using ServerlessTestApi.Core.DataAccess;
 using ServerlessTestApi.Core.Models;
 
@@ -10,7 +11,7 @@ namespace ApiTests.UnitTest;
 public class MockDeleteProductFunctionTests : FunctionTest<Function>
 {   
     [Fact]
-    public async Task DeleteProduct_ShouldReturnSuccess()
+    public async Task DeleteProduct_With_ProductInDb_Should_ReturnSuccess()
     {
         // arrange
         var request = new ApiRequestBuilder()
@@ -18,26 +19,28 @@ public class MockDeleteProductFunctionTests : FunctionTest<Function>
             .WithHttpMethod(HttpMethod.Delete)
             .Build();
         
-        var data = new Mock<IProductsDAO>();
+        var fakeProductDao = A.Fake<IProductsDAO>();
 
-        data.Setup(d => d.GetProduct(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new ProductDTO("123456", "Test Product", 10));
+        A.CallTo(() => fakeProductDao.GetProduct(A<string>._, A<CancellationToken>._))
+            .Returns(Task.FromResult<ProductDTO?>(new ProductDTO("123456", "Test Product", 10)));
         
-        var function = new Function(data.Object, Logger);
+        var function = new Function(fakeProductDao, Logger);
 
         // act
         var response = await function.FunctionHandler(request, new TestLambdaContext());
 
         // assert
         response.StatusCode.Should().Be(200);
-        data.Verify(d => d.DeleteProduct("123456", It.IsAny<CancellationToken>()), Times.Once);
+        
+        A.CallTo(() => fakeProductDao.DeleteProduct("123456", A<CancellationToken>._))
+            .MustHaveHappened();
     }
     
     [Theory]
     [InlineData("POST")]
     [InlineData("PUT")]
     [InlineData("GET")]
-    public async Task TestLambdaHandler_ForNonDeleteRequests_ShouldReturn405(string httpMethod)
+    public async Task TestLambdaHandler_With_NonDeleteRequests_Should_Return405(string httpMethod)
     {
         // arrange
         var request = new ApiRequestBuilder()
@@ -45,8 +48,8 @@ public class MockDeleteProductFunctionTests : FunctionTest<Function>
             .WithHttpMethod(httpMethod)
             .Build();
         
-        var data = new Mock<IProductsDAO>();
-        var function = new Function(data.Object, Logger);
+        var fakeProductDao = A.Fake<IProductsDAO>();
+        var function = new Function(fakeProductDao, Logger);
 
         // act
         var response = await function.FunctionHandler(request, new TestLambdaContext());
@@ -56,7 +59,7 @@ public class MockDeleteProductFunctionTests : FunctionTest<Function>
     }
     
     [Fact]
-    public async Task DeleteProduct_ErrorInDeleteDataAccess_ShouldReturn500()
+    public async Task DeleteProduct_With_ErrorInDeleteDataAccess_Should_Return500()
     {
         // arrange
         var request = new ApiRequestBuilder()
@@ -64,12 +67,11 @@ public class MockDeleteProductFunctionTests : FunctionTest<Function>
             .WithHttpMethod(HttpMethod.Delete)
             .Build();
         
-        var data = new Mock<IProductsDAO>();
-
-        data.Setup(d => d.DeleteProduct(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new NullReferenceException());
+        var fakeProductDao = A.Fake<IProductsDAO>();
+        A.CallTo(() => fakeProductDao.DeleteProduct(A<string>._, A<CancellationToken>._))
+            .Throws<NullReferenceException>();
         
-        var function = new Function(data.Object, Logger);
+        var function = new Function(fakeProductDao, Logger);
 
         // act
         var response = await function.FunctionHandler(request, new TestLambdaContext());
@@ -79,7 +81,7 @@ public class MockDeleteProductFunctionTests : FunctionTest<Function>
     }
     
     [Fact]
-    public async Task DeleteProduct_TimeOut_ShouldReturn503()
+    public async Task DeleteProduct_With_TimeOut_Should_Return503()
     {
         // arrange
         var request = new ApiRequestBuilder()
@@ -87,12 +89,12 @@ public class MockDeleteProductFunctionTests : FunctionTest<Function>
             .WithHttpMethod(HttpMethod.Delete)
             .Build();
         
-        var data = new Mock<IProductsDAO>();
+        var fakeProductDao = A.Fake<IProductsDAO>();
 
-        data.Setup(d => d.DeleteProduct(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new TaskCanceledException());
+        A.CallTo(() => fakeProductDao.DeleteProduct(A<string>._, A<CancellationToken>._))
+            .Throws<TaskCanceledException>();
 
-        var function = new Function(data.Object, Logger);
+        var function = new Function(fakeProductDao, Logger);
 
         // act
         var response = await function.FunctionHandler(request, new TestLambdaContext());

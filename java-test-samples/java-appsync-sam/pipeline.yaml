@@ -1,0 +1,549 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+
+AWSTemplateFormatVersion: 2010-09-09
+Description: >
+  This template generates a 2-environment CI/CD Pipeline for sample serverless API application
+  Based on https://github.com/aws-samples/cookiecutter-aws-sam-pipeline
+
+Resources:
+  CodeRepository:
+    Type: AWS::CodeCommit::Repository
+    Properties:
+      RepositoryName: !Ref AWS::StackName
+      RepositoryDescription: Code repository for serverless GraphQL API sample application
+
+  # S3 Bucket for build artifacts
+  BuildArtifactsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      VersioningConfiguration:
+        Status: Enabled
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteOldVersions
+            Status: Enabled
+            NoncurrentVersionExpirationInDays: 30
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      Tags:
+        - Key: "Stack"
+          Value: !Ref AWS::StackName
+
+  # Application build project for the CodeBuild
+  CodeBuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Sub ${AWS::StackName}-ApplicationBuild
+      Description: !Sub Build project for the ${AWS::StackName}
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/amazonlinux2-x86_64-standard:3.0
+        EnvironmentVariables:
+          - Name: BUILD_OUTPUT_BUCKET
+            Value: !Ref BuildArtifactsBucket
+      Cache:
+        Type: S3
+        Location: !Sub ${BuildArtifactsBucket}/codebuild-cache
+      ServiceRole: !GetAtt ApplicationCodeBuildServiceRole.Arn
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: ./java-appsync-sam/buildspec.yml
+      Tags:
+        - Key: "Stack"
+          Value: !Ref AWS::StackName
+
+  # Application integration test project for the CodeBuild
+  IntegrationTestProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Sub ${AWS::StackName}-IntegrationTest
+      Description: !Sub Integration test project for the ${AWS::StackName}
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/amazonlinux2-x86_64-standard:3.0
+        EnvironmentVariables:
+          - Name: TEST_APPLICATION_STACK_NAME
+            Value: !Sub ${AWS::StackName}-Testing
+          - Name: TEST_COGNITO_STACK_NAME
+            Value: !Sub ${AWS::StackName}-Cognito-Testing
+      ServiceRole: !GetAtt IntegrationTestCodeBuildServiceRole.Arn
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: ./java-appsync-sam/testspec.yml
+      Tags:
+        - Key: "Stack"
+          Value: !Ref AWS::StackName
+
+  # Pipeline for building and deploying project
+  Pipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      ArtifactStore:
+        Location: !Ref BuildArtifactsBucket
+        Type: S3
+      Name: !Ref AWS::StackName
+      RoleArn: !GetAtt CodePipelineExecutionRole.Arn
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: SourceCodeRepo
+              ActionTypeId:
+                Category: Source
+                Owner: AWS
+                Provider: CodeCommit
+                Version: "1"
+              Configuration:
+                RepositoryName: !GetAtt CodeRepository.Name
+                BranchName: main
+              OutputArtifacts:
+                - Name: SourceCodeAsZip
+              RunOrder: 1
+        - Name: Build
+          Actions:
+            - Name: CodeBuild
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: "1"
+              Configuration:
+                ProjectName: !Ref CodeBuildProject
+              InputArtifacts:
+                - Name: SourceCodeAsZip
+              OutputArtifacts:
+                - Name: BuildArtifactAsZip
+        - Name: Testing
+          Actions:
+            - Name: CreateCognitoChangeSet
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: CloudFormation
+                Version: "1"
+              Configuration:
+                ActionMode: CHANGE_SET_REPLACE
+                RoleArn: !GetAtt CloudFormationExecutionRole.Arn
+                StackName: !Sub ${AWS::StackName}-Cognito-Testing
+                ChangeSetName: !Sub ${AWS::StackName}-ChangeSet-Cognito-Testing
+                TemplatePath: BuildArtifactAsZip::cognito.yaml
+                Capabilities: CAPABILITY_IAM
+              InputArtifacts:
+                - Name: BuildArtifactAsZip
+              RunOrder: 1
+            - Name: ExecuteCognitoChangeSet
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: CloudFormation
+                Version: "1"
+              Configuration:
+                ActionMode: CHANGE_SET_EXECUTE
+                RoleArn: !GetAtt CloudFormationExecutionRole.Arn
+                StackName: !Sub ${AWS::StackName}-Cognito-Testing
+                ChangeSetName: !Sub ${AWS::StackName}-ChangeSet-Cognito-Testing
+              OutputArtifacts:
+                - Name: !Sub ${AWS::StackName}CognitoTestingChangeSet
+              RunOrder: 2
+            - Name: CreateApplicationChangeSet
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: CloudFormation
+                Version: "1"
+              Configuration:
+                ActionMode: CHANGE_SET_REPLACE
+                RoleArn: !GetAtt CloudFormationExecutionRole.Arn
+                StackName: !Sub ${AWS::StackName}-Testing
+                ChangeSetName: !Sub ${AWS::StackName}-ChangeSet-Testing
+                TemplatePath: BuildArtifactAsZip::application.yaml
+                ParameterOverrides: !Sub '{"CognitoStackName": "${AWS::StackName}-Cognito-Testing"}'
+                Capabilities: CAPABILITY_IAM
+              InputArtifacts:
+                - Name: BuildArtifactAsZip
+              RunOrder: 1
+            - Name: ExecuteApplicationChangeSet
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: CloudFormation
+                Version: "1"
+              Configuration:
+                ActionMode: CHANGE_SET_EXECUTE
+                RoleArn: !GetAtt CloudFormationExecutionRole.Arn
+                StackName: !Sub ${AWS::StackName}-Testing
+                ChangeSetName: !Sub ${AWS::StackName}-ChangeSet-Testing
+              OutputArtifacts:
+                - Name: !Sub ${AWS::StackName}ApplicationTestingChangeSet
+              RunOrder: 4
+            - Name: IntegrationTest
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: "1"
+              Configuration:
+                ProjectName: !Ref IntegrationTestProject
+              InputArtifacts:
+                - Name: SourceCodeAsZip
+              RunOrder: 5
+        - Name: Deployment
+          Actions:
+            - Name: DeploymentApproval
+              ActionTypeId:
+                Category: Approval
+                Owner: AWS
+                Provider: Manual
+                Version: "1"
+              RunOrder: 1
+            - Name: CreateCognitoChangeSet
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: CloudFormation
+                Version: "1"
+              Configuration:
+                ActionMode: CHANGE_SET_REPLACE
+                RoleArn: !GetAtt CloudFormationExecutionRole.Arn
+                StackName: !Sub ${AWS::StackName}-Cognito-Deployment
+                ChangeSetName: !Sub ${AWS::StackName}-ChangeSet-Cognito-Deployment
+                TemplatePath: BuildArtifactAsZip::cognito.yaml
+                Capabilities: CAPABILITY_IAM
+              InputArtifacts:
+                - Name: BuildArtifactAsZip
+              RunOrder: 2
+            - Name: ExecuteCognitoChangeSet
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: CloudFormation
+                Version: "1"
+              Configuration:
+                ActionMode: CHANGE_SET_EXECUTE
+                RoleArn: !GetAtt CloudFormationExecutionRole.Arn
+                StackName: !Sub ${AWS::StackName}-Cognito-Deployment
+                ChangeSetName: !Sub ${AWS::StackName}-ChangeSet-Cognito-Deployment
+              OutputArtifacts:
+                - Name: !Sub ${AWS::StackName}CognitoDeploymentChangeSet
+              RunOrder: 3
+            - Name: CreateApplicationChangeSet
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: CloudFormation
+                Version: "1"
+              Configuration:
+                ActionMode: CHANGE_SET_REPLACE
+                RoleArn: !GetAtt CloudFormationExecutionRole.Arn
+                StackName: !Sub ${AWS::StackName}-Deployment
+                ChangeSetName: !Sub ${AWS::StackName}-ChangeSet-Deployment
+                TemplatePath: BuildArtifactAsZip::application.yaml
+                ParameterOverrides: !Sub '{"CognitoStackName": "${AWS::StackName}-Cognito-Deployment"}'
+                Capabilities: CAPABILITY_IAM
+              InputArtifacts:
+                - Name: BuildArtifactAsZip
+              RunOrder: 2
+            - Name: ExecuteApplicationChangeSet
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: CloudFormation
+                Version: "1"
+              Configuration:
+                ActionMode: CHANGE_SET_EXECUTE
+                RoleArn: !GetAtt CloudFormationExecutionRole.Arn
+                StackName: !Sub ${AWS::StackName}-Deployment
+                ChangeSetName: !Sub ${AWS::StackName}-ChangeSet-Deployment
+              OutputArtifacts:
+                - Name: !Sub ${AWS::StackName}DeploymentChangeSet
+              RunOrder: 5
+
+  # IAM roles/policies for the pipeline
+  ApplicationCodeBuildServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Action:
+              - "sts:AssumeRole"
+            Effect: Allow
+            Principal:
+              Service:
+                - codebuild.amazonaws.com
+      Path: /
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AWSAppSyncSchemaAuthor"
+      Policies:
+        - PolicyName: CodeBuildLogs
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                Resource:
+                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/${AWS::StackName}*"
+                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/${AWS::StackName}*:*"
+        - PolicyName: CodeBuildArtifactsBucket
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "s3:GetObject"
+                  - "s3:GetObjectVersion"
+                  - "s3:PutObject"
+                Resource:
+                  - !Sub "arn:aws:s3:::${BuildArtifactsBucket}/*"
+
+  IntegrationTestCodeBuildServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Action:
+              - "sts:AssumeRole"
+            Effect: Allow
+            Principal:
+              Service:
+                - codebuild.amazonaws.com
+      Path: /
+      Policies:
+        - PolicyName: CodeBuildLogs
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                Resource:
+                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/${AWS::StackName}*"
+                  - !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/${AWS::StackName}*:*"
+        - PolicyName: CodeBuildArtifactsBucket
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "s3:GetObject"
+                  - "s3:GetObjectVersion"
+                  - "s3:PutObject"
+                Resource:
+                  - !Sub "arn:aws:s3:::${BuildArtifactsBucket}/*"
+        - PolicyName: CloudFormationAccess
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: "cloudformation:DescribeStacks"
+                Resource:
+                  - !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${AWS::StackName}-Testing/*"
+                  - !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${AWS::StackName}-Cognito-Testing/*"
+        - PolicyName: ParameterStoreAccess
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: "secretsmanager:GetRandomPassword"
+                Resource: "*"
+        - PolicyName: CognitoAccess
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "cognito-idp:AdminDeleteUser"
+                  - "cognito-idp:AdminConfirmSignUp"
+                  - "cognito-idp:AdminAddUserToGroup"
+                Resource:
+                  - !Sub "arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/*"
+        - PolicyName: AppSyncAccess
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "appsync:EvaluateMappingTemplate"
+                Resource:
+                  - !Sub "arn:aws:appsync:${AWS::Region}:${AWS::AccountId}:*"
+        - PolicyName: DynamoDBAccess
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "dynamodb:BatchGet*"
+                  - "dynamodb:DescribeStream"
+                  - "dynamodb:DescribeTable"
+                  - "dynamodb:Get*"
+                  - "dynamodb:Query"
+                  - "dynamodb:Scan"
+                  - "dynamodb:BatchWrite*"
+                  - "dynamodb:CreateTable"
+                  - "dynamodb:Delete*"
+                  - "dynamodb:Update*"
+                  - "dynamodb:PutItem"
+                Resource:
+                  - !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${AWS::StackName}*"
+
+  CloudFormationExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          Action: "sts:AssumeRole"
+          Effect: Allow
+          Principal:
+            Service: cloudformation.amazonaws.com
+      Path: /
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/PowerUserAccess"
+      Policies:
+        - PolicyName: IAMAccess
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "iam:PassRole"
+                  - "iam:GetRole"
+                  - "iam:CreateRole"
+                  - "iam:DeleteRole"
+                  - "iam:GetRolePolicy"
+                  - "iam:PutRolePolicy"
+                  - "iam:AttachRolePolicy"
+                  - "iam:DetachRolePolicy"
+                  - "iam:DeleteRolePolicy"
+                  - "iam:ListRoleTags"
+                  - "iam:TagRole"
+                  - "iam:UntagRole"
+                # You may need to relaxe scope of following resource if you use stack name that
+                # is longer than 25 characters by changing to arn:aws:iam::${AWS::AccountId}:role/*
+                Resource: !Sub "arn:aws:iam::${AWS::AccountId}:role/${AWS::StackName}*"
+
+  CodePipelineExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Action:
+              - "sts:AssumeRole"
+            Effect: Allow
+            Principal:
+              Service:
+                - codepipeline.amazonaws.com
+      Path: /
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AWSCodePipeline_FullAccess
+        - arn:aws:iam::aws:policy/AWSCodeCommitReadOnly
+      Policies:
+        - PolicyName: CodePipelineAccess
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "iam:PassRole"
+                # You may need to relaxe scope of following resource if you use stack name that
+                # is longer than 25 characters by changing to arn:aws:iam::${AWS::AccountId}:role/*
+                Resource: !Sub "arn:aws:iam::${AWS::AccountId}:role/${AWS::StackName}*"
+        - PolicyName: CodePipelineCodeAndArtifactsS3Bucket
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "s3:ListBucket"
+                  - "s3:*Object*"
+                Resource: !Sub "arn:aws:s3:::${BuildArtifactsBucket}/*"
+              - Effect: Allow
+                Action:
+                  - "codecommit:GitPull"
+                  - "codecommit:Get*"
+                  - "codecommit:List*"
+                  - "codecommit:BatchGet*"
+                  - "codecommit:BatchDescribe*"
+                  - "codecommit:Describe*"
+                  - "codecommit:EvaluatePullRequestApprovalRules"
+                  - "codecommit:UploadArchive"
+                Resource: !Sub "arn:aws:codecommit:${AWS::Region}:${AWS::AccountId}:${CodeRepository.Name}"
+        - PolicyName: CodePipelineCodeBuildAndCloudformationAccess
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "codebuild:StartBuild"
+                  - "codebuild:BatchGetBuilds"
+                Resource:
+                  - !Sub "arn:aws:codebuild:${AWS::Region}:${AWS::AccountId}:project/${CodeBuildProject}"
+                  - !Sub "arn:aws:codebuild:${AWS::Region}:${AWS::AccountId}:project/${IntegrationTestProject}"
+              - Effect: Allow
+                Action:
+                  - "cloudformation:CreateStack"
+                  - "cloudformation:DescribeStacks"
+                  - "cloudformation:DeleteStack"
+                  - "cloudformation:UpdateStack"
+                  - "cloudformation:CreateChangeSet"
+                  - "cloudformation:ExecuteChangeSet"
+                  - "cloudformation:DeleteChangeSet"
+                  - "cloudformation:DescribeChangeSet"
+                  - "cloudformation:SetStackPolicy"
+                  - "cloudformation:SetStackPolicy"
+                  - "cloudformation:ValidateTemplate"
+                Resource:
+                  - !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${AWS::StackName}*/*"
+                  - !Sub "arn:aws:cloudformation:${AWS::Region}:aws:transform/Serverless-2016-10-31"
+
+Outputs:
+  CodeCommitRepositoryHttpUrl:
+    Description: AWS CodeCommit Git repository
+    Value: !GetAtt CodeRepository.CloneUrlHttp
+
+  CodeCommitRepositorySshUrl:
+    Description: AWS CodeCommit Git repository
+    Value: !GetAtt CodeRepository.CloneUrlSsh
+
+  BuildArtifactS3Bucket:
+    Description: Amazon S3 Bucket for Pipeline and Build artifacts
+    Value: !Ref BuildArtifactsBucket
+
+  CodeBuildProject:
+    Description: CodeBuild Project name
+    Value: !Ref CodeBuildProject
+
+  IntegrationTestProject:
+    Description: Integration Test Project name
+    Value: !Ref IntegrationTestProject
+
+  CodePipeline:
+    Description: AWS CodePipeline pipeline name
+    Value: !Ref Pipeline
+
+  CodeBuildIAMRole:
+    Description: CodeBuild IAM Role
+    Value: !GetAtt ApplicationCodeBuildServiceRole.Arn
+
+  CloudformationIAMRole:
+    Description: Cloudformation IAM Role
+    Value: !GetAtt CloudFormationExecutionRole.Arn
+
+  CodePipelineIAMRole:
+    Description: CodePipeline IAM Role
+    Value: !GetAtt CodePipelineExecutionRole.Arn
