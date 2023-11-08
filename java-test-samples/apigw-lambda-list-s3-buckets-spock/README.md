@@ -8,7 +8,7 @@ This project contains automated test code samples for serverless applications. T
 - [Working with local emulators](#working-with-local-emulators)
     - [Use the SAM Lambda emulator](#use-the-sam-lambda-emulator)
     - [Use the SAM API Gateway emulator](#use-the-sam-api-gateway-emulator)
-- [Run a unit test using a mock framework](#run-a-unit-test-using-a-mock-framework)
+- [Unit testing using a mock](#run-a-unit-test-using-a-mock-framework)
 - [Run an integration test against cloud resources](#run-integration-tests-against-cloud-resources)
 - [Invoke a Lambda function in the cloud](#invoke-a-lambda-function-in-the-cloud)
 - [Fetch, tail, and filter Lambda function logs locally](#fetch-tail-and-filter-lambda-function-logs-locally)
@@ -140,7 +140,7 @@ apigw-lambda-list-s3-buckets$ mvn test
 
 [[top]](#api-gateway-to-lambda-to-list-s3-buckets)
 
-## Run a unit test using a mock framework
+## Unit testing using a mock
 You can use Spock to mock the service calls that are being done in the Lambda function.
 [`AppWithMockSpec.groovy`](./src/test/groovy/com/example/AppWithMockSpec.groovy) covers this example:
 
