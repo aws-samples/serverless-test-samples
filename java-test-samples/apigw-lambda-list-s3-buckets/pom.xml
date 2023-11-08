@@ -10,7 +10,8 @@
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
     <junit.jupiter.version>5.9.0</junit.jupiter.version>
-    <junit.platform.version>1.9.0</junit.platform.version>
+    <junit.platform.version>1.9.2</junit.platform.version>
+    <spock.version>2.3-groovy-4.0</spock.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -34,12 +35,12 @@
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-lambda-java-core</artifactId>
-      <version>1.2.1</version>
+      <version>1.2.2</version>
     </dependency>
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-lambda-java-events</artifactId>
-      <version>3.11.0</version>
+      <version>3.11.1</version>
     </dependency>
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
@@ -132,23 +133,35 @@
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-s3</artifactId>
-      <version>1.12.307</version>
+      <version>1.12.470</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>2.0.1</version>
+      <version>2.0.5</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
-      <version>2.0.1</version>
+      <version>2.0.5</version>
     </dependency>
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-lambda-java-tests</artifactId>
       <version>1.1.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <artifactId>spock-core</artifactId>
+      <groupId>org.spockframework</groupId>
+      <scope>test</scope>
+      <version>${spock.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.groovy</groupId>
+      <artifactId>groovy-json</artifactId>
+      <version>4.0.10</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -174,12 +187,17 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.22.2</version>
         <configuration>
+          <includes>
+            <include>**/*Spec.groovy</include>
+            <include>**/*Test.java</include>
+          </includes>
           <!-- These tests are excluded from sure fire plugin to avoid failures due to external dependencies.
                You can run these tests individually if you have the relevant pre-requisites in place.
                Please see README for more information on each test class file.
            -->
           <excludes>
             <exclude>AppTest.java</exclude>
+            <exclude>AppSpecIT.groovy</exclude>
           </excludes>
         </configuration>
       </plugin>

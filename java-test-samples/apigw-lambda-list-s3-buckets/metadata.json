@@ -21,6 +21,14 @@
         {
             "title": "Integration Test",
             "filepath": "/src/test/java/com/example/AppTest.java"
+        },
+        {
+          "title": "Unit Tests - Spock",
+          "filepath": "/src/test/groovy/com/example/AppWithMockSpec.groovy"
+        },
+        {
+          "title": "Integration Test - Spock",
+          "filepath": "/src/test/groovy/com/example/AppSpecIT.groovy"
         }
     ],
     "authors": [
@@ -42,6 +50,13 @@
           "image": "https://media.licdn.com/dms/image/C4E03AQEKB5q7oE1Vug/profile-displayphoto-shrink_400_400/0/1517729240352?e=1684368000&v=beta&t=gqSVXveSHrXQK9ZHNIKB1ihV8gjqjOZ2gMTeW3_86mQ",
           "bio": "Senior Specialist Solutions Architect at AWS",
           "linkedin": "https://www.linkedin.com/in/aneelmurari"
+        },
+        {
+          "name": "Matt Ridehalgh",
+          "image": "https://avatars.githubusercontent.com/u/9155962?v=4",
+          "bio": "Solutions Architect at AWS",
+          "linkedin": "https://www.linkedin.com/in/matthew-ridehalgh/",
+          "twitter": "https://twitter.com/mrideh"
         }
     ]
 }
