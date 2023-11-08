@@ -178,7 +178,7 @@ public class AppWithMockTest {
 
 ## Testing with the Spock testing framework
 
-Spock is a Groovy-based testing framework that uses a narrative style with blocks like "when", "then", and "expect" for writing clear and readable tests. It provides mocking, stubbing, and spying to isolate code under test. Spock reduces boilerplate code and aims to simplify testing through its declarative style and comprehensive feature set.
+Spock is a Groovy-based testing framework that uses a narrative style with blocks like "when", "then", and "expect" for writing clear and readable tests. It provides mocking, stubbing, and spying to isolate code under test. With its expressive Groovy syntax and declarative style Spock reduces boilerplate code and aims to simplify testing.
 
 ### Unit testing using a mock
 You can use Spock to mock the service calls that are being done in the Lambda function.
