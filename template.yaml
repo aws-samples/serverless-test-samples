@@ -253,3 +253,6 @@ Outputs:
   GetInventoryFunction:
     Description: "Name of the Lambda function required in the 'Invoke a Lambda function in the cloud' section."
     Value: !Ref GetInventoryFunction
+  GetFileValidatorARN:
+    Description: "ARN of the Lambda function required in the 'OPTIONAL: Invoke a Lambda function in the cloud' section."
+    Value: !GetAtt FileValidator.Arn
