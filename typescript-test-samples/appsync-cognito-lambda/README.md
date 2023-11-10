@@ -9,7 +9,7 @@
 
 This example contains introductory testing examples of TypeScript tests written for AWS AppSync with authentication provided by Amazon Cognito.
 
-The project uses [AWS CDK] for Infrastructure as Code.
+The project uses [AWS CDK](https://aws.amazon.com/cdk/) for Infrastructure as Code.
 
 ---
 
@@ -36,20 +36,20 @@ The SUT in this pattern is a synchronous AWS Appsync API with an AWS Lambda data
 
 The goal of this pattern is to provide an example of an API-level integration test for an authenticated AppSync endpoint. The pattern provides helpers for signing up a new user, getting an access token and calling AWS AppSync via an HTTP request.
 
-## [Top](#contents)
+[Top](#contents)
 
 ## About this Example
 
 This specific sample project allows a user to execute an AppSync query to generate a random message.
 
-This project consists of an [AppSync GraphQL API](https://aws.amazon.com/appsync/), a single [AWS Lambda](https://aws.amazon.com/lambda) function, and [Amazon Cognito](https://aws.amazon.com/cognito).
+This project consists of an [AppSync GraphQL API](https://aws.amazon.com/appsync/), a single [AWS Lambda](https://aws.amazon.com/lambda) function, and [Amazon Cognito](https://aws.amazon.com/cognito) User Pool.
 
 ### Key Files in the Project
 
 -   [stack.ts](lib/stack.ts) - CDK stack definition for deployment
 -   [integration-handler.test.ts](tests/integration/integration-handler.test.ts) - API-level integration tests on a live stack
 
-## [Top](#contents)
+[Top](#contents)
 
 ## Run the Integration Tests
 
