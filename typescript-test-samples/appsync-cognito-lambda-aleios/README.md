@@ -53,6 +53,12 @@ This project consists of an [AppSync GraphQL API](https://aws.amazon.com/appsync
 
 ## Run the Integration Tests
 
+### Prerequisites
+
+**AWS CLI Configuration**: Make sure you have the AWS CLI installed and configured on your system. You can configure it using the command `aws configure`. This will prompt you to enter your AWS Access Key ID, Secret Access Key, AWS Region, and output format.
+
+**Default Profile**: The tests assume that you are using your default AWS CLI profile. If you have multiple profiles, you can set the default profile in your AWS configuration file or switch to the default profile using the `aws configure` command.
+
 ### Deployment
 
 [integration-handler.test.ts](tests/integration/integration-handler.test.ts)
