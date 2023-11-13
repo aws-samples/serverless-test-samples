@@ -12,7 +12,7 @@
   "pattern_detail_tabs": [
     {
       "title": "Application Code",
-      "filepath": "/bin/appsync-cognito-lambda.ts"
+      "filepath": "/functions/get-random-message/handler.ts"
     },
     {
       "title": "Integration Tests",
