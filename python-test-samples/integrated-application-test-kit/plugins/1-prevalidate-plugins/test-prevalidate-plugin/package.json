@@ -1,0 +1,22 @@
+{
+  "name": "test_plugin",
+  "version": "1.0.0",
+  "description": "This plugin demonstrates testing best practices for sample video plugin system",
+  "main": "app.js",
+  "author": "Dan Fox, AWS",
+  "license": "MIT",
+  "dependencies": {
+    "@aws-sdk/client-eventbridge": "^3.406.0",
+    "axios": ">=0.21.1"
+  },
+  "scripts": {
+    "test": "mocha tests/"
+  },
+  "devDependencies": {
+    "@aws-sdk/client-cloudformation": "^3.405.0",
+    "@aws-sdk/client-sfn": "^3.405.0",
+    "chai": "^4.3.6",
+    "mocha": "^10.1.0",
+    "uuid": "^9.0.0"
+  }
+}

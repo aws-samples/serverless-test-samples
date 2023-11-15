@@ -1,0 +1,370 @@
+{
+  "Comment": "Plugin test state machine",
+  "StartAt": "Define defaults",
+  "States": {
+    "Define defaults": {
+      "Type": "Pass",
+      "Next": "Load inputs",
+      "ResultPath": "$.inputDefaults",
+      "Parameters": {
+        "eventHook": "${eventHook}",
+        "pluginTitle": "${pluginTitle}"
+      }    
+    },
+    "Load inputs": {
+      "Type": "Pass",
+      "Next": "which eventhook?",
+      "ResultPath": "$.withDefaults",
+      "OutputPath": "$.withDefaults.args",
+      "Parameters": {
+        "args.$": "States.JsonMerge($.inputDefaults, $$.Execution.Input, false)"
+      }
+    },
+    "which eventhook?": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.eventHook",
+          "StringEquals": "postValidate",
+          "Next": "postValidate"
+        },
+        {
+          "Variable": "$.eventHook",
+          "StringEquals": "preMetadata",
+          "Next": "preMetadata"
+        },
+        {
+          "Variable": "$.eventHook",
+          "StringEquals": "postMetadata",
+          "Next": "postMetadata"
+        },
+        {
+          "Variable": "$.eventHook",
+          "StringEquals": "preValidate",
+          "Next": "preValidate"
+        }
+      ],
+      "Default": "Invalid event hook"
+    },
+    "Invalid event hook": {
+      "Type": "Fail",
+      "Error": "EventHookfailure",
+      "Cause": "Invalid event hook"
+    },
+    "postValidate": {
+      "Type": "Pass",
+      "Next": "EventBridge PutEvents",
+      "Parameters": {
+        "eventHook.$": "$.eventHook",
+        "version": "0",
+        "id": "06b64655-1077-df85-79df-77f99eff5b33",
+        "detail-type.$": "States.Format('postValidate.{}',$.pluginTitle)",
+        "source": "video.pluginManager",
+        "account": "123456789012",
+        "time": "2023-08-31T09:54:41Z",
+        "region": "us-west-2",
+        "resources": [
+          "arn:aws:states:us-west-2:123456789012:stateMachine:123456789012-us-west-2-PluginLifecycleWorkflow",
+          "arn:aws:states:us-west-2:123456789012:execution:123456789012-us-west-2-PluginLifecycleWorkflow:59c3b33d-7248-43b3-81e3-5c6205c2a955"
+        ],
+        "detail": {
+          "video": {
+            "author": {
+              "username": "soldier369"
+            },
+            "createdAt": "2023-10-12T10:14:44.167Z",
+            "durationmillis": 144000,
+            "thumbnail": "https://d3ih6h9pkrghoj.cloudfront.net/ivs/v1/093675026797/nIET8AxYI7Nq/2023/10/5/13/51/8HHcMJ1FCBR3/media/thumbnails/thumb0.jpg",
+            "playbackUrl": "https://d3ih6h9pkrghoj.cloudfront.net/ivs/v1/093675026797/nIET8AxYI7Nq/2023/10/5/13/51/8HHcMJ1FCBR3/media/hls/720p30/output.mp4",
+            "channel": "78918340-d081-7059-632f-62ce34e1d4ed",
+            "recording_s3_key_prefix": "ivs/v1/093675026797/nIET8AxYI7Nq/2023/10/5/13/51/8HHcMJ1FCBR3",
+            "id": "st-1EQqxfA8cn37wyFj9QsBFqn",
+            "streamUrl": "https://d3ih6h9pkrghoj.cloudfront.net/ivs/v1/093675026797/nIET8AxYI7Nq/2023/10/5/13/51/8HHcMJ1FCBR3/media/hls/master.m3u8"
+          },
+          "pluginData": {
+                "preValidate": [
+                    {
+                    "OutputKey": "plugin-content_moderation_plugin",
+                    "OutputValue": {
+                        "valid": true,
+                        "reason": "No offensive content found in video"
+                    }
+                    },
+                    {
+                    "OutputKey": "plugin-duration_plugin",
+                    "OutputValue": {
+                        "valid": true
+                    }
+                    }
+                ]    
+            },
+          "taskToken": "AQCgAAAAKgAAAAMAAAAAAAAAAbNK18cfdkXD9sWOUTeDHhcr5A8vSj0ZReSjHzLyNKvzZSUaP4EJ8PWJRmE0ux3RXqESEhgq+XOqAmJz886b9kZ2vHNc9tcmUy94GW5cezh7626DzKDdWMzU0Z1x4Wd8heH/b6y50A==+oIw7nvxwywCSpL75ggjkxxJxjgtPPI6a26eZzrc/bEqj6S6mIuCanwMjxJkj7TmVOm7iLlXkdoJWVDMoABf0dVVCAPYcKokxNZ7s/S7JedmKzqbIp2sAE1hk2yWlezpVafMD++XHUckVW7knUpaIzCvsvEK+CDl3TeOetYFCkVWvxeV97VwXzNF1Hb7cAGAK8lSVZTx5NvCdDGuKCgrEt+t96D1wYwZzM40ulTgRuPIfAU00nvVvJNhkVOhVTAmxQRAUTuWYZLdlALQvMvcEORRHDvfguQgb6xt4p2Qe96pEF3MJvC+0GHxkWv/am1Cf0QcLJ1pYlvVm2gbPfXJezDhmiRgyrPKMFN+GbTzqxJiAAaeiYc6/lDmWUgzmDAPZDyCymDVhTK4T5M0I2Rnj4jmEEHS3l3yyWmdanSoKRz8HNbwWjhPZvL+mD8cZzW+iRPE0U5ZS6reuNax41ALEgvsxsVTVVlV0OGN6leLKrFyDjHGPvqFR9Dlq5xps9OUfqbYN8hhl9SRNm9pwUX+"
+        }
+      }
+    },
+    "EventBridge PutEvents": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::events:putEvents.waitForTaskToken",
+      "Parameters": {
+        "Entries": [
+          {
+            "Detail": {
+              "video": {
+                "id.$": "$.id",
+                "channel.$": "$.detail.video.channel",
+                "createdAt.$": "$.detail.video.createdAt",
+                "durationmillis.$": "$.detail.video.durationmillis",
+                "thumbnail.$": "$.detail.video.thumbnail",
+                "playbackUrl.$": "$.detail.video.playbackUrl",
+                "author": {
+                  "username.$": "$.detail.video.author"
+                }
+              },
+              "taskToken.$": "$$.Task.Token",
+              "pluginData.$": "$.detail.pluginData"
+            },
+            "DetailType.$": "$.detail-type",
+            "EventBusName": "default",
+            "Source": "video.pluginManager"
+          }
+        ]
+      },
+      "Next": "Validate the response",
+      "TimeoutSeconds": 180,
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.Timeout"
+          ],
+          "Next": "Timed out"
+        }
+      ],
+      "ResultPath": "$.pluginOutput"
+    },
+    "Timed out": {
+      "Type": "Fail",
+      "Cause": "The correct task token was not recieved within the time limt",
+      "Comment": "Check taht you are retirning an event to teh default bus with the Task Token that your plugin recieved"
+    },
+    "Validate the response": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "And": [
+            {
+              "Variable": "$.pluginOutput.valid",
+              "IsPresent": true
+            },
+            {
+              "Variable": "$.pluginOutput.valid",
+              "IsBoolean": true
+            },
+            {
+              "Or": [
+                {
+                  "Variable": "$.eventHook",
+                  "StringEquals": "postValidate"
+                },
+                {
+                  "Variable": "$.eventHook",
+                  "StringEquals": "preValidate"
+                }
+              ]
+            }
+          ],
+          "Next": "Success"
+        },
+        {
+          "Or": [
+            {
+              "And": [
+                {
+                  "Or": [
+                    {
+                      "Variable": "$.eventHook",
+                      "StringEquals": "preMetadata"
+                    },
+                    {
+                      "Variable": "$.eventHook",
+                      "StringEquals": "postMetadata"
+                    }
+                  ]
+                },
+                {
+                  "And": [
+                    {
+                      "Variable": "$.pluginOutput.pluginData",
+                      "IsPresent": true
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "Next": "Success"
+        }
+      ],
+      "Default": "Response not valid"
+    },
+    "Response not valid": {
+      "Type": "Fail",
+      "Cause": "The plugin is returning an invalid response check the readme for more info",
+      "Comment": "https://github.com/aws-samples/serverless-video-streaming/tree/main/plugins#plugin-response-object"
+    },
+    "Success": {
+      "Type": "Succeed"
+    },
+    "preMetadata": {
+      "Type": "Pass",
+      "Next": "EventBridge PutEvents",
+      "Parameters": {
+        "eventHook.$": "$.eventHook",
+        "version": "0",
+        "id": "c2996c57-e91e-8e7b-54e4-147d2cc497de",
+        "detail-type.$": "States.Format('preMetadata.{}',$.pluginTitle)",
+        "source": "video.pluginManager",
+        "account": "123456789012",
+        "time": "2023-08-31T10:03:03Z",
+        "region": "us-west-2",
+        "resources": [
+          "arn:aws:states:us-west-2:123456789012:stateMachine:123456789012-us-west-2-PluginLifecycleWorkflow",
+          "arn:aws:states:us-west-2:123456789012:execution:123456789012-us-west-2-PluginLifecycleWorkflow:9c56bea3-f552-4771-bc0a-509b1af68618"
+        ],
+        "detail": {
+          "video": {
+            "author": {
+              "username": "soldier369"
+            },
+            "createdAt": "2023-10-12T10:14:44.167Z",
+            "durationmillis": 144000,
+            "thumbnail": "https://d3ih6h9pkrghoj.cloudfront.net/ivs/v1/093675026797/nIET8AxYI7Nq/2023/10/5/13/51/8HHcMJ1FCBR3/media/thumbnails/thumb0.jpg",
+            "playbackUrl": "https://d3ih6h9pkrghoj.cloudfront.net/ivs/v1/093675026797/nIET8AxYI7Nq/2023/10/5/13/51/8HHcMJ1FCBR3/media/hls/720p30/output.mp4",
+            "channel": "78918340-d081-7059-632f-62ce34e1d4ed",
+            "recording_s3_key_prefix": "ivs/v1/093675026797/nIET8AxYI7Nq/2023/10/5/13/51/8HHcMJ1FCBR3",
+            "id": "st-1EQqxfA8cn37wyFj9QsBFqn",
+            "streamUrl": "https://d3ih6h9pkrghoj.cloudfront.net/ivs/v1/093675026797/nIET8AxYI7Nq/2023/10/5/13/51/8HHcMJ1FCBR3/media/hls/master.m3u8"
+          },
+          "pluginData": {
+            "preValidate": [
+              {
+                "OutputKey": "plugin-content_moderation_plugin",
+                "OutputValue": {
+                  "valid": true,
+                  "reason": "No offensive content found in video"
+                }
+              },
+              {
+                "OutputKey": "plugin-duration_plugin",
+                "OutputValue": {
+                  "valid": true
+                }
+              }
+            ],
+            "postValidate": []
+          },
+          "taskToken": "AQCgAAAAKgAAAAMAAAAAAAAAAWt75fCKm1gDK7Iv4BMxeI3WJTMFRNiJ1gpcLcY7KeHwI3hB/Dy9JnfQyL5Bfm3wzCCfcTZD8czzxyeY7VYb97xtycdxKsBsiwwOQ0cJ41FfDjdNPmI5Yn9OK1rdlyf64Bd1ZnhJNQ==1qSa17DZLyI2IbOd+NBjooFp1k64s84dF+Xw+3mUJD/yuZ4fPXm55AQjS8vSKZi+9Pf+HY/nBQXuImvSM4cxBTYBjiHygSAKqGHYxEKNRwhZvjEyFh9Je79dDlpPM6ItQy83rFGqTaJVGZWMPHV/ijE/yg56Sfw4L56NAFzJfRHDYhNhbb31jumnGxdxhP6VPfcYoCsh8Nikz7dvRvWGfmfCp57tr3yx9QEdoBPjTNwkjhYlocml6y5jPI+xwgV8h0uGibp4ulUx+itide3W2DiqJkNanmf0sOv9Im7TQv3YIB7RCE3xJKGWsCavMEk59N5P9Pl7moYseCShsgowjCVRaCQrKFaf4GyxYa5jvfmAXqmcCbJqE95+fS9FUGn1E/sr/oy1I5RVb3ZqkbQPoUJBXkSgygvwMnmRTcN9miBQl3pV7CGI3OO2uECpNbLXgcXhB62UE54EPsOVA+YZrKarn2Wn3x5pDN1T9+jxwDProFDcN12sIhxIMba0b5CzeX6GOj2doo1sb9+oFuyy"
+        }
+      }
+    },
+    "postMetadata": {
+      "Type": "Pass",
+      "Next": "EventBridge PutEvents",
+      "Parameters": {
+        "eventHook.$": "$.eventHook",
+        "version": "0",
+        "id": "054235b8-3936-ad39-e821-8bcf2b3e9366",
+        "detail-type.$": "States.Format('postMetadata.{}',$.pluginTitle)",
+        "source": "video.pluginManager",
+        "account": "123456789012",
+        "time": "2023-08-31T10:03:25Z",
+        "region": "us-west-2",
+        "resources": [
+          "arn:aws:states:us-west-2:123456789012:stateMachine:123456789012-us-west-2-PluginLifecycleWorkflow",
+          "arn:aws:states:us-west-2:123456789012:execution:123456789012-us-west-2-PluginLifecycleWorkflow:9c56bea3-f552-4771-bc0a-509b1af68618"
+        ],
+        "detail": {
+          "video": {
+            "author": {
+              "username": "soldier369"
+            },
+            "createdAt": "2023-10-12T10:14:44.167Z",
+            "durationmillis": 144000,
+            "thumbnail": "https://d3ih6h9pkrghoj.cloudfront.net/ivs/v1/093675026797/nIET8AxYI7Nq/2023/10/5/13/51/8HHcMJ1FCBR3/media/thumbnails/thumb0.jpg",
+            "playbackUrl": "https://d3ih6h9pkrghoj.cloudfront.net/ivs/v1/093675026797/nIET8AxYI7Nq/2023/10/5/13/51/8HHcMJ1FCBR3/media/hls/720p30/output.mp4",
+            "channel": "78918340-d081-7059-632f-62ce34e1d4ed",
+            "recording_s3_key_prefix": "ivs/v1/093675026797/nIET8AxYI7Nq/2023/10/5/13/51/8HHcMJ1FCBR3",
+            "id": "st-1EQqxfA8cn37wyFj9QsBFqn",
+            "streamUrl": "https://d3ih6h9pkrghoj.cloudfront.net/ivs/v1/093675026797/nIET8AxYI7Nq/2023/10/5/13/51/8HHcMJ1FCBR3/media/hls/master.m3u8"
+          },
+          "pluginData": {
+            "preValidate": [
+              {
+                "OutputKey": "plugin-content_moderation_plugin",
+                "OutputValue": {
+                  "valid": true,
+                  "reason": "No offensive content found in video"
+                }
+              },
+              {
+                "OutputKey": "plugin-duration_plugin",
+                "OutputValue": {
+                  "valid": true
+                }
+              }
+            ],
+            "postValidate": [],
+            "preMetadata": [
+              {
+                "OutputKey": "plugin-transcribeplugin",
+                "OutputValue": {
+                  "TranscriptFilePointers": {
+                    "TranscriptFileUri": "https://example.com/transcribe.json",
+                    "SubtitleFileUris": [
+                      "https://example.com/transcribe.vtt"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "taskToken": "AQCgAAAAKgAAAAMAAAAAAAAAAZiPlrHGCTsL4I66zysrOw4pXGoGeECfKjSmHgAVLj9uQ5hocHhVxPHbOCjQS3xIa7QEsP27+MiU2a5fxp+Uwo0ft6YbgJhddLR7KRbB+LlyvRe098LSOREVUdhbO4AEWDwaMc4r8w==OlhIwTvLrVhnfr1A2UCyUinqpK0WQn/FnROd+7Q3viKLGB3RpdkCjT/j1jw71aU5GkQoapmi4O+dJZN5LCbkZMcJ5LIQ6PsYQvLkQ55Vuzv4UnwSRHzt9BcpGzqv+q1PgYdAJIVKJsb82a9KwBIzE4620bhSrpdQL/2Zq++AoCgjBGSkT2lDyZ99iqErDTtGk0wkBtZvWrONhmVxXU3QmA7ouVm4dgjTVl4qQHWZG9U33uUuQHw/t1KfIp4WL0ds+hJ/hPDefFwH791qj6fo0MXm0apOA2JXcURD84j8/0QOkPx3zbGVBuYr8AzMeCE++5e9FjcJu1w913FSpvnDkLf92C8Cp1QvcPJ1SnQKTokz1YE8oqwlHM2zo1Mzu6tX5nAUN5m8hHfndhcA6u6sUSSqAzhtICN64t9KPl9AmNy4CdZE6+lGMZuqxeL2xCHVXySb7nsnnpe/KujCkoQhVbdvGJcZJ01q+SWUXCVyS+0mopueDiwjMR6S/QqjoIjgQNP5NtA7ee2/u5XVQnNj"
+        }
+      }
+    },
+    "preValidate": {
+      "Type": "Pass",
+      "Parameters": {
+        "eventHook.$": "$.eventHook",
+        "version": "0",
+        "id": "84036a02-7475-25ed-1d57-e7426e3dc553",
+        "detail-type.$": "States.Format('preValidate.{}',$.pluginTitle)",
+        "source": "video.pluginManager",
+        "account": "123456789012",
+        "time": "2023-08-31T09:54:38Z",
+        "region": "us-west-2",
+        "resources": [
+          "arn:aws:states:us-west-2:123456789012:stateMachine:123456789012-us-west-2-PluginLifecycleWorkflow",
+          "arn:aws:states:us-west-2:123456789012:execution:123456789012-us-west-2-PluginLifecycleWorkflow:59c3b33d-7248-43b3-81e3-5c6205c2a955"
+        ],
+        "detail": {
+          "video": {
+            "author": {
+              "username": "soldier369"
+            },
+            "createdAt": "2023-10-12T10:14:44.167Z",
+            "durationmillis": 144000,
+            "thumbnail": "https://d3ih6h9pkrghoj.cloudfront.net/ivs/v1/093675026797/nIET8AxYI7Nq/2023/10/5/13/51/8HHcMJ1FCBR3/media/thumbnails/thumb0.jpg",
+            "playbackUrl": "https://d3ih6h9pkrghoj.cloudfront.net/ivs/v1/093675026797/nIET8AxYI7Nq/2023/10/5/13/51/8HHcMJ1FCBR3/media/hls/720p30/output.mp4",
+            "channel": "78918340-d081-7059-632f-62ce34e1d4ed",
+            "recording_s3_key_prefix": "ivs/v1/093675026797/nIET8AxYI7Nq/2023/10/5/13/51/8HHcMJ1FCBR3",
+            "id": "st-1EQqxfA8cn37wyFj9QsBFqn",
+            "streamUrl": "https://d3ih6h9pkrghoj.cloudfront.net/ivs/v1/093675026797/nIET8AxYI7Nq/2023/10/5/13/51/8HHcMJ1FCBR3/media/hls/master.m3u8"
+          },
+          "taskToken": "AQCgAAAAKgAAAAMAAAAAAAAAAUC4eMR4Uc1R6eeI7Wix57TZyVXjUqGO6wQFqVwBjYZNeSGscdle6NIxMHe7sd5H5CwycI8xW6TVo8dXAlJ+fxZ1qLtimUm2RvKupphOz2OFG2EPJf6ePseJuwmWzXexJdG4hfGPCg==01oRgdjVAhaGG/vU0ifZFMDHAjneOpAdkYvnyMu12gE8XNOahINzUVEfb2b8ukz4zL9GHA4SpzbSsK5ZQT65KDKU/HyqbJi/owwZIcd47YtX1RU8CMqBqcMc4H4xrJ52iqGfA0eQxPhjOux0QcQbv8iSk/XiUl4N7ZMFuUcJ5Yq+Ms0Eh4uO1N+ZcwqYHoOVY4aljcGuy0DhUnDx8VGjQwqDxMPuAMJy9ec+esqO1rKXuhqK6lz14J9Gt1SMpAZGX8HbaCZspr820S2M10VC5nikhTgdYEGOwaltolyMKjsEYVxi/uxKl/Z2SMGaaQW0/Swr5d7PeVoJX9znu36lIyVHQlTlc3LJUASf3fyMa16lPnl37wj5VR3kf7sy4nw25gVR5yjU5PHPDXjq3Kv4QeZRSg4Otk+yQcfoVuSSiXWZHGQ/8H0ONvNCnmS/xn7UTI4FgUzG7ZqGXsHdrynM/3hSyxvbZZXCMgyxaRUdFJzfCI2/zPs1hcbV0NX9N0dbkLjA54OvZuPswGcos8H9",
+          "pluginData": ""
+        }
+      },
+      "Next": "EventBridge PutEvents"
+    }
+  }
+}

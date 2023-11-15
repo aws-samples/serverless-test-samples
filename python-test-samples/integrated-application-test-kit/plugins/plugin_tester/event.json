@@ -1,0 +1,8 @@
+[
+    {
+      "Source": "video.plugin.MyPlugin",
+      "DetailType": "preValidate.MyPlugin",
+      "Detail": "{\n    \"Message\": {\n      \"Execution\": {\n        \"Input\": {\n          \"detail\": {\n            \"recording_status\": \"Recording Ready\",\n            \"channel_name\": \"f841b370-a081-70bd-e170-6daff572cada\",\n            \"createdAt\": \"2023-08-18T14:19:13.004Z\",\n            \"durationmillis\": 49500,\n            \"thumbnail\": \"https://dmpdx8pmqxo3f.cloudfront.net/elemental/ivs/v1/832196373597/aOOxayFnlW5D/2023/8/18/14/18/zbNtvZPT6i9k/thumbs/0.0000004.jpg\",\n            \"width\": 1920,\n            \"playback_url\": \"https://dmpdx8pmqxo3f.cloudfront.net/elemental/ivs/v1/832196373597/aOOxayFnlW5D/2023/8/18/14/18/zbNtvZPT6i9k/0_lowres.mp4\",\n            \"id\": \"st-1EnYMiHd4a25BDomunLoG5N\",\n            \"height\": 1080\n,\"author\": \"random1\"\n          }\n        },\n        \"StartTime\": \"2023-07-25T15:25:51.354Z\"\n      },\n      \"TaskToken\": \"1234567890\"\n  }}",
+      "EventBusName": "default"
+    }
+]
