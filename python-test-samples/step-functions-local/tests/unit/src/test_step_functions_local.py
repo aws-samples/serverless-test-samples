@@ -1,3 +1,7 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+
+"""Tests Step Functions local with mocks using pytest"""
 import os
 import time
 import logging
@@ -11,8 +15,8 @@ from testcontainers.core.waiting_utils import wait_for_logs
 log = logging.getLogger()
 
 
-@pytest.fixture(scope="session")
-def container(request):
+@pytest.fixture(name="container", scope="session")
+def fixture_container(request):
     """
     Runs the amazon/aws-stepfunctions-local container with the MockConfigFile.json
     """
@@ -21,44 +25,46 @@ def container(request):
                                        'statemachine', 'test', 'MockConfigFile.json')
     mock_file_container_path = "/home/stepfunctionslocal/MockConfigFile.json"
 
-    container = DockerContainer("amazon/aws-stepfunctions-local") \
+    sf_local = DockerContainer("amazon/aws-stepfunctions-local") \
         .with_bind_ports(8083, 8083) \
         .with_exposed_ports(8083) \
         .with_env("SFN_MOCK_CONFIG", mock_file_container_path) \
         .with_volume_mapping(mock_file_host_path, mock_file_container_path)
 
-    container.start()
-    wait_for_logs(container, "Starting server on port 8083")
+    sf_local.start()
+    wait_for_logs(sf_local, "Starting server on port 8083")
 
     # Important to avoid non-deterministic behavior, waiting for container to spin up
     time.sleep(2)
 
     def stop_step_function():
         log.info("[fixture] stopping step functions container")
-        container.stop()
+        sf_local.stop()
 
     request.addfinalizer(stop_step_function)
 
-    return container
+    return sf_local
 
 
-@pytest.fixture(scope="session", autouse=True)
-def sfn_client(request, container):
+@pytest.fixture(name="sfn_client", scope="session", autouse=True)
+def fixture_sfn_client(container):
     """
     Creates the state machine using the local_testing.asl.json definition
     """
 
     # Set up Step Function client with test container URL
-    sfn_client = boto3.client('stepfunctions',
-        endpoint_url='http://' + container.get_container_host_ip() + ':' + container.get_exposed_port(8083))
+    client = boto3.client('stepfunctions',
+        endpoint_url='http://' + container.get_container_host_ip() + ':' +
+                     container.get_exposed_port(8083))
 
     # Read state machine definition
     step_function_definition = Path(
-        os.path.join(os.path.dirname(__file__), '..', '..', '..', 'statemachine', 'local_testing.asl.json')).read_text()
+        os.path.join(os.path.dirname(__file__), '..', '..', '..', 'statemachine',
+                     'local_testing.asl.json')).read_text(encoding="utf-8")
 
     # Create state machine
     try:
-        sfn_client.create_state_machine(
+        client.create_state_machine(
             name="LocalTesting",
             definition=step_function_definition,
             roleArn="arn:aws:iam::123456789012:role/DummyRole"
@@ -70,8 +76,8 @@ def sfn_client(request, container):
             err.response["Error"]["Message"],
         )
         raise
-    else:
-        return sfn_client
+
+    return client
 
 
 def get_arn(sfn_client):
@@ -93,7 +99,8 @@ def execute_stepfunction(sfn_client, execution_name, test_name):
     state_machine_arn = get_arn(sfn_client)
 
     step_function_input = Path(
-        os.path.join(os.path.dirname(__file__), '../../..', 'statemachine', 'test', 'valid_input.json')).read_text()
+        os.path.join(os.path.dirname(__file__), '../../..', 'statemachine', 'test',
+                     'valid_input.json')).read_text(encoding="utf-8")
 
     try:
         # Starting execution of the state machine
@@ -116,7 +123,8 @@ def execute_stepfunction(sfn_client, execution_name, test_name):
 
         # Checking whether the execution has completed.
         try:
-            history_response = sfn_client.get_execution_history(executionArn=start_execution['executionArn'])
+            history_response = sfn_client.get_execution_history(
+                executionArn=start_execution['executionArn'])
         except ClientError as err:
             log.error(
                 "Couldn't fetch execution history for state machine %s. Here's why: %s: %s",
@@ -156,7 +164,8 @@ def check_state_exited_event_details(history_response, state_exited_event_detail
 def test_happy_path(sfn_client):
     """
     Testing that the step function completes successfully.
-    Every external service runs succesfully and the state machine exits with "CustomerAddedToFollowup".
+    Every external service runs succesfully and the state machine
+    exits with "CustomerAddedToFollowup".
     """
     history_response = execute_stepfunction(sfn_client, 'happyPathExecution', 'HappyPathTest')
 
@@ -166,10 +175,11 @@ def test_happy_path(sfn_client):
 def test_negative_sentiment(sfn_client):
     """
     Testing that the step function completes successfully.
-    The contact details are properly formatted, a negative sentiment is detected within the user comments and the state
-    machine exits with "NegativeSentimentDetected"
+    The contact details are properly formatted, a negative sentiment is detected within the
+    user comments and the state machine exits with "NegativeSentimentDetected"
     """
-    history_response = execute_stepfunction(sfn_client, 'negativeSentimentExecution', 'NegativeSentimentTest')
+    history_response = execute_stepfunction(
+        sfn_client, 'negativeSentimentExecution', 'NegativeSentimentTest')
 
     assert check_state_exited_event_details(history_response, 'NegativeSentimentDetected')
 
@@ -177,17 +187,19 @@ def test_negative_sentiment(sfn_client):
 def test_retry_on_service_exception(sfn_client):
     """
     Testing that the step function completes successfully after retrying
-    The sentiment detection service fails three times and the state machine retries until successfully retrieving the
-    sentiment on the fourth attempt.
+    The sentiment detection service fails three times and the state machine
+    retries until successfully retrieving the sentiment on the fourth attempt.
     """
-    history_response = execute_stepfunction(sfn_client, 'retryExecution', 'RetryOnServiceExceptionTest')
+    history_response = execute_stepfunction(
+        sfn_client, 'retryExecution', 'RetryOnServiceExceptionTest')
 
     results = []
     for event in history_response['events']:
-        if (event['type'] == 'TaskFailed' and 'taskFailedEventDetails' in event and
-            event['taskFailedEventDetails']['error'] == 'InternalServerException'
+        if (
+                event['type'] == 'TaskFailed' and
+                event['taskFailedEventDetails']['error'] == 'InternalServerException'
             ) or (
-                event['type'] == 'TaskSucceeded' and 'taskSucceededEventDetails' in event and
+                event['type'] == 'TaskSucceeded' and
                 event['taskSucceededEventDetails']['resource'] == 'comprehend:detectSentiment'
         ):
             results.append(event)

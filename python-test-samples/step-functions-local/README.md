@@ -143,6 +143,22 @@ With the test case and mock responses configured, you can use them for testing w
  - Python 3.9 or newer
  - [Docker](https://www.docker.com/)
  
+### Test flow
+
+The unit test flow in [test_step_funtions_local.py](tests/unit/src/test_step_functions_local.py) is:
+
+- ```fixture_container``` downloads and starts the  ```amazon/aws-stepfunctions-local``` 
+  container locally
+- ```fixture_sfn_client``` then creates the state machine using the definition from [local_testing.
+  asl.json](statemachine/local_testing.asl.json)
+- When a test runs it calls ```execute_stepfunction```.  This executes the state machine passing 
+  the input in [valid_input.json](statemachine/test/valid_input.json) and appending ```test_name``` to 
+  the state machine ARN. ```test_name``` is used to look up the TestCase entry in [MockConfigFile.json](statemachine/test/MockConfigFile.json) which defines which 
+  mocked responses to use.  ```execute_stepfunction``` returns the list of events from the state 
+  machine execution.
+- After all the tests have run, the container is shut down by the ```stop_step_function``` 
+  finalizer added in ```fixture_container```
+
 ### Unit Test description
 
 This example contains a [sample event](statemachine/test/valid_input.json) with new user registration data to be processed by the state machine. The unit tests will check how the state machine behaves for each of the following scenarios defined in the [MockConfigFile.json](statemachine/test/MockConfigFile.json) file:
