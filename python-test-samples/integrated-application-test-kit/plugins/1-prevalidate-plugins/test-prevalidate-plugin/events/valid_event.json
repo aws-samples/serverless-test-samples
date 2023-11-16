@@ -1,0 +1,28 @@
+{
+  "version": "0",
+  "id": "38235831-9179-4aae-73d2-5c197ea9cb58",
+  "detail-type": "preValidate.TestPlugin",
+  "source": "video.pluginManager",
+  "account": "994092007821",
+  "time": "2023-09-07T17:35:50Z",
+  "region": "us-west-2",
+  "resources": [
+      "arn:aws:states:us-west-2:994092007821:stateMachine:PluginLifecycleWorkflow-ztGwvoHrB4lM",
+      "arn:aws:states:us-west-2:994092007821:execution:PluginLifecycleWorkflow-ztGwvoHrB4lM:ccbeea67-30e6-4cb5-9b94-1009b5f0eef1"
+  ],
+  "detail": {
+      "video": {
+          "author": {
+              "username": "Mark Twain"
+          },
+          "createdAt": "2023-08-30T14:57:51.169Z",
+          "durationmillis": 24000,
+          "thumbnail": "https://dmpdx8pmqxo3f.cloudfront.net/media/ivs/v1/123456789012/ERaAhUZnrHJG/2023/8/30/14/57/ovoTjGdG38Mk/media/hls/720p30/thumbnails/thumb0.jpg",
+          "playbackUrl": "https://dmpdx8pmqxo3f.cloudfront.net/media/ivs/v1/123456789012/ERaAhUZnrHJG/2023/8/30/14/57/ovoTjGdG38Mk/media/hls/720p30/output.mp4",
+          "channel": "08d143f0-00f1-7052-f97a-cbcda39ff077",
+          "id": "84036a02-7475-25ed-1d57-e7426e3dc553"
+      },
+      "pluginData": "",
+      "taskToken": "AQCQAAAAKgAAAAMAAAAAAAAAAZd5T0Tbzuc6qFy0XjyicjViEovTD/HrQ96aFfoqFnXUIh+DuBnOai0eU1iPHSPu8sDOppg/Fe8+AhFX1TGnvnIaGuH7p1pCcf0ilXgnGWJO9V9Od3SAvPVUzql4tEApUZ+SXR4KTnsTtzS3cZBSGdfVKjBvM/2CDcz7ulrPmLlS9UJdmonpf72ti3+lJ7atRGsCcz+QbTf74IdVm8zXfx4psah4gcU3yKXwHI8PcoDS2I0ZCLwZSSquSwQ/i0FvBko9nIFLunFkkM+Y/QzAeOPPx5kY3D7V1CGW7rHa5QFfGHfTIAeaF69F41Tx8oaZuhaNs5LFj5UEMeP4J5jQiR/e05oWQ2dPE/mOwl5OzhNmWyC8v8OKIqwdz5VsQWn06a7kq4laZVlOYUdoZ9+qM7s/AAsQlARmhkdWvpKkvv1fcKLXdaVSvY4wPz+lpleK3C0DIVnJu+UjNKZWdfriV/0HPxxM6ZseAwxulJRqrkjOARTdaagJfTODkzHdrPI17J195C+LitsI3fSQzHkTx8XYc9iB52JfeBeoNY9m32RDCxLHjXJ5sl+hMf2dL+Lm6niiZ/rxgg4XxMRTSKTYC1Xcx3DdErvMLVRdi3cjdHEvSJ55shPyV8Hy8V9QoYn7AJ+RmGReQ5kISA5G"
+  }
+}

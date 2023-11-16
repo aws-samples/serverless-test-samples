@@ -1,0 +1,39 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  python-minimal-plugin
+
+  Sample SAM Template for python-minimal-plugin
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 3
+    Tracing: Active
+
+Resources:
+  PythonMinimalPluginFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: functions/
+      Handler: app.lambda_handler
+      Runtime: python3.11
+      Policies:
+      - EventBridgePutEventsPolicy:
+          EventBusName: default
+      Architectures:
+      - x86_64
+      Events:
+        pluginTrigger:
+          Type: EventBridgeRule
+          Properties:
+            EventBusName: default # a rule for the default event bus
+            Pattern:
+              source:
+                - video.pluginManager
+              detail-type:
+                - postValidate.PythonMinimalPlugin # this will be triggered on the metadata hook event
+Outputs:
+  PythonMinimalPluginFunction:
+    Description: PythonMinimalPluginFunction Function ARN
+    Value: !GetAtt PythonMinimalPluginFunction.Arn

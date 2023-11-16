@@ -1,0 +1,8 @@
+version = 0.1
+[default.deploy.parameters]
+stack_name = "video-plugin-tester"
+resolve_s3 = true
+s3_prefix = "video-plugin-tester"
+capabilities = "CAPABILITY_IAM"
+image_repositories = []
+region="us-west-2"
