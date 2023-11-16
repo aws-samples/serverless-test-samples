@@ -4,6 +4,8 @@
 
 This sample demonstrates how you can use the [AWS Integrated Application Test Kit (IATK)](https://awslabs.github.io/aws-iatk/) to develop integration tests for your serverless and event-driven applications. It can help you locate test resources hosted on the cloud, attach and monitor test harnesses within SLAs, extract tracing data for your test executions, and more.
 
+Read more on the [Introducing the AWS Integrated Application Test Kit (IATK)](https://aws.amazon.com/blogs/compute/aws-integrated-application-test-kit/) blog post.
+
 ## Contents
 
 * [Introduction](#introduction)
