@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This sample demonstrates how you can use the Integrated Application Test Kit (IATK) to develop integration tests for your serverless and event-driven applications. It can help you locate test resources hosted on the cloud, attach and monitor test harnesses within SLAs, extract tracing data for your test executions, and more.
+This sample demonstrates how you can use the [AWS Integrated Application Test Kit (IATK)](https://awslabs.github.io/aws-iatk/) to develop integration tests for your serverless and event-driven applications. It can help you locate test resources hosted on the cloud, attach and monitor test harnesses within SLAs, extract tracing data for your test executions, and more.
 
 ## Contents
 
@@ -50,7 +50,11 @@ cd ./plugins/plugin_tester && sam deploy --no-confirm-changeset --no-fail-on-emp
 
 ### Run the prevalidate integration tests
 
-The prevalidate plugin is a sample plugin that acts on the [prevalidate event](./events/1-prevalidate-event.md) emitted by the platform. These integration tests use the AWS SDK to query the Amazon CloudFormation API directly and poll the plugin tester workflow.
+This example shows how you might write tests without the use of the IATK.
+
+The prevalidate plugin is a sample plugin that acts on the [prevalidate event](./events/1-prevalidate-event.md) emitted by the platform. 
+
+The integration tests use the AWS SDK to query the Amazon CloudFormation API directly and poll the plugin tester workflow.
 
 Deploy the [test-prevalidate-plugin](./plugins/1-prevalidate-plugins/test-prevalidate-plugin/)
 
@@ -70,7 +74,11 @@ cd ./plugins/1-prevalidate-plugins/test-prevalidate-plugin && PLUGIN_TESTER_STAC
 
 ### Run the postvalidate integration tests
 
-The postvalidate plugin is a sample plugin that acts on the [postvalidate event](./events/2-postvalidate-event.md) emitted by the platform. These integration tests use the Integrated Application Test Kit to find cloud-hosted resources and listen for activity.
+In contrast to the previous test example, these tests show how the IATK simplifies some common testing tasks.
+
+The postvalidate plugin is a sample plugin that acts on the [postvalidate event](./events/2-postvalidate-event.md) emitted by the platform. 
+
+These integration tests use the Integrated Application Test Kit to find cloud-hosted resources and listen for activity.
 
 Deploy the [python-minimal-plugin](./plugins/2-postvalidate-plugins/python-minimal-plugin/)
 
@@ -110,3 +118,5 @@ Delete the [plugin tester](./plugins/plugin_tester/)
 ```bash
 cd ./plugins/plugin_tester && sam delete
 ```
+
+To learn more about testing serverless applications go to [serverlessland.com/testing](https://serverlessland.com/testing).
