@@ -35,7 +35,7 @@ This sample is built around the idea of a Video Plugin application where users m
 
 ![Architecture](./img/architecture.png)
 
-The system includes a [plugin tester](./plugins/plugin_tester/README.md), which is an AWS Step Functions workflow that acts as the video platform - emitting lifecycle events with the expected structure and sequence. [The sample tests](./plugins/2-postvalidate-plugins/python-minimal-plugin/tests/) integrate with the plugin tester to exercise plugin functionality.
+The system includes a [plugin tester](./plugins/plugin_tester/), which is an AWS Step Functions workflow that acts as the video platform - emitting lifecycle events with the expected structure and sequence. [The sample tests](./plugins/2-postvalidate-plugins/python-minimal-plugin/tests/) integrate with the plugin tester to exercise plugin functionality.
 
 ![Plugin Tester](./img/plugin_tester_1.png)
 
