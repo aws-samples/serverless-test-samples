@@ -23,7 +23,8 @@ def lambda_handler(event, _):
     if event.get("Unicorn Location", None) is None:
         raise Exception("Unicorn Location not provided")
 
-    if random.uniform(0, 1) < 0.20:
+    # Make sure Comet is always available for the lab!
+    if random.uniform(0, 1) < 0.20 and "Comet" not in event["Unicorn Name"]:
         initial_status = "IN_TRAINING"
     else:
         initial_status = "AVAILABLE"

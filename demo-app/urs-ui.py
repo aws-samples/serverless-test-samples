@@ -10,9 +10,10 @@
 import json
 import os
 import uuid
+import time
 import requests
 import streamlit as st
-
+from streamlit_js_eval import streamlit_js_eval
 
 # Initialize Contexts
 if 'api_endpoint_url' not in st.session_state:
@@ -36,9 +37,6 @@ def update_api_endpoint():
         json.dump(endpoint_json, out_file)
         st.write("API Endpoint saved, refresh browser to take effect.")
 
-
-# Retrieve Application Endpoint
-
 def upload_file_to_s3(api_endpoint_url: str, file_to_upload: str) -> str:
     """
     Upload a data file to S3
@@ -54,7 +52,7 @@ def upload_file_to_s3(api_endpoint_url: str, file_to_upload: str) -> str:
                                       data=response.json()['fields'],
                                       files=files)
     if http_response.ok:
-        return "Data file written to S3.  Wait 20 seconds and refresh browser."
+        return "Data file written to S3.  Waiting 20 seconds for processing and will then refresh browser."
     else:
         return "ERROR: Data file not written to S3."
 
@@ -106,8 +104,9 @@ def get_locations(api_endpoint_url: str) -> list:
         print(err)
         return []
     
-
-location_list = get_locations(st.session_state['api_endpoint_url'])
+st.session_state['location_list'] = get_locations(st.session_state['api_endpoint_url'])
+if 'unicorn_inventory' not in st.session_state:
+    st.session_state['unicorn_inventory'] = []
 
 # Generate the Application Title
 col1, col2 = st.columns([1, 4])
@@ -120,19 +119,21 @@ listing_tab, reserve_tab, admin_tab = st.tabs(["Listing", "Reserve", "Administra
 
 # Listing Tab
 with listing_tab:
-    location_listing = st.radio("Pick a location for the Unicorn listing:", location_list)
-    u_inv = get_inventory(st.session_state['api_endpoint_url'], location_listing)
-    st.table(u_inv)
+    location_listing = st.radio("Pick a location for the Unicorn listing:", st.session_state['location_list'])
+    st.session_state['unicorn_inventory'] = get_inventory(st.session_state['api_endpoint_url'], location_listing)
+    st.table(st.session_state['unicorn_inventory'])
 
 # Reserve Tab
 with reserve_tab:
-    location_res = st.radio("Pick a location for Unicorn reservations:", location_list)
+    location_res = st.radio("Pick a location for Unicorn reservations:", st.session_state['location_list'])
     u_list = [ u["Name"] for u in get_inventory(st.session_state['api_endpoint_url'], location_res, True ) ]
     if len(u_list) > 0:
         unicorn_to_reserve = st.selectbox('Which Unicorn would you like to reserve?', u_list)
         reserve_for = st.text_input("Reserve Unicorn for:")
         if st.button(f"Reserve {unicorn_to_reserve}"):
-            if reserve_unicorn(st.session_state['api_endpoint_url'], unicorn_to_reserve, reserve_for):
+            with st.spinner("Reserving Unicorn..."):
+                reserve_status = reserve_unicorn(st.session_state['api_endpoint_url'], unicorn_to_reserve, reserve_for)
+            if reserve_status:
                 st.write(f"Unicorn Reserved: {unicorn_to_reserve}")
             else:
                 st.write(f"Error reserving Unicorn {unicorn_to_reserve}!")
@@ -151,9 +152,16 @@ with admin_tab:
     # File picker for uploading to the unicorn inventory
     uploaded_file = st.file_uploader("Choose a CSV file for the Unicorn Inventory.", type=["csv"])
     if uploaded_file is not None:
-        TEMP_FILE_NAME = str(uuid.uuid4()) + ".csv"
-        string_data = uploaded_file.getvalue().decode("utf-8")
-        with open(TEMP_FILE_NAME,"w",encoding="utf-8") as out_file:
-            out_file.write(string_data)
-        st.write(upload_file_to_s3(st.session_state['api_endpoint_url'], TEMP_FILE_NAME))
-        os.remove(TEMP_FILE_NAME)
+        with st.spinner("Uploading file to S3..."):
+            TEMP_FILE_NAME = str(uuid.uuid4()) + ".csv"
+            string_data = uploaded_file.getvalue().decode("utf-8")
+            with open(TEMP_FILE_NAME,"w",encoding="utf-8") as out_file:
+                out_file.write(string_data)
+            out_message = upload_file_to_s3(st.session_state['api_endpoint_url'], TEMP_FILE_NAME)
+            os.remove(TEMP_FILE_NAME)
+        with st.spinner(out_message):
+            time.sleep(20)
+            st.session_state['location_list'] = get_locations(st.session_state['api_endpoint_url'])
+            st.session_state['unicorn_inventory'] = get_inventory(st.session_state['api_endpoint_url'], location_listing)
+            streamlit_js_eval(js_expressions="parent.window.location.reload()")
+

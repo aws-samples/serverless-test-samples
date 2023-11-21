@@ -21,7 +21,6 @@ from aws_lambda_powertools.utilities.data_classes import APIGatewayProxyEvent
 from aws_lambda_powertools.utilities.typing import LambdaContext
 from aws_lambda_powertools.utilities.validation import validator
 
-
 from schemas import OUTPUT_SCHEMA
 patch_all()
 
