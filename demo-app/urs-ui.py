@@ -32,10 +32,15 @@ def update_api_endpoint():
     """
     Endpoint has changes, save it for next run
     """
-    endpoint_json = {"api_endpoint": st.session_state['api_endpoint_url'].strip()}
-    with open("config.json","w",encoding="utf-8") as out_file:
-        json.dump(endpoint_json, out_file)
-        st.write("API Endpoint saved, refresh browser to take effect.")
+    if len(st.session_state['api_endpoint_url']) > 10:
+        with st.spinner("Saving New API Endpoint..."):
+            endpoint_json = {"api_endpoint": st.session_state['api_endpoint_url'].strip()}
+            with open("config.json","w",encoding="utf-8") as out_file:
+                json.dump(endpoint_json, out_file)
+        st.write("API Endpoint saved, refreshing browser to take effect.")
+        time.sleep(1)
+        streamlit_js_eval(js_expressions="parent.window.location.reload()")
+            
 
 def upload_file_to_s3(api_endpoint_url: str, file_to_upload: str) -> str:
     """
@@ -74,7 +79,6 @@ def get_inventory(api_endpoint_url: str, fetch_loc: str, available_only = False)
         return response.json()["unicorn_list"]
     except Exception as err:
         print(err)
-        st.write("No Unicorns Found.")
         return []
 
 def reserve_unicorn(api_endpoint_url: str, unicorn_name: str, unicorn_reserve_for : str) -> bool:
@@ -104,9 +108,52 @@ def get_locations(api_endpoint_url: str) -> list:
         print(err)
         return []
     
-st.session_state['location_list'] = get_locations(st.session_state['api_endpoint_url'])
-if 'unicorn_inventory' not in st.session_state:
-    st.session_state['unicorn_inventory'] = []
+
+# Initialize Inventory Tab Pick Lists and Displays   
+if 'inventory_locations' not in st.session_state:
+    st.session_state['inventory_locations'] = get_locations(st.session_state['api_endpoint_url'])
+    if len(st.session_state['inventory_locations']) > 0:
+        location_inv = st.session_state['inventory_locations'][0]
+        st.session_state['inventory_picked_location'] = location_inv
+        st.session_state['inventory_unicorns'] = get_inventory(st.session_state['api_endpoint_url'], location_inv )
+    else:
+        st.session_state['inventory_picked_location'] = ""
+        st.session_state['inventory_unicorns'] = []
+
+# Initialize Reservation Tab Pick Lists and Displays  
+if 'reservation_locations' not in st.session_state:
+    st.session_state['reservation_locations'] = get_locations(st.session_state['api_endpoint_url'])
+    if len(st.session_state['reservation_locations']) > 0:
+        location_res = st.session_state['reservation_locations'][0]
+        st.session_state['reservation_picked_location'] = location_res
+        u_list = [ u["Name"] for u in get_inventory(st.session_state['api_endpoint_url'], location_res, True ) ]
+        st.session_state['reservation_unicorns'] = u_list
+    else:
+        st.session_state['reservation_picked_location'] = ""
+        st.session_state['reservation_unicorns'] = []
+
+def update_unicorn_inventory_list():
+    """
+    Update the sessions state for the list of unicorns for the current inventory location
+    """
+    location_inv = st.session_state['inventory_picked_location']
+    if location_inv != "":
+        u_list = get_inventory(st.session_state['api_endpoint_url'], location_inv )
+    else:
+        u_list = []
+    st.session_state['inventory_unicorns'] = u_list
+
+def update_unicorn_reserve_list():
+    """
+    Update the sessions state for the reservable unicorns for the current reserve location
+    """
+    location_res = st.session_state['reservation_picked_location']
+    if location_res != "":
+        u_list = [ u["Name"] for u in get_inventory(st.session_state['api_endpoint_url'], location_res, True ) ]
+    else:
+        u_list = []
+    st.session_state['reservation_unicorns'] = u_list
+
 
 # Generate the Application Title
 col1, col2 = st.columns([1, 4])
@@ -119,22 +166,36 @@ listing_tab, reserve_tab, admin_tab = st.tabs(["Listing", "Reserve", "Administra
 
 # Listing Tab
 with listing_tab:
-    location_listing = st.radio("Pick a location for the Unicorn listing:", st.session_state['location_list'])
-    st.session_state['unicorn_inventory'] = get_inventory(st.session_state['api_endpoint_url'], location_listing)
-    st.table(st.session_state['unicorn_inventory'])
+    st.radio("Pick a location for the Unicorn listing:", 
+             options=st.session_state['inventory_locations'],
+             key="inventory_picked_location",
+             on_change=update_unicorn_inventory_list)
+    st.table(st.session_state['inventory_unicorns'])
 
 # Reserve Tab
 with reserve_tab:
-    location_res = st.radio("Pick a location for Unicorn reservations:", st.session_state['location_list'])
-    u_list = [ u["Name"] for u in get_inventory(st.session_state['api_endpoint_url'], location_res, True ) ]
-    if len(u_list) > 0:
-        unicorn_to_reserve = st.selectbox('Which Unicorn would you like to reserve?', u_list)
+    st.radio("Pick a location for Unicorn reservations:",
+                            options = st.session_state['reservation_locations'],
+                            key="reservation_picked_location",
+                            on_change=update_unicorn_reserve_list)
+    
+    if len(st.session_state['reservation_unicorns']) > 0:
+
+        redraw_handle = st.empty()
+        redraw_handle.selectbox(label='Which Unicorn would you like to reserve?',
+                                         options=st.session_state['reservation_unicorns'],
+                                         key="reservation_unicorn_name")
         reserve_for = st.text_input("Reserve Unicorn for:")
-        if st.button(f"Reserve {unicorn_to_reserve}"):
+        if st.button(f"Reserve Unicorn"):
+            unicorn_to_reserve = st.session_state['reservation_unicorn_name']
             with st.spinner("Reserving Unicorn..."):
-                reserve_status = reserve_unicorn(st.session_state['api_endpoint_url'], unicorn_to_reserve, reserve_for)
+                reserve_status = reserve_unicorn(st.session_state['api_endpoint_url'], 
+                                                 st.session_state['reservation_unicorn_name'], 
+                                                 reserve_for)
             if reserve_status:
                 st.write(f"Unicorn Reserved: {unicorn_to_reserve}")
+                time.sleep(1)
+                streamlit_js_eval(js_expressions="parent.window.location.reload()")
             else:
                 st.write(f"Error reserving Unicorn {unicorn_to_reserve}!")
     else:
@@ -161,7 +222,5 @@ with admin_tab:
             os.remove(TEMP_FILE_NAME)
         with st.spinner(out_message):
             time.sleep(20)
-            st.session_state['location_list'] = get_locations(st.session_state['api_endpoint_url'])
-            st.session_state['unicorn_inventory'] = get_inventory(st.session_state['api_endpoint_url'], location_listing)
             streamlit_js_eval(js_expressions="parent.window.location.reload()")
 
