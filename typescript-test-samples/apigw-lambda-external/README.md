@@ -35,7 +35,7 @@ The SUT in this pattern is a synchronous API composed of Amazon API Gateway, AWS
 
 ### Goal
 
-The goal of this pattern is to test the SUT in environment as similar to production as possible by running tests against resources deployed to the cloud but not communicating with an external API.
+The goal of this pattern is to test the SUT in an environment as similar to production as possible by running tests against resources deployed to the cloud but not communicating with an external API.
 
 ### Description
 
