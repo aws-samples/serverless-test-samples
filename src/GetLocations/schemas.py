@@ -20,8 +20,7 @@ OUTPUT_SCHEMA = {
             "$id": "#/properties/body",
             "type": "string",
             "title": "The response message",
-            "examples": ["OK","Error"],
-            "maxLength": 256,
+            "examples": ["OK","Error"]
         }
     },
 }
