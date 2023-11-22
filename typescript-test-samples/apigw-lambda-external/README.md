@@ -31,6 +31,8 @@ The project uses the [AWS Serverless Application Model](https://docs.aws.amazon.
 
 The SUT in this pattern is a synchronous API composed of Amazon API Gateway, AWS Lambda and a simple external API.
 
+![System Under Test (SUT)](img/system-under-test.png)
+
 ### Goal
 
 The goal of this pattern is to test the SUT in environment as similar to production as possible by running tests against resources deployed to the cloud but not communicating with an external API.
@@ -38,6 +40,8 @@ The goal of this pattern is to test the SUT in environment as similar to product
 ### Description
 
 The SUT will be deployed to the AWS cloud. The test code will create an HTTP client that will send requests to the deployed API Gateway endpoint. The endpoint will invoke the backing services, test resource configuration, IAM permissions, authorizers, and internal business logic of the SUT. The SUT will not have any dependency on the external API, resulting in the service not being negatively impacted by the constraints or idiosyncrasies of external systems, ensuring that this system remains robust whilst under test.
+
+![System Under Test Description (SUT)](img/system-under-test-description.png)
 
 ## [Top](#contents)
 
