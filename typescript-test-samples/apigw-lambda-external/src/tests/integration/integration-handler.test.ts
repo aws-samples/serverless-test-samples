@@ -24,7 +24,7 @@ describe('API Integration tests', () => {
      * Calling the URL with a invalid city
      * This should return a 404
      */
-    describe.only('GET /{invalidCity}', () => {
+    describe('GET /{invalidCity}', () => {
         it('should return not found code for http get', async () => {
             const url = `${baseApiUrl}/${invalidCity}`;
             try {
