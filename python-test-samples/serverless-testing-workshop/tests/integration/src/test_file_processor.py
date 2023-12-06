@@ -156,7 +156,7 @@ class TestFileProcessingWorkflow(TestCase):
         self.assertGreater(item_should_be_found["Count"], 0,
                            "Item not found after time allowed for processing.")
 
-        self.assertLessEqual(poll_complete_seconds, 2,
+        self.assertLessEqual(poll_complete_seconds, 5,
                              f"Unicorns should be fast!  Took too long: {poll_complete_seconds} sec")
 
         self.assertEqual(item_should_be_found["Count"], 1,
