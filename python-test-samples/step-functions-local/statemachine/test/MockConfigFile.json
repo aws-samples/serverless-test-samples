@@ -1,0 +1,188 @@
+{
+  "StateMachines": {
+    "LocalTesting": {
+      "TestCases": {
+        "HappyPathTest": {
+          "Check Identity": "CheckIdentityLambdaMockedSuccess",
+          "Check Address": "CheckAddressLambdaMockedSuccess",
+          "DetectSentiment": "DetectSentimentPositive",
+          "Add to FollowUp": "AddToFollowUpSuccess",
+          "CustomerAddedToFollowup": "CustomerAddedToFollowupSuccess"
+        },
+        "NegativeSentimentTest": {
+          "Check Identity": "CheckIdentityLambdaMockedSuccess",
+          "Check Address": "CheckAddressLambdaMockedSuccess",
+          "DetectSentiment": "DetectSentimentNegative",
+          "NegativeSentimentDetected": "NegativeSentimentDetectedSuccess"
+        },
+        "CustomValidationFailedCatchTest": {
+          "Check Identity": "CheckIdentityLambdaMockedThrowError",
+          "Check Address": "CheckAddressLambdaMockedSuccess",
+          "CustomValidationFailed": "CustomValidationFailedPutEventSuccess"
+        },
+        "ValidationExceptionCatchTest": {
+          "Check Identity": "CheckIdentityLambdaMockedSuccess",
+          "Check Address": "CheckAddressLambdaMockedThrowExceptionSuccess",
+          "ValidationException": "ValidationExceptionPutEventSuccess"
+        },
+        "RetryOnServiceExceptionTest": {
+          "Check Identity": "CheckIdentityLambdaMockedSuccess",
+          "Check Address": "CheckAddressLambdaMockedSuccess",
+          "DetectSentiment": "DetectSentimentRetryOnErrorWithSuccess",
+          "Add to FollowUp": "AddToFollowUpSuccess",
+          "CustomerAddedToFollowup": "CustomerAddedToFollowupSuccess"
+        }
+      }
+    }
+  },
+  "MockedResponses": {
+    "CheckIdentityLambdaMockedSuccess": {
+      "0": {
+        "Return": {
+          "statusCode": 200,
+          "Payload": {
+            "statusCode": 200,
+            "body": "{\"approved\": true}"
+          }
+        }
+      }
+    },
+    "CheckAddressLambdaMockedSuccess": {
+      "0": {
+        "Return": {
+          "statusCode": 200,
+          "Payload": {
+            "statusCode": 200,
+            "body": "{\"approved\": true}"
+          }
+        }
+      }
+    },
+    "AddToFollowUpSuccess": {
+      "0": {
+        "Return": {
+          "statusCode": 200,
+          "SdkHttpMetadata": {
+            "HttpStatusCode": 200
+          }
+        }
+      }
+    },
+    "CustomerAddedToFollowupSuccess": {
+      "0": {
+        "Return": {
+          "statusCode": 200,
+          "Payload": {
+            "statusCode": 200
+          }
+        }
+      }
+    },
+    "CheckIdentityLambdaMockedThrowError": {
+      "0-3": {
+        "Throw": {
+          "Error": "CustomValidationError",
+          "Cause": "Check Identity Validation Failed"
+        }
+      }
+    },
+    "CheckAddressLambdaMockedThrowExceptionSuccess": {
+      "0": {
+        "Throw": {
+          "Error": "CustomAddressValidationError",
+          "Cause": "Address Validation Exception"
+        }
+      }
+    },
+    "CustomValidationFailedPutEventSuccess": {
+      "0": {
+        "Return": {
+          "statusCode": 200,
+          "Payload": {
+            "Entries": [
+              {
+                "EventId": "abc123"
+              }
+            ],
+            "FailedEntryCount": 0
+          }
+        }
+      }
+    },
+    "ValidationExceptionPutEventSuccess": {
+      "0": {
+        "Return": {
+          "statusCode": 200,
+          "Payload": {
+            "Entries": [
+              {
+                "EventId": "abc123"
+              }
+            ],
+            "FailedEntryCount": 0
+          }
+        }
+      }
+    },
+    "DetectSentimentPositive": {
+      "0": {
+        "Return": {
+          "Sentiment": "POSITIVE",
+          "SentimentScore": {
+            "Mixed": 0.00012647535,
+            "Negative": 0.00008031699,
+            "Neutral": 0.0051454515,
+            "Positive": 0.9946478
+          }
+        }
+      }
+    },
+    "DetectSentimentNegative": {
+      "0": {
+        "Return": {
+          "Sentiment": "NEGATIVE",
+          "SentimentScore": {
+            "Mixed": 0.00012647535,
+            "Positive": 0.00008031699,
+            "Neutral": 0.0051454515,
+            "Negative": 0.9946478
+          }
+        }
+      }
+    },
+    "NegativeSentimentDetectedSuccess": {
+      "0": {
+        "Return": {
+          "statusCode": 200,
+          "Payload": {
+            "Entries": [
+              {
+                "EventId": "abc123"
+              }
+            ],
+            "FailedEntryCount": 0
+          }
+        }
+      }
+    },
+    "DetectSentimentRetryOnErrorWithSuccess": {
+      "0-2": {
+        "Throw": {
+          "Error": "InternalServerException",
+          "Cause": "Server Exception while calling DetectSentiment API in Comprehend Service"
+        }
+      },
+      "3": {
+        "Return": {
+          "Sentiment": "POSITIVE",
+          "SentimentScore": {
+            "Mixed": 0.00012647535,
+            "Negative": 0.00008031699,
+            "Neutral": 0.0051454515,
+            "Positive": 0.9946478
+          }
+        }
+      }
+    }
+  }
+}

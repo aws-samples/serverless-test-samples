@@ -14,6 +14,7 @@ This portion of the repository contains code samples for testing serverless appl
 |[Schema and Contract Testing](./schema-and-contract-testing)|This project contains sample schema and contract tests for an event driven architecture.|
 |[Kinesis with Lambda and DynamoDB](./kinesis-lambda-dynamodb)|This project contains a example of testing an application with an Amazon Kinesis Data Stream.|
 |[SQS with Lambda](./apigw-sqs-lambda-sqs)|This project demonstrates testing SQS as a source and destination in an integration test|
+|[Step Functions Local](./step-functions-local)| An example of testing Step Functions workflow locally using pytest and Testcontainers | 
 
 ## Test API's
 These projects have excellent in-depth examples of unit and integration tests for API based applications. 
