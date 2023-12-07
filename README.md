@@ -63,6 +63,11 @@ Event-driven architectures (EDA) are an architecture style that uses events and 
 |---|---|---|---|
 | [Hexagonal architecture](./dotnet-test-samples/hexagonal-architecture/) |API Gateway, Lambda, DynamoDB|.NET|Hexagonal architecture is an architectural pattern used for encapsulating domain logic and decoupling it from other implementation details, such as infrastructure or client requests.|
 
+## Workshops
+|Workshop Link|Code Link|Description|
+---|---|---
+|[Serverless Testing Workshop Lab](https://catalog.us-east-1.prod.workshops.aws/workshops/0f9013f4-3960-426d-a445-dc3519b8e3d4)|[Serverless Testing Workshop Code](./workshops/serverless-testing-workshop)|A workshop demonstrating the basics of Unit Test, Local Test, and Integration Test|
+
 
 ## Service Orchestration
 |System Under Test|Language|Description|
