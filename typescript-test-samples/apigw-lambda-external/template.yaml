@@ -61,6 +61,7 @@ Resources:
   # Volatile Stack Resources
   MockApi:
     Type: AWS::ApiGateway::RestApi
+    Condition: isVolatileBuild
     Properties:
       Name: MockApi
       Description: Mock API Endpoint
@@ -119,11 +120,13 @@ Resources:
 
   MockApiDeployment:
     Type: AWS::ApiGateway::Deployment
+    Condition: isVolatileBuild
     Properties:
       RestApiId: !Ref MockApi
 
   BranchStage:
     Type: AWS::ApiGateway::Stage
+    Condition: isVolatileBuild
     Properties:
       StageName: Volatile
       DeploymentId: !Ref MockApiDeployment
