@@ -5,27 +5,25 @@
 [![test: unit](https://img.shields.io/badge/Test-Unit-blue)](https://img.shields.io/badge/Test-Unit-blue)
 [![test: integration](https://img.shields.io/badge/Test-Integration-yellow)](https://img.shields.io/badge/Test-Integration-yellow)
 
-# Serverless Testing Workshop
+# Serverless Testing Workshop System Under Test (SUT) 
 
-## Introduction
-
-The project is a companion System Under Test for the Serverless Test Workshop.  
-For details and use, see the [Serverless Testing Workshop](https://catalog.us-east-1.prod.workshops.aws/workshops/0f9013f4-3960-426d-a445-dc3519b8e3d4/en-US) in Workshop Studio. 
+This folder contains the source for the System Under Test (SUT) in the [Serverless Testing Workshop](https://catalog.us-east-1.prod.workshops.aws/workshops/0f9013f4-3960-426d-a445-dc3519b8e3d4/en-US). 
 
 ---
 
 ## Architecture
 
-The system under test is a Unicorn Reservation System (URS) Application has a thin front-end, which makes API calls to the back-end services.
+This system under test is a thin front-end of a fictitious Unicorn Reservation System (URS) which  makes API calls to back-end services. The system includes an event-driven integration with Amazon EventBridge between Amazon S3 and a Step Functions workflow.
 
-[![Application Architecture](_img/App_Architecture.png)
+![Application Architecture](_img/App_Architecture.png)
 
-* The user interacts with a (locally) hosted UI [1].
-* An Amazon API Gateway  [2] serves as the host for the back-end API calls, routing requests to multiple AWS Lambda  functions based on the endpoint.
-* An AWS Lambda  [3] function will query the Amazon DynamoDB  Table [4] that stores the Unicorn Inventory.
-* An Amazon DynamoDB  Table [4] stores the list of Unicorns, including the Unicorn Name, Location, Reservation Status, and for whom the unicorn is reserved.
-* A Lambda function [5] returns the list of potential locations for Unicorns.
-* A Lambda function [6] handles the reservation of a Unicorn
-* A Lambda function [7] produces a signed URL for a user to upload a CSV file.
-* A user can upload an inventory CSV file to an Amazon S3  Bucket [8]. Uploading a CSV file to the S3 Bucket triggers an EventBridge event [9].
-* The event [9] invokes an AWS Step Function  [10], which reads the file and runs a validation Lambda function and a DynamoDB write for the Unicorns in the CSV file. Finally, a list of Unicorn locations is compiled.
+1. Users interact with a locally hosted UI.
+2. Amazon API Gateway routes requests to AWS Lambda functions
+3. AWS Lambda function returns unicorn inventory.
+4. Amazon DynamoDB Table stores the inventory of unicorns, including the name, location, reservation status, and reserved by info. 
+5. Lambda function returns a list of unicorn locations.
+6. Lambda function handles unicorn reservations
+7. Lambda function produces a signed URL to upload a CSV file with bulk inventory data.
+8. Inventory documents (CSV) can be uploaded to an Amazon S3 bucket, which triggers an event to Amazon EventBridge.
+9. Amazon EventBridge invokes a workflow to import and process the bulk inventory document (CSV).
+10. AWS Step Function workflow reads the inventory CSV file from S3, runs a Lambda function to validate the file, writes items to the DynamoDB table, and compiles an updated list of Unicorn locations.
