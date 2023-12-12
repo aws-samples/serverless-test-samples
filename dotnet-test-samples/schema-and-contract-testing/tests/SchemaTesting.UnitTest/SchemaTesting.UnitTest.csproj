@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Autofac.Extras.FakeItEasy" Version="7.0.0" />
     <PackageReference Include="AWSSDK.EventBridge" Version="3.7.102.3" />
     <PackageReference Include="AWSSDK.Schemas" Version="3.7.100.113" />
     <PackageReference Include="FakeItEasy" Version="8.0.0" />

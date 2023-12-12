@@ -2,6 +2,8 @@ using CreateCustomerFunction;
 
 namespace SchemaTesting.UnitTest;
 
+using Autofac.Extras.FakeItEasy;
+
 using CreateCustomerFunction.CustomerCreatedEvent;
 
 using SchemaTesting.Shared;
@@ -18,10 +20,9 @@ public class AddressTests
     [Fact]
     public async Task ProcessCommandWithValidAddress_ShouldReturnSuccess()
     {
-        var commandHandler = new CreateCustomerCommandHandler(new CreateCustomerCommandHandlerOptions()
-        {
-            EventVersionToPublish = EventVersion.V1
-        },this._eventPublisher);
+        using var autoFake = new AutoFake();
+
+        var commandHandler = autoFake.Resolve<CreateCustomerCommandHandler>();
         
         var sampleCommand = new CreateCustomerCommand()
         {
@@ -38,10 +39,9 @@ public class AddressTests
     [Fact]
     public async Task ParseEmptyAddressEvent_ShouldReturnNull()
     {
-        var commandHandler = new CreateCustomerCommandHandler(new CreateCustomerCommandHandlerOptions()
-        {
-            EventVersionToPublish = EventVersion.V1
-        },this._eventPublisher);
+        using var autoFake = new AutoFake();
+
+        var commandHandler = autoFake.Resolve<CreateCustomerCommandHandler>();
         
         var sampleCommand = new CreateCustomerCommand()
         {
