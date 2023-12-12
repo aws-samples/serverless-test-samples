@@ -3,6 +3,7 @@ using AWS.Lambda.Powertools.Logging;
 namespace CreateCustomerFunction;
 
 using AWS.Lambda.Powertools.Tracing;
+using CreateCustomerFunction.CustomerCreatedEvent;
 
 using SchemaTesting.Shared;
 
@@ -23,14 +24,14 @@ public class CreateCustomerCommandHandler
     private readonly IEventPublisher _publisher;
     private readonly CreateCustomerCommandHandlerOptions _options = new();
 
-    public CreateCustomerCommandHandler(Action<CreateCustomerCommandHandlerOptions> options, IEventPublisher publisher)
+    public CreateCustomerCommandHandler(CreateCustomerCommandHandlerOptions options, IEventPublisher publisher)
     {
         _publisher = publisher;
-        options.Invoke(_options);
+        _options = options;
     }
     
     [Tracing]
-    public async Task<bool> Handle(CreateCustomerCommand command)
+    public async Task<CreateCustomerCommandResponse> Handle(CreateCustomerCommand command)
     {
         Logger.LogInformation("Received new create customer event");
         
@@ -40,7 +41,10 @@ public class CreateCustomerCommandHandler
         if (!validAddress)
         {
             Logger.LogInformation("Command is invalid, returning");
-            return false;
+            return new CreateCustomerCommandResponse()
+            {
+                Success = false
+            };
         }
         
         var customerId = Guid.NewGuid().ToString();
@@ -54,14 +58,20 @@ public class CreateCustomerCommandHandler
         
         await this._publisher.Publish(new EventWrapper(this.GenerateEvent(customerId, command)));
 
-        return true;
+        return new CreateCustomerCommandResponse()
+        {
+            Success = true,
+            Address = command.Address,
+            FirstName = command.FirstName,
+            LastName = command.LastName
+        };
     }
 
     // This method is for demonstrative purposes only to allow the type of event published
     // to be changed based on options. Typically, the event class would change over time.
-    private CustomerCreatedEvent GenerateEvent(string customerId, CreateCustomerCommand command)
+    private BaseCustomerCreatedEvent GenerateEvent(string customerId, CreateCustomerCommand command)
     {
-        CustomerCreatedEvent result = this._options.EventVersionToPublish switch
+        BaseCustomerCreatedEvent result = this._options.EventVersionToPublish switch
         {
             EventVersion.V1 => new CustomerCreatedEventV1()
             {

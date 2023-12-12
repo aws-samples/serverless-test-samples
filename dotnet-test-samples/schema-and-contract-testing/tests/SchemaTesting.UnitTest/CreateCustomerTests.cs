@@ -2,17 +2,26 @@ using CreateCustomerFunction;
 
 namespace SchemaTesting.UnitTest;
 
+using CreateCustomerFunction.CustomerCreatedEvent;
+
 using SchemaTesting.Shared;
 
 public class AddressTests
 {
+    private IEventPublisher _eventPublisher;
+
+    public AddressTests()
+    {
+        this._eventPublisher = A.Fake<IEventPublisher>();
+        A.CallTo(() => this._eventPublisher.Publish(A<EventWrapper>._));
+    }
     [Fact]
     public async Task ProcessCommandWithValidAddress_ShouldReturnSuccess()
     {
-        var commandHandler = new CreateCustomerCommandHandler(options =>
+        var commandHandler = new CreateCustomerCommandHandler(new CreateCustomerCommandHandlerOptions()
         {
-            options.EventVersionToPublish = EventVersion.V1;
-        },new Mock<IEventPublisher>().Object);
+            EventVersionToPublish = EventVersion.V1
+        },this._eventPublisher);
         
         var sampleCommand = new CreateCustomerCommand()
         {
@@ -23,16 +32,16 @@ public class AddressTests
 
         var result = await commandHandler.Handle(sampleCommand);
 
-        result.Should().BeTrue();
+        result.Success.Should().BeTrue();
     }
     
     [Fact]
     public async Task ParseEmptyAddressEvent_ShouldReturnNull()
     {
-        var commandHandler = new CreateCustomerCommandHandler(options =>
+        var commandHandler = new CreateCustomerCommandHandler(new CreateCustomerCommandHandlerOptions()
         {
-            options.EventVersionToPublish = EventVersion.V1;
-        },new Mock<IEventPublisher>().Object);
+            EventVersionToPublish = EventVersion.V1
+        },this._eventPublisher);
         
         var sampleCommand = new CreateCustomerCommand()
         {
@@ -43,6 +52,6 @@ public class AddressTests
 
         var result = await commandHandler.Handle(sampleCommand);
 
-        result.Should().BeFalse();
+        result.Success.Should().BeFalse();
     }
 }

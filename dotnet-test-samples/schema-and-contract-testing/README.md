@@ -93,6 +93,27 @@ You may choose to be selective in deciding where to implement contract testing. 
 - [schemas](schemas) - versioned schemas used for schema testing
 - [events](events) - sample events used for contract testing
 
+## Deploy the sample application
+
+This example includes both local tests and tests that can execute against the Amazon Event Bridge Schema Registry. To use schema registry for testing, you first need to deploy the sample application and then run some load through the system.
+
+```bash
+sam build
+sam deploy --guided
+```
+
+You can make a POST request to the generated API endpoint on the `/customer` route, using the below request body.
+
+```json
+{
+    "firstName": "James",
+    "lastName": "Eastham",
+    "address": "Holborn Viaduct, London, Greater London, England, The World"
+}
+```
+
+Check your Amazon Event Bridge Schema Registry. You will see events under the `com.dev.customer@CustomerCreatedEventV1` heading. It can take a few minutes for new schemas to be registered.
+
 ## Run the Tests
 
 ### Bash

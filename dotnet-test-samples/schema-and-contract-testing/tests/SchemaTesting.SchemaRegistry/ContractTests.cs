@@ -1,6 +1,7 @@
 namespace SchemaTesting.SchemaRegistry;
 
 using CreateCustomerFunction;
+using CreateCustomerFunction.CustomerCreatedEvent;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -11,19 +12,19 @@ using SchemaTesting.Shared;
 public class ContractTests : IClassFixture<Setup>
 {
     private readonly Setup _setup;
-    private readonly List<EventBusEventOverride<CustomerCreatedEvent>> _publishedEvents;
+    private readonly List<EventBusEventOverride<BaseCustomerCreatedEvent>> _publishedEvents;
     private readonly Mock<IEventPublisher> _mockEventPublisher;
     private readonly JsonSerializerSettings settings = new() { NullValueHandling = NullValueHandling.Ignore };
 
     public ContractTests(Setup setup)
     {
         this._setup = setup;
-        this._publishedEvents = new List<EventBusEventOverride<CustomerCreatedEvent>>();
+        this._publishedEvents = new List<EventBusEventOverride<BaseCustomerCreatedEvent>>();
         this._mockEventPublisher = new Mock<IEventPublisher>();
         this._mockEventPublisher.Setup(p => p.Publish(It.IsAny<EventWrapper>()))
             .Callback((EventWrapper e) =>
             {
-                this._publishedEvents.Add(new EventBusEventOverride<CustomerCreatedEvent>(e.Payload));
+                this._publishedEvents.Add(new EventBusEventOverride<BaseCustomerCreatedEvent>(e.Payload));
             });
     }
     
@@ -31,9 +32,9 @@ public class ContractTests : IClassFixture<Setup>
     public async Task EventPayload_With_MatchingSchema_Should_PassSchemaValidation()
     {
         // Create a new command handler using the mock event publisher.
-        var commandHandler = new CreateCustomerCommandHandler(options =>
+        var commandHandler = new CreateCustomerCommandHandler(new CreateCustomerCommandHandlerOptions()
         {
-            options.EventVersionToPublish = EventVersion.V1;
+            EventVersionToPublish = EventVersion.V1
         },this._mockEventPublisher.Object);
 
         await commandHandler.Handle(new CreateCustomerCommand()
@@ -66,10 +67,10 @@ public class ContractTests : IClassFixture<Setup>
     public async Task EventPayload_With_NonBreakingChange_Should_PassSchemaValidation()
     {
         // Create a new command handler using the mock event publisher.
-        var commandHandler = new CreateCustomerCommandHandler(options =>
+        var commandHandler = new CreateCustomerCommandHandler(new CreateCustomerCommandHandlerOptions()
         {
             // The V2 event type introduces a non-breaking change by adding an email address field.
-            options.EventVersionToPublish = EventVersion.V2;
+            EventVersionToPublish = EventVersion.V2
         },this._mockEventPublisher.Object);
 
         // Act
@@ -102,9 +103,10 @@ public class ContractTests : IClassFixture<Setup>
     public async Task EventPayload_With_DifferentSchema_Should_FailSchemaValidation()
     {
         // Create a new command handler using the mock event publisher.
-        var commandHandler = new CreateCustomerCommandHandler(options =>
+        var commandHandler = new CreateCustomerCommandHandler(new CreateCustomerCommandHandlerOptions()
         {
-            options.EventVersionToPublish = EventVersion.V3;
+            // The V2 event type introduces a non-breaking change by adding an email address field.
+            EventVersionToPublish = EventVersion.V3
         },this._mockEventPublisher.Object);
 
         await commandHandler.Handle(new CreateCustomerCommand()

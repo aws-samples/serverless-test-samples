@@ -4,27 +4,30 @@ using Newtonsoft.Json.Schema;
 
 namespace SchemaTesting.UnitTest;
 
+using CreateCustomerFunction.CustomerCreatedEvent;
+
 using Newtonsoft.Json;
 
 using SchemaTesting.Shared;
 
-using JsonSerializer = System.Text.Json.JsonSerializer;
-
 public class ContractTests
 {
-    private readonly List<CustomerCreatedEvent?> _publishedEvents;
-    private readonly Mock<IEventPublisher> _mockEventPublisher;
+    private readonly List<BaseCustomerCreatedEvent?> _publishedEvents;
+    private readonly IEventPublisher _mockEventPublisher;
     private readonly ISchemaReader _schemaReader;
 
     public ContractTests()
     {
-        this._publishedEvents = new List<CustomerCreatedEvent?>();
-        this._mockEventPublisher = new Mock<IEventPublisher>();
-        _mockEventPublisher.Setup(p => p.Publish(It.IsAny<EventWrapper>()))
-            .Callback((EventWrapper e) =>
-            {
-                _publishedEvents.Add(e.Payload as CustomerCreatedEvent);
-            });
+        this._publishedEvents = new List<BaseCustomerCreatedEvent?>();
+        this._mockEventPublisher = A.Fake<IEventPublisher>();
+        A.CallTo(() => this._mockEventPublisher.Publish(A<EventWrapper>._))
+            .Invokes(
+                (fakedCall) =>
+                {
+                    var evt = fakedCall.Arguments.Get<EventWrapper>("evt");
+                    this._publishedEvents.Add(evt.Payload as BaseCustomerCreatedEvent);
+                });
+        
         this._schemaReader = new LocalDiskSchemaReader();
     }
     
@@ -32,10 +35,10 @@ public class ContractTests
     public async Task EventPayloadMatchesSchema_ShouldPass()
     {
         // Create a new command handler using the mock event publisher.
-        var commandHandler = new CreateCustomerCommandHandler(options =>
+        var commandHandler = new CreateCustomerCommandHandler(new CreateCustomerCommandHandlerOptions()
         {
-            options.EventVersionToPublish = EventVersion.V1;
-        },_mockEventPublisher.Object);
+            EventVersionToPublish = EventVersion.V1
+        },_mockEventPublisher);
 
         await commandHandler.Handle(new CreateCustomerCommand()
         {
@@ -59,10 +62,10 @@ public class ContractTests
     public async Task OptionalElementsAddedToExpectedSchema_ShouldPass()
     {
         // Create a new command handler using the mock event publisher.
-        var commandHandler = new CreateCustomerCommandHandler(options =>
+        var commandHandler = new CreateCustomerCommandHandler(new CreateCustomerCommandHandlerOptions()
         {
-            options.EventVersionToPublish = EventVersion.V1;
-        },_mockEventPublisher.Object);
+            EventVersionToPublish = EventVersion.V1
+        },_mockEventPublisher);
 
         await commandHandler.Handle(new CreateCustomerCommand()
         {
@@ -86,10 +89,10 @@ public class ContractTests
     public async Task AdditionalElementsAddedToEventPayload_ShouldPass()
     {
         // Create a new command handler using the mock event publisher.
-        var commandHandler = new CreateCustomerCommandHandler(options =>
+        var commandHandler = new CreateCustomerCommandHandler(new CreateCustomerCommandHandlerOptions()
         {
-            options.EventVersionToPublish = EventVersion.V2;
-        }, _mockEventPublisher.Object);
+            EventVersionToPublish = EventVersion.V2
+        }, _mockEventPublisher);
 
         await commandHandler.Handle(new CreateCustomerCommand()
         {
@@ -113,10 +116,10 @@ public class ContractTests
     public async Task ElementsRemovedFromEventPayload_ShouldFail()
     {
         // Create a new command handler using the mock event publisher.
-        var commandHandler = new CreateCustomerCommandHandler(options =>
+        var commandHandler = new CreateCustomerCommandHandler(new CreateCustomerCommandHandlerOptions()
         {
-            options.EventVersionToPublish = EventVersion.V3;
-        }, _mockEventPublisher.Object);
+            EventVersionToPublish = EventVersion.V3
+        }, _mockEventPublisher);
 
         await commandHandler.Handle(new CreateCustomerCommand()
         {
@@ -140,10 +143,10 @@ public class ContractTests
     public async Task EventPayloadDoesNotMatchSchema_ShouldFail()
     {
         // Create a new command handler using the mock event publisher.
-        var commandHandler = new CreateCustomerCommandHandler(options =>
+        var commandHandler = new CreateCustomerCommandHandler(new CreateCustomerCommandHandlerOptions()
         {
-            options.EventVersionToPublish = EventVersion.V1;
-        },_mockEventPublisher.Object);
+            EventVersionToPublish = EventVersion.V1
+        },_mockEventPublisher);
 
         await commandHandler.Handle(new CreateCustomerCommand()
         {

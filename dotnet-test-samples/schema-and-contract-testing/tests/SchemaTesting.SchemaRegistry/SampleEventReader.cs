@@ -1,17 +1,18 @@
 namespace SchemaTesting.SchemaRegistry;
 
 using CreateCustomerFunction;
+using CreateCustomerFunction.CustomerCreatedEvent;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 public static class SampleEventReader
 {
-    public static async Task<CustomerCreatedEvent?> ParseEventVersion(string eventVersion)
+    public static async Task<BaseCustomerCreatedEvent?> ParseEventVersion(string eventVersion)
     {
         var eventJson = await File.ReadAllTextAsync($"./events/event-{eventVersion}.json");
         
-        return JsonConvert.DeserializeObject<CustomerCreatedEvent>(eventJson);
+        return JsonConvert.DeserializeObject<BaseCustomerCreatedEvent>(eventJson);
     }
     
     public static async Task<JObject> ParseRawJsonFromEventVersion(string eventVersion)

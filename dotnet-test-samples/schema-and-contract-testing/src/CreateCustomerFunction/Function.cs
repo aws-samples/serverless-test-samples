@@ -9,46 +9,27 @@ using SchemaTesting.Shared;
 
 using System.Text.Json;
 using Amazon.EventBridge;
+using Amazon.Lambda.Annotations;
+using Amazon.Lambda.Annotations.APIGateway;
 using Amazon.Lambda.APIGatewayEvents;
 
 public class Function
 {
     private readonly CreateCustomerCommandHandler _commandHandler;
     
-    public Function() : this(null)
+    public Function(CreateCustomerCommandHandler commandHandler)
     {
-    }
-
-    internal Function(IEventPublisher? publisher)
-    {
-        AWSSDKHandler.RegisterXRayForAllServices();
-        
-        var eventPublisher = publisher ?? new EventBridgeEventPublisher(new AmazonEventBridgeClient());
-
-        _commandHandler =
-            new CreateCustomerCommandHandler(options => { options.EventVersionToPublish = EventVersion.V1; },
-                eventPublisher);
+        this._commandHandler = commandHandler;
     }
 
     [Logging(LogEvent = true)]
     [Tracing]
-    public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest apiGatewayProxyRequest)
+    [LambdaFunction]
+    [RestApi(LambdaHttpMethod.Post, "/customer")]
+    public async Task<IHttpResult> FunctionHandler([FromBody] CreateCustomerCommand command)
     {
-        var command = JsonSerializer.Deserialize<CreateCustomerCommand>(apiGatewayProxyRequest.Body);
-
-        if (command == null)
-        {
-            return new APIGatewayProxyResponse()
-            {
-                StatusCode = 400
-            };
-        }
-
         var result = await this._commandHandler.Handle(command);
 
-        return new APIGatewayProxyResponse()
-        {
-            StatusCode = result ? 201 : 400
-        };
+        return result.Success ? HttpResults.Ok("OK") : HttpResults.BadRequest(result);
     }
 }

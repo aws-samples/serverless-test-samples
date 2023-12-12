@@ -9,9 +9,9 @@ public class AddressTests
     [Fact]
     public async Task HandleCreateCustomerCommand_With_ValidRequest_Should_CompleteSuccessfully()
     {
-        var commandHandler = new CreateCustomerCommandHandler(options =>
+        var commandHandler = new CreateCustomerCommandHandler(new CreateCustomerCommandHandlerOptions()
         {
-            options.EventVersionToPublish = EventVersion.V1;
+            EventVersionToPublish = EventVersion.V1
         },new Mock<IEventPublisher>().Object);
         
         var sampleCommand = new CreateCustomerCommand()
@@ -23,15 +23,15 @@ public class AddressTests
 
         var result = await commandHandler.Handle(sampleCommand);
 
-        result.Should().BeTrue();
+        result.Success.Should().BeTrue();
     }
     
     [Fact]
     public async Task HandleCreateCustomerCommand_With_EmptyAddressProperty_Should_ReturnNull()
     {
-        var commandHandler = new CreateCustomerCommandHandler(options =>
+        var commandHandler = new CreateCustomerCommandHandler(new CreateCustomerCommandHandlerOptions()
         {
-            options.EventVersionToPublish = EventVersion.V1;
+            EventVersionToPublish = EventVersion.V1
         },new Mock<IEventPublisher>().Object);
         
         var sampleCommand = new CreateCustomerCommand()
@@ -43,6 +43,6 @@ public class AddressTests
 
         var result = await commandHandler.Handle(sampleCommand);
 
-        result.Should().BeFalse();
+        result.Success.Should().BeFalse();
     }
 }

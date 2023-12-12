@@ -26,7 +26,7 @@ Resources:
       FunctionName:
         !Sub "CreateCustomerFunction-${AWS::StackName}-${AWS::AccountId}${ResourceSuffix}"
       CodeUri: ./src/CreateCustomerFunction/
-      Handler: CreateCustomerFunction::CreateCustomerFunction.Function::FunctionHandler
+      Handler: CreateCustomerFunction::CreateCustomerFunction.Function_FunctionHandler_Generated::FunctionHandler
       Environment:
         Variables:
           EVENT_BUS_NAME: !Ref CentralEventBus

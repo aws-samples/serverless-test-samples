@@ -21,7 +21,7 @@ public class EventBusEventOverride<T> : PutEventsRequestEntry where T : Event
         
         this.Id = Guid.NewGuid().ToString();
         DetailType = evt.Type;
-        Resources = new object[0];
+        Resources = Array.Empty<object>();
         Source = "com.customer";
         EventBusName = "custom-event-bus";
         Time = DateTime.Now;
