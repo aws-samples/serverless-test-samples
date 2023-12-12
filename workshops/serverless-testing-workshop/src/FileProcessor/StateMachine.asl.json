@@ -1,0 +1,103 @@
+{
+  "Comment": "A description of my state machine",
+  "StartAt": "File Analysis",
+  "States": {
+    "File Analysis": {
+      "Type": "Map",
+      "ItemProcessor": {
+        "ProcessorConfig": {
+          "Mode": "DISTRIBUTED",
+          "ExecutionType": "STANDARD"
+        },
+        "StartAt": "Simulate a Longer Running Workflow",
+        "States": {
+          "Simulate a Longer Running Workflow": {
+              "Type": "Wait",
+              "Seconds": 6,
+              "Next": "Validate Unicorn File"
+          },
+          "Validate Unicorn File": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::lambda:invoke",
+            "OutputPath": "$.Payload",
+            "Parameters": {
+              "Payload.$": "$",
+              "FunctionName": "${ValidateCSVFile}"
+            },
+            "Retry": [
+              {
+                "ErrorEquals": [
+                  "Lambda.ServiceException",
+                  "Lambda.AWSLambdaException",
+                  "Lambda.SdkClientException",
+                  "Lambda.TooManyRequestsException"
+                ],
+                "IntervalSeconds": 1,
+                "MaxAttempts": 3,
+                "BackoffRate": 2
+              }
+            ],
+            "Next": "DynamoDB PutItem"
+          },
+          "DynamoDB PutItem": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::aws-sdk:dynamodb:putItem",
+            "Parameters": {
+              "TableName":"${UnicornTable}",
+              "Item": {
+                "PK": {
+                  "S.$": "$.PK"
+                },
+                "LOCATION": {
+                  "S.$": "$.LOCATION"
+                },
+                "STATUS": {
+                  "S.$": "$.STATUS"
+                }
+              }
+            },
+            "End": true,
+            "ResultPath": null
+          }
+        }
+      },
+      "ItemReader": {
+        "Resource": "arn:aws:states:::s3:getObject",
+        "ReaderConfig": {
+          "InputType": "CSV",
+          "CSVHeaderLocation": "FIRST_ROW"
+        },
+        "Parameters": {
+          "Bucket.$": "$.detail.bucket.name",
+          "Key.$": "$.detail.object.key"
+        }
+      },
+      "MaxConcurrency": 10,
+      "Label": "FileAnalysis",
+      "Next": "CreateUnicornLocations"
+    },
+    "CreateUnicornLocations": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "OutputPath": "$.Payload",
+      "Parameters": {
+        "Payload.$": "$",
+        "FunctionName": "${CreateLocations}"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 1,
+          "MaxAttempts": 3,
+          "BackoffRate": 2
+        }
+      ],
+      "End": true
+    }
+  }
+}
