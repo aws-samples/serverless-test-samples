@@ -6,11 +6,11 @@
 [![test: integration](https://img.shields.io/badge/Test-Integration-yellow)]()
 
 
-## API Gateway, Lambda Function, and DynamoDB Table
+## DynamoDB Testing using TestContainers & DynamoDB Local
 
 ### Description
 
-This pattern creates an Amazon API Gateway HTTP API, an AWS Lambda function, and a DynamoDB Table using SAM and .NET 6.
+This pattern creates an Amazon API Gateway HTTP API, an AWS Lambda function, and a DynamoDB Table using SAM and .NET 6. It also demonstrates how you can use a local emulated version of DynamoDB to increase the speed of feedback loops as you make changes to your application code.
 
 Important: this application uses various AWS services and there are costs associated with these services after the Free Tier usage. Please see the AWS Pricing page for details. You are responsible for any AWS costs incurred.
 
@@ -24,6 +24,9 @@ The framework used to deploy the infrastructure is SAM
 The AWS services used in this pattern are
 
 *API Gateway - AWS Lambda - DynamoDB*
+
+## Prerequisites
+The ability to run Docker containers on your local machine.
 
 ## Topology
 
@@ -116,37 +119,95 @@ The source code for this sample includes automated unit and integration tests. [
 ### Unit Tests ([MockPutProductFunctionTests.cs](tests/ApiTests.UnitTest/MockPutProductFunctionTests.cs))
 The goal of these tests is to run a unit test on the handler method of the Lambda functions. It uses [FakeItEasy](https://github.com/FakeItEasy/FakeItEasy) for the mocking framework. The `ProductsDAO` interface is faked.
 
+These tests also demonstrate how you can use emulation using [DynamoDB Local](https://github.com/awslabs/amazon-dynamodb-local-samples) and the [TestContainers](https://testcontainers.com/) project to startup, initialize and tear down an emulated version of DynamoDB for the purpose of local testing.
+
+The tests use a combination of emulation, to test happy paths. And mocking to test for service exceptions and other errors.
+
+The startup of the emulator is found in the [TestStartup.cs](./tests/ApiTests.UnitTest/TestStartup.cs) file. The emulated instance of DynamoDB is started up using the `DynamoDBBuilder` class, and port 8000 from the container is mapped to a random port on the local machine. 
+
 ```c#
+container = new DynamoDbBuilder()
+    .WithPortBinding(
+        8000,
+        true)
+    .Build();
+
+container.StartAsync().GetAwaiter().GetResult();
+
+var serviceUrl = $"http://localhost:{container.GetMappedPublicPort(8000)}";
+
+var dynamoDbClient = new AmazonDynamoDBClient(new BasicAWSCredentials("test", "test"),
+    new AmazonDynamoDBConfig()
+    {
+        ServiceURL = serviceUrl,
+    });
+```
+
+As part of the startup code, the DynamoDB table is created and a sample `Product` is added to the database:
+
+```c#
+var createReq = new CreateTableRequest(
+    "Products",
+    new List<KeySchemaElement>()
+    {
+        new KeySchemaElement(
+            "id",
+            KeyType.HASH)
+    });
+createReq.AttributeDefinitions = new List<AttributeDefinition>(1)
+{
+    new AttributeDefinition(
+        "id",
+        ScalarAttributeType.S)
+};
+createReq.BillingMode = BillingMode.PAY_PER_REQUEST;
+
+dynamoDbClient.CreateTableAsync(createReq).GetAwaiter().GetResult();
+
+this.ProductsDao = new DynamoDbProducts(dynamoDbClient, Options.Create(new DynamoDbOptions()
+{
+    ProductTableName = "Products"
+}));
+
+this.TestProduct = new Product(
+    Guid.NewGuid().ToString(),
+    "TestProduct",
+    10);
+
+this.ProductsDao.PutProduct(this.TestProduct, default)
+    .GetAwaiter()
+    .GetResult();
+```
+
+Finally, the test classes themselves inject the `TestStartup` object using the `CollectionFixture` feature of xUnit. That allows the initialized `ProductsDAO` instance to be used throughout the test cases. 
+
+```c#
+public MockPutProductFunctionTests(TestStartup startup)
+{
+    this._startup = startup;
+}
+
 [Fact]
-public async Task PutProduct_WithValidBody_ShouldReturnSuccess()
+public async Task PutProduct_WithSuccessfulInsert_Should_Return201()
 {
     // arrange
-    var product = default(Product);
-    var dto = new ProductDTO("testid", "test product", 10);
+    var dto = new ProductDTO("testcreateid", "test product", 10);
     var request = new ApiRequestBuilder()
-        .WithHttpMethod("PUT")
-        .WithBody(testProduct)
-        .WithPathParameter("id", testProduct.Id)
+        .WithHttpMethod(HttpMethod.Put)
+        .WithBody(dto)
+        .WithPathParameter("id", dto.Id)
         .Build();
     
-    var logger = A.Fake<ILogger<Function>>();
-    var jsonOptions = Options.Create(new JsonSerializerOptions(JsonSerializerDefaults.Web));
-    var fakeDao = A.Fake<ProductsDAO>();
-
-    A.CallTo(() => fakeDao.PutProduct(A<Product>._, A<CancellationToken>._))
-       .Returns(Task.FromResult(UpsertResult.Inserted));
-    
-    var function = new Function(fakeDao, logger, jsonOptions);
+    var function = new Function(this._startup.ProductsDao, Logger, JsonOptions);
 
     // act
-    var response = await function.FunctionHandler(apiRequest, new TestLambdaContext());
+    var response = await function.FunctionHandler(request, new TestLambdaContext());
 
     // assert
-    response.StatusCode.Should().Be(201);
-    response.Headers["Location"].Should().Be("https://localhost/dev/testid")
-
-    A.CallTo(() => fakeDao..PutProduct(testProduct))
-    .MustHaveHappened();
+    Assert.Multiple(
+        () => response.StatusCode.Should().Be(201),
+        () => response.Headers["Location"].Should().Be("https://localhost/dev/testcreateid")
+    );
 }
 ```
 
@@ -200,7 +261,8 @@ sam delete
 * [Git Installed](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 * [AWS Serverless Application Model](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html) (AWS SAM) installed
 * [.NET 6](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) installed
+* The ability to run Docker containers
 
 ## Video Walkthroughs
 
-[Unit testing AWS Lambda with .NET 6](https://www.youtube.com/watch?v=481ylgKPnNg&pp=ygUTLk5FVCBsYW1iZGEgdGVzdGluZw%3D%3D)
+[Testcontainers with .NET](https://www.youtube.com/watch?v=z0F9tofV_MQ)

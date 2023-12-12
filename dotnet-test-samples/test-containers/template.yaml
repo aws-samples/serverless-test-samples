@@ -1,0 +1,95 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Globals:
+  Function:
+    MemorySize: 1024
+    Architectures: [arm64]
+    Runtime: dotnet6
+    Timeout: 30
+    Tracing: Active
+    Environment:
+      Variables:
+        PRODUCT_TABLE_NAME: !Ref Table
+
+Resources:
+  GetProductsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/ServerlessTestApi/
+      Handler: ServerlessTestApi::ServerlessTestApi.Function_GetProducts_Generated::GetProducts
+      Events:
+        Api:
+          Type: HttpApi
+          Properties:
+            Path: /
+            Method: GET
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref Table
+
+  GetProductFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/ServerlessTestApi/
+      Handler: ServerlessTestApi::ServerlessTestApi.Function_GetProduct_Generated::GetProduct
+      Events:
+        Api:
+          Type: HttpApi
+          Properties:
+            Path: /{id}
+            Method: GET
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref Table
+
+  DeleteProductFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/ServerlessTestApi/
+      Handler: ServerlessTestApi::ServerlessTestApi.Function_DeleteProduct_Generated::DeleteProduct
+      Events:
+        Api:
+          Type: HttpApi
+          Properties:
+            Path: /{id}
+            Method: DELETE
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Table
+
+  PutProductFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/ServerlessTestApi/
+      Handler: ServerlessTestApi::ServerlessTestApi.Function_CreateProduct_Generated::CreateProduct
+      Events:
+        Api:
+          Type: HttpApi
+          Properties:
+            Path: /{id}
+            Method: PUT
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref Table
+
+  Table:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+
+Outputs:
+  ApiUrl:
+    Description: "API Gateway endpoint URL"
+    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/"
+  TableName:
+    Description: "DynamoDB Table Name"
+    Value: !Ref Table
