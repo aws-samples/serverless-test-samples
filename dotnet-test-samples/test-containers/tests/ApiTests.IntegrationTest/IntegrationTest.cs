@@ -1,15 +1,10 @@
 using ApiTests.IntegrationTest.Drivers;
 using FluentAssertions;
-using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Net.Http.Json;
 
 namespace ApiTests.IntegrationTest;
 
-// use xunit extensions to control dependent test order
-
-// REF: https://github.com/xunit/samples.xunit/blob/main/TestOrderExamples/TestCaseOrdering/PriorityOrderExamples.cs
-[TestCaseOrderer("ApiTests.IntegrationTest.TestOrderer", "ApiTests.IntegrationTest")]
 public class IntegrationTest : IClassFixture<Setup>, IDisposable
 {
     private readonly Setup _setup;
@@ -37,7 +32,7 @@ public class IntegrationTest : IClassFixture<Setup>, IDisposable
         _client.Dispose();
     }
 
-    [Fact, TestOrder(1)]
+    [Fact]
     public async Task CreateProduct_ShouldReturnSuccess()
     {
         // arrange
@@ -56,7 +51,7 @@ public class IntegrationTest : IClassFixture<Setup>, IDisposable
         response.Headers.Location.Should().NotBeNull();
     }
 
-    [Fact, TestOrder(2)]
+    [Fact]
     public async Task RetrieveACreatedProduct_ShouldReturnProduct()
     {
         // arrange
@@ -71,7 +66,7 @@ public class IntegrationTest : IClassFixture<Setup>, IDisposable
         product.Should().BeEquivalentTo(new Product(id, "TestProduct", 10));
     }
 
-    [Fact, TestOrder(2)]
+    [Fact]
     public async Task GetProducts_ShouldReturnSuccess()
     {
         // arrange
@@ -86,7 +81,7 @@ public class IntegrationTest : IClassFixture<Setup>, IDisposable
         products.Should().BeEquivalentTo(new ProductWrapper(new() { new Product(id, "TestProduct", 10) }));
     }
 
-    [Fact, TestOrder(3)]
+    [Fact]
     public async Task UpdateProduct_CanUpdateProductData_ShouldReturnSuccess()
     {
         // arrange
@@ -108,7 +103,7 @@ public class IntegrationTest : IClassFixture<Setup>, IDisposable
         product.Should().BeEquivalentTo(expected);
     }
 
-    [Fact, TestOrder(4)]
+    [Fact]
     public async Task DeleteACreatedProduct_ShouldReturnSuccess()
     {
         // arrange

@@ -44,16 +44,19 @@ public class MockGetProductsFunctionTests : FunctionTest<Function>
     [Fact]
     public async Task GetProducts_With_DataAccessReturnsProducts_Should_ReturnInBody()
     {
+        var testProduct = new Product(
+            Guid.NewGuid().ToString(),
+            "TestProduct",
+            10);
+
+        this._startup.ProductsDao.PutProduct(testProduct, default)
+            .GetAwaiter()
+            .GetResult();
+        
         // arrange
         var request = new ApiRequestBuilder()
             .WithHttpMethod(HttpMethod.Get)
             .Build();
-
-        var expected = new ProductWrapper(
-            new List<ProductDTO>(capacity: 1)
-            {
-                new(this._startup.TestProduct.Id, this._startup.TestProduct.Name, this._startup.TestProduct.Price),
-            });
 
         var function = new Function(this._startup.ProductsDao, Logger, JsonOptions);
 
@@ -65,7 +68,7 @@ public class MockGetProductsFunctionTests : FunctionTest<Function>
 
         var body = JsonSerializer.Deserialize<ProductWrapper>(response.Body, JsonOptions.Value);
 
-        body.Should().BeEquivalentTo(expected);
+        body.Products.FirstOrDefault(p => p.Id == testProduct.Id).Should().NotBeNull();
     }
 
     [Theory]

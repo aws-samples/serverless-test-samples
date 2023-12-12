@@ -23,13 +23,22 @@ public class MockGetProductFunctionTests : FunctionTest<Function>
     [Fact]
     public async Task GetProduct_Should_ReturnSuccess()
     {
+        var testProduct = new Product(
+            Guid.NewGuid().ToString(),
+            "TestProduct",
+            10);
+
+        this._startup.ProductsDao.PutProduct(testProduct, default)
+            .GetAwaiter()
+            .GetResult();
+        
         // arrange
         var request = new ApiRequestBuilder()
-            .WithPathParameter("id", this._startup.TestProduct.Id)
+            .WithPathParameter("id", testProduct.Id)
             .WithHttpMethod(HttpMethod.Get)
             .Build();
 
-        var expected = new ProductDTO(this._startup.TestProduct.Id, this._startup.TestProduct.Name, this._startup.TestProduct.Price);
+        var expected = new ProductDTO(testProduct.Id, testProduct.Name, testProduct.Price);
 
         var function = new Function(this._startup.ProductsDao, Logger, JsonOptions);
 
@@ -50,9 +59,18 @@ public class MockGetProductFunctionTests : FunctionTest<Function>
     [InlineData("DELETE")]
     public async Task TestLambdaHandler_WithNonGetRequests_Should_Return405(string httpMethod)
     {
+        var testProduct = new Product(
+            Guid.NewGuid().ToString(),
+            "TestProduct",
+            10);
+
+        this._startup.ProductsDao.PutProduct(testProduct, default)
+            .GetAwaiter()
+            .GetResult();
+        
         // arrange
         var request = new ApiRequestBuilder()
-            .WithPathParameter("id", this._startup.TestProduct.Id)
+            .WithPathParameter("id", testProduct.Id)
             .WithHttpMethod(httpMethod)
             .Build();
         

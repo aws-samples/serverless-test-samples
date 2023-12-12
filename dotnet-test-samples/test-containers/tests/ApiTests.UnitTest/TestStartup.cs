@@ -10,7 +10,6 @@ using Amazon.Runtime;
 using Microsoft.Extensions.Options;
 
 using ServerlessTestApi.Core.DataAccess;
-using ServerlessTestApi.Core.Models;
 using ServerlessTestApi.Infrastructure;
 using ServerlessTestApi.Infrastructure.DataAccess;
 
@@ -19,8 +18,6 @@ public sealed class TestStartup : IDisposable
     private readonly IContainer container;
 
     public IProductsDAO ProductsDao { get; }
-    
-    public Product TestProduct { get; }
 
     public TestStartup()
     {
@@ -67,15 +64,6 @@ public sealed class TestStartup : IDisposable
         {
             ProductTableName = "Products"
         }));
-
-        this.TestProduct = new Product(
-            Guid.NewGuid().ToString(),
-            "TestProduct",
-            10);
-
-        this.ProductsDao.PutProduct(this.TestProduct, default)
-            .GetAwaiter()
-            .GetResult();
     }
 
     public void Dispose()
