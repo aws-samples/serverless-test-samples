@@ -1,10 +1,13 @@
-﻿using Amazon.XRay.Recorder.Core;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+﻿namespace ApiTests.IntegrationTestWithEmulation;
+
 using System.Text.Json;
+
+using Amazon.XRay.Recorder.Core;
+
 using FakeItEasy;
 
-namespace ApiTests.UnitTest;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 public abstract class FunctionTest<TFunc>
 {

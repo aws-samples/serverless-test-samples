@@ -1,27 +1,34 @@
-﻿using Amazon.DynamoDBv2;
+﻿namespace ServerlessTestApi;
+
+using System.Collections.Generic;
+using System.Text.Json;
+
+using Amazon.DynamoDBv2;
+using Amazon.Lambda.Annotations;
+using Amazon.XRay.Recorder.Handlers.AwsSdk;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+
 using Serilog;
 using Serilog.Formatting.Compact;
+
 using ServerlessTestApi.Core.DataAccess;
+using ServerlessTestApi.Infrastructure;
 using ServerlessTestApi.Infrastructure.DataAccess;
-using System.Text.Json;
 
-namespace ServerlessTestApi.Infrastructure;
-
-public static class Startup
+[LambdaStartup]
+public class Startup
 {
-    private static IServiceProvider? _serviceProvider;
-
-    public static IServiceProvider ServiceProvider => _serviceProvider ??= InitializeServiceProvider();
-
-    public static void AddDefaultServices(IServiceCollection services)
+    public void ConfigureServices(IServiceCollection services)
     {
+        AWSSDKHandler.RegisterXRayForAllServices();
+
         var builder = new ConfigurationBuilder()
             .AddInMemoryCollection(
-                new Dictionary<string, string?>()
+                new Dictionary<string, string>()
                 {
                     ["PRODUCT_TABLE_NAME"] = "Products",
                 })
@@ -40,12 +47,5 @@ public static class Startup
         services.AddLogging(builder => builder.AddSerilog(logger));
         services.TryAddSingleton<IAmazonDynamoDB>(static sp => new AmazonDynamoDBClient());
         services.TryAddSingleton<IProductsDAO, DynamoDbProducts>();
-    }
-
-    private static IServiceProvider InitializeServiceProvider()
-    {
-        var services = new ServiceCollection();
-        AddDefaultServices(services);
-        return services.BuildServiceProvider();
     }
 }

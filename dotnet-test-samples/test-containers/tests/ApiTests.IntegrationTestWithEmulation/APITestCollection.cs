@@ -1,6 +1,4 @@
-﻿namespace ApiTests.UnitTest;
-
-using ProductAPI.Tests;
+﻿namespace ApiTests.IntegrationTestWithEmulation;
 
 [CollectionDefinition("APITests")]
 public class APITestCollection : ICollectionFixture<TestStartup>

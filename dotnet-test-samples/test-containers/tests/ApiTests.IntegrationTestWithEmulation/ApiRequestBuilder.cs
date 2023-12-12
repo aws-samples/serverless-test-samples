@@ -1,7 +1,8 @@
-﻿using Amazon.Lambda.APIGatewayEvents;
+﻿namespace ApiTests.IntegrationTestWithEmulation;
+
 using System.Text.Json;
 
-namespace ApiTests.UnitTest;
+using Amazon.Lambda.APIGatewayEvents;
 
 public class ApiRequestBuilder
 {
@@ -13,37 +14,37 @@ public class ApiRequestBuilder
 
     public ApiRequestBuilder WithPathParameter(string name, string value)
     {
-        _pathParams ??= new(StringComparer.OrdinalIgnoreCase);
-        _pathParams.Add(name, value);
-        _path.Add(value);
+        this._pathParams ??= new(StringComparer.OrdinalIgnoreCase);
+        this._pathParams.Add(name, value);
+        this._path.Add(value);
         return this;
     }
 
     public ApiRequestBuilder WithHttpMethod(string httpMethod) =>
-        WithHttpMethod(new HttpMethod(httpMethod));
+        this.WithHttpMethod(new HttpMethod(httpMethod));
 
     public ApiRequestBuilder WithHttpMethod(HttpMethod httpMethod)
     {
-        _httpMethod = httpMethod;
+        this._httpMethod = httpMethod;
         return this;
     }
 
     public ApiRequestBuilder WithBody(string body)
     {
-        _body = body;
+        this._body = body;
         return this;
     }
 
     public ApiRequestBuilder WithBody<T>(T body, JsonSerializerOptions? jsonOptions = default)
     {
-        _body = JsonSerializer.Serialize(body, jsonOptions);
+        this._body = JsonSerializer.Serialize(body, jsonOptions);
         return this;
     }
 
     public ApiRequestBuilder WithHeader(string name, string value)
     {
-        _headers ??= new(StringComparer.OrdinalIgnoreCase);
-        _headers[name] = value;
+        this._headers ??= new(StringComparer.OrdinalIgnoreCase);
+        this._headers[name] = value;
         return this;
     }
 
@@ -55,12 +56,12 @@ public class ApiRequestBuilder
                 DomainName = "localhost",
                 Http = new APIGatewayHttpApiV2ProxyRequest.HttpDescription()
                 {
-                    Method = (_httpMethod ?? HttpMethod.Get).Method,
-                    Path = string.Join('/', _path),
+                    Method = (this._httpMethod ?? HttpMethod.Get).Method,
+                    Path = string.Join('/', this._path),
                 }
             },
-            PathParameters = _pathParams,
-            Body = _body,
-            Headers = _headers,
+            PathParameters = this._pathParams,
+            Body = this._body,
+            Headers = this._headers,
         };
 }

@@ -1,17 +1,18 @@
-﻿using Amazon.DynamoDBv2;
-using DotNet.Testcontainers.Containers;
-using Testcontainers.DynamoDb;
+﻿namespace ApiTests.IntegrationTestWithEmulation;
 
-namespace ProductAPI.Tests;
-
+using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using Amazon.Runtime;
+
+using DotNet.Testcontainers.Containers;
 
 using Microsoft.Extensions.Options;
 
 using ServerlessTestApi.Core.DataAccess;
 using ServerlessTestApi.Infrastructure;
 using ServerlessTestApi.Infrastructure.DataAccess;
+
+using Testcontainers.DynamoDb;
 
 public sealed class TestStartup : IDisposable
 {
@@ -21,17 +22,17 @@ public sealed class TestStartup : IDisposable
 
     public TestStartup()
     {
-        container = new DynamoDbBuilder()
+        this.container = new DynamoDbBuilder()
             // 8000 on the container is bound to a random local port to allow for the same test to run anywhere without fear of port conflicts
             .WithPortBinding(
                 8000,
                 true)
             .Build();
 
-        container.StartAsync().GetAwaiter().GetResult();
+        this.container.StartAsync().GetAwaiter().GetResult();
 
         // The GetMappedPublicPort method retrieves the locally mapped port number for port 8000 on the container.
-        var serviceUrl = $"http://localhost:{container.GetMappedPublicPort(8000)}";
+        var serviceUrl = $"http://localhost:{this.container.GetMappedPublicPort(8000)}";
         
         var dynamoDbClient = new AmazonDynamoDBClient(new BasicAWSCredentials("test", "test"), //The DynamoDB SDK requires credentials, but these aren't used.
             new AmazonDynamoDBConfig()
@@ -68,6 +69,6 @@ public sealed class TestStartup : IDisposable
 
     public void Dispose()
     {
-        container.StopAsync();
+        this.container.StopAsync();
     }
 }

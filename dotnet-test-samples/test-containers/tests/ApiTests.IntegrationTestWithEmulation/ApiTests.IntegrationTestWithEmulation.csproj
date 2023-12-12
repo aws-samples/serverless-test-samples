@@ -33,10 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\DeleteProduct\DeleteProduct.csproj" />
-    <ProjectReference Include="..\..\src\GetProducts\GetProducts.csproj" />
-    <ProjectReference Include="..\..\src\GetProduct\GetProduct.csproj" />
-    <ProjectReference Include="..\..\src\PutProduct\PutProduct.csproj" />
+    <ProjectReference Include="..\..\src\ServerlessTestApi\ServerlessTestApi.csproj" />
     <ProjectReference Include="..\..\src\ServerlessTestApi.Core\ServerlessTestApi.Core.csproj" />
   </ItemGroup>
 

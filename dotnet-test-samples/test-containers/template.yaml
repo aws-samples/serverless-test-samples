@@ -16,8 +16,8 @@ Resources:
   GetProductsFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./src/GetProducts/
-      Handler: GetProducts::GetProducts.Function::FunctionHandler
+      CodeUri: ./src/ServerlessTestApi/
+      Handler: ServerlessTestApi::ServerlessTestApi.Function_GetProducts_Generated::GetProducts
       Events:
         Api:
           Type: HttpApi
@@ -31,8 +31,8 @@ Resources:
   GetProductFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./src/GetProduct/
-      Handler: GetProduct::GetProduct.Function::FunctionHandler
+      CodeUri: ./src/ServerlessTestApi/
+      Handler: ServerlessTestApi::ServerlessTestApi.Function_GetProduct_Generated::GetProduct
       Events:
         Api:
           Type: HttpApi
@@ -46,8 +46,8 @@ Resources:
   DeleteProductFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./src/DeleteProduct/
-      Handler: DeleteProduct::DeleteProduct.Function::FunctionHandler
+      CodeUri: ./src/ServerlessTestApi/
+      Handler: ServerlessTestApi::ServerlessTestApi.Function_DeleteProduct_Generated::DeleteProduct
       Events:
         Api:
           Type: HttpApi
@@ -61,8 +61,8 @@ Resources:
   PutProductFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./src/PutProduct/
-      Handler: PutProduct::PutProduct.Function::FunctionHandler
+      CodeUri: ./src/ServerlessTestApi/
+      Handler: ServerlessTestApi::ServerlessTestApi.Function_CreateProduct_Generated::CreateProduct
       Events:
         Api:
           Type: HttpApi
