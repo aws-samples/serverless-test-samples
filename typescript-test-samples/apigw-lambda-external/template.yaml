@@ -149,5 +149,6 @@ Outputs:
     Description: "Fetch weather via API"
     Value: !GetAtt WeatherFunction.Arn
   MockApi:
+    Condition: isVolatileBuild
     Description: "Mock API"
     Value: !Sub "https://${MockApi}.execute-api.${AWS::Region}.amazonaws.com/Volatile"
