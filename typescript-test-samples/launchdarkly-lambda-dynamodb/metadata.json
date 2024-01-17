@@ -4,7 +4,7 @@
   "content_language": "English",
   "language": "TypeScript",
   "type": ["Integration"],
-  "diagram": "/img/system-under-test.png",
+  "diagram": "/img/LaunchDarkly-AWS-diagram.png",
   "framework": "CDK",
   "services": ["lambda", "dynamodb"],
   "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
