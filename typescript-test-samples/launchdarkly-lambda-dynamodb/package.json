@@ -1,8 +1,0 @@
-{
-  "dependencies": {
-    "@types/aws-lambda": "^8.10.131",
-    "aws-lambda": "^1.0.7",
-    "launchdarkly-node-server-sdk": "^7.0.3",
-    "launchdarkly-node-server-sdk-dynamodb": "^4.1.0"
-  }
-}

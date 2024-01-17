@@ -49,6 +49,16 @@ We've provided three example Lambdas to demonstrates the basics of deploying Lau
 
 For a complete guide to using LaunchDarkly in AWS serverless, including how to set up the Relay Proxy within your AWS environment and how to ensure that all events are captured by the SDKs within an ephemeral Lambda, visit [this guide](https://launchdarkly.com/blog/using-launchdarkly-in-aws-serverless/).
 
+### TypeScript Source Files
+
+Each of the example Lambdas (`index.mjs`) includes the TypeScript source file (`index.ts`) that was used to compile it. These source files include all of the necessary TypeScript types for LaunchDarkly. You can recompile the Lambda source file using the following commands:
+
+```bash
+cd launchdarkly-lambda-dynamodb/cdk
+npm install
+npm run build
+```
+
 ## Deploying via the AWS CDK
 
 You'll need to install the CDK. For more details about the AWS CDK and options for installing it, please visit the [AWS docs](https://aws.amazon.com/cdk/). Once the CDK is installed, follow these commands to bootstrap the deployment and then deploy it to your configured AWS account.
