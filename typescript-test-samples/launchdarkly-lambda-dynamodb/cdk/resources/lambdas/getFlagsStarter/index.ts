@@ -1,11 +1,14 @@
+import { Handler, APIGatewayEvent } from "aws-lambda";
 // The LaunchDarkly Node Server SDK
 // This needs to be npm installed or added via the Lambda Layer
-const LaunchDarkly = require("launchdarkly-node-server-sdk");
+import LaunchDarkly from "launchdarkly-node-server-sdk";
 
-exports.handler = async (event) => {
+export const handler: Handler = async (event: APIGatewayEvent) => {
   // Initialize the client with your LaunchDarkly SDK key
   // This needs to be added to the environment variables of your Lambda function
-  const client = LaunchDarkly.init(process.env.LAUNCHDARKLY_SDK_KEY);
+  const client: LaunchDarkly.LDClient = LaunchDarkly.init(
+    process.env.LAUNCHDARKLY_SDK_KEY as string
+  );
 
   // wait for the SDK client to be ready
   // note that you can wait for the ready event instead
@@ -16,7 +19,7 @@ exports.handler = async (event) => {
   // this could be useful for randomized progressive rollouts or experimentation
   // for targeted rollouts you could use a user context passing Cognito identity information
   // or you could create an environment context with data on the function version, region, etc.
-  const context = {
+  const context: LaunchDarkly.LDContext = {
     kind: "user",
     key: "anonymous-1",
     anonymous: true,
@@ -24,8 +27,11 @@ exports.handler = async (event) => {
 
   // in this example we're just getting a simple boolean flag with the key of "new-feature"
   // we are passing the anonymous user context and setting a default value of false
-  const newFeature = await client.variation("new-feature", context, false);
-
+  const newFeature: boolean = await client.variation(
+    "new-feature",
+    context,
+    false
+  );
   // you can implement different code paths based on the flag value
   if (newFeature) {
     // new code
