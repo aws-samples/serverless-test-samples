@@ -11,15 +11,15 @@
   "pattern_source": "AWS",
   "pattern_detail_tabs": [
     {
-      "title": "Lambda using LaunchDarkly",
+      "title": "Lambda function using LaunchDarkly",
       "filepath": "/cdk/resources/lambdas/getFlagsStarter/index.mjs"
     },
     {
-      "title": "Lambda using LaunchDarkl with DynamoDB feature store",
+      "title": "Lambda function using LaunchDarkly with DynamoDB feature store",
       "filepath": "/cdk/resources/lambdas/getFlagsWithDynamo/index.mjs"
     },
     {
-      "title": "Lambda for Syncing LaunchDarkly Flags to DynamoDB",
+      "title": "Lambda function for Syncing LaunchDarkly Flags to DynamoDB",
       "filepath": "/cdk/resources/lambdas/getFlagsStarter/index.mjs"
     }
   ],
