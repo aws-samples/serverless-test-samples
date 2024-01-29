@@ -20,7 +20,7 @@
     },
     {
       "title": "Lambda function for Syncing LaunchDarkly Flags to DynamoDB",
-      "filepath": "/cdk/resources/lambdas/getFlagsStarter/index.mjs"
+      "filepath": "/cdk/resources/lambdas/syncFlagsToDynamo/index.mjs"
     }
   ],
   "authors": [
