@@ -39,7 +39,9 @@ We've provided three example Lambda functions that demonstrate the basics of dep
 2. **[getFlagsWithDynamo](cdk/resources/lambdas/getFlagsWithDynamo/)** – This takes the prior example but adds DynamoDB as a persistent feature store for LaunchDarkly feature flags enabling the SDK client to evaluate flag results based upon the data stored in DynamoDB. It is configured to enable daemon mode, which means that it will not call out to LaunchDarkly for these initial values, which can decrease initialization cost and reduce external requests. To disable daemon mode, remove the `useLdd` flag from the configuration.
 3. **[syncFlagsToDynamo](cdk/resources/lambdas/syncFlagsToDynamo/)** – This is a simple Lambda designed to force cache flag values into DynamoDB enabling the use of daemon mode. While this solution works, it requires the function to be called (manually or programmatically) to start the initialization. The ideal solution for this problem is to use LauchDarkly's [Relay Proxy](https://docs.launchdarkly.com/home/relay-proxy/).
 
-You will need a LaunchDarkly account. If you don't have one yet, you can [start a free trial](https://app.launchdarkly.com/signup). Once you have an account, you'll need your server-side SDK key. Your environment's SDK key is available in the Projects tab of your [Account settings](https://app.launchdarkly.com/settings/projects) page. The example Lambda functions look for a boolean flag called `new-feature`. You will need to create that flag to try the functions as is or change the key in the function to match a flag within your account.
+You will need a LaunchDarkly account. If you don't have one yet, you can [start a free trial](https://app.launchdarkly.com/signup). Once you have an account, you'll need your server-side SDK key. Your environment's SDK key is available in the Projects tab of your [Account settings](https://app.launchdarkly.com/settings/projects) page. Please replace the `LAUNCHDARKLY_SDK_KEY` environment variable in [`cdk-stack.js`](cdk/lib/cdk-stack.js) prior to deploying the stack.
+
+The example Lambda functions look for a boolean flag called `new-feature`. You will need to create that flag to try the functions as is or change the key in the function to match a flag within your account.
 
 For a complete guide to using LaunchDarkly in AWS serverless, including how to set up the Relay Proxy within your AWS environment and how to ensure that all events are captured by the SDKs within an ephemeral Lambda function, visit [this guide](https://launchdarkly.com/blog/using-launchdarkly-in-aws-serverless/).
 
@@ -79,6 +81,8 @@ cd cdk
 cdk bootstrap
 cdk deploy
 ```
+
+Please ensure that you have replaced the `LAUNCHDARKLY_SDK_KEY` environment variable in [`cdk-stack.js`](cdk/lib/cdk-stack.js) with your LaunchDarkly SDK key prior to deploying the stack. The SDK key is available in the Projects tab of LaunchDarkly's [Account settings](https://app.launchdarkly.com/settings/projects) page.
 
 This will deploy all of the assets discussed above including the Lambda Layer with the LaunchDarkly SDKs and the three example Lambda functions, with the Layer as a dependency.
 
