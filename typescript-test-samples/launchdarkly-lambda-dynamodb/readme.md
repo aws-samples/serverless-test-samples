@@ -39,13 +39,15 @@ We've provided three example Lambda functions that demonstrate the basics of dep
 2. **[getFlagsWithDynamo](cdk/resources/lambdas/getFlagsWithDynamo/)** – This takes the prior example but adds DynamoDB as a persistent feature store for LaunchDarkly feature flags enabling the SDK client to evaluate flag results based upon the data stored in DynamoDB. It is configured to enable daemon mode, which means that it will not call out to LaunchDarkly for these initial values, which can decrease initialization cost and reduce external requests. To disable daemon mode, remove the `useLdd` flag from the configuration.
 3. **[syncFlagsToDynamo](cdk/resources/lambdas/syncFlagsToDynamo/)** – This is a simple Lambda designed to force cache flag values into DynamoDB enabling the use of daemon mode. While this solution works, it requires the function to be called (manually or programmatically) to start the initialization. The ideal solution for this problem is to use LauchDarkly's [Relay Proxy](https://docs.launchdarkly.com/home/relay-proxy/).
 
+You will need a LaunchDarkly account. If you don't have one yet, you can [start a free trial](https://app.launchdarkly.com/signup). Once you have an account, you'll need your server-side SDK key. Your environment's SDK key is available in the Projects tab of your [Account settings](https://app.launchdarkly.com/settings/projects) page. The example Lambda functions look for a boolean flag called `new-feature`. You will need to create that flag to try the functions as is or change the key in the function to match a flag within your account.
+
 For a complete guide to using LaunchDarkly in AWS serverless, including how to set up the Relay Proxy within your AWS environment and how to ensure that all events are captured by the SDKs within an ephemeral Lambda function, visit [this guide](https://launchdarkly.com/blog/using-launchdarkly-in-aws-serverless/).
 
-The project also includes the code necessary to build and deploy a Lambda Layer to easily add the necessary LaunchDarkly dependencies to any Lambda function that requires them. More on how to create and use the Layer below.
+The project also includes the code necessary to build and deploy a [Lambda Layer](https://docs.aws.amazon.com/lambda/latest/dg/chapter-layers.html) to easily add the necessary LaunchDarkly dependencies to any Lambda function that requires them. More on how to create and use the Layer below.
 
 ## The LaunchDarkly SDKs
 
-Adding LaunchDarkly feature flags to any Lambda function always begins with installing the appropriate SDK for the Lambda runtime you are using. You can find a [full list of server-side SDKs here](https://docs.launchdarkly.com/sdk). For the Node.js runtime, that would mean using NPM.
+Adding LaunchDarkly feature flags to any Lambda function always begins with installing the appropriate SDK for the Lambda runtime you are using. You can find a [full list of server-side SDKs here](https://docs.launchdarkly.com/sdk). For the Node.js runtime, that would mean using the [Node Server SDK](https://docs.launchdarkly.com/sdk/server-side/node-js) via NPM.
 
 ```bash
 npm install launchdarkly-node-server-sdk
@@ -85,7 +87,7 @@ This will deploy all of the assets discussed above including the Lambda Layer wi
 Each of the example Lambdas (`index.mjs`) includes the TypeScript source file (`index.ts`) that was used to compile it. These source files include all of the necessary TypeScript types for LaunchDarkly. You can recompile the Lambda function source file using the following commands:
 
 ```bash
-cd launchdarkly-lambda-dynamodb/cdk
+cd cdk
 npm install
 npm run build
 ```
