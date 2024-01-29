@@ -21,7 +21,7 @@ The project uses the [AWS Cloud Development Kit](https://aws.amazon.com/cdk/) (C
 
 ## About This Example
 
-It can be difficult to fully test features in Lambda functions outside of a production cloud environment. Feature flags can be a powerful pattern for enabling and disabling features for testing. LaunchDarkly's advanced targeting capabilities allow you to create feature flags that canbe used to safely test features in production without impacting the existing experience. Using feature flags and targeting, you can run code paths that are enabled for one user or one environment (or any combination of criteria) but not for anyone else. For example, utilizing authentication, environment and identity data, you can enable features for:
+It can be difficult to fully test features in Lambda functions outside of a production cloud environment. Feature flags can be a powerful pattern for enabling and disabling features for testing. LaunchDarkly's advanced targeting capabilities allow you to create feature flags that can be used to safely test features in production without impacting the existing experience. Using feature flags and targeting, you can run code paths that are enabled for one user or one environment (or any combination of criteria) but not for anyone else. For example, utilizing authentication, environment and identity data, you can enable features for:
 
 * Only particular testing or staging environments
 * Only particular users or segments of users
