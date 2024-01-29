@@ -24,7 +24,7 @@ The project uses the [AWS Cloud Development Kit](https://aws.amazon.com/cdk/) (C
 It can be difficult to fully test features in Lambda functions outside of a production cloud environment. Feature flags can be a powerful pattern for enabling and disabling features for testing. LaunchDarkly's advanced targeting capabilities allow you to create feature flags that can be used to safely test features in production without impacting the existing experience. Using feature flags and targeting, you can run code paths that are enabled for one user or one environment (or any combination of criteria) but not for anyone else. For example, utilizing authentication, environment and identity data, you can enable features for:
 
 * Only particular testing or staging environments
-* Only particular users or segments of users
+* Only particular users or segments of users, for example a test identity or a segment containing multiple identities performing Q&A
 * Beta testing with managed beta access customers
 * Progressive rollouts to stress testing features
 * Experimentation on features or performance
@@ -70,7 +70,7 @@ npm run build
 
 ## Deploying via the AWS CDK
 
-You'll need to install the CDK. For more details about the AWS CDK and options for installing it, please visit the [AWS docs](https://aws.amazon.com/cdk/). Once the CDK is installed, follow these commands to bootstrap the deployment and then deploy it to your configured AWS account.
+You'll need to install the CDK. For more details about the AWS CDK and options for installing it, please visit the [AWS docs](https://aws.amazon.com/cdk/). Once the CDK is installed and have initiated an [authenticated CLI session](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html#getting_started_auth), follow these commands to bootstrap the deployment and then deploy it to your configured AWS account.
 
 ```bash
 cd cdk
