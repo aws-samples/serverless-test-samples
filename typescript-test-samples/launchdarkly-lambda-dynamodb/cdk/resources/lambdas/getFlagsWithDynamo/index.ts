@@ -45,9 +45,9 @@ export const handler: Handler = async (event: APIGatewayEvent) => {
 
   // you can implement different code paths based on the flag value
   if (newFeature) {
-    // new code
+    // this is the ode path that you want to test before a full-scale rollout
   } else {
-    // old code
+    // this is the ode path that you want to test before a full-scale rollout
   }
 
   return newFeature;
