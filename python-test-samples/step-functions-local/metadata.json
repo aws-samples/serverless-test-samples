@@ -1,6 +1,6 @@
 {
-  "title": "Step Functions Local Testing",
-  "description": "This project shows a technique for testing an AWS Step Functions workflow in a local desktop environment",
+  "title": "Step Functions Local Testing with Python",
+  "description": "This project shows a technique for testing an AWS Step Functions workflow in a local desktop environment using Python.",
   "content_language": "English",
   "language": "Python",
   "type": ["Unit"],
@@ -9,21 +9,20 @@
   "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
   "pattern_source": "AWS",
   "pattern_detail_tabs": [
-      {
-          "title": "Step Functions State Machine",
-          "filepath": "/statemachine/step_functions_local_testing.asl.json"
-      },
-      {
-          "title": "Unit Tests",
-          "filepath": "/tests/unit/src/test_step_functions_local.py"
-      }
-  ],
-  "authors": [
-      {
-        "name": "Dan Straw",
-        "image": "https://avatars.githubusercontent.com/u/271028",
-        "bio": "Senior Solutions Architect at AWS",
-        "linkedin": "https://www.linkedin.com/in/danstraw/"
-      }
-  ]
+        {
+            "title": "Step Functions State Machine",
+            "filepath": "/statemachine/local_testing.asl.json"
+        },
+        {
+            "title": "Unit Tests",
+            "filepath": "/tests/unit/src/test_step_functions_local.py"
+        }
+    ],
+    "authors": [
+        {
+            "name": "Dan Straw",
+            "bio": "Senior solutions Architect at AWS",
+            "linkedin": "danstraw"
+        }
+    ]
 }
