@@ -1,7 +1,14 @@
-// This function can be used to initially pull all the flag values
-// from LaunchDarkly and store them in a DynamoDB table.
-// The preferred way of doing this is via the Relay Proxy
-// (see https://docs.launchdarkly.com/home/relay-proxy/)
+/*
+    This function can be used to initially pull all the flag values
+    from LaunchDarkly and store them in a DynamoDB table.
+
+    IMPORTANT: This is intended as a backend function to be called
+    via a webhook. It should not part of the typical request path.
+
+    The preferred way of doing this is via the Relay Proxy
+    (see https://docs.launchdarkly.com/home/relay-proxy/)
+    
+*/
 import {
   Handler,
   Context,
