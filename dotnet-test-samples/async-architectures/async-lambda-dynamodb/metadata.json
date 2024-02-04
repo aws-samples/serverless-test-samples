@@ -16,13 +16,13 @@
         },
         {
             "title": "Integration Test",
-            "filepath": "/tests/AsyncTesting.IntegrationTest/AsyncTests.cs" 
+            "filepath": "/tests/AsyncTesting.IntegrationTest/TextTransformerE2ETest.cs" 
         }
     ],
     "authors": [
         {
           "name": "James Eastham",
-          "image": "https://media.licdn.com/dms/image/C4D03AQHDx6vm65vyeA/profile-displayphoto-shrink_800_800/0/1637340702988?e=1684972800&v=beta&t=ohSQHb3h2VmM4iq8EWlLVi1wfrR7AUgke8wfSqP8RPI",
+          "image": "/assets/images/resources/contributors/ext-james-eastham.jpg",
           "bio": "Senior Cloud Architect at AWS",
           "linkedin": "https://www.linkedin.com/in/james-eastham/",
           "twitter": "https://twitter.com/plantpowerjames"
