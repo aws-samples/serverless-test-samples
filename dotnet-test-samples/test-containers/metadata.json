@@ -1,5 +1,5 @@
 {
-    "title": "Testcontainers and DynamoDB Local",
+    "title": "Test containers and DynamoDB locally",
     "description": "This project contains unit and integration tests for a pattern using API Gateway, AWS Lambda and Amazon DynamoDB. It uses the Testcontainers project and DynamoDB Local to demonstrate the use of emulation",
     "content_language": "English",
     "language": ".NET",
@@ -9,27 +9,27 @@
     "framework": "SAM",
     "services": ["apigw", "lambda", "dynamodb"],
     "pattern_source": "AWS",
-    "pattern_detail_tabs": [
+     "pattern_detail_tabs": [
         {
             "title": "Application Code Example (GetProduct)",
-            "filepath": "/src/GetProduct/Function.cs"
+            "filepath": "/src/GetProducts/Function.cs"
         },
         {
-            "title": "Unit Tests",
-            "filepath": "/tests/ApiTests.UnitTest/MockPutProductFunctionTests.cs"
+            "title": "Integration Test (PUT)",
+            "filepath": "/tests/ApiTests.IntegrationTestWithEmulation/MockPutProductFunctionTests.cs"
         },
         {
-            "title": "Integration Test",
-            "filepath": "/tests/ApiTests.IntegrationTest/IntegrationTest.cs"
-        }        
+            "title": "Integration Test (GET)",
+            "filepath": "/tests/ApiTests.IntegrationTestWithEmulation/MockGetProductFunctionTests.cs"
+        }
     ],
     "authors": [
         {
-          "name": "James Eastham",          
-          "image": "https://media.licdn.com/dms/image/C4D03AQHDx6vm65vyeA/profile-displayphoto-shrink_800_800/0/1637340702988?e=1684972800&v=beta&t=ohSQHb3h2VmM4iq8EWlLVi1wfrR7AUgke8wfSqP8RPI",
-          "bio": "Senior Cloud Architect at AWS",
-          "linkedin": "https://www.linkedin.com/in/james-eastham/",
-          "twitter": "https://twitter.com/plantpowerjames"
-        }        
+            "name": "James Eastham",
+            "image": "/assets/images/resources/contributors/james-eastham.jpg",
+            "bio": "Senior Cloud Architect at AWS",
+            "linkedin": "james-eastham",
+            "twitter": "plantpowerjames"
+        }
     ]
 }
