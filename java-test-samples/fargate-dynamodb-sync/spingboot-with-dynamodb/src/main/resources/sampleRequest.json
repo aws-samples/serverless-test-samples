@@ -1,0 +1,17 @@
+[
+  {
+    "customerId": "1",
+    "name": "customer-1",
+    "email": "customer1@gmail.com"
+  },
+  {
+    "customerId": "2",
+    "name": "customer-2",
+    "email": "customer2@gmail.com"
+  },
+  {
+    "customerId": "3",
+    "name": "customer-3",
+    "email": "customer3@gmail.com"
+  }
+]

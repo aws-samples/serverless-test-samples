@@ -1,0 +1,11 @@
+{
+  "customerId": {
+    "S": "1"
+  },
+  "email": {
+    "S": "customer1@gmail.com"
+  },
+  "name": {
+    "S": "customer-1"
+  }
+}
