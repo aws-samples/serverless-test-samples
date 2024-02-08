@@ -69,6 +69,7 @@ The necessary dependencies are already included in this project under `/cdk/reso
 
 ```bash
 cd  create-layer
+npm install
 npm run build
 ```
 
