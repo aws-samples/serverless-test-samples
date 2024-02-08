@@ -41,13 +41,6 @@ Java-21
 3. Step function with Dynamodb access
 4. DynamoDB tables
 
-## Deploying Lambda & Step Function:
-1.Lambda : ![Lambda-function.png](Lambda-function.png) 
-  - Application code is deployed as Zip file or executable in the Lambda function code with updated runtime and Handler (Ex: Runtime: Java 21, Handler: com.amazon.aws.sample.lambda.SqsLambdaStepFunctionHandler::handleRequest)
-
-2.Step Function : ![Step-function.png](Step-function.png)
-  - Place the step function yaml code under step function code section.
-
 ## Application Flow Steps:
 1. SQS queue is to receive messages from ECS.
 2. Message placed in SQS triggers the Lambda function
