@@ -1,0 +1,32 @@
+{
+  "orderId": {
+    "S": "abee61d5-e180-4d01-bdb5-f7ce31562a81"
+  },
+  "company": {
+    "S": "Samsung"
+  },
+  "customerId": {
+    "S": "C420"
+  },
+  "deliveryAddressCode": {
+    "S": "129384"
+  },
+  "model": {
+    "S": "A23"
+  },
+  "orderStatus": {
+    "S": "Order Placed"
+  },
+  "productId": {
+    "S": "P101"
+  },
+  "productName": {
+    "S": "Android"
+  },
+  "quantity": {
+    "S": "1"
+  },
+  "sellerId": {
+    "S": "S101"
+  }
+}
