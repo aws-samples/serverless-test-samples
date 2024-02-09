@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "launchdarkly-node-server-sdk": "^7.0.3",
+    "launchdarkly-node-server-sdk-dynamodb": "^4.1.0"
+  }
+}
