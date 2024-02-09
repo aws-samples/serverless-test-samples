@@ -1,6 +1,4 @@
-# Test Harness 
-
-### Testing Approach:
+## Integration Testing Approach:
 1. Once the deployment is done successfully in ECS, there will be message sent to SNS topic. 
 2. As part of Lambda project, SQS will be created and subscribes to SNS topic. 
 3. Lambda has all required access policies to run the automation test scripts defined to test the serverless application. 
@@ -15,10 +13,11 @@
 
 ### Manual trigger in Lambda: 
     Once the latest tests are deployed, navigate to Lambda function in AWS console, and click the Run button.
+
 ### Auto trigger in Lambda: 
 Since the SQS subscribed to SNS topic, whenever the deployment happens, the Lambda will trigger the automation tests to test the microservices. 
 
-## Steps to follow in PyTest-Python:
+### Steps to follow in PyTest-Python:
 1. Install any IDE (PyCharm, Intellij, Eclipse) that supports python programming language. For demonstration purpose we will be using Intellij IDEA 2023.1 Community Edition
 
 2. Install the below plugins from the IntelliJ marketplace.

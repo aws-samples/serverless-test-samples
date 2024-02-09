@@ -1,10 +1,10 @@
-# Springboot-with-dynamoDB
+# Springboot with DynamoDB Application
 Synchronous sample Spring boot application written in Java which performs customer CRUD operations. AWS serverless services like Amazon API Gateway, ALB, ECR, Fargate, DynamoDB & SQS being used to host and test the application flow.
 Java application is containerized & docker image pushed to ECR. Application is deployed into Fargate & endpoints are available through Application load balancer. API endpoints are set in API Gateway. CRUD operations are invoked via API Gateway which invokes API endpoints of application. Customer details sent to API requests are stored into DynamoDB tables as well as accessed as per the CRUD operations. Finally, post Deployment event placed into SQS.
 
 ![customer_crud_app.png](doc%2Fcustomer_crud_app.png)
 
-## App
+### Application
 Java17 maven application with Springboot 2.2.6 and AWS Java SDK 1.11.614 dependencies.
 
 ### Pre-requisites
@@ -15,13 +15,13 @@ Java17 maven application with Springboot 2.2.6 and AWS Java SDK 1.11.614 depende
 Once the application starts, we will trigger a message {"application_status":"ready"} will be dropped to the SQS
 
 _________________________________________________________________________________________________________
-# Test Harness 
+## Integration Testing:
+
 Serverless Application Development Approach:
 The development of each application is based on AWS serverless Architecture. All Microservices are running in ECS Cluster as Fargate Containers. As part of micro service deployment template, required CPU core, memory, number of containers and auto scaling configuration are defined and same is provisioned during deployment. Each micro service container is associated with an ingress container which act as application load balancer.
 
 ![AWS_Lambda.png](doc%2FAWS_Lambda.png)
 
-### Testing Approach:
 1. Once the deployment is done successfully in ECS, there will be message sent to SNS topic. 
 2. As part of Lambda project, SQS will be created and subscribes to SNS topic. 
 3. Lambda has all required access policies to run the automation test scripts defined to test the serverless application. 
@@ -39,7 +39,7 @@ The development of each application is based on AWS serverless Architecture. All
 ### Auto trigger in Lambda: 
 Since the SQS subscribed to SNS topic, whenever the deployment happens, the Lambda will trigger the automation tests to test the microservices. 
 
-## Steps to follow in PyTest-Python:
+### Steps to follow in PyTest-Python:
 1. Install any IDE (PyCharm, Intellij, Eclipse) that supports python programming language. For demonstration purpose we will be using Intellij IDEA 2023.1 Community Edition
 
 2. Install the below plugins from the IntelliJ marketplace.
