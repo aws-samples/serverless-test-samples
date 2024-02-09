@@ -1,14 +1,14 @@
-# Async-sqs-lambda-stepfunction-dynamodb
+## Async-sqs-lambda-stepfunction-dynamodb
 Simple DynamoDB & SQS integration with Spring Boot application
 ![img_1.png](doc/async-order-processing.png)
 
-# Description:
+### Description:
 The sample Spring boot application written in Java which performs Order Processing operations. AWS serverless services like Amazon API Gateway, ALB, ECS, DynamoDB, Step Function & SQS being used to host and test the application flow.
 
-# App
+### Application
 This project contains a Java17 maven application with Springboot 3.2.2 and AWS Java SDK 2.17.56 dependencies.
 
-# Pre-requisites
+### Pre-requisites
 1) SQS Queue with invoke lambda permission
 2) SQS trigger set for Lambda function
 3) Step function with Dynamodb access
@@ -17,7 +17,7 @@ This project contains a Java17 maven application with Springboot 3.2.2 and AWS J
    1) order_details ref: src/test/resources/order_details.json
    2) product_details ref: src/test/resources/product_details.json
 
-# Steps:
+### Steps:
 1) API endpoints are set in API Gateway
 2) Containerized application is deployed on ECS cluster as AWS Fargate
 3) * Scenario-1:
@@ -28,7 +28,7 @@ This project contains a Java17 maven application with Springboot 3.2.2 and AWS J
     1) Order Status API request sent to application.
     2) Application backend code connects to DynamoDB and displays status of order.
 
-# Steps for deploying the docker images on ECS with Fargate
+### Steps for deploying the docker images on ECS with Fargate
 1) Create a Docker Image ensuring that you have a 'Dockerfile' in your application code.
 2) Push Docker Image to Amazon ECR
 3) Create ECS Task Definition through the AWS Management Console or use the AWS CLI. 
@@ -38,13 +38,13 @@ This project contains a Java17 maven application with Springboot 3.2.2 and AWS J
 5) Set the launch type to Fargate, which means ECS manages the underlying infrastructure.
 6) Deploy ECS Service through the AWS Management Console or using the AWS CLI.
 
-# How to run
+### How to run?
 1) Update application.properties with your AWS SQS queue name. If not already created, code will auto create it.
 2) Run these commands in the terminal 
    1) mvn clean install
    2) mvn spring-boot:run
 
-# APIs
+### APIs
 1) POST: Place Order
    curl --location 'http://<HOST>/orders/place' \
    --header 'Content-Type: application/json' \

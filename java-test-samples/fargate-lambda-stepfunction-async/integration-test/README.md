@@ -7,7 +7,7 @@ Integration Testing - Serverless Asynchronous
 3. Lambda Function
 4. Destination SQS configured for Lambda function
 
-## Deploying Lambda & Step Function:
+## Deploying Lambda:
 1.Lambda
   - Application code is deployed as Zip file or executable in the Lambda function code with updated runtime and Handler
 2.Environment Variables 
