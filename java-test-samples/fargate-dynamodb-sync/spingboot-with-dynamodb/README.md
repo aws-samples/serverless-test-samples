@@ -1,6 +1,8 @@
 # Springboot-with-dynamoDB
 Simple Dynamo DB & SQS integration with Spring Boot application
 
+![customer_crud_app.png](doc%2Fcustomer_crud_app.png)
+
 ### Application
 Java17 maven application with Springboot 2.2.6 and AWS Java SDK 1.11.614 dependencies.
 

@@ -1,4 +1,7 @@
 ## Integration Testing Approach:
+
+![AWS_Lambda.png](..%2Fdoc%2FAWS_Lambda.png)
+
 1. Once the deployment is done successfully in ECS, there will be message sent to SNS topic. 
 2. As part of Lambda project, SQS will be created and subscribes to SNS topic. 
 3. Lambda has all required access policies to run the automation test scripts defined to test the serverless application. 
