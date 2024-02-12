@@ -1,9 +1,10 @@
 ## Async-sqs-lambda-stepfunction-dynamodb
-Simple DynamoDB & SQS integration with Spring Boot application
+A Simple Spring Boot application integration with SQS and DynamoDB.
+
 ![img_1.png](doc/async-order-processing.png)
 
 ### Description:
-The sample Spring boot application written in Java which performs Order Processing operations. AWS serverless services like Amazon API Gateway, ALB, ECS, DynamoDB, Step Function & SQS being used to host and test the application flow.
+The sample Spring boot application written in Java which performs Order Processing operations. AWS serverless services like Amazon API Gateway, ALB, Fargate, DynamoDB, Step Function & SQS being used to host and test the application flow.
 
 ### Application
 This project contains a Java17 maven application with Springboot 3.2.2 and AWS Java SDK 2.17.56 dependencies.
