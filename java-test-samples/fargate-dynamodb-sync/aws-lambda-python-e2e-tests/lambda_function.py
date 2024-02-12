@@ -16,10 +16,10 @@ report_name = 'pytest_report.html'
 logToUpload = {}
  
 def lambda_handler(event, context):
-logToUpload['GET'] = read_test.test_get_list_of_users()
-logToUpload['POST'] = create_test.test_create_new_user()
-logToUpload['DELETE'] = delete_test.test_delete_user()
-logToUpload['PUT'] = update_test.test_update_user()
+    logToUpload['GET'] = read_test.test_get_list_of_users()
+    logToUpload['POST'] = create_test.test_create_new_user()
+    logToUpload['DELETE'] = delete_test.test_delete_user()
+    logToUpload['PUT'] = update_test.test_update_user()
  
 # Upload the result file into S3 bucket
 fileName = 'pocserverless_test_report' + '.json'
