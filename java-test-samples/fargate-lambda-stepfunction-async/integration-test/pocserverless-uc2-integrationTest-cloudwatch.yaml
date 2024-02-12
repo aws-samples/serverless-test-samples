@@ -23,34 +23,34 @@ Resources:
         Size: 512
       Environment:
         Variables:
-          API_URL: http://172.31.50.214/api/orders/place
+          API_URL: http://<<HOST>>/api/orders/place
           REGION: us-east-1
           TARGET_QUEUE: >-
-            https://sqs.us-east-1.amazonaws.com/413418342606/pocserverless-sqs-test-dest
+            https://sqs.us-east-1.amazonaws.com/<<XXXXXXXX>>/pocserverless-sqs-test-dest
       EventInvokeConfig:
         DestinationConfig:
           OnSuccess:
-            Destination: arn:aws:sqs:us-east-1:413418342606:pocserverless-sqs-test-dest
+            Destination: arn:aws:sqs:us-east-1:<<XXXXXXXX>>:pocserverless-sqs-test-dest
             Type: SQS
         MaximumEventAgeInSeconds: 21600
         MaximumRetryAttempts: 2
       Layers:
         - >-
-          arn:aws:lambda:us-east-1:336392948345:layer:AWSSDKPandas-Python310-Arm64:7
+          arn:aws:lambda:us-east-1:<<XXXXXXXX>>:layer:AWSSDKPandas-Python310-Arm64:7
       PackageType: Zip
       Policies:
         - Statement:
             - Effect: Allow
               Action:
                 - logs:CreateLogGroup
-              Resource: arn:aws:logs:us-east-1:413418342606:*
+              Resource: arn:aws:logs:us-east-1:<<XXXXXXXX>>:*
             - Effect: Allow
               Action:
                 - logs:CreateLogStream
                 - logs:PutLogEvents
               Resource:
                 - >-
-                  arn:aws:logs:us-east-1:413418342606:log-group:/aws/lambda/pocserverless-uc2-integrationTest:*
+                  arn:aws:logs:us-east-1:<<XXXXXXXX>>:log-group:/aws/lambda/pocserverless-uc2-integrationTest:*
             - Action:
                 - cloudformation:SetStackPolicy
                 - cloudformation:CancelUpdateStack
@@ -148,10 +148,10 @@ Resources:
         ApplyOn: None
       VpcConfig:
         SecurityGroupIds:
-          - sg-0a98d746ec26e8454
+          - sg-<<XXXXXXXX>>
         SubnetIds:
-          - subnet-0984aba7a93bab7d1
-          - subnet-059e8af8ab104aada
+          - subnet-<<XXXXXXXX>>
+          - subnet-<<XXXXXXXX>>
         Ipv6AllowedForDualStack: false
       Events:
         SQS1:

@@ -22,7 +22,7 @@ Java-21
   - Place the step function yaml code under step function code section.
 
 ### Application Flow Steps:
-1. SQS queue is to receive messages from ECS.
+1. SQS queue is to receive messages from the application hosted on AWS Fargate.
 2. Message placed in SQS triggers the Lambda function
 3. Lambda will invoke the pre-defined Step function(refer config.properties)
 4. Step function will check for product availability in DynamoDB prodcut_details table, In case product quantity available order status will be set as order placed, Otherwise order rejected will be executed.
