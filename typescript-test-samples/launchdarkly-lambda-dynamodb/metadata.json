@@ -1,0 +1,34 @@
+{
+  "title": "Typescript: LaunchDarkly, AWS Lambda and DynamoDB Example",
+  "description": "This project contains examples of integrating LaunchDarkly feature flags into Lambda.",
+  "content_language": "English",
+  "language": "TypeScript",
+  "type": ["Integration"],
+  "diagram": "/img/LaunchDarkly-AWS-diagram.png",
+  "framework": "CDK",
+  "services": ["lambda", "dynamodb"],
+  "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
+  "pattern_source": "AWS",
+  "pattern_detail_tabs": [
+    {
+      "title": "Lambda function using LaunchDarkly",
+      "filepath": "/cdk/resources/lambdas/getFlagsStarter/index.mjs"
+    },
+    {
+      "title": "Lambda function using LaunchDarkly with DynamoDB feature store",
+      "filepath": "/cdk/resources/lambdas/getFlagsWithDynamo/index.mjs"
+    },
+    {
+      "title": "Lambda function for Syncing LaunchDarkly Flags to DynamoDB",
+      "filepath": "/cdk/resources/lambdas/syncFlagsToDynamo/index.mjs"
+    }
+  ],
+  "authors": [
+    {
+      "name": "Brian Rinaldi",
+      "image": "https://media.licdn.com/dms/image/C4E03AQFP0OYEXUimMw/profile-displayphoto-shrink_800_800/0/1647523541573?e=1710979200&v=beta&t=brt8s3TkFNhKlLFS93pkTXj6kitXFmJHDE2AlNvpOYU",
+      "bio": "Developer Experience Engineer at LaunchDarkly",
+      "linkedin": "https://www.linkedin.com/in/brianrinaldi/"
+    }
+  ]
+}
