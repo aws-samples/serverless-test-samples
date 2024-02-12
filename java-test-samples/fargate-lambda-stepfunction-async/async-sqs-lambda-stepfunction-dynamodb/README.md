@@ -1,5 +1,5 @@
 ## Async-sqs-lambda-stepfunction-dynamodb
-A Simple Spring Boot application integration with SQS and DynamoDB.
+A Simple DynamoDB & SQS integration with Spring Boot application and deployed on Fargate.
 
 ![img_1.png](doc/async-order-processing.png)
 
