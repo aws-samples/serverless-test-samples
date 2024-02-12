@@ -1,5 +1,5 @@
-# Springboot-with-dynamoDB
-Simple Dynamo DB & SQS integration with Spring Boot application
+# Synchronous Approach - Springboot-with-dynamoDB
+Simple Dynamo DB & SQS integration with Spring Boot application to perform CRUD operations
 
 ![customer_crud_app.png](doc%2Fcustomer_crud_app.png)
 

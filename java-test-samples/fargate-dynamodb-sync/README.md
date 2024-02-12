@@ -1,5 +1,5 @@
-# Springboot with DynamoDB Application
-Synchronous sample Spring boot application written in Java which performs customer CRUD operations. AWS serverless services like Amazon API Gateway, ALB, ECR, Fargate, DynamoDB & SQS being used to host and test the application flow.
+# Synchronous Approach- Springboot with DynamoDB Application
+Synchronous sample SpringBoot application written in Java which performs customer CRUD operations. AWS serverless services like Amazon API Gateway, ALB, ECR, Fargate, DynamoDB & SQS being used to host and test the application flow.
 Java application is containerized & docker image pushed to ECR. Application is deployed into Fargate & endpoints are available through Application load balancer. API endpoints are set in API Gateway. CRUD operations are invoked via API Gateway which invokes API endpoints of application. Customer details sent to API requests are stored into DynamoDB tables as well as accessed as per the CRUD operations. Finally, post Deployment event placed into SQS.
 
 ![customer_crud_app.png](doc%2Fcustomer_crud_app.png)
