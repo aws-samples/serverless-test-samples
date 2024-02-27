@@ -200,3 +200,7 @@ sam delete
 * [Git Installed](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 * [AWS Serverless Application Model](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html) (AWS SAM) installed
 * [.NET 6](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) installed
+
+## Video Walkthroughs
+
+[Unit testing AWS Lambda with .NET 6](https://www.youtube.com/watch?v=481ylgKPnNg&pp=ygUTLk5FVCBsYW1iZGEgdGVzdGluZw%3D%3D)

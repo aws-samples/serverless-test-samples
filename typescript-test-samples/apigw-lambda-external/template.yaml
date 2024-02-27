@@ -1,0 +1,154 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  API Gateway -> Lambda -> External - Serverless Testing Pattern
+
+  Sample SAM Template for API Gateway -> Lambda -> External - Serverless Testing Pattern
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 3
+    MemorySize: 128
+
+Parameters:
+  IsVolatile:
+    Description: Is this a volatile build
+    Type: String
+    Default: "false"
+
+Conditions:
+  isVolatileBuild: !Equals [!Ref IsVolatile, "true"]
+
+Resources:
+  WeatherFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: src/
+      Handler: app.lambdaHandler
+      Runtime: nodejs16.x
+      Architectures:
+        - x86_64
+      Tracing: Active
+      # Available policies:
+      # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-template-list.html
+      Policies:
+        - AWSXrayWriteOnlyAccess
+      Environment:
+        Variables:
+          WEATHER_API:
+            !If [
+              isVolatileBuild,
+              !Sub "https://${MockApi}.execute-api.${AWS::Region}.amazonaws.com/Volatile",
+              "https://goweather.herokuapp.com/weather",
+            ]
+
+      Events:
+        Weather:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /{city}
+            Method: get
+    Metadata: # Manage esbuild properties
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        # Sourcemap: true # Enabling source maps will create the required NODE_OPTIONS environment variables on your lambda function during sam build
+        EntryPoints:
+          - app.ts
+
+  # Volatile Stack Resources
+  MockApi:
+    Type: AWS::ApiGateway::RestApi
+    Condition: isVolatileBuild
+    Properties:
+      Name: MockApi
+      Description: Mock API Endpoint
+      Body:
+        openapi: "3.0.1"
+        info:
+          title: "Mock Weather API"
+          version: "2023-11-22T10:16:51Z"
+        paths:
+          /{city+}:
+            get:
+              parameters:
+                - name: "city"
+                  in: "path"
+                  required: true
+                  schema:
+                    type: "string"
+              responses:
+                "404":
+                  description: "404 response"
+                  content: {}
+                "500":
+                  description: "500 response"
+                  content: {}
+                "200":
+                  description: "200 response"
+                  content:
+                    application/json:
+                      schema:
+                        $ref: "#/components/schemas/Empty"
+              x-amazon-apigateway-integration:
+                responses:
+                  "4\\d{2}":
+                    statusCode: "404"
+                    responseTemplates:
+                      application/json: "{\n  \"message\": \"NOT_FOUND\"\n}\n"
+                  default:
+                    statusCode: "200"
+                    responseTemplates:
+                      application/json:
+                        "{\n  \"temperature\": \"+8 °C\",\n  \"wind\": \"\
+                        15 km/h\",\n  \"description\": \"Partly cloudy\",\n  \"forecast\"\
+                        : [{ \"day\": \"1\", \"temperature\": \"+7 °C\", \"wind\": \"25 km/h\"\
+                        \ }]\n}\n"
+                requestTemplates:
+                  application/json:
+                    "{\n  #if( $input.params('city') == \"springfield\" )\n\
+                    \    \"statusCode\": 404\n  #else\n    \"statusCode\": 200\n  #end\n}"
+                passthroughBehavior: "when_no_match"
+                type: "mock"
+        components:
+          schemas:
+            Empty:
+              title: "Empty Schema"
+              type: "object"
+
+  MockApiDeployment:
+    Type: AWS::ApiGateway::Deployment
+    Condition: isVolatileBuild
+    Properties:
+      RestApiId: !Ref MockApi
+
+  BranchStage:
+    Type: AWS::ApiGateway::Stage
+    Condition: isVolatileBuild
+    Properties:
+      StageName: Volatile
+      DeploymentId: !Ref MockApiDeployment
+      RestApiId: !Ref MockApi
+      MethodSettings:
+        - ResourcePath: "/*"
+          DataTraceEnabled: true
+          HttpMethod: "*"
+          LoggingLevel: INFO
+          MetricsEnabled: true
+
+Outputs:
+  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+  # Find out more about other implicit resources you can reference within SAM
+  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+  WeatherFunctionApi:
+    Description: "API Gateway endpoint URL for Prod stage for WeatherFunction function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
+  WeatherFunctionFunction:
+    Description: "Fetch weather via API"
+    Value: !GetAtt WeatherFunction.Arn
+  MockApi:
+    Condition: isVolatileBuild
+    Description: "Mock API"
+    Value: !Sub "https://${MockApi}.execute-api.${AWS::Region}.amazonaws.com/Volatile"

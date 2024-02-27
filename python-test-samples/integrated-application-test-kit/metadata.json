@@ -1,0 +1,38 @@
+{
+  "title": "Integrated Application Test Kit",
+  "description": "This project contains samples for integration tests that use the Integrated Application Test Kit",
+  "content_language": "English",
+  "language": "Python",
+  "type": ["Integration"],
+  "diagram": "/img/architecture.png",
+  "framework": "SAM",
+  "services": ["eventbridge", "lambda", "sfn"],
+  "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
+  "pattern_source": "AWS",
+  "pattern_detail_tabs": [
+        {
+            "title": "Application Code",
+            "filepath": "/plugins/2-postvalidate-plugins/python-minimal-plugin/functions/app.py"
+        },
+        {
+            "title": "Integration Test",
+            "filepath": "/plugins/2-postvalidate-plugins/python-minimal-plugin/tests/integration/test_by_polling.py"
+        }
+    ],
+    "authors": [
+        {
+            "name": "Dan Fox",
+            "image": "/assets/external/testing/guidance/assets/authors/danfox.jpeg",
+            "bio": "Principal Solutions Architect at AWS",
+            "linkedin": "danfoxprofile",
+            "twitter": "danfox"
+        },
+        {
+            "name": "Brian Krygsman",
+            "image": "/assets/external/testing-patterns/python-test-samples/integrated-application-test-kit/Brian Krygsman.png",
+            "bio": "Senior Solutions Architect at AWS",
+            "linkedin": "brian-krygsman",
+            "twitter": "brnkrygs"
+        }
+    ]
+}

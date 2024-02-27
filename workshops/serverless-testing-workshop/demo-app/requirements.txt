@@ -1,0 +1,4 @@
+requests
+boto3
+streamlit
+streamlit_js_eval

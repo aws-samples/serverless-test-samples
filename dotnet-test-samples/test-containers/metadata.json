@@ -1,0 +1,35 @@
+{
+    "title": "Test containers and DynamoDB locally",
+    "description": "This project contains unit and integration tests for a pattern using API Gateway, AWS Lambda and Amazon DynamoDB. It uses the Testcontainers project and DynamoDB Local to demonstrate the use of emulation",
+    "content_language": "English",
+    "language": ".NET",
+    "type": ["Unit", "Integration"],
+    "diagram": "/img/apigw-lambda-ddb.jpg",
+    "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
+    "framework": "SAM",
+    "services": ["apigw", "lambda", "dynamodb"],
+    "pattern_source": "AWS",
+     "pattern_detail_tabs": [
+        {
+            "title": "Application Code Example (GetProduct)",
+            "filepath": "/src/GetProducts/Function.cs"
+        },
+        {
+            "title": "Integration Test (PUT)",
+            "filepath": "/tests/ApiTests.IntegrationTestWithEmulation/MockPutProductFunctionTests.cs"
+        },
+        {
+            "title": "Integration Test (GET)",
+            "filepath": "/tests/ApiTests.IntegrationTestWithEmulation/MockGetProductFunctionTests.cs"
+        }
+    ],
+    "authors": [
+        {
+            "name": "James Eastham",
+            "image": "/assets/images/resources/contributors/james-eastham.jpg",
+            "bio": "Senior Cloud Architect at AWS",
+            "linkedin": "james-eastham",
+            "twitter": "plantpowerjames"
+        }
+    ]
+}

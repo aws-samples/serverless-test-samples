@@ -1,0 +1,118 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  video-plugin-plugin_tester
+
+  SAM Template for Plugin Tester stack, which triggers plugin
+  the same way the production system could.
+
+Parameters:
+  pluginTitle:
+    Description: Identifier for this plugin
+    Type: String
+    Default: PythonMinimalPlugin
+
+  eventHook:
+    Description: Identifier for this plugin
+    Type: String
+    Default: postValidate
+
+Resources:
+
+  PluginTaskSuccessFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: code/
+      Handler: app.handler
+      Runtime: nodejs18.x
+      Timeout: 3
+      Tracing: Active
+      Environment:
+        Variables:
+          PluginLifecycleWorkflow: !Ref PluginLifecycleWorkflow
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Resource: !Ref PluginLifecycleWorkflow
+              Action:
+                - states:sendTaskSuccess
+
+  PluginSuccessRule:
+    Type: AWS::Events::Rule
+    Properties:
+      EventBusName: default
+      EventPattern:
+        source:
+          - prefix: video.plugin
+        detail-type:
+          - prefix: plugin-complete
+      State: ENABLED
+      Targets: 
+        - Arn: !GetAtt PluginTaskSuccessFunction.Arn
+          Id: PluginSuccessRuleLambdaTarget
+
+  PluginSuccessRulePermission:
+    Type: AWS::Lambda::Permission
+    Properties: 
+      FunctionName: !Ref PluginTaskSuccessFunction
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn: !GetAtt PluginSuccessRule.Arn
+  
+  PluginLifecycleWorkflow:
+    Type: AWS::Serverless::StateMachine # More info about State Machine Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-statemachine.html
+    Properties:
+      DefinitionSubstitutions:
+        pluginTitle: !Ref pluginTitle
+        eventHook: !Ref eventHook
+      DefinitionUri: workflow/statemachine.asl.json
+      Tracing: 
+        Enabled: True
+      Policies: # Find out more about SAM policy templates: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-templates.html
+        - EventBridgePutEventsPolicy:
+            EventBusName: "default"
+        - AWSXRayDaemonWriteAccess
+        
+  PluginEventRegistry:
+    Type: AWS::EventSchemas::Registry
+    Properties:
+      Description: Tracks events for the video plugin platform
+
+  PluginTesterWorkflowTriggerEventSchema:
+    Type: AWS::EventSchemas::Schema
+    Properties:
+      RegistryName: !GetAtt PluginEventRegistry.RegistryName
+      SchemaName: PluginTesterWorkflowTriggerEventSchema
+      Description: 'Event used to trigger the plugin tester workflow'
+      Type: JSONSchemaDraft4
+      Content: >
+        {
+          "$schema": "http://json-schema.org/draft-04/schema#",
+          "type": "object",
+          "properties": {
+            "eventHook": {
+              "type": "string"
+            },
+            "pluginTitle": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "eventHook",
+            "pluginTitle"
+          ]
+        }
+        
+Outputs:
+  PluginLifecycleWorkflow:
+    Description: PluginLifecycleWorkflow Step Function Workflow ARN
+    Value: !GetAtt PluginLifecycleWorkflow.Arn
+  PluginSuccessEventRuleName:
+    Description: Name of the EventBridge rule triggering our success function.
+    Value: !Ref PluginSuccessRule
+  PluginEventRegistryName:
+    Description: Name of the event registry for tracking video plugin platform events
+    Value: !GetAtt PluginEventRegistry.RegistryName
+  PluginTesterWorkflowTriggerEventSchemaName:
+    Description: Name of the plugin tester workflow trigger event schema.
+    Value: !GetAtt PluginTesterWorkflowTriggerEventSchema.SchemaName

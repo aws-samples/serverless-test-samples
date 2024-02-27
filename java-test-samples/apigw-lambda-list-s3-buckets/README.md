@@ -10,6 +10,8 @@ This project contains automated test code samples for serverless applications. T
     - [Use the SAM API Gateway emulator](#use-the-sam-api-gateway-emulator)
 - [Run a unit test using a mock framework](#run-a-unit-test-using-a-mock-framework)
 - [Run an integration test against cloud resources](#run-integration-tests-against-cloud-resources)
+- [Testing with the Spock testing framework](#testing-with-the-spock-testing-framework)
+  - [Unit testing using a mock](#unit-testing-using-a-mock)
 - [Invoke a Lambda function in the cloud](#invoke-a-lambda-function-in-the-cloud)
 - [Fetch, tail, and filter Lambda function logs locally](#fetch-tail-and-filter-lambda-function-logs-locally)
 - [Use SAM Accelerate to speed up feedback cycles](#use-sam-accelerate-to-speed-up-feedback-cycles)
@@ -170,6 +172,40 @@ public class AppWithMockTest {
     assertTrue(content.length() > 0);
     assertEquals("foo", content);
   }
+}
+```
+[[top]](#api-gateway-to-lambda-to-list-s3-buckets)
+
+## Testing with the Spock testing framework
+
+Spock is a Groovy-based testing framework that uses a narrative style with blocks like "when", "then", and "expect" for writing clear and readable tests. It provides mocking, stubbing, and spying to isolate code under test. With its expressive Groovy syntax and declarative style Spock reduces boilerplate code and aims to simplify testing.
+
+### Unit testing using a mock
+You can use Spock to mock the service calls that are being done in the Lambda function.
+[`AppWithMockSpec.groovy`](./src/test/groovy/com/example/AppWithMockSpec.groovy) covers this example:
+
+```groovy
+class AppWithMockSpec  extends Specification {
+
+
+    def mockS3Client = Mock(S3Client)
+    def app = new App(mockS3Client)
+
+    def "returns a list of buckets"() {
+        given: "a bucket exists"
+        1 * mockS3Client.listBuckets() >> listWithBucket()
+
+        when: "a request is received"
+        def request =  getRequestFromFile()
+        def responseEvent = app.handleRequest(request, null)
+
+        then: "a list of buckets is returned"
+        def responseBody = new JsonSlurper().parseText(responseEvent.getBody()) as List
+        responseBody.size() >= 1
+
+        and: "the first item is the example bucket"
+        responseBody.first() == TEST_BUCKET_NAME
+    }
 }
 ```
 

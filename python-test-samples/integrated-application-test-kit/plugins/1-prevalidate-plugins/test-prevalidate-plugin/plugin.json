@@ -1,0 +1,14 @@
+{
+    "name": "TestPlugin",
+    "description": "A plugin that demonstrates testing best practices",
+    "author": "Dan Fox",
+    "version": "1.0.0",
+    "tags": ["testing", "AWS", "serverless"],
+    "eventHook": "preValidate",
+    "average_completion_time": "10s",
+    "services":["StepFunctions","AWS Lambda"],
+    "deployment_template":"template.yaml",
+    "output_example":{
+              "valid":"BOOL"
+    }
+  }
