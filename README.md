@@ -78,7 +78,7 @@ Event-driven architectures (EDA) are an architecture style that uses events and 
 | Partner |System Under Test|Language|Description|
 |---|---|---|---|
 | Datadog |[API Gateway, Lambda, SQS, SNS](./typescript-test-samples/apigw-lambda-sqs-sns-datadog)|TypeScript|This example is about creating Synthetic Tests and Monitors with Datadog.|
-| LaunchDarkly |[Lambda, DynamoDB](./typescript-test-samples/launchdarkly-lambda-dynamodb) |TypeScripty|Get started using LaunchDarkly feature flags to test new code and features with AWS Lambda.|
+| LaunchDarkly |[Lambda, DynamoDB](./typescript-test-samples/launchdarkly-lambda-dynamodb) |TypeScript|Get started using LaunchDarkly feature flags to test new code and features with AWS Lambda.|
 
 ## Test Containers
 [Testcontainers](https://testcontainers.com/) is an open source framework for providing throwaway, lightweight instances of databases, message brokers, web browsers, or just about anything that can run in a Docker container. These tests demonstrate how you can utilize this as part of your testing frameworks to startup, initialize and tear down emulated resources.
