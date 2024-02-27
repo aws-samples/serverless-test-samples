@@ -1,4 +1,4 @@
-# Using LaunchDarkly for Testing in AWS Lambdas
+# Using LaunchDarkly for Testing with AWS Lambda
 
 ## Introduction
 
