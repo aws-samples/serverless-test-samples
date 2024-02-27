@@ -6,33 +6,33 @@
   "type": ["Integration"],
   "diagram": "/img/architecture.png",
   "framework": "SAM",
-  "services": ["eventbridge", "lambda", "stepfunctions"],
+  "services": ["eventbridge", "lambda", "sfn"],
   "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
   "pattern_source": "AWS",
   "pattern_detail_tabs": [
-      {
-          "title": "Application Code",
-          "filepath": "/plugins/2-postvalidate-plugins/python-minimal-plugin/functions/app.py"
-      },
-      {
-          "title": "Integration Test",
-          "filepath": "/plugins/2-postvalidate-plugins/python-minimal-plugin/tests/integration/test_by_polling.py"
-      }
-  ],
-  "authors": [
-      {
-        "name": "Dan Fox",
-        "image": "https://media.licdn.com/dms/image/C4D03AQEeuHEjdXHy-A/profile-displayphoto-shrink_800_800/0/1516244567344?e=1683763200&v=beta&t=EolMYTa0v-c4Mo2wTMKrL2R5oE9-amE2EmtEMgldwLE",
-        "bio": "Principal Solutions Architect at AWS",
-        "linkedin": "https://www.linkedin.com/in/danfoxprofile/",
-        "twitter": "https://twitter.com/danfox"
-      },
-      {
-        "name": "Brian Krygsman",
-        "image": "https://avatars.githubusercontent.com/u/3408210?v=4",
-        "bio": "Senior Solutions Architect at AWS",
-        "linkedin": "https://www.linkedin.com/in/brian-krygsman/",
-        "twitter": "https://twitter.com/brnkrygs"
-      }
-  ]
+        {
+            "title": "Application Code",
+            "filepath": "/plugins/2-postvalidate-plugins/python-minimal-plugin/functions/app.py"
+        },
+        {
+            "title": "Integration Test",
+            "filepath": "/plugins/2-postvalidate-plugins/python-minimal-plugin/tests/integration/test_by_polling.py"
+        }
+    ],
+    "authors": [
+        {
+            "name": "Dan Fox",
+            "image": "/assets/external/testing/guidance/assets/authors/danfox.jpeg",
+            "bio": "Principal Solutions Architect at AWS",
+            "linkedin": "danfoxprofile",
+            "twitter": "danfox"
+        },
+        {
+            "name": "Brian Krygsman",
+            "image": "/assets/external/testing-patterns/python-test-samples/integrated-application-test-kit/Brian Krygsman.png",
+            "bio": "Senior Solutions Architect at AWS",
+            "linkedin": "brian-krygsman",
+            "twitter": "brnkrygs"
+        }
+    ]
 }
