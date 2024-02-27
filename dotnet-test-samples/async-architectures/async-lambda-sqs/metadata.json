@@ -1,14 +1,22 @@
 {
-    "title": "Asynchronous Tests with Lambda and SQS",
-    "description": "This project shows how to test an asynchronous serverless workflow that triggers a lambda with SQS as backend service",
+    "title": "Asynchronous tests with Lambda and SQS",
+    "description": "This project shows how to test an asynchronous serverless workflow that triggers a Lambda function with SQS",
     "content_language": "English",
     "language": ".NET",
-    "type": ["Unit", "Integration", "End to end"],
-    "diagram": "../img/s3-lambda-sqs.png",
+    "type": [
+        "Unit",
+        "Integration",
+        "End to end"
+    ],
+    "diagram": "/assets/external/testing-patterns/dotnet-test-samples/async-architectures/img/s3-lambda-sqs.png",
     "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
     "pattern_source": "AWS",
     "framework": "SAM",
-    "services": ["s3", "lambda", "sqs"],
+    "services": [
+        "s3",
+        "lambda",
+        "sqs"
+    ],
     "pattern_detail_tabs": [
         {
             "title": "Application Code Example (GetStock Functions)",
@@ -20,7 +28,7 @@
         },
         {
             "title": "Integration Tests",
-            "filepath": "/tests/S3Notifications.integrationTests/FunctionTest.cs"
+            "filepath": "/tests/S3Notifications.IntegrationTests/FunctionTest.cs"
         },
         {
             "title": "End to End Tests",
@@ -30,10 +38,12 @@
     "authors": [
         {
             "name": "Dror Helper",
-            "image": "https://media.licdn.com/dms/image/C4D03AQGbBwfXtx0Zmg/profile-displayphoto-shrink_200_200/0/1638988505074?e=1712793600&v=beta&t=bdLficUdTqgF4sY78kQ3aXKI5L3yPL8E3fYN7dUQDaU",
             "bio": "Senior Microsoft Specialist Solution Architect at AWS",
             "linkedin": "drorhelper",
-            "twitter": "dhelper"
-        }      
-    ]
+            "twitter": "https://twitter.com/dhelper"
+        }
+    ],
+    "rootFolder": "async-architectures",
+    "folderName": "async-lambda-sqs",
+    "path": "dotnet-test-samples/async-architectures/async-lambda-sqs"
 }
