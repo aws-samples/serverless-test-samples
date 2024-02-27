@@ -1,5 +1,5 @@
 {
-    "title": "Java Starter Project",
+    "title": "Java tesitng starter project",
     "description": "This project contains unit, and integration tests for a pattern using API Gateway, AWS Lambda and Amazon S3.",
     "content_language": "English",
     "language": "Java",
@@ -33,30 +33,30 @@
     ],
     "authors": [
         {
-          "name": "Dhiraj Mahapatro",
-          "image": "https://media.licdn.com/dms/image/C5603AQEhBOOL_3ZtNQ/profile-displayphoto-shrink_400_400/0/1517684416967?e=1684368000&v=beta&t=9YKYj2QypL7Pm_LiVlWtTo_RBejVZt9U0aQSt1GIRys",
-          "bio": "Principal Specialist Solutions Architect at AWS",
-          "linkedin": "https://www.linkedin.com/in/dmahapatro",
-          "twitter": "https://twitter.com/dhirajmahapatro"
+            "name": "Dhiraj Mahapatro",
+            "image": "/assets/images/resources/contributors/dhiraj-mahapatro.jpg",
+            "bio": "Principal Specialist Solutions Architect at AWS",
+            "linkedin": "dmahapatro",
+            "twitter": "dhirajmahapatro"
         },
         {
-          "name": "Rahul Popat",
-          "image": "https://media.licdn.com/dms/image/C4E03AQFM5sRp_8nsnQ/profile-displayphoto-shrink_400_400/0/1594949331033?e=1684368000&v=beta&t=7plmbrKM3n92zwVx5YZ8kh0DOJY1NO-NZFkyPoHjq-k",
-          "bio": "Senior Specialist Solutions Architect at AWS",
-          "linkedin": "https://www.linkedin.com/in/rahulpopat"
+            "name": "Rahul Popat",
+            "image": "/assets/images/resources/rahul-popat.jpeg",
+            "bio": "Senior Specialist Solutions Architect at AWS",
+            "linkedin": "rahulpopat"
         },
         {
-          "name": "Aneel Murari",
-          "image": "https://media.licdn.com/dms/image/C4E03AQEKB5q7oE1Vug/profile-displayphoto-shrink_400_400/0/1517729240352?e=1684368000&v=beta&t=gqSVXveSHrXQK9ZHNIKB1ihV8gjqjOZ2gMTeW3_86mQ",
-          "bio": "Senior Specialist Solutions Architect at AWS",
-          "linkedin": "https://www.linkedin.com/in/aneelmurari"
+            "name": "Aneel Murari",
+            "imageURL": "/assets/images/resources/contributors/aneel.jpeg",
+            "bio": "Senior Specialist Solutions Architect at AWS",
+            "linkedin": "aneelmurari"
         },
         {
-          "name": "Matt Ridehalgh",
-          "image": "https://avatars.githubusercontent.com/u/9155962?v=4",
-          "bio": "Solutions Architect at AWS",
-          "linkedin": "https://www.linkedin.com/in/matthew-ridehalgh/",
-          "twitter": "https://twitter.com/mrideh"
+            "name": "Matt Ridehalgh",
+            "image": "/assets/external/testing-patterns/java-test-samples/apigw-lambda-list-s3-buckets/Matt Ridehalgh.png",
+            "bio": "Solutions Architect at AWS",
+            "linkedin": "matthew-ridehalgh",
+            "twitter": "mrideh"
         }
     ]
 }
