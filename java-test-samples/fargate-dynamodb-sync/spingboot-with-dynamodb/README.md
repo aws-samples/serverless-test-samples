@@ -4,7 +4,7 @@ Simple Dynamo DB & SQS integration with Spring Boot application to perform CRUD 
 ![customer_crud_app.png](doc%2Fcustomer_crud_app.png)
 
 ### Application
-Java17 maven application with Springboot 2.2.6 and AWS Java SDK 1.11.614 dependencies.
+Java17 maven application with Springboot 3.2.3 and AWS Java SDK 2.17.56 dependencies.
 
 ### How to run?
 1) Update application.properties with your AWS sqs queue name. If not already created, code will auto create it.

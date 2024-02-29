@@ -5,7 +5,7 @@ Java application is containerized & docker image pushed to ECR. Application is d
 ![customer_crud_app.png](doc%2Fcustomer_crud_app.png)
 
 ### Application
-Java17 maven application with Springboot 2.2.6 and AWS Java SDK 1.11.614 dependencies.
+Java17 maven application with Springboot 3.2.3 and AWS Java SDK 2.17.56 dependencies.
 
 ### Pre-requisites
 1) SQS Queue
@@ -77,6 +77,6 @@ Before you begin, ensure you have the following prerequisites:
 3. Artillery installed globally (npm install -g artillery)
 
 ### Steps to execute Load Test
-1. Create YAML test script files and define different sections    like load phases, target endpoints and scenario configurations
+1. Create YAML test script files and define different sections like load phases, target endpoints and scenario configurations
 2. Open command prompt and execute the YAML file from the repository where its placed.Create output file before test run
-3. Upon test completion open the output file through any browser chrome, firefox and view the results . When executed from AWS codebuild we can view the results directly in S3  b   bucket after test completes 
+3. Upon test completion open the output file through any browser chrome, firefox and view the results . When executed from AWS codebuild we can view the results directly in S3 bucket after test completes 
