@@ -22,7 +22,7 @@ import javax.validation.Valid;
 @RequestMapping("/orders")
 public class OrderController {
     private static final SqsClient SQS_CLIENT = SqsClient.builder().region(Region.US_EAST_1).build();
-    Logger logger = LoggerFactory.getLogger("Order Controller");
+    private static final Logger logger = Logger.getLogger(OrderController.class);
     @Value("${cloud.aws.region.end-point.uri}")
     private String endpoint;
     @Autowired
