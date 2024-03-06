@@ -11,12 +11,11 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication
 @ComponentScan("com.*")
 public class SpringDynamodbApplication {
-
+  private static final Logger logger = LoggerFactory.getLogger(SpringDynamodbApplication.class);
 	public static void main(String[] args) {
-		Logger logger = LoggerFactory.getLogger(SpringDynamodbApplication.class);
 		ConfigurableApplicationContext context = SpringApplication.run(SpringDynamodbApplication.class, args);
 		if(context.isActive()) {
-			logger.info("after application is started successfully");
+			logger.info("Application started successfully");
 			context.getBean(SqsService.class).sendMessage();
 		}
 	}

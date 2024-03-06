@@ -18,8 +18,8 @@ import com.amazonaws.services.dynamodbv2.util.TableUtils;
 
 @Configuration
 public class DynamoDBConfig {
+    private static final Logger logger = LoggerFactory.getLogger(DynamoDBConfig.class);
 
-    Logger logger = LoggerFactory.getLogger(DynamoDBConfig.class);
     @Value("${cloud.aws.region.static}")
     public String region;
 
