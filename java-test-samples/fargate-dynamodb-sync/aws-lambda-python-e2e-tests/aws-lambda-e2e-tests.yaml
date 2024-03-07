@@ -1,0 +1,11 @@
+actions:
+  - action: "Invoke function aws-lambda-e2eTests"
+    type: "LAMBDA"
+    region: "us-east-1"
+    function_name: "aws-lambda-e2eTests"
+    handler: "main.handler"
+    invocation_type: "RequestResponse"
+    log_type: "Tail"
+    payload: "{\r\n    \"revision\": \"${BUDDY_EXECUTION_REVISION}\"\r\n}"
+    integration_hash: "<<HASH_VALUE>>"
+    url: "http://<<HOST>>/"
