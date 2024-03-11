@@ -23,6 +23,7 @@ import javax.validation.Valid;
 public class OrderController {
     private static final SqsClient SQS_CLIENT = SqsClient.builder().region(Region.US_EAST_1).build();
     private static final Logger logger = Logger.getLogger(OrderController.class);
+    private static final ObjectMapper jsonMapper = new ObjectMapper();
     @Value("${cloud.aws.region.end-point.uri}")
     private String endpoint;
     @Autowired
@@ -38,12 +39,8 @@ public class OrderController {
         logger.info("Entered api: orders/place");
         try {
             request.setOrderId(Uuid.generateUuid());
-            ObjectMapper objectMapper = new ObjectMapper();
             String plainJson = null;
-            plainJson = objectMapper.writeValueAsString(request);
-            logger.info(plainJson);
-
-            logger.info("entered SQS Block");
+            plainJson = jsonMapper.writeValueAsString(request);
             SendMessageRequest messageRequest = SendMessageRequest.builder()
                     .queueUrl(endpoint)
                     .messageBody(plainJson)
@@ -52,7 +49,6 @@ public class OrderController {
         } catch (Exception e) {
             logger.error("Error while placing order");
         }
-
         OrderResponse orderResponse = new OrderResponse();
         orderResponse.setMessage("Order Request Sent Successfully");
         orderResponse.setUuid(request.getOrderId());

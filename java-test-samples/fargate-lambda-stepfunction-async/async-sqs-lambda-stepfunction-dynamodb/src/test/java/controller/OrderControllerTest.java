@@ -39,54 +39,51 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 @SpringBootTest(classes = {PropertyPlaceholderAutoConfiguration.class, DynamoDBConfig.class})
 public class OrderControllerTest {
-    @Mock
-    private AmazonDynamoDB amazonDynamoDBMock;
-    @Mock
-    private DynamoDBConfig dynamoDBConfig;
-    @InjectMocks
-    private OrderController orderController;
+  @Mock
+  private AmazonDynamoDB amazonDynamoDBMock;
+  @Mock
+  private DynamoDBConfig dynamoDBConfig;
+  @InjectMocks
+  private OrderController orderController;
+  private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Test
-    public void testPlaceOrder() throws JsonProcessingException {
-        OrderRequest request = new OrderRequest();
-        request.setOrderId(Uuid.generateUuid());
-        ObjectMapper objectMapper = new ObjectMapper();
-        String plainJson = objectMapper.writeValueAsString(request);
-        SqsClient sqsClientMock = mock(SqsClient.class);
+  @Test
+  public void testPlaceOrder() throws JsonProcessingException {
+    OrderRequest request = new OrderRequest();
+    request.setOrderId(Uuid.generateUuid());
+    String plainJson = objectMapper.writeValueAsString(request);
+    SqsClient sqsClientMock = mock(SqsClient.class);
 
-        SendMessageRequest mockMessageRequest = SendMessageRequest.builder()
-                .queueUrl("endpoint")
-                .messageBody(plainJson)
-                .build();
-        sqsClientMock.sendMessage(mockMessageRequest);
-        verify(sqsClientMock).sendMessage(mockMessageRequest);
-        OrderRequest orderRequest = new OrderRequest();
-        ResponseEntity<?> response = orderController.placeOrder(orderRequest);
-        verify(sqsClientMock).sendMessage(any(SendMessageRequest.class));
-        assertThat(response.getStatusCode().value()).isEqualTo(200);
-        OrderResponse orderResponse = (OrderResponse) response.getBody();
-        assertThat(orderResponse.getMessage()).isEqualTo("Order Request Sent Successfully");
-        assertThat(orderResponse.getUuid()).isNotNull();
-    }
+    SendMessageRequest mockMessageRequest = SendMessageRequest.builder()
+      .queueUrl("endpoint")
+      .messageBody(plainJson)
+      .build();
+    sqsClientMock.sendMessage(mockMessageRequest);
+    verify(sqsClientMock).sendMessage(mockMessageRequest);
+    OrderRequest orderRequest = new OrderRequest();
+    ResponseEntity<?> response = orderController.placeOrder(orderRequest);
+    verify(sqsClientMock).sendMessage(any(SendMessageRequest.class));
+    assertThat(response.getStatusCode().value()).isEqualTo(200);
+    OrderResponse orderResponse = (OrderResponse) response.getBody();
+    assertThat(orderResponse.getMessage()).isEqualTo("Order Request Sent Successfully");
+    assertThat(orderResponse.getUuid()).isNotNull();
+  }
 
-    @Test
-    public void testGetStatusByUuid() throws Exception {
+  @Test
+  public void testGetStatusByUuid() throws Exception {
+    String orderId = "abee61d5-e180-4d01-bdb5-f7ce31562a81";
+    GetItemResult result = new GetItemResult().withItem(Map.of("orderStatus", new AttributeValue("Order Request Sent Successfully")));
+    Mockito.lenient().when(amazonDynamoDBMock.getItem(any(GetItemRequest.class))).thenReturn(result);
+    dynamoDBConfig.getOrderStatus(orderId);
+    ResponseEntity<String> res = ResponseEntity.ok("Order Placed");
+    orderController.getStatusByUuid(orderId);
+    assertThat(result.getItem().get("orderStatus").getS()).isEqualTo("Order Request Sent Successfully");
+  }
 
-       String orderId = "abee61d5-e180-4d01-bdb5-f7ce31562a81";
-
-        GetItemResult result = new GetItemResult().withItem(Map.of("orderStatus", new AttributeValue("Order Request Sent Successfully")));
-        Mockito.lenient().when(amazonDynamoDBMock.getItem(any(GetItemRequest.class))).thenReturn(result);
-        dynamoDBConfig.getOrderStatus(orderId);
-        ResponseEntity<String> res = ResponseEntity.ok("Order Placed");
-        orderController.getStatusByUuid(orderId);
-        assertThat(result.getItem().get("orderStatus").getS()).isEqualTo("Order Request Sent Successfully");
-    }
-
-    @Test
-    public void testGetOrderStatusThrowsException() {
-        String orderId = "abee61d5-e180-4d01-bdb5-f7ce31562a81";
-
-        Mockito.when(dynamoDBConfig.getOrderStatus(orderId)).thenThrow(new OrderException("OrderId not found"));
-        assertThrows(OrderException.class, () -> orderController.getStatusByUuid(orderId));
-    }
+  @Test
+  public void testGetOrderStatusThrowsException() {
+    String orderId = "abee61d5-e180-4d01-bdb5-f7ce31562a81";
+    Mockito.when(dynamoDBConfig.getOrderStatus(orderId)).thenThrow(new OrderException("OrderId not found"));
+    assertThrows(OrderException.class, () -> orderController.getStatusByUuid(orderId));
+  }
 }
