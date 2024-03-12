@@ -1,4 +1,4 @@
-## Description 
+## Description
 ![async-arch.png](doc%2Fasync-arch.png)
 
 SQS->Lambda->Step Functions->DynamoDB
