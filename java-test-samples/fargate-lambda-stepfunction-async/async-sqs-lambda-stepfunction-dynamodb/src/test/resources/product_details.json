@@ -1,0 +1,20 @@
+{
+  "productId": {
+    "S": "P102"
+  },
+  "company": {
+    "S": "Samsung"
+  },
+  "model": {
+    "S": "A33"
+  },
+  "productName": {
+    "S": "Android"
+  },
+  "productStock": {
+    "N": "5"
+  },
+  "sellerId": {
+    "S": "S102"
+  }
+}

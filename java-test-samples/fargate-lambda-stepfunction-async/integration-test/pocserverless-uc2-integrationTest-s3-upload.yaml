@@ -1,0 +1,244 @@
+# This AWS SAM template has been generated from your function's configuration. If
+# your function has one or more triggers, note that the AWS resources associated
+# with these triggers aren't fully specified in this template and include
+# placeholder values. Open this template in AWS Application Composer or your
+# favorite IDE and modify it to specify a serverless application with other AWS
+# resources.
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: An AWS Serverless Application Model template describing your function.
+Resources:
+  pocserverlessuc2integrationTest2:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Description: ''
+      MemorySize: 128
+      Timeout: 30
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.10
+      Architectures:
+        - x86_64
+      EphemeralStorage:
+        Size: 512
+      EventInvokeConfig:
+        MaximumEventAgeInSeconds: 21600
+        MaximumRetryAttempts: 2
+      PackageType: Zip
+      Policies:
+        - Statement:
+            - Action:
+                - cloudformation:SetStackPolicy
+                - cloudformation:CancelUpdateStack
+                - cloudformation:UpdateTerminationProtection
+                - cloudformation:SignalResource
+                - iam:UpdateRoleDescription
+                - iam:DeleteRole
+                - iam:AttachRolePolicy
+                - cloudformation:CreateChangeSet
+                - iam:PutRolePolicy
+                - cloudformation:DeleteChangeSet
+                - cloudformation:ContinueUpdateRollback
+                - iam:DetachRolePolicy
+                - cloudformation:CreateStack
+                - iam:DeleteRolePolicy
+                - cloudformation:DeleteStack
+                - cloudformation:UpdateStack
+                - iam:DeleteServiceLinkedRole
+                - cloudformation:ExecuteChangeSet
+                - iam:DeletePolicy
+                - iam:CreatePolicyVersion
+                - iam:DeletePolicyVersion
+                - iam:SetDefaultPolicyVersion
+                - iam:UpdateAssumeRolePolicy
+              Resource:
+                - arn:aws:cloudformation:*:*:stack/StackSet-ITSLayer1*/*
+                - arn:aws:iam::*:role/ITSLayer1/*
+                - arn:aws:iam::*:role/AWSCloudFormationStackSetExecutionRole
+                - arn:aws:iam::*:role/ITSLayer1StackSetExecutionRole
+                - arn:aws:iam::*:policy/DenyITSLayer1PlatformModification
+                - arn:aws:iam::*:policy/ITS*
+                - arn:aws:iam::*:policy/ITSLayer1/*
+              Effect: Deny
+              Sid: DenyLayer1PlatformModification
+            - Action:
+                - iam:DeactivateMFADevice
+                - iam:CreateServiceSpecificCredential
+                - iam:DeleteGroup
+                - iam:UpdateGroup
+                - iam:CreateVirtualMFADevice
+                - iam:CreateSAMLProvider
+                - iam:CreateUser
+                - iam:CreateLoginProfile
+                - iam:AddUserToGroup
+                - iam:RemoveUserFromGroup
+                - iam:EnableMFADevice
+                - iam:ResyncMFADevice
+                - iam:DetachGroupPolicy
+                - iam:DetachUserPolicy
+                - iam:UpdateSAMLProvider
+                - iam:DeleteLoginProfile
+                - iam:PutGroupPolicy
+                - iam:UpdateLoginProfile
+                - iam:CreateGroup
+                - iam:DeleteAccountPasswordPolicy
+                - iam:UpdateUser
+                - iam:DeleteUserPolicy
+                - iam:AttachUserPolicy
+                - iam:DeleteUser
+                - iam:UpdateAccountPasswordPolicy
+                - iam:DeleteVirtualMFADevice
+                - iam:AttachGroupPolicy
+                - iam:PutUserPolicy
+                - iam:DeleteGroupPolicy
+                - iam:DeleteSAMLProvider
+              Resource: '*'
+              Effect: Deny
+              Sid: DenyAccountIAMActions
+            - Action:
+                - iam:AddClientIDToOpenIDConnectProvider
+                - iam:CreateOpenIDConnectProvider
+                - iam:DeleteOpenIDConnectProvider
+                - iam:RemoveClientIDFromOpenIDConnectProvider
+                - iam:TagOpenIDConnectProvider
+                - iam:UpdateOpenIDConnectProviderThumbprint
+                - iam:UntagOpenIDConnectProvider
+              Effect: Deny
+              Sid: DenyOIDCExceptForEKS
+              NotResource:
+                - arn:aws:iam::*:oidc-provider/oidc.eks.*.amazonaws.com
+                - arn:aws:iam::*:oidc-provider/oidc.eks.*.amazonaws.com/*
+            - Effect: Allow
+              Action:
+                - logs:CreateLogGroup
+              Resource: arn:aws:logs:us-east-1:413418342606:*
+            - Effect: Allow
+              Action:
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource:
+                - >-
+                  arn:aws:logs:us-east-1:413418342606:log-group:/aws/lambda/pocserverless-uc2-integrationTest-2:*
+            - Effect: Allow
+              Action:
+                - ec2:CreateNetworkInterface
+                - ec2:DescribeNetworkInterfaces
+                - ec2:DeleteNetworkInterface
+                - ec2:AssignPrivateIpAddresses
+                - ec2:UnassignPrivateIpAddresses
+              Resource: '*'
+            - Action:
+                - sqs:*
+              Effect: Allow
+              Resource: '*'
+            - Action:
+                - dynamodb:*
+                - dax:*
+                - application-autoscaling:DeleteScalingPolicy
+                - application-autoscaling:DeregisterScalableTarget
+                - application-autoscaling:DescribeScalableTargets
+                - application-autoscaling:DescribeScalingActivities
+                - application-autoscaling:DescribeScalingPolicies
+                - application-autoscaling:PutScalingPolicy
+                - application-autoscaling:RegisterScalableTarget
+                - cloudwatch:DeleteAlarms
+                - cloudwatch:DescribeAlarmHistory
+                - cloudwatch:DescribeAlarms
+                - cloudwatch:DescribeAlarmsForMetric
+                - cloudwatch:GetMetricStatistics
+                - cloudwatch:ListMetrics
+                - cloudwatch:PutMetricAlarm
+                - cloudwatch:GetMetricData
+                - datapipeline:ActivatePipeline
+                - datapipeline:CreatePipeline
+                - datapipeline:DeletePipeline
+                - datapipeline:DescribeObjects
+                - datapipeline:DescribePipelines
+                - datapipeline:GetPipelineDefinition
+                - datapipeline:ListPipelines
+                - datapipeline:PutPipelineDefinition
+                - datapipeline:QueryObjects
+                - ec2:DescribeVpcs
+                - ec2:DescribeSubnets
+                - ec2:DescribeSecurityGroups
+                - iam:GetRole
+                - iam:ListRoles
+                - kms:DescribeKey
+                - kms:ListAliases
+                - sns:CreateTopic
+                - sns:DeleteTopic
+                - sns:ListSubscriptions
+                - sns:ListSubscriptionsByTopic
+                - sns:ListTopics
+                - sns:Subscribe
+                - sns:Unsubscribe
+                - sns:SetTopicAttributes
+                - lambda:CreateFunction
+                - lambda:ListFunctions
+                - lambda:ListEventSourceMappings
+                - lambda:CreateEventSourceMapping
+                - lambda:DeleteEventSourceMapping
+                - lambda:GetFunctionConfiguration
+                - lambda:DeleteFunction
+                - resource-groups:ListGroups
+                - resource-groups:ListGroupResources
+                - resource-groups:GetGroup
+                - resource-groups:GetGroupQuery
+                - resource-groups:DeleteGroup
+                - resource-groups:CreateGroup
+                - tag:GetResources
+                - kinesis:ListStreams
+                - kinesis:DescribeStream
+                - kinesis:DescribeStreamSummary
+              Effect: Allow
+              Resource: '*'
+            - Action:
+                - cloudwatch:GetInsightRuleReport
+              Effect: Allow
+              Resource: arn:aws:cloudwatch:*:*:insight-rule/DynamoDBContributorInsights*
+            - Action:
+                - iam:PassRole
+              Effect: Allow
+              Resource: '*'
+              Condition:
+                StringLike:
+                  iam:PassedToService:
+                    - application-autoscaling.amazonaws.com
+                    - application-autoscaling.amazonaws.com.cn
+                    - dax.amazonaws.com
+            - Effect: Allow
+              Action:
+                - iam:CreateServiceLinkedRole
+              Resource: '*'
+              Condition:
+                StringEquals:
+                  iam:AWSServiceName:
+                    - replication.dynamodb.amazonaws.com
+                    - dax.amazonaws.com
+                    - dynamodb.application-autoscaling.amazonaws.com
+                    - contributorinsights.dynamodb.amazonaws.com
+                    - kinesisreplication.dynamodb.amazonaws.com
+            - Effect: Allow
+              Action:
+                - s3:*
+                - s3-object-lambda:*
+              Resource: '*'
+      SnapStart:
+        ApplyOn: None
+      Tags:
+        pocserverless: automation
+      Events:
+        SQS1:
+          Type: SQS
+          Properties:
+            Queue:
+              Fn::GetAtt:
+                - SQSQueue1
+                - Arn
+            BatchSize: 10
+      RuntimeManagementConfig: {}
+  SQSQueue1:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: SQSQueue1
+      SqsManagedSseEnabled: true

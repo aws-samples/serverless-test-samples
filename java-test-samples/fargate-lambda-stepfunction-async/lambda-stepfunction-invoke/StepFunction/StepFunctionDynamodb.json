@@ -1,0 +1,81 @@
+{
+  "Comment": "This will check the provided product quantities are available in DynamoDb and based on the results order place or order reject records will be inserted into DynamoDb",
+  "StartAt": "ProductAvailabilityCheck",
+  "States": {
+    "ProductAvailabilityCheck": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:dynamodb:query",
+      "Next": "Is Product Available",
+      "Parameters": {
+        "TableName": "product_details",
+        "ProjectionExpression": "sellerId",
+        "KeyConditionExpression": "productId = :val",
+        "FilterExpression": "productStock >= :q",
+        "ExpressionAttributeValues": {
+          ":q": {
+            "N.$": "$.quantity"
+          },
+          ":val": {
+            "S.$": "$.productId"
+          }
+        }
+      },
+      "ResultPath": "$.Items"
+    },
+    "Is Product Available": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.Items.Items[0].sellerId",
+          "IsPresent": true,
+          "Next": "Flatten-Order",
+          "Comment": "Yes"
+        }
+      ],
+      "Default": "Flatten-Reject"
+    },
+    "Flatten-Order": {
+      "Type": "Pass",
+      "Parameters": {
+        "orderId.$": "$.orderId",
+        "productId.$": "$.productId",
+        "company.$": "$.company",
+        "customerId.$": "$.customerId",
+        "deliveryAddressCode.$": "$.deliveryAddressCode",
+        "model.$": "$.model",
+        "productName.$": "$.productName",
+        "quantity.$": "$.quantity",
+        "sellerId.$": "$.Items.Items[0].sellerId",
+        "orderStatus": "Order Placed"
+      },
+      "ResultPath": "$.item",
+      "Next": "PlaceOrder"
+    },
+    "Flatten-Reject": {
+      "Type": "Pass",
+      "Parameters": {
+        "orderId.$": "$.orderId",
+        "productId.$": "$.productId",
+        "company.$": "$.company",
+        "customerId.$": "$.customerId",
+        "deliveryAddressCode.$": "$.deliveryAddressCode",
+        "model.$": "$.model",
+        "productName.$": "$.productName",
+        "quantity.$": "$.quantity",
+        "orderStatus": "Order Rejected"
+      },
+      "ResultPath": "$.item",
+      "Next": "PlaceOrder"
+    },
+    "PlaceOrder": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::dynamodb:putItem",
+      "Parameters": {
+        "TableName": "order_details",
+        "Item.$": "$.item"
+      },
+      "ResultPath": "$.output",
+      "End": true
+    }
+  }
+}

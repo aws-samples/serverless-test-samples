@@ -1,0 +1,170 @@
+# This AWS SAM template has been generated from your function's configuration. If
+# your function has one or more triggers, note that the AWS resources associated
+# with these triggers aren't fully specified in this template and include
+# placeholder values. Open this template in AWS Application Composer or your
+# favorite IDE and modify it to specify a serverless application with other AWS
+# resources.
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: An AWS Serverless Application Model template describing your function.
+Resources:
+  pocserverlessuc2integrationTest:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Description: ''
+      MemorySize: 128
+      Timeout: 10
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.10
+      Architectures:
+        - arm64
+      EphemeralStorage:
+        Size: 512
+      Environment:
+        Variables:
+          API_URL: http://<<HOST>>/api/orders/place
+          REGION: us-east-1
+          TARGET_QUEUE: >-
+            https://sqs.us-east-1.amazonaws.com/<<XXXXXXXX>>/pocserverless-sqs-test-dest
+      EventInvokeConfig:
+        DestinationConfig:
+          OnSuccess:
+            Destination: arn:aws:sqs:us-east-1:<<XXXXXXXX>>:pocserverless-sqs-test-dest
+            Type: SQS
+        MaximumEventAgeInSeconds: 21600
+        MaximumRetryAttempts: 2
+      Layers:
+        - >-
+          arn:aws:lambda:us-east-1:<<XXXXXXXX>>:layer:AWSSDKPandas-Python310-Arm64:7
+      PackageType: Zip
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - logs:CreateLogGroup
+              Resource: arn:aws:logs:us-east-1:<<XXXXXXXX>>:*
+            - Effect: Allow
+              Action:
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource:
+                - >-
+                  arn:aws:logs:us-east-1:<<XXXXXXXX>>:log-group:/aws/lambda/pocserverless-uc2-integrationTest:*
+            - Action:
+                - cloudformation:SetStackPolicy
+                - cloudformation:CancelUpdateStack
+                - cloudformation:UpdateTerminationProtection
+                - cloudformation:SignalResource
+                - iam:UpdateRoleDescription
+                - iam:DeleteRole
+                - iam:AttachRolePolicy
+                - cloudformation:CreateChangeSet
+                - iam:PutRolePolicy
+                - cloudformation:DeleteChangeSet
+                - cloudformation:ContinueUpdateRollback
+                - iam:DetachRolePolicy
+                - cloudformation:CreateStack
+                - iam:DeleteRolePolicy
+                - cloudformation:DeleteStack
+                - cloudformation:UpdateStack
+                - iam:DeleteServiceLinkedRole
+                - cloudformation:ExecuteChangeSet
+                - iam:DeletePolicy
+                - iam:CreatePolicyVersion
+                - iam:DeletePolicyVersion
+                - iam:SetDefaultPolicyVersion
+                - iam:UpdateAssumeRolePolicy
+              Resource:
+                - arn:aws:cloudformation:*:*:stack/StackSet-ITSLayer1*/*
+                - arn:aws:iam::*:role/ITSLayer1/*
+                - arn:aws:iam::*:role/AWSCloudFormationStackSetExecutionRole
+                - arn:aws:iam::*:role/ITSLayer1StackSetExecutionRole
+                - arn:aws:iam::*:policy/DenyITSLayer1PlatformModification
+                - arn:aws:iam::*:policy/ITS*
+                - arn:aws:iam::*:policy/ITSLayer1/*
+              Effect: Deny
+              Sid: DenyLayer1PlatformModification
+            - Action:
+                - iam:DeactivateMFADevice
+                - iam:CreateServiceSpecificCredential
+                - iam:DeleteGroup
+                - iam:UpdateGroup
+                - iam:CreateVirtualMFADevice
+                - iam:CreateSAMLProvider
+                - iam:CreateUser
+                - iam:CreateLoginProfile
+                - iam:AddUserToGroup
+                - iam:RemoveUserFromGroup
+                - iam:EnableMFADevice
+                - iam:ResyncMFADevice
+                - iam:DetachGroupPolicy
+                - iam:DetachUserPolicy
+                - iam:UpdateSAMLProvider
+                - iam:DeleteLoginProfile
+                - iam:PutGroupPolicy
+                - iam:UpdateLoginProfile
+                - iam:CreateGroup
+                - iam:DeleteAccountPasswordPolicy
+                - iam:UpdateUser
+                - iam:DeleteUserPolicy
+                - iam:AttachUserPolicy
+                - iam:DeleteUser
+                - iam:UpdateAccountPasswordPolicy
+                - iam:DeleteVirtualMFADevice
+                - iam:AttachGroupPolicy
+                - iam:PutUserPolicy
+                - iam:DeleteGroupPolicy
+                - iam:DeleteSAMLProvider
+              Resource: '*'
+              Effect: Deny
+              Sid: DenyAccountIAMActions
+            - Action:
+                - iam:AddClientIDToOpenIDConnectProvider
+                - iam:CreateOpenIDConnectProvider
+                - iam:DeleteOpenIDConnectProvider
+                - iam:RemoveClientIDFromOpenIDConnectProvider
+                - iam:TagOpenIDConnectProvider
+                - iam:UpdateOpenIDConnectProviderThumbprint
+                - iam:UntagOpenIDConnectProvider
+              Effect: Deny
+              Sid: DenyOIDCExceptForEKS
+              NotResource:
+                - arn:aws:iam::*:oidc-provider/oidc.eks.*.amazonaws.com
+                - arn:aws:iam::*:oidc-provider/oidc.eks.*.amazonaws.com/*
+            - Effect: Allow
+              Action:
+                - ec2:CreateNetworkInterface
+                - ec2:DescribeNetworkInterfaces
+                - ec2:DeleteNetworkInterface
+                - ec2:AssignPrivateIpAddresses
+                - ec2:UnassignPrivateIpAddresses
+              Resource: '*'
+            - Action:
+                - sqs:*
+              Effect: Allow
+              Resource: '*'
+      SnapStart:
+        ApplyOn: None
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-<<XXXXXXXX>>
+        SubnetIds:
+          - subnet-<<XXXXXXXX>>
+          - subnet-<<XXXXXXXX>>
+        Ipv6AllowedForDualStack: false
+      Events:
+        SQS1:
+          Type: SQS
+          Properties:
+            Queue:
+              Fn::GetAtt:
+                - SQSQueue1
+                - Arn
+            BatchSize: 10
+      RuntimeManagementConfig: {}
+  SQSQueue1:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: SQSQueue1
+      SqsManagedSseEnabled: true
