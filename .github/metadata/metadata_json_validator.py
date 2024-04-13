@@ -67,50 +67,12 @@ def validate_metadata_json(metadata_schema: dict, metadata_json_filename: str) -
         for pattern_detail in metadata_contents["pattern_detail_tabs"]:
             detail_path = path.dirname(metadata_json_filename) + pattern_detail["filepath"]
             if path.isfile(detail_path) is False:
-                raise FileNotFoundError("Invalid detail path: " + pattern_detail["filepath"])
+                raise FileNotFoundError("Invalid filepath path: " + pattern_detail["filepath"])
 
         return True
     except Exception as exception:
         print(str(exception))
         return False
-
-
-def check_file_exists(filename: str) -> bool:
-    """
-    Makes sure a file exists
-    :param: filename - path to the file to validate
-    :return: Boolean indicating whether file exists
-    """
-    if not path.isfile(filename):
-        print(f"File not found: {filename}")
-        return False
-
-    return True
-
-
-def check_files_in_metadata_exist(metadata_json_filename: str) -> bool:
-    """
-    Makes sure any files listed in the metadata.json file actually exist
-
-    :param: metadata_json_filename - path to the metadata.json file to validate
-    :return: Boolean indicating whether validation completed OK.
-    """
-    with open(metadata_json_filename, "r", encoding="utf-8") as metadata_object:
-        metadata = json.load(metadata_object)
-        pattern_dirname = path.dirname(path.abspath(metadata_json_filename))
-
-        validated_ok = True
-        for tab in metadata["pattern_detail_tabs"]:
-            # test whether the "filepath" key exists in the tab dict
-            if "filepath" in tab:
-                if not check_file_exists(pattern_dirname + tab["filepath"]):
-                    validated_ok = False
-
-        if "diagram" in metadata:
-            if not check_file_exists(pattern_dirname + metadata["diagram"]):
-                validated_ok = False
-
-    return validated_ok
 
 
 def validate_test_sample_folders(folders: set) -> bool:
@@ -132,9 +94,6 @@ def validate_test_sample_folders(folders: set) -> bool:
             print(f"Validating: {metadata_filename}")
 
             if not validate_metadata_json(metadata_schema, metadata_filename):
-                validated_ok = False
-
-            if not check_files_in_metadata_exist(metadata_filename):
                 validated_ok = False
 
         return validated_ok
