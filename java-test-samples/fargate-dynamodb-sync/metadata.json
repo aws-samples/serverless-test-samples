@@ -1,0 +1,52 @@
+{
+    "title": "Deloitte - Testing a Fargate application with synchronous serverless test framework",
+    "description": "This project, from AWS partner Deloitte, shows how to use a synchronous serverless test harness to exercise a Spring Boot container-based workload running on AWS Fargate.",
+    "content_language": "English",
+    "language": "Java",
+    "type": [ "Unit", "Integration", "End to end", "Load" ],
+    "diagram": "/doc/Deloitte_logo.png",
+    "framework": "",
+    "services": ["lambda","fargate","ecs","dynamodb","sqs"],
+    "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
+    "pattern_source": "Deloitte",
+    "pattern_detail_tabs": [
+        {
+            "title": "Unit Tests",
+            "filepath": "/spingboot-with-dynamodb/src/test/java/com/amazon/aws/sample/controller/CustomerControllerTest.java"
+        },
+        {
+            "title": "End to end Tests",
+            "filepath": "/aws-lambda-python-e2e-tests/tests/create_test.py"
+        },
+        {
+            "title": "Load Tests",
+            "filepath": "/load-tests/README.md"
+        }
+    ],
+    "authors": [
+        {
+          "name": "Harsha Vardhan Allena",
+          "image": "https://github.com/aws-samples/serverless-test-samples/blob/main/java-test-samples/fargate-dynamodb-sync/doc/images/Harsha_Vardhan_Allena.png",
+          "bio": "Senior Consultant at Deloitte",
+          "linkedin": "",
+          "github": "https://github.com/harsha050393",
+          "twitter": ""
+        },
+		{
+          "name": "Aruna Shanubhogue",
+          "image": "https://github.com/aws-samples/serverless-test-samples/blob/main/java-test-samples/fargate-dynamodb-sync/doc/images/Aruna_Shanubhogue.png",
+          "bio": "Consultant at Deloitte",
+          "linkedin": "",
+          "github": "https://github.com/arunasha9",
+          "twitter": ""
+		},
+		 {
+          "name": "Indrajit Bose",
+          "image": "https://github.com/aws-samples/serverless-test-samples/blob/main/java-test-samples/fargate-dynamodb-sync/doc/images/Indrajit_Bose.jpg",
+          "bio": "Consultant at Deloitte",
+          "linkedin": "",
+          "github": "https://github.com/indrajiit/ibosePerf",
+          "twitter": ""
+        }		 
+    ]
+}
