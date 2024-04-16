@@ -1,4 +1,0 @@
-aws_lambda_powertools
-jmespath
-fastjsonschema
-github_action_utils
