@@ -32,7 +32,7 @@ This project expands on the [apigw-lambda](../apigw-lambda/README.md) introducto
 
 The  System Under Test (SUT) in this pattern is Lambda layer which makes calls to other AWS services and is referenced by a Lambda function.
 
-![Lambda Layer SUT](../../_img/pattern_05_lambda_layer_sut.png)
+![Lambda Layer SUT](./img/pattern_05_lambda_layer_sut.png)
 
 [Top](#contents)
 
@@ -54,7 +54,7 @@ The Lambda layer test directly invokes the individual methods and functions in t
 
 This pattern uses a simple test framework, with the test harness directly calling the Lambda function handlers and Lambda layer code.  No cloud resources or stack emulation are required.
 
-![Lambda Layer SUT](../../_img/pattern_05_lambda_layer_test.jpg)
+![Lambda Layer SUT](./img/pattern_05_lambda_layer_test.jpg)
 
 [Top](#contents)
 

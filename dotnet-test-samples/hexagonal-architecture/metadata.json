@@ -28,8 +28,8 @@
           "name": "Dror Helper",          
           "image": "https://media.licdn.com/dms/image/C4D03AQGbBwfXtx0Zmg/profile-displayphoto-shrink_800_800/0/1638988505074?e=1712188800&v=beta&t=gzxBAr2Q9PGgXvI9t9TQzIdi_apxEq3VEvO12ClTMy8",
           "bio": "Senior Microsoft Specialist Solution Architect at AWS",
-          "linkedin": "https://www.linkedin.com/in/drorhelper/",
-          "twitter": "https://twitter.com/dhelper"
+          "linkedin": "drorhelper",
+          "twitter": "dhelper"
         }        
     ]
 }

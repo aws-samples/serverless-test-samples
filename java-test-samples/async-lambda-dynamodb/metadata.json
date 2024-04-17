@@ -1,0 +1,28 @@
+{
+    "title": "Asynchronous Integration Test with Lambda Event Listener and DynamoDB",
+    "description": "This pattern uses a Lambda function configured to be an event listener to receive the System Under Test's output data, with DynamoDB configured to be the event listener storage option",
+    "content_language": "English",
+    "language": "Java",
+    "type": ["Unit"],
+    "diagram": "/img/lambda-dynamo.png",
+    "pattern_source": "AWS",
+    "git_repo_url": "https://github.com/aws-samples/serverless-test-samples/tree/main/java-test-samples/async-lambda-dynamodb",
+    "services": ["Amazon Lambda", "Amazon DynamoDB"],
+    "pattern_detail_tabs": [
+        {
+            "title": "Asynchronous Tests",
+            "filepath": "/java-test-samples/async-lambda-dynamodb/src/test/java/com/amazon/aws/sample/TestAsyncTransformation.java"
+        }
+    ],
+    "authors": [
+        {
+            "name": "Gustavo Martim",
+            "image": "https://media.licdn.com/dms/image/C4E03AQEFvOn4UHIsMg/profile-displayphoto-shrink_800_800/0/1618931714496?e=1718841600&v=beta&t=rOxngzc-ho6V0yYDvEZGkzx9vJSJojWpeaF0iUqAu7A",
+            "bio": "Cloud Application Architect at AWS",
+            "linkedin": "gumar"
+        }
+    ],
+    "rootFolder": "java-test-samples",
+    "folderName": "async-lambda-dynamodb",
+    "path": "java-test-samples/async-lambda-dynamodb"
+}

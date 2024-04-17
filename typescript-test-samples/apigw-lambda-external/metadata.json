@@ -8,6 +8,7 @@
   "framework": "SAM",
   "services": ["apigw", "lambda"],
   "git_repo_url": "https://github.com/aws-samples/serverless-test-samples/tree/main/typescript-test-samples/apigw-lambda-external",
+  "pattern_source": "Customer",
   "pattern_detail_tabs": [
     {
       "title": "Application Code",

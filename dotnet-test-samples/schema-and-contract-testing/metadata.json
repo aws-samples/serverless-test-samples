@@ -1,0 +1,33 @@
+{
+    "title": ".NET: Schema and Contract testing for Event-Driven Architectures",
+    "description": "This pattern contains schema and contract tests to prevent event schema changes from breaking consumer applications",
+    "content_language": "English",
+    "language": ".NET",
+    "type": ["Schema","Contract"],
+    "diagram": "/img/contract_testing.png",
+    "pattern_source": "AWS",
+    "git_repo_url": "https://github.com/aws-samples/serverless-test-samples/tree/main/dotnet-test-samples/schema-and-contract-testing",
+    "services": ["Amazon EventBridge"],
+    "pattern_detail_tabs": [
+        {
+            "title": "Schema Test",
+            "filepath": "/tests/SchemaTesting.UnitTest/SchemaTests.cs"
+        },
+        {
+            "title": "Bash Script",
+            "filepath": "/tests/SchemaTesting.UnitTest/ContractTests.cs"
+        }
+    ],
+    "authors": [
+        {
+            "name": "James Eastham",
+            "image": "/assets/images/resources/contributors/james-eastham.jpg",
+            "bio": "Senior Cloud Architect at AWS",
+            "linkedin": "james-eastham",
+            "twitter": "plantpowerjames"
+        }
+    ],
+    "rootFolder": "dotnet-test-samples",
+    "folderName": "schema-and-contract-testing",
+    "path": "dotnet-test-samples/schema-and-contract-testing"
+}

@@ -6,7 +6,7 @@
     "type": [
         "Unit"
     ],
-    "framework": "Maven",
+    "diagram": "/img/contract_testing.png",
     "services": [
         "eventbridge"
     ],

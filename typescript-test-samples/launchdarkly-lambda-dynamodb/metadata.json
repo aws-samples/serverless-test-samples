@@ -8,7 +8,7 @@
   "framework": "CDK",
   "services": ["lambda", "dynamodb"],
   "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
-  "pattern_source": "AWS",
+  "pattern_source": "Customer",
   "pattern_detail_tabs": [
     {
       "title": "Lambda function using LaunchDarkly",
@@ -28,7 +28,7 @@
       "name": "Brian Rinaldi",
       "image": "https://media.licdn.com/dms/image/C4E03AQFP0OYEXUimMw/profile-displayphoto-shrink_800_800/0/1647523541573?e=1710979200&v=beta&t=brt8s3TkFNhKlLFS93pkTXj6kitXFmJHDE2AlNvpOYU",
       "bio": "Developer Experience Engineer at LaunchDarkly",
-      "linkedin": "https://www.linkedin.com/in/brianrinaldi/"
+      "linkedin": "brianrinaldi"
     }
   ]
 }

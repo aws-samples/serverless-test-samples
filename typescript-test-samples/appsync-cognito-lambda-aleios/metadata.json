@@ -8,7 +8,7 @@
   "framework": "CDK",
   "services": ["appsync", "lambda", "cognito"],
   "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
-  "pattern_source": "aleios",
+  "pattern_source": "Customer",
   "pattern_detail_tabs": [
     {
       "title": "Application Code",

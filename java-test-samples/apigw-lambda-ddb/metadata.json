@@ -32,20 +32,20 @@
           "name": "Dhiraj Mahapatro",
           "image": "https://media.licdn.com/dms/image/C5603AQEhBOOL_3ZtNQ/profile-displayphoto-shrink_400_400/0/1517684416967?e=1684368000&v=beta&t=9YKYj2QypL7Pm_LiVlWtTo_RBejVZt9U0aQSt1GIRys",
           "bio": "Principal Specialist Solutions Architect at AWS",
-          "linkedin": "https://www.linkedin.com/in/dmahapatro",
-          "twitter": "https://twitter.com/dhirajmahapatro"
+          "linkedin": "dmahapatro",
+          "twitter": "dhirajmahapatro"
         },
         {
           "name": "Rahul Popat",
           "image": "https://media.licdn.com/dms/image/C4E03AQFM5sRp_8nsnQ/profile-displayphoto-shrink_400_400/0/1594949331033?e=1684368000&v=beta&t=7plmbrKM3n92zwVx5YZ8kh0DOJY1NO-NZFkyPoHjq-k",
           "bio": "Senior Specialist Solutions Architect at AWS",
-          "linkedin": "https://www.linkedin.com/in/rahulpopat"
+          "linkedin": "rahulpopat"
         },
         {
           "name": "Aneel Murari",
           "image": "https://media.licdn.com/dms/image/C4E03AQEKB5q7oE1Vug/profile-displayphoto-shrink_400_400/0/1517729240352?e=1684368000&v=beta&t=gqSVXveSHrXQK9ZHNIKB1ihV8gjqjOZ2gMTeW3_86mQ",
           "bio": "Senior Specialist Solutions Architect at AWS",
-          "linkedin": "https://www.linkedin.com/in/aneelmurari"
+          "linkedin": "aneelmurari"
         }
     ]
 }

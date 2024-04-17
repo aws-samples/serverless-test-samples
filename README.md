@@ -55,8 +55,8 @@ Event-driven architectures (EDA) are an architecture style that uses events and 
 ---|---|---
 |[S3, Lambda](./python-test-samples/async-lambda-dynamodb)|Python|This is a great starter project for learning how to test async EDA.|
 |[Schemas and Contracts](./typescript-test-samples/schema-and-contract-testing)|TypeScript|Event driven architectures decouple producers and consumers at the infrastructure layer, but these resources may still be coupled at the application layer by the event contract. Learn how to test for breaking changes in the contract.|
-|[S3, Lambda, DynamoDB](./dotnet-test-samples/async-architectures/async-lambda-dynamodb)|.NET|This example shows how to test async system by using DynamoDB during to store incoming asynchronous events during testing|
-|[S3, Lambda, SQS](./dotnet-test-samples/async-architectures/async-lambda-sqs)|.NET|An example to how to test asynchronous workflow by long polling the queue that resulting messages are sent to.|
+|[S3, Lambda, DynamoDB](./dotnet-test-samples/async-lambda-dynamodb)|.NET|This example shows how to test async system by using DynamoDB during to store incoming asynchronous events during testing|
+|[S3, Lambda, SQS](./dotnet-test-samples/async-lambda-sqs)|.NET|An example to how to test asynchronous workflow by long polling the queue that resulting messages are sent to.|
 
 ## Architectural patterns
 |Pattern|Services used|Language|Description|
