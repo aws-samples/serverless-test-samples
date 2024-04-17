@@ -8,7 +8,6 @@ This portion of the repository contains test samples for Java based serverless p
 |[Step Functions Local Testing](step-functions-local)|An example of testing Step Functions workflow locally using JUnit, Spock test framework, and Testcontainers.|
 |[Springboot with DynamoDB Application](fargate-dynamodb-sync)| Synchronous sample SpringBoot application written in Java which performs customer CRUD operations. AWS serverless services like Amazon API Gateway, ALB, ECR, Fargate, DynamoDB & SQS being used to host and test the application flow.|
 |[GraphQL using AppSync](java-appsync-sam)| An implementation of the backend GraphQL API using Java with AWS Java SDK 2.x and AWS SAM. |
-|[Step Functions Local](./step-functions-local)| This project shows a technique for testing an AWS Step Functions workflow locally | 
 
 ## Test Asynchronous Architectures
 In a synchronous system, a calling service makes a request to a receiving service and then blocks, waiting for the receiver to complete the operation and return a result. In contrast, in an **asynchronous system**, a caller makes a request to a receiving system, which typically returns an immediate acknowledgement but then performs the requested operation at a later time. Asynchronous systems are frequently designed using event-driven architectures. These types of systems have several advantages including increased reliability, greater control over load processing, and improved scalability. However, testing these systems can present unique challenges.
