@@ -1,0 +1,4 @@
+fastjsonschema
+PyGithub
+aws_lambda_powertools
+jmespath
