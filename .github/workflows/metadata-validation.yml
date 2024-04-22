@@ -50,4 +50,4 @@ jobs:
         ALL_CHANGED_FILES: ${{ steps.get_changed.outputs.all_changed_files }}
         PR_NUMBER: ${{ github.event.number }}
         GITHUB_AUTOMATION: true
-        GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
