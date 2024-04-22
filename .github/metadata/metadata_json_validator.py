@@ -64,9 +64,11 @@ def github_pull_request_comment(comment: str):
 
         # Fetch the pull request number from the PR_NUMBER enviroment variable
         pr_number = os.environ.get('PR_NUMBER')
-        if pr_number is None or len(pr_number) == 0:
+        if pr_number is None or len(int(pr_number)) == 0:
             print("PR_NUMBER environment variable not set. Should be the pull request number")
             sys.exit(3)
+        else:
+            pr_number = int(pr_number)
 
         # Fetch the Github Token from the GITHUB_TOKEN enviroment variable
         github_token = os.environ.get('GITHUB_TOKEN')
