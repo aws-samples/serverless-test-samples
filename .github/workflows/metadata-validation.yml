@@ -23,6 +23,16 @@ jobs:
         files: "*-test-samples/**"
         separator: ","
 
+    - name: Echo changed files
+      id: setfiles
+      run: |
+        files=${{ steps.get_changed.outputs.all_changed_files }}
+        echo $files
+        echo "FILES=$files" >> $GITHUB_OUTPUT
+        if [[ ! -z "$files" ]]; then
+          echo "run_validate=true" >> $GITHUB_OUTPUT
+        fi
+
     - name: Set up Python 3.10
       if: ${{ steps.setfiles.outputs.run_validate == 'true' }}
       uses: actions/setup-python@v5
