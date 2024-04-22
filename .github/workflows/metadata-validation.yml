@@ -20,7 +20,7 @@ jobs:
       id: get_changed
       uses: tj-actions/changed-files@v44
       with:
-        files: "*-test-samples/**/*"
+        files: "*-test-samples/**"
         separator: ","
 
     - name: Set up Python 3.10
