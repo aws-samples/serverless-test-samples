@@ -1,0 +1,38 @@
+{
+    "title": "Deloitte - Testing a Fargate application with asynchronous serverless test framework",
+    "description": "This project, from AWS partner Deloitte, shows how to use an asynchronous serverless test harness to exercise a Spring Boot container-based workload running on AWS Fargate.",
+    "content_language": "English",
+    "language": "Java",
+    "type": [ "Unit", "Integration", "End to end", "Load" ],
+    "diagram": "/doc/Deloitte_logo.png",
+    "services": ["lambda","fargate","ecs","dynamodb","sqs"],
+    "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
+    "pattern_source": "Customer",
+    "pattern_detail_tabs": [
+        {
+            "title": "Unit Tests",
+            "filepath": "/async-sqs-lambda-stepfunction-dynamodb/src/test/java/controller/OrderControllerTest.java"
+        },
+        {
+            "title": "End to end Tests",
+            "filepath": "/integration-test/lambda_function_s3_upload.py"
+        }
+    ],
+    "authors": [
+        {
+          "name": "Ravindra Palisetti",
+          "image": "https://github.com/aws-samples/serverless-test-samples/blob/main/java-test-samples/fargate-lambda-stepfunction-async/doc/authors/Ravindra.png",
+          "bio": "Technical Manager at Deloitte"
+        },
+		{
+          "name": "Venkatesh Peddada",
+          "image": "https://github.com/aws-samples/serverless-test-samples/blob/main/java-test-samples/fargate-lambda-stepfunction-async/doc/authors/Venkatesh.png",
+          "bio": "Technical Manager at Deloitte"
+		},
+		 {
+          "name": "Evani Kranthi",
+          "image": "https://github.com/aws-samples/serverless-test-samples/blob/main/java-test-samples/fargate-lambda-stepfunction-async/doc/authors/Kranthi.png",
+          "bio": "Specialist Senior at Deloitte"
+        }		 
+    ]
+}
