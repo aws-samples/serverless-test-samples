@@ -26,7 +26,7 @@
     "authors": [
         {
           "name": "Harsha Vardhan Allena",
-          "image": "https://github.com/aws-samples/serverless-test-samples/blob/main/java-test-samples/fargate-dynamodb-sync/doc/images/Harsha_Vardhan_Allena.png",
+          "image": "https://github.com/aws-samples/serverless-test-samples/blob/main/java-test-samples/fargate-dynamodb-sync/doc/authors/Harsha_Vardhan_Allena.png",
           "bio": "Senior Consultant at Deloitte",
           "linkedin": "",
           "github": "https://github.com/harsha050393",
@@ -34,7 +34,7 @@
         },
 		{
           "name": "Aruna Shanubhogue",
-          "image": "https://github.com/aws-samples/serverless-test-samples/blob/main/java-test-samples/fargate-dynamodb-sync/doc/images/Aruna_Shanubhogue.png",
+          "image": "https://github.com/aws-samples/serverless-test-samples/blob/main/java-test-samples/fargate-dynamodb-sync/doc/authors/Aruna_Shanubhogue.png",
           "bio": "Consultant at Deloitte",
           "linkedin": "",
           "github": "https://github.com/arunasha9",
@@ -42,7 +42,7 @@
 		},
 		 {
           "name": "Indrajit Bose",
-          "image": "https://github.com/aws-samples/serverless-test-samples/blob/main/java-test-samples/fargate-dynamodb-sync/doc/images/Indrajit_Bose.jpg",
+          "image": "https://github.com/aws-samples/serverless-test-samples/blob/main/java-test-samples/fargate-dynamodb-sync/doc/authors/Indrajit_Bose.jpg",
           "bio": "Consultant at Deloitte",
           "linkedin": "",
           "github": "https://github.com/indrajiit/ibosePerf",
