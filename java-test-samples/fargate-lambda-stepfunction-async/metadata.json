@@ -7,7 +7,7 @@
     "diagram": "/doc/Deloitte_logo.png",
     "services": ["lambda","fargate","ecs","dynamodb","sqs"],
     "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
-    "pattern_source": "Deloitte",
+    "pattern_source": "Customer",
     "pattern_detail_tabs": [
         {
             "title": "Unit Tests",
