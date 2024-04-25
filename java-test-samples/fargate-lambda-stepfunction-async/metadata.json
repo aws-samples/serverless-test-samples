@@ -5,7 +5,6 @@
     "language": "Java",
     "type": [ "Unit", "Integration", "End to end", "Load" ],
     "diagram": "/doc/Deloitte_logo.png",
-    "framework": "",
     "services": ["lambda","fargate","ecs","dynamodb","sqs"],
     "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
     "pattern_source": "Deloitte",
