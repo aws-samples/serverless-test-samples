@@ -22,26 +22,17 @@
         {
           "name": "Ravindra Palisetti",
           "image": "https://github.com/aws-samples/serverless-test-samples/blob/main/java-test-samples/fargate-lambda-stepfunction-async/doc/authors/Ravindra.png",
-          "bio": "Technical Manager at Deloitte",
-          "linkedin": "",
-          "github": "",
-          "twitter": ""
+          "bio": "Technical Manager at Deloitte"
         },
 		{
           "name": "Venkatesh Peddada",
           "image": "https://github.com/aws-samples/serverless-test-samples/blob/main/java-test-samples/fargate-lambda-stepfunction-async/doc/authors/Venkatesh.png",
-          "bio": "Technical Manager at Deloitte",
-          "linkedin": "",
-          "github": "",
-          "twitter": ""
+          "bio": "Technical Manager at Deloitte"
 		},
 		 {
           "name": "Evani Kranthi",
           "image": "https://github.com/aws-samples/serverless-test-samples/blob/main/java-test-samples/fargate-lambda-stepfunction-async/doc/authors/Kranthi.png",
-          "bio": "Specialist Senior at Deloitte",
-          "linkedin": "",
-          "github": "",
-          "twitter": ""
+          "bio": "Specialist Senior at Deloitte"
         }		 
     ]
 }
