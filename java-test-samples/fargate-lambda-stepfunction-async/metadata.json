@@ -11,7 +11,7 @@
     "pattern_detail_tabs": [
         {
             "title": "Unit Tests",
-            "filepath": "/src/test/java/controller/OrderControllerTest.java"
+            "filepath": "/async-sqs-lambda-stepfunction-dynamodb/src/test/java/controller/OrderControllerTest.java"
         },
         {
             "title": "End to end Tests",
