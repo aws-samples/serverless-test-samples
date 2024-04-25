@@ -8,7 +8,8 @@
   "framework": "CDK",
   "services": ["lambda", "dynamodb"],
   "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
-  "pattern_source": "Customer",
+  "pattern_source": "Partner",
+  "pattern_source_name": "LaunchDarkly",
   "pattern_detail_tabs": [
     {
       "title": "Lambda function using LaunchDarkly",

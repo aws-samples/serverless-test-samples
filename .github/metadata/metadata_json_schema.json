@@ -134,13 +134,21 @@
         "pattern_source": {
             "$id": "#/properties/pattern_source",
             "type": "string",
-            "title": "Contributor of the the pattern",
+            "title": "Contributor type of the the pattern",
             "examples": [
                 "AWS"
             ],
-            "pattern": "AWS|Customer",
+            "pattern": "AWS|Customer|Partner",
             "maxLength": 60,
             "minLength": 3
+        },
+        "pattern_source_name": {
+            "$id": "#/properties/pattern_source_name",
+            "type": "string",
+            "title": "Name of Pattern Contributor (Optional)",
+            "examples": [
+                "AWS"
+            ]
         },
         "pattern_detail_tabs": {
             "$id": "#/properties/pattern_detail_tabs",
