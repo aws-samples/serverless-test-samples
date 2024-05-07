@@ -8,6 +8,7 @@ This portion of the repository contains code samples for testing serverless appl
 |Project|Description|
 ---|---
 |[Python Starter Project](./apigw-lambda)|This project contains introductory examples of Python tests written for AWS Lambda. This is the best place to start!|
+|[Integrated Application Test Kit](./integrated-application-test-kit)|This sample demonstrates how you can use the [AWS Integrated Application Test Kit (IATK)](https://awslabs.github.io/aws-iatk/) to develop integration tests for your serverless and event-driven applications.|
 |[Lambda local testing with Mocks](./lambda-mock)|This project contains unit tests for Lambda using mocks.|
 |[Lambda Layers with Mocks](./apigw-lambda-layer)|This project contains unit tests for Lambda layers using mocks.|
 |[API Gateway with Lambda and DynamoDB](./apigw-lambda-dynamodb)|This project contains unit and integration tests for a pattern using API Gateway, AWS Lambda and Amazon DynamoDB.|

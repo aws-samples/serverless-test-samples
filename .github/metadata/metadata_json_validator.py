@@ -16,22 +16,19 @@ python3 .github/METADATA/metadata_json_validator.py python-test-samples/apigw-la
 from os import path
 import re
 import json
-import argparse
+from github import Github, Auth
 import sys
 
 from aws_lambda_powertools.utilities.validation import validate
 
+import os
+
+FOLDERS_TO_IGNORE = ['img']
+
 
 def get_list_of_changed_test_sample_directories(changed_files: str) -> set[str]:
     """
-    From the list of files changed in git, extract unique test sample directories which have a metadata.json file in them.
-
-    There are a couple of edge cases.  Sometimes a directory doesn't contain a pattern (for instance /java-test-samples/img/)
-    and sometimes the patterns are nested (for instance dotnet-test-samples/async-architectures/async-lambda-dynamodb)
-
-    So as we can't reliably define whether the directory is a test sample directory,
-    we instead just test whether a metadata.json file has changed.
-
+    From the list of files changed in git, extract unique test sample directories
     :param: changed_files - Comma separated list of files which have changed
     :return: a set of folder names which should contain valid metadata.json files
     """
@@ -40,10 +37,50 @@ def get_list_of_changed_test_sample_directories(changed_files: str) -> set[str]:
     folders = []
     for file in file_list:
         if re.match(r"^\w+-test-samples/[^/]+/.*", file):
-            res = re.search(r"(^\w+-test-samples/.*/)metadata.json$", file)
-            folders.append(res.group(1))
+            res = re.search(r"(^\w+-test-samples/[^/]+/).*", file)
+            # folder_name: 'dotnet-test-samples/apigw-lambda'
+            folder_name = res.group(1)
+
+            res = re.search(r"^\w+-test-samples/([^/]+)/.*", file)
+            # subfolder_name: 'apigw-lambda'
+            subfolder_name = res.group(1)
+            if subfolder_name not in FOLDERS_TO_IGNORE:
+                folders.append(folder_name)
 
     return set(folders)
+
+def github_pull_request_comment(comment: str):
+    # Fetch the GitHub Automation flag from the GH_AUTOMATION enviroment variable
+    github_automation = os.environ.get('GITHUB_AUTOMATION')
+    if github_automation is not None and len(github_automation) > 0:
+
+        # Fetch the Github Owner & Repo
+        github_repository = os.environ.get('GITHUB_REPOSITORY')
+        if github_repository is None or len(github_repository) == 0:
+            print("GITHUB_REPOSITORY environment variable not set")
+            sys.exit(2)
+
+        [owner, repo] = github_repository.split('/')
+
+        # Fetch the pull request number from the PR_NUMBER enviroment variable
+        pr_number = os.environ.get('PR_NUMBER')
+        if pr_number is None or len(pr_number) == 0:
+            print("PR_NUMBER environment variable not set. Should be the pull request number")
+            sys.exit(3)
+        else:
+            pr_number = int(pr_number)
+
+        # Fetch the Github Token from the GITHUB_TOKEN enviroment variable
+        github_token = os.environ.get('GITHUB_TOKEN')
+        if github_token is None or len(github_token) == 0:
+            print("GITHUB_TOKEN environment variable not set")
+            sys.exit(4)
+
+        github = Github(github_token)
+        repo = github.get_repo(f"{owner}/{repo}")
+        pr = repo.get_pull(pr_number)
+        pr.create_issue_comment(comment)
+        github.close()
 
 
 def validate_metadata_json(metadata_schema: dict, metadata_json_filename: str) -> bool:
@@ -54,6 +91,8 @@ def validate_metadata_json(metadata_schema: dict, metadata_json_filename: str) -
     :return: Boolean indicating whether file was validated correctly
     """
     try:
+        if not path.isfile(metadata_json_filename):
+            raise FileNotFoundError(f"{metadata_json_filename} does not exist - please create it")
 
         with open(metadata_json_filename, "r", encoding="utf-8") as metadata_object:
             metadata_contents = json.load(metadata_object)
@@ -66,18 +105,23 @@ def validate_metadata_json(metadata_schema: dict, metadata_json_filename: str) -
 
         for pattern_detail in metadata_contents["pattern_detail_tabs"]:
             detail_path = path.dirname(metadata_json_filename) + pattern_detail["filepath"]
+            if not re.match(r"^http", detail_path):
+                # Not checking links to external repos
+                continue
             if path.isfile(detail_path) is False:
                 raise FileNotFoundError("Invalid filepath path: " + pattern_detail["filepath"])
 
         return True
     except Exception as exception:
-        print(str(exception))
+        print(f"Error in {metadata_json_filename}: {str(exception)}")
+        github_pull_request_comment(f"Error in {metadata_json_filename}: {str(exception)}")
         return False
-
 
 def validate_test_sample_folders(folders: set) -> bool:
     """
     Validate all changed test sample folders
+    :param: pr_number - the pull request number
+    :param: gh_automation - the GitHub Automation flag
     :param: folders - a set of folder names which should contain valid metadata.json files
     :return: Boolean indicating whether all metadata files validated correctly
     """
@@ -91,8 +135,6 @@ def validate_test_sample_folders(folders: set) -> bool:
         for folder in folders:
             metadata_filename = path.join(folder, "metadata.json")
 
-            print(f"Validating: {metadata_filename}")
-
             if not validate_metadata_json(metadata_schema, metadata_filename):
                 validated_ok = False
 
@@ -100,20 +142,15 @@ def validate_test_sample_folders(folders: set) -> bool:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        prog='metadata_json_validator.py',
-        description='Validate metadata.json for presenting the code sample on serverlessland.com.'
-    )
 
-    parser.add_argument('changed_files',
-                        type=str,
-                        help="Path to the sub-repo from the project root." + \
-                             "Example: python-test-samples/apigw-lambda'"
-                        )
-    args = parser.parse_args()
+    # Fetch the comma separated list of files which have changed from the ALL_CHANGED_FILES environment variable
+    changed_files = os.environ.get('ALL_CHANGED_FILES')
+    if changed_files is None or len(changed_files) == 0:
+        print("ALL_CHANGED_FILES environment variable not set. Should be a comma separated list of files which have changed")
+        sys.exit(1)
 
     # Fetch a list of all test sample directories which have changed
-    test_sample_folders = get_list_of_changed_test_sample_directories(args.changed_files)
+    test_sample_folders = get_list_of_changed_test_sample_directories(changed_files)
 
     # Validate each metadata.json file in turn
     if not validate_test_sample_folders(test_sample_folders):

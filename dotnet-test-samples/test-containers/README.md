@@ -30,7 +30,7 @@ The ability to run Docker containers on your local machine.
 
 ## Topology
 
-<img src="../docs/apigw-lambda-ddb.jpg" alt="topology" width="80%"/>
+<img src="./img/apigw-lambda-ddb.jpg" alt="topology" width="80%"/>
 
 
 ## Description

@@ -12,15 +12,15 @@
     "pattern_detail_tabs": [
         {
             "title": "Application Code",
-            "filepath": "/sam/demo-local-testing-using-java/statemachine/local_testing.asl.json"
+            "filepath": "https://github.com/aws-samples/aws-stepfunctions-examples/tree/main/sam/demo-local-testing-using-java/statemachine/local_testing.asl.json"
         },
         {
             "title": "Unit Tests",
-            "filepath": "/sam/demo-local-testing-using-java/src/test/java/com/example/sfn/StepFunctionsLocalJUnitTest.java"
+            "filepath": "https://github.com/aws-samples/aws-stepfunctions-examples/tree/main/sam/demo-local-testing-using-java/src/test/java/com/example/sfn/StepFunctionsLocalJUnitTest.java"
         },
         {
             "title": "Integration Test",
-            "filepath": "/sam/demo-local-testing-using-java/src/test/groovy/com/example/sfn/StepFunctionsLocalSpockSpec.groovy"
+            "filepath": "https://github.com/aws-samples/aws-stepfunctions-examples/tree/main/sam/demo-local-testing-using-java/src/test/groovy/com/example/sfn/StepFunctionsLocalSpockSpec.groovy"
         }
     ],
     "authors": [

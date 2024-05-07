@@ -8,7 +8,8 @@
   "framework": "CDK",
   "services": ["lambda","sqs","sns","apigw"],
   "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
-  "pattern_source": "Datadog",
+  "pattern_source": "Partner",
+  "pattern_source_name": "Datadog",
   "pattern_detail_tabs": [
       {
           "title": "Publisher",
@@ -26,7 +27,7 @@
         "bio": "Staff Engineer @DataDog, Serverless Hero",
         "github": "astuyve",
         "twitter": "astuyve",
-        "linkedin": "https://www.linkedin.com/in/aaron-stuyvenberg"
+        "linkedin": "aaron-stuyvenberg"
       }
   ]
 }

@@ -78,7 +78,7 @@
             "uniqueItems": true,
             "items": {
                 "type": "string",
-                "pattern": "Unit|Integration|Load|Canary|End to end"
+                "pattern": "Unit|Integration|Load|Canary|End to end|Schema|Contract"
             }
         },
         "diagram": {
@@ -134,13 +134,21 @@
         "pattern_source": {
             "$id": "#/properties/pattern_source",
             "type": "string",
-            "title": "Contributor of the the pattern",
+            "title": "Contributor type of the the pattern",
             "examples": [
                 "AWS"
             ],
-            "pattern": "AWS|Customer",
+            "pattern": "AWS|Customer|Partner",
             "maxLength": 60,
             "minLength": 3
+        },
+        "pattern_source_name": {
+            "$id": "#/properties/pattern_source_name",
+            "type": "string",
+            "title": "Name of Pattern Contributor (Optional)",
+            "examples": [
+                "AWS"
+            ]
         },
         "pattern_detail_tabs": {
             "$id": "#/properties/pattern_detail_tabs",
@@ -174,7 +182,7 @@
                             "/src/app.py",
                             "/tests/unit/local_emulator_test.py"
                         ],
-                        "maxLength": 128,
+                        "maxLength": 1024,
                         "minLength": 3
                     }
                 }
@@ -220,7 +228,7 @@
                                 "pattern": "^https?://"
                             },
                             {
-                                "pattern": "^/[a-z0-9]([a-z0-9-\\.]*[a-z0-9])?(/[a-z0-9]([a-z0-9-\\.]*[a-z0-9])?)*$"
+                                "pattern": "^/[a-z0-9]([a-z0-9-\\.]*[a-z0-9])?(.*)$"
                             }
                         ]
                     },

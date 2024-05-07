@@ -40,7 +40,7 @@ The AWS services used in this pattern are
 
 ## Topology
 
-<img src="../docs/hexagonal-architecture.png" alt="topology" width="80%"/>
+<img src="./img/hexagonal-architecture.png" alt="topology" width="80%"/>
 
 
 ## Instructions

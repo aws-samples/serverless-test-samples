@@ -1,3 +1,4 @@
 fastjsonschema
-jmespath
+PyGithub
 aws_lambda_powertools
+jmespath

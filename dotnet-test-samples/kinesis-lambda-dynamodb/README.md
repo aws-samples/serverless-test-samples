@@ -32,7 +32,7 @@ The AWS services used in this pattern are
 
 The SUT is a streaming data processing system. A Lambda function has an Event Source Mapping to a Kinesis Data Stream. The Lambda Event Source Mapping(ESM) polls the Kinesis Data Stream and then synchronously invokes the Lambda function with a batch of messages. The Lambda function processes batches of messages and writes results to a DynamoDB Table.
 
-![System Under Test (SUT)](../docs/kinesis-system-under-test.png)
+![System Under Test (SUT)](./img/kinesis-system-under-test.png)
 
 ### Goal
 
@@ -42,7 +42,7 @@ The goal of this example is to show how to test Lambda functions that are part o
 
 In this pattern you will deploy a streaming workload where a Lambda function is triggered by messages in a Kinesis Data Stream. This project demonstrates several techniques for executing tests including running Lambda function locally with a simulated payload as well integration tests in the cloud.
 
-![System Under Test Description (SUT)](../docs/kinesis-system-under-test-description.png)
+![System Under Test Description (SUT)](./img/kinesis-system-under-test-description.png)
 
 This example contains an [Amazon Kinesis Data Stream](https://aws.amazon.com/kinesis/data-streams/), [AWS Lambda](https://aws.amazon.com/lambda/) and [Amazon DynamoDB](https://aws.amazon.com/dynamodb/) table core resources.
 

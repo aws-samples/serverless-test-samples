@@ -55,7 +55,7 @@ In this pattern, you develop a Lambda function that makes calls to other AWS clo
 
 This pattern can be used with a variety of infrastructure as code systems including SAM, Serverless Framework, CDK, CloudFormation and Terraform. This pattern uses a simple test framework, with the test harness directly calling the Lambda function handlers. No cloud resources or full ** stack emulation are required.
 
-![Test Pattern](/_img/pattern_04_lambda_mock_test.png)
+![Test Pattern](./doc/pattern_04_lambda_mock_test.png)
 
 [Top](#contents)
 

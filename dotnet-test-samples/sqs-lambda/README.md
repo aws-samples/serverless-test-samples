@@ -32,7 +32,7 @@ The AWS services used in this pattern are
 
 The SUT in this pattern is a Lambda function invoked by the presence of messages in an SQS queue as the event source.
 
-![System Under Test (SUT)](../docs/sqs-lambda-sut.png)
+![System Under Test (SUT)](./img/sqs-lambda-sut.png)
 
 ### Goal
 
@@ -42,7 +42,7 @@ This pattern is intended to perform rapid functional testing without affecting c
 
 In this pattern the Lambda function processes SQS messages without interacting directly with the SQS queue itself, instead relying on the [default visibility and deletion behaviors](https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html) of the SQS event. This project demonstrates several techniques for executing tests including running Lambda function locally with a simulated payload as well integration tests in the cloud.
 
-![System Under Test Description (SUT)](../docs/sqs-lambda.png)
+![System Under Test Description (SUT)](./img/sqs-lambda.png)
 
 This example contains an [Amazon SQS](https://aws.amazon.com/sqs/), [AWS Lambda](https://aws.amazon.com/lambda/) and [Amazon DynamoDB](https://aws.amazon.com/dynamodb/) table core resources.
 
@@ -100,7 +100,7 @@ To test the application, you need to publish a message to the SQS Queue. This ca
 
 - AWS Console
   
-  <img src="../docs/send-message.png" alt="topology" width="80%"/>
+  <img src="./img/send-message.png" alt="topology" width="80%"/>
 
 - Send Message API: refer [SQS API Reference](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_SendMessage.html)
   

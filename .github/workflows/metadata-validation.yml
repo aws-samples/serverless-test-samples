@@ -1,10 +1,12 @@
 name: Metadata Validation
 
 on:
-  push:
+  pull_request:
 
 permissions:
   contents: read
+  issues: write
+  pull-requests: write
 
 jobs:
   default:
@@ -20,7 +22,7 @@ jobs:
       id: get_changed
       uses: tj-actions/changed-files@v44
       with:
-        files: "*-test-samples/**/metadata.json"
+        files: "*-test-samples/**"
         separator: ","
 
     - name: Echo changed files
@@ -33,11 +35,11 @@ jobs:
           echo "run_validate=true" >> $GITHUB_OUTPUT
         fi
 
-    - name: Set up Python 3.12
+    - name: Set up Python 3.10
       if: ${{ steps.setfiles.outputs.run_validate == 'true' }}
       uses: actions/setup-python@v5
       with:
-        python-version: "3.12"
+        python-version: "3.10"
 
     - name: Install requirements
       if: ${{ steps.setfiles.outputs.run_validate == 'true' }}
@@ -45,4 +47,9 @@ jobs:
 
     - name: Validate Schema
       if: ${{ steps.setfiles.outputs.run_validate == 'true' }}
-      run: python .github/metadata/metadata_json_validator.py ${{ steps.get_changed.outputs.all_changed_files }}
+      run: python .github/metadata/metadata_json_validator.py
+      env:
+        ALL_CHANGED_FILES: ${{ steps.get_changed.outputs.all_changed_files }}
+        PR_NUMBER: ${{ github.event.number }}
+        GITHUB_AUTOMATION: true
+        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"

@@ -27,7 +27,7 @@ The AWS services used in this pattern are
 
 ## Topology
 
-<img src="../docs/apigw-lambda-ddb.jpg" alt="topology" width="80%"/>
+<img src="./img/apigw-lambda-ddb.jpg" alt="topology" width="80%"/>
 
 
 ## Description
