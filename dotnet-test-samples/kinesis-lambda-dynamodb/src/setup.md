@@ -4,29 +4,19 @@
 
 - [Setup SSH](#setup-ssh)
     - [Generate KeyPairs](#generate-keypairs)
-    - [Install WSSH](#install-wssh)
-    - [Configure SSH](#configure-ssh)
-- [Setup Midway CLI](#setup-midway-cli)
-    - [Installing `mwinit`](#installing-mwinit)
-    - [Login to Midway via CLI](#login-to-midway-via-cli)
-- [Verify Midway and SSH Configurations](#verify-midway-and-ssh-configurations)
 - [Xcode Command Line Tools](#xcode-command-line-tools)
 - [Homebrew](#homebrew)
     - [Homebrew Packages](#homebrew-packages)
     - [macOS Applications](#macos-applications)
 - [Configure Shell](#configure-shell)
 - [Configure Git](#configure-git)
-    - [Code Defender](#code-defender)
 - [Configure VIM](#configure-vim)
 - [Configure AWS SDKs and Tools](#configure-aws-sdks-and-tools)
-    - [Isengard Account](#isengard-account)
-    - [Install Isengard-CLI](#install-isengard-cli)
-    - [Verify Isengard-CLI](#verify-isengard-cli)
     - [Setup AWS configuration](#setup-aws-configuration)
 - [Install NodeJS](#install-nodejs)
 - [Install Python](#install-python)
 
-<!-- tocstop -->
+----
 
 ## Setup SSH
 
