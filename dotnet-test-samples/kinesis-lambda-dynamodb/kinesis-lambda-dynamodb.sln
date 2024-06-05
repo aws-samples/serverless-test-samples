@@ -3,6 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C93EB792-418B-44D5-ADEF-8130F2F66A1D}"
 	ProjectSection(SolutionItems) = preProject
 		src\template.yaml = src\template.yaml
+		src\setup.md = src\setup.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KinesisEventHandler", "src\KinesisEventHandler\KinesisEventHandler.csproj", "{5A0EA400-4466-4938-9A31-CCB0EBA11B61}"
