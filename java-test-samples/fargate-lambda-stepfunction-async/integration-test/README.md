@@ -1,7 +1,7 @@
 ## Description 
 Integration Testing - Serverless Asynchronous
 
-![Serverless async Test Architecture.png](Serverless%20async%20Test%20Architecture.png)
+![Serverless-async-Test-Architecture.png](../doc/Serverless-async-Test-Architecture.png)
 
 ### Deploying Lambda:
 1.Lambda

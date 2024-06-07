@@ -22,7 +22,7 @@
     "authors": [
         {
           "name": "James Eastham",
-          "image": "/assets/images/resources/contributors/ext-james-eastham.jpg",
+          "image": "/../img/authors/james-eastham.png",
           "bio": "Senior Cloud Architect at AWS",
           "linkedin": "james-eastham",
           "twitter": "plantpowerjames"

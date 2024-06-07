@@ -216,21 +216,14 @@
                     "image": {
                         "$id": "#/properties/authors/properties/image",
                         "type": "string",
-                        "title": "URL to a hosted image of the author",
+                        "title": "Relative path from pattern root to an image of the author",
                         "examples": [
-                            "https://www.linkedin.com/in/exampleperson/mypicture.png"
+                            "/img/authors/mypicture.png",
+                            "/../img/authors/mypicture.png"
                         ],
-                        "maxLength": 4096,
+                        "maxLength": 2048,
                         "minLength": 3,
-                        "anyOf": [
-                            {
-                                "format": "uri",
-                                "pattern": "^https?://"
-                            },
-                            {
-                                "pattern": "^/[a-z0-9]([a-z0-9-\\.]*[a-z0-9])?(.*)$"
-                            }
-                        ]
+                        "pattern": "^/[\\.a-z0-9]([a-z0-9-\\.]*[a-z0-9])?(.*)$"
                     },
                     "bio": {
                         "$id": "#/properties/authors/properties/bio",

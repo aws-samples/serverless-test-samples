@@ -50,7 +50,7 @@ Java-21
 _________________________________________________________________________________________________________
 ## Integration Testing - Serverless Asynchronous
 
-![Serverless async Test Architecture.png](doc%2FServerless%20async%20Test%20Architecture.png)
+![Serverless-async-Test-Architecture.png](doc/Serverless-async-Test-Architecture.png)
 
 ### Deploying Lambda:
 1.Lambda
