@@ -22,14 +22,14 @@
     "authors": [
         {
             "name": "Dan Fox",
-            "image": "/assets/external/testing/guidance/assets/authors/danfox.jpeg",
+            "image": "/../img/authors/dan-fox.jpeg",
             "bio": "Principal Solutions Architect at AWS",
             "linkedin": "danfoxprofile",
             "twitter": "danfox"
         },
         {
             "name": "Brian Krygsman",
-            "image": "/assets/external/testing-patterns/python-test-samples/integrated-application-test-kit/Brian Krygsman.png",
+            "image": "/../img/authors/brian-krygsman.png",
             "bio": "Senior Solutions Architect at AWS",
             "linkedin": "brian-krygsman",
             "twitter": "brnkrygs"

@@ -22,11 +22,13 @@
     "authors": [
         {
             "name": "Yossi Chai",
+            "image": "/../img/authors/yossi-chai.jpeg",
             "bio": "Senior Solutions Architect at AWS",
             "linkedin": "yossi-chai"
         },
         {
             "name": "Guy Almog",
+            "image": "/../img/authors/guy-almog.jpeg",
             "bio": "Senior Solutions Architect at AWS",
             "linkedin": "guy-almog"
         }

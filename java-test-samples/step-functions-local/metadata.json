@@ -26,7 +26,7 @@
     "authors": [
        {
             "name": "Dhiraj Mahapatro",
-            "image": "/assets/images/resources/contributors/dhiraj-mahapatro.jpg",
+            "image": "/../img/authors/dhiraj-mahapatro.jpg",
             "bio": "Principal Specialist Solutions Architect at AWS",
             "linkedin": "dmahapatro",
             "twitter": "dhirajmahapatro"

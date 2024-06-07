@@ -34,26 +34,26 @@
     "authors": [
         {
             "name": "Dhiraj Mahapatro",
-            "image": "/assets/images/resources/contributors/dhiraj-mahapatro.jpg",
+            "image": "/../img/authors/dhiraj-mahapatro.jpg",
             "bio": "Principal Specialist Solutions Architect at AWS",
             "linkedin": "dmahapatro",
             "twitter": "dhirajmahapatro"
         },
         {
             "name": "Rahul Popat",
-            "image": "/assets/images/resources/rahul-popat.jpeg",
+            "image": "/../img/authors/rahul-popat.jpeg",
             "bio": "Senior Specialist Solutions Architect at AWS",
             "linkedin": "rahulpopat"
         },
         {
             "name": "Aneel Murari",
-            "imageURL": "/assets/images/resources/contributors/aneel.jpeg",
+            "imageURL": "/../img/authors/aneel.jpeg",
             "bio": "Senior Specialist Solutions Architect at AWS",
             "linkedin": "aneelmurari"
         },
         {
             "name": "Matt Ridehalgh",
-            "image": "/assets/external/testing-patterns/java-test-samples/apigw-lambda-list-s3-buckets/Matt Ridehalgh.png",
+            "image": "/../img/authors/matt-ridehalgh.png",
             "bio": "Solutions Architect at AWS",
             "linkedin": "matthew-ridehalgh",
             "twitter": "mrideh"

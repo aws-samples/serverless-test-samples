@@ -38,7 +38,8 @@
     "authors": [
         {
             "name": "Dror Helper",
-            "bio": "Senior Microsoft Specialist Solution Architect at AWS",
+            "image": "/../img/authors/dror-helper.jpeg",
+            "bio": "Senior Specialist Solution Architect at AWS",
             "linkedin": "drorhelper",
             "twitter": "dhelper"
         }

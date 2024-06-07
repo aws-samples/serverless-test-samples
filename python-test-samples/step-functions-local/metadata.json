@@ -21,7 +21,8 @@
     "authors": [
         {
             "name": "Dan Straw",
-            "bio": "Senior solutions Architect at AWS",
+            "image": "/../img/authors/dan-straw.jpeg",
+            "bio": "Senior Solutions Architect at AWS",
             "linkedin": "danstraw"
         }
     ]

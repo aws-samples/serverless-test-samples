@@ -22,13 +22,13 @@
   "authors": [
     {
       "name": "Arthi Jaganathan",
-      "image": "https://media.licdn.com/dms/image/C5603AQGmkzZORs2pgA/profile-displayphoto-shrink_200_200/0/1660822331422?e=1687392000&v=beta&t=p8BXOv1ADhDT80S6l6fDf9YHIdfFh-VoWsqVUsMlsPY",
+      "image": "/../img/authors/arthi-jaganathan.jpeg",
       "bio": "Principal Serverless Solutions Architect at AWS",
       "linkedin": "arthi-jaganathan-b3b95644"
     },
     {
       "name": "Katherine Vishnevskaya",
-      "image": "https://avatars.githubusercontent.com/u/26699700",
+      "image": "/../img/authors/katherine-vishnevskaya.jpeg",
       "bio": "Solutions Architect at AWS",
       "linkedin": "katherine-vishnevskaya"
     }
