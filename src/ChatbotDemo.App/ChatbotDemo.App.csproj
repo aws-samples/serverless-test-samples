@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Amazon.Lambda.APIGatewayEvents" Version="2.7.0" />
+        <PackageReference Include="Amazon.Lambda.Core" Version="2.2.0" />
+        <PackageReference Include="AWS.Lambda.Powertools.Metrics" Version="1.6.2" />
+        <PackageReference Include="AWS.Lambda.Powertools.Tracing" Version="1.4.2" />
+        <PackageReference Include="AWS.Lambda.Powertools.Logging" Version="1.5.1" />
+        <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.4.3" />
+        <PackageReference Include="AWSSDK.ApiGatewayManagementApi" Version="3.7.300.108" />
+        <PackageReference Include="AWSXRayRecorder.Handlers.AwsSdk" Version="2.12.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\ChatbotDemo.Infrastructure\ChatbotDemo.Infrastructure.csproj" />
+      <ProjectReference Include="..\ChatbotDemo.Repositories\ChatbotDemo.Repositories.csproj" />
+    </ItemGroup>
+
+</Project>

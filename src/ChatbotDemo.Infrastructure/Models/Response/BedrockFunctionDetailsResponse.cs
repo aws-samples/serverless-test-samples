@@ -1,0 +1,18 @@
+using System.Text.Json.Serialization;
+using ChatbotDemo.Infrastructure.Models.Request;
+
+namespace ChatbotDemo.Infrastructure.Models.Response;
+
+public class BedrockFunctionDetailsResponse: IBedrockResponse
+{
+    [JsonPropertyName("messageVersion")] public string MessageVersion { get; set; }
+
+    [JsonPropertyName("sessionAttributes")]
+    public SessionAttributes SessionAttributes { get; set; }
+
+    [JsonPropertyName("promptSessionAttribute")]
+    public PromptSessionAttributes PromptSessionAttribute { get; set; }
+    
+    [JsonPropertyName("response")]
+    public FunctionDetailsResponse Response { get; set; }
+}
