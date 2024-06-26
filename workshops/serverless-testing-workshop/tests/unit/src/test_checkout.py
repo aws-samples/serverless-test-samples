@@ -36,7 +36,7 @@ class TestSampleLambdaWithDynamoDB(TestCase):
     def setUp(self) -> None:
         """
         Test Set up:
-           1. Create the lambda environment variale DYNAMODB_TABLE_NAME
+           1. Create the Lambda environment variable DYNAMODB_TABLE_NAME
            2. Build a DynamoDB Table according to the SAM template
            3. Populate DynamoDB Data into the Table for test
         """
