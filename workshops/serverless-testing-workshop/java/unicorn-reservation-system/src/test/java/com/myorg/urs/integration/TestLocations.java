@@ -11,6 +11,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -87,6 +88,38 @@ public class TestLocations {
 
         Map<String, AttributeValue> item = Map.of("PK", AttributeValue.builder().s("LOCATION#LIST").build(),
                 "LOCATIONS", AttributeValue.builder().l(locations).build());
+
+        PutItemRequest putItemRequest = PutItemRequest.builder().tableName(dynamoDbTableName).item(item).build();
+
+        PutItemResponse putItemResponse = dynamoDbClient.putItem(putItemRequest);
+
+        Assertions.assertNotNull(putItemResponse);
+    }
+
+    @AfterAll
+    public static void runAfterAll() {
+        Map<String, AttributeValue> key = Map.of("PK", AttributeValue.builder().s("LOCATION#LIST").build());
+
+        GetItemRequest getItemRequest = GetItemRequest.builder().tableName(dynamoDbTableName).key(key).build();
+
+        DynamoDbClient dynamoDbClient = DynamoDbClient.builder().build();
+
+        GetItemResponse getItemResponse = dynamoDbClient.getItem(getItemRequest);
+
+        Assertions.assertNotNull(getItemResponse);
+
+        List<AttributeValue> locations = getItemResponse.item().get("LOCATIONS").l();
+
+        List<AttributeValue> updatedLocations = new ArrayList<>();
+
+        for (AttributeValue location : locations) {
+            if (!location.s().equals(testLocation)) {
+                updatedLocations.add(location);
+            }
+        }
+
+        Map<String, AttributeValue> item = Map.of("PK", AttributeValue.builder().s("LOCATION#LIST").build(),
+                "LOCATIONS", AttributeValue.builder().l(updatedLocations).build());
 
         PutItemRequest putItemRequest = PutItemRequest.builder().tableName(dynamoDbTableName).item(item).build();
 
