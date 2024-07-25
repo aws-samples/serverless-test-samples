@@ -16,9 +16,9 @@ using Amazon.Lambda.Core;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-using ServerlessTestApi.Core.DataAccess;
-using ServerlessTestApi.Core.Models;
-using ServerlessTestApi.Infrastructure;
+using Core.DataAccess;
+using Core.Models;
+using Infrastructure;
 
 public class Function
 {
@@ -31,9 +31,9 @@ public class Function
         ILogger<Function> logger,
         IOptions<JsonSerializerOptions> jsonOptions)
     {
-        this._dataAccess = dataAccess;
-        this._logger = logger;
-        this._jsonOptions = jsonOptions;
+        _dataAccess = dataAccess;
+        _logger = logger;
+        _jsonOptions = jsonOptions;
     }
 
     [LambdaFunction]
@@ -174,7 +174,6 @@ public class Function
         string id,
         ILambdaContext context)
     {
-        UpsertResult result;
 
         using var cts = context.GetCancellationTokenSource();
         

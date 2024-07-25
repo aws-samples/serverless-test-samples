@@ -1,4 +1,4 @@
-[![.NET: 6.0](https://img.shields.io/badge/.NET-6.0-Green)]()
+[![.NET: 8.0](https://img.shields.io/badge/.NET-8.0-Green)]()
 [![AWS: Lambda](https://img.shields.io/badge/AWS-Lambda-blueviolet)]()
 [![Amazon: Api Gateway](https://img.shields.io/badge/Amazon-API%20Gateway-blueviolet)]()
 [![Amazon: DynamoDB](https://img.shields.io/badge/Amazon-DynamoDB-blueviolet)]()
@@ -15,7 +15,7 @@ This pattern creates an Amazon API Gateway HTTP API, an AWS Lambda function, and
 Important: this application uses various AWS services and there are costs associated with these services after the Free Tier usage. Please see the AWS Pricing page for details. You are responsible for any AWS costs incurred.
 
 ## Language
-.NET 6
+.NET 8
 
 ## Framework
 The framework used to deploy the infrastructure is SAM

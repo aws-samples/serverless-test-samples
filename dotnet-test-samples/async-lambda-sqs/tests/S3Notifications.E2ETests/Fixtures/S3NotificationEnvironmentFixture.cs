@@ -19,7 +19,7 @@ public class S3NotificationEnvironmentFixture : IAsyncLifetime, IDisposable
 
     public S3NotificationEnvironmentFixture()
     {
-        var regionName = Environment.GetEnvironmentVariable("AWS_SAM_REGION_NAME") ?? "us-east-1";
+        var regionName = Environment.GetEnvironmentVariable("AWS_SAM_REGION_NAME") ?? "eu-west-2";
 
         _regionEndpoint = RegionEndpoint.GetBySystemName(regionName);
 
@@ -35,7 +35,7 @@ public class S3NotificationEnvironmentFixture : IAsyncLifetime, IDisposable
 
     public async Task InitializeAsync()
     {
-        var stackName = Environment.GetEnvironmentVariable("AWS_SAM_STACK_NAME") ?? "async-lambda-sqs";
+        var stackName = Environment.GetEnvironmentVariable("AWS_SAM_STACK_NAME") ?? "async-sqs";
         using var cloudFormationClient = new AmazonCloudFormationClient(
             new AmazonCloudFormationConfig
             {

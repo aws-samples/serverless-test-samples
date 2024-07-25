@@ -32,7 +32,6 @@ public class FunctionTest :
         
         
         // Create a bucket an object to setup a test data.
-        await _s3Client.PutBucketAsync(_bucketName);
         await _s3Client.PutObjectAsync(new PutObjectRequest
         {
             BucketName = _bucketName,
