@@ -10,7 +10,7 @@ Globals:
     MemorySize: 1024
     Architectures:
       - arm64
-    Runtime: dotnet6
+    Runtime: dotnet8
     Tracing: Active
     Environment:
       Variables:
