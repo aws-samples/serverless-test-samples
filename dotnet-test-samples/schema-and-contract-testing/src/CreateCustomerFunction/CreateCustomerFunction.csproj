@@ -1,18 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Amazon.Lambda.Annotations" Version="1.1.0" />
-    <PackageReference Include="Amazon.Lambda.APIGatewayEvents" Version="2.6.0" />
-    <PackageReference Include="Amazon.Lambda.Core" Version="2.1.0" />
-    <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.3.1" />
-    <PackageReference Include="AWS.Lambda.Powertools.Logging" Version="1.0.1" />
-    <PackageReference Include="AWSSDK.EventBridge" Version="3.7.102.3" />
+    <PackageReference Include="Amazon.Lambda.Annotations" Version="1.5.0" />
+    <PackageReference Include="Amazon.Lambda.APIGatewayEvents" Version="2.7.0" />
+    <PackageReference Include="Amazon.Lambda.Core" Version="2.2.0" />
+    <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.4.3" />
+    <PackageReference Include="AWS.Lambda.Powertools.Logging" Version="1.5.1" />
+    <PackageReference Include="AWSSDK.EventBridge" Version="3.7.401" />
   </ItemGroup>
 
   <ItemGroup>

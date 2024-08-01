@@ -28,7 +28,7 @@ namespace GetStock.Adapters
             }
             var jsonString = document.ToJson();
 
-            return JsonSerializer.Deserialize<StockData>(jsonString);
+            return JsonSerializer.Deserialize<StockData>(jsonString)!;
         }
 
     }

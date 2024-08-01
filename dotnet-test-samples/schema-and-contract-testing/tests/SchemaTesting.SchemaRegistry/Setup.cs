@@ -6,8 +6,8 @@ using Amazon.CloudFormation.Model;
 
 public class Setup : IAsyncLifetime
 {
-    public ISchemaReader SchemaReader { get; private set; }
-    
+    public ISchemaReader SchemaReader { get; private set; } = null!;
+
     public async Task InitializeAsync()
     {
         var stackName = Environment.GetEnvironmentVariable("AWS_SAM_STACK_NAME") ?? "schema-testing";
@@ -17,7 +17,7 @@ public class Setup : IAsyncLifetime
         var response = await cloudFormationClient.DescribeStacksAsync(new DescribeStacksRequest() { StackName = stackName });
         var outputs = response.Stacks[0].Outputs;
 
-        this.SchemaReader = new EventBridgeSchemaRegistryReader();
+        SchemaReader = new EventBridgeSchemaRegistryReader();
     }
 
     public Task DisposeAsync()

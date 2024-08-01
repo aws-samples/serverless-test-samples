@@ -19,33 +19,33 @@ namespace PutProduct
 {
     public class Function
     {
-        private readonly IProductsDAO _dataAccess;
+        private readonly IProductsDao _dataAccess;
         private readonly IOptions<JsonSerializerOptions> _jsonOptions;
         private readonly ILogger<Function> _logger;
 
         public Function() : this(Startup.ServiceProvider) { }
 
         public Function(
-            IProductsDAO dataAccess,
+            IProductsDao dataAccess,
             ILogger<Function> logger,
             IOptions<JsonSerializerOptions> jsonOptions)
             : this(NewServiceProvider(dataAccess, logger, jsonOptions)) { }
 
         private Function(IServiceProvider serviceProvider)
         {
-            _dataAccess = serviceProvider.GetRequiredService<IProductsDAO>();
+            _dataAccess = serviceProvider.GetRequiredService<IProductsDao>();
             _jsonOptions = serviceProvider.GetRequiredService<IOptions<JsonSerializerOptions>>();
             _logger = serviceProvider.GetRequiredService<ILogger<Function>>();
         }
 
         private static IServiceProvider NewServiceProvider(
-            IProductsDAO dataAccess,
+            IProductsDao dataAccess,
             ILogger<Function> logger,
             IOptions<JsonSerializerOptions> jsonOptions)
         {
             var container = new System.ComponentModel.Design.ServiceContainer();
 
-            container.AddService(typeof(IProductsDAO), dataAccess);
+            container.AddService(typeof(IProductsDao), dataAccess);
             container.AddService(typeof(IOptions<JsonSerializerOptions>), jsonOptions);
             container.AddService(typeof(ILogger<Function>), logger);
 

@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
@@ -14,11 +14,11 @@
     <None Remove=".DS_Store" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Amazon.Lambda.Core" Version="2.1.0" />
-    <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.3.1" />
-    <PackageReference Include="Amazon.Lambda.S3Events" Version="3.0.1" />
-    <PackageReference Include="AWS.Lambda.Powertools.Logging" Version="1.1.1" />
-    <PackageReference Include="AWSSDK.S3" Version="3.7.200.1" />
-    <PackageReference Include="AWSSDK.SQS" Version="3.7.200.1" />
+    <PackageReference Include="Amazon.Lambda.Core" Version="2.2.0" />
+    <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.4.3" />
+    <PackageReference Include="Amazon.Lambda.S3Events" Version="3.1.0" />
+    <PackageReference Include="AWS.Lambda.Powertools.Logging" Version="1.5.1" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.400.2" />
+    <PackageReference Include="AWSSDK.SQS" Version="3.7.400.2" />
   </ItemGroup>
 </Project>

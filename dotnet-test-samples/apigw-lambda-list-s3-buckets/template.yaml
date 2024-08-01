@@ -8,7 +8,7 @@ Globals:
   Function:
     Tracing: PassThrough
     Timeout: 10
-    Runtime: dotnet6
+    Runtime: dotnet8
     Architectures:
       - arm64
     Environment:

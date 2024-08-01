@@ -21,7 +21,7 @@ public class MockPutProductFunctionTests : FunctionTest<Function>
             .WithPathParameter("id", dto.Id)
             .Build();
         
-        var fakeProductDao = A.Fake<IProductsDAO>();
+        var fakeProductDao = A.Fake<IProductsDao>();
 
 
         A.CallTo(() => fakeProductDao.PutProduct(A<Product>._, A<CancellationToken>._))
@@ -53,7 +53,7 @@ public class MockPutProductFunctionTests : FunctionTest<Function>
             .WithPathParameter("id", dto.Id)
             .Build();
 
-        var fakeProductDao = A.Fake<IProductsDAO>();
+        var fakeProductDao = A.Fake<IProductsDao>();
 
         A.CallTo(() => fakeProductDao.PutProduct(A<Product>._, A<CancellationToken>._))
             .Invokes(ctx => product = ctx.Arguments.Get<Product>(0))
@@ -79,7 +79,7 @@ public class MockPutProductFunctionTests : FunctionTest<Function>
             .WithPathParameter("id", product.Id)
             .Build();
         
-        var fakeProductDao = A.Fake<IProductsDAO>();
+        var fakeProductDao = A.Fake<IProductsDao>();
         var function = new Function(fakeProductDao, Logger, JsonOptions);
 
         // act
@@ -102,7 +102,7 @@ public class MockPutProductFunctionTests : FunctionTest<Function>
             .WithBody(product)
             .Build();
         
-        var fakeProductDao = A.Fake<IProductsDAO>();
+        var fakeProductDao = A.Fake<IProductsDao>();
         var function = new Function(fakeProductDao, Logger, JsonOptions);
 
         // act
@@ -126,7 +126,7 @@ public class MockPutProductFunctionTests : FunctionTest<Function>
             .WithHttpMethod(httpMethod)
             .Build();
         
-        var fakeProductDao = A.Fake<IProductsDAO>();
+        var fakeProductDao = A.Fake<IProductsDao>();
         var function = new Function(fakeProductDao, Logger, JsonOptions);
 
         // act
@@ -148,7 +148,7 @@ public class MockPutProductFunctionTests : FunctionTest<Function>
             .WithBody(product)
             .Build();
         
-        var fakeProductDao = A.Fake<IProductsDAO>();
+        var fakeProductDao = A.Fake<IProductsDao>();
 
         A.CallTo(() => fakeProductDao.PutProduct(A<Product>._, A<CancellationToken>._))
             .ThrowsAsync(new NullReferenceException());
@@ -174,7 +174,7 @@ public class MockPutProductFunctionTests : FunctionTest<Function>
             .WithBody(product)
             .Build();
 
-        var fakeProductDao = A.Fake<IProductsDAO>();
+        var fakeProductDao = A.Fake<IProductsDao>();
 
         A.CallTo(() => fakeProductDao.PutProduct(A<Product>._, A<CancellationToken>._))
             .ThrowsAsync(new TaskCanceledException());

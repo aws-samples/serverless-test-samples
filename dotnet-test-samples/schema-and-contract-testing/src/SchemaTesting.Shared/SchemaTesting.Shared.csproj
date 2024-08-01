@@ -1,17 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="AWS.Lambda.Powertools.Logging" Version="1.0.1" />
-      <PackageReference Include="AWS.Lambda.Powertools.Tracing" Version="1.0.1" />
-      <PackageReference Include="AWSSDK.EventBridge" Version="3.7.102.3" />
-      <PackageReference Include="AWSXRayRecorder.Handlers.AwsSdk" Version="2.12.0" />
-      <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+      <PackageReference Include="AWS.Lambda.Powertools.Logging" Version="1.5.1" />
+      <PackageReference Include="AWS.Lambda.Powertools.Tracing" Version="1.5.0" />
+      <PackageReference Include="AWSSDK.EventBridge" Version="3.7.401" />
+      <PackageReference Include="AWSXRayRecorder.Handlers.AwsSdk" Version="2.13.0" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
 
 </Project>

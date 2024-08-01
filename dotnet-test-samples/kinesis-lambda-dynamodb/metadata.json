@@ -1,6 +1,6 @@
 {
   "title": "Amazon Kinesis Data Streams with AWS Lambda Function & Amazon DynamoDB",
-  "description": "This pattern creates an AWS Lambda function that consumes messages from an Amazon Kinesis Data Streams and dumps them to Amazon DynamoDB using SAM and .NET 6.",
+  "description": "This pattern creates an AWS Lambda function that consumes messages from an Amazon Kinesis Data Streams and dumps them to Amazon DynamoDB using SAM and .NET 8.",
   "content_language": "English",
   "language": ".NET",
   "type": ["Unit", "Integration"],

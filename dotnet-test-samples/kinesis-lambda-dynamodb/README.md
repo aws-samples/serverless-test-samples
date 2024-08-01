@@ -1,4 +1,4 @@
-[![.NET: 6.0](https://img.shields.io/badge/.NET-6.0-Green)](https://img.shields.io/badge/.NET-6.0-Green)
+[![.NET: 8.0](https://img.shields.io/badge/.NET-8.0-Green)](https://img.shields.io/badge/.NET-6.0-Green)
 [![AWS: Lambda](https://img.shields.io/badge/AWS-Lambda-blueviolet)]()
 [![AWS: Kinesis](https://img.shields.io/badge/AWS-Kinesis-blueviolet)]()
 [![AWS: DynamoDB](https://img.shields.io/badge/Amazon-DynamoDB-blueviolet)]()
@@ -9,12 +9,12 @@
 
 ### Description
 
-This pattern creates an AWS Lambda function that consumes messages from an Amazon Kinesis Data Streams and dumps them to Amazon DynamoDB using SAM and .NET 6.
+This pattern creates an AWS Lambda function that consumes messages from an Amazon Kinesis Data Streams and dumps them to Amazon DynamoDB using SAM and .NET.
 
 > **Important:** *This application uses various AWS services and there are costs associated with these services after the Free Tier usage. Please see the AWS Pricing page for details. You are responsible for any AWS costs incurred.*
 
 ## Language
-.NET 6
+.NET 8
 
 ## Framework
 The framework used to deploy the infrastructure is [SAM](https://aws.amazon.com/serverless/sam)
@@ -272,4 +272,4 @@ sam delete
 * [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html) installed and configured
 * [Git Installed](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 * [AWS Serverless Application Model](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html) (AWS SAM) installed
-* [.NET 6](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) installed
+* [.NET 8](https://dotnet.microsoft.com/en-us/download/dotnet) installed

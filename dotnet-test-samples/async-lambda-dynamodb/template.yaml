@@ -25,7 +25,7 @@ Globals: # https://docs.aws.amazon.com/serverless-application-model/latest/devel
     Function:
         Timeout: 15
         MemorySize: 256
-        Runtime: dotnet6
+        Runtime: dotnet8
         Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
         Environment:
             Variables:

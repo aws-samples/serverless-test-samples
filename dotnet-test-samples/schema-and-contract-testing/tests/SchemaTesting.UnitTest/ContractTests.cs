@@ -20,15 +20,15 @@ public class ContractTests
     {
         this._publishedEvents = new List<BaseCustomerCreatedEvent?>();
         this._mockEventPublisher = A.Fake<IEventPublisher>();
-        A.CallTo(() => this._mockEventPublisher.Publish(A<EventWrapper>._))
+        A.CallTo(() => _mockEventPublisher.Publish(A<EventWrapper>._))
             .Invokes(
-                (fakedCall) =>
+                fakedCall =>
                 {
                     var evt = fakedCall.Arguments.Get<EventWrapper>("evt");
-                    this._publishedEvents.Add(evt.Payload as BaseCustomerCreatedEvent);
+                    _publishedEvents.Add(evt!.Payload as BaseCustomerCreatedEvent);
                 });
         
-        this._schemaReader = new LocalDiskSchemaReader();
+        _schemaReader = new LocalDiskSchemaReader();
     }
     
     [Fact]

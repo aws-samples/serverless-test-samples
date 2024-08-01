@@ -1,4 +1,4 @@
-[![.NET: 6.0](https://img.shields.io/badge/.NET-6.0-Green)](https://img.shields.io/badge/.NET-6.0-Green)
+[![.NET: 8.0](https://img.shields.io/badge/.NET-8.0-Green)](https://img.shields.io/badge/.NET-6.0-Green)
 [![AWS: Lambda](https://img.shields.io/badge/AWS-Lambda-blueviolet)](https://img.shields.io/badge/AWS-Lambda-blueviolet)
 [![Amazon: API Gateway](https://img.shields.io/badge/Amazon-API%20Gateway-blueviolet)]()
 [![Amazon: DynamoDB](https://img.shields.io/badge/Amazon-DynamoDB-blueviolet)]()
@@ -23,12 +23,12 @@ In Lambda functions, hexagonal architecture can help you implement new business 
 ### Application description
 The example application is a backend web service built using Amazon API Gateway, AWS Lambda, and Amazon DynamoDB. Business logic in the domain layer should be tested with unit tests. Responses from secondary actors via ports should be mocked during unit testing to speed up test execution. 
 
-This pattern creates an Amazon API Gateway HTTP API, an AWS Lambda function, and a DynamoDB Table using SAM and .NET 6.
+This pattern creates an Amazon API Gateway HTTP API, an AWS Lambda function, and a DynamoDB Table using SAM and .NET.
 
 **Important: this application uses various AWS services and there are costs associated with these services after the Free Tier usage. Please see the AWS Pricing page for details. You are responsible for any AWS costs incurred.**
 
 ## Language
-.NET 6
+.NET 8
 
 ## Framework
 The framework used to deploy the infrastructure is SAM
@@ -218,5 +218,5 @@ It uses the [IClassFixture](https://xunit.net/docs/shared-context) feature of [x
 * [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html) installed and configured
 * [Git Installed](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 * [AWS Serverless Application Model](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html) (AWS SAM) installed
-* [.NET 6](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) installed
+* [.NET 8](https://dotnet.microsoft.com/en-us/download/dotnet) installed
 * [Fixer.io -  3rd party service to retrieve real-time currencies value for this example](https://fixer.io/)

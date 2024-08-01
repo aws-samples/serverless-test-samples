@@ -4,7 +4,7 @@ using Amazon.EventBridge.Model;
 
 using Newtonsoft.Json;
 
-using SchemaTesting.Shared;
+using Shared;
 
 /// <summary>
 /// Schemas stored in EventBridge Schema Registry include the <see cref="PutEventsRequestEntry"/> wrapper.
@@ -15,13 +15,13 @@ public class EventBusEventOverride<T> : PutEventsRequestEntry where T : Event
 {
     public EventBusEventOverride(object eventObject)
     {
-        var evt = (eventObject as T);
+        var evt = (T)eventObject;
         
-        this.Detail = new EventWrapper(evt);
+        Detail = new EventWrapper(evt);
         
-        this.Id = Guid.NewGuid().ToString();
+        Id = Guid.NewGuid().ToString();
         DetailType = evt.Type;
-        Resources = Array.Empty<object>();
+        Resources = [];
         Source = "com.customer";
         EventBusName = "custom-event-bus";
         Time = DateTime.Now;
@@ -40,7 +40,7 @@ public class EventBusEventOverride<T> : PutEventsRequestEntry where T : Event
     public new object[] Resources { get; set; }
     
     [JsonProperty("id")]
-    public new string Id { get; set; }
+    public string Id { get; set; }
     
     [JsonProperty("source")]
     public new string Source { get; set; }

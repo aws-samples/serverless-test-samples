@@ -6,7 +6,7 @@ using ServerlessTestApi.Core.Models;
 
 namespace ServerlessTestApi.Infrastructure.DataAccess;
 
-public class DynamoDbProducts : IProductsDAO
+public class DynamoDbProducts : IProductsDao
 {
     private readonly IAmazonDynamoDB _dynamoDbClient;
     private readonly IOptions<DynamoDbOptions> _options;
