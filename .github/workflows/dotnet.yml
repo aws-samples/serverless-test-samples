@@ -23,10 +23,9 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: |
+        dotnet-version: | 
           6.0.x
           8.0.x
-
     - name: Build
       run: find dotnet-test-samples -name "*.sln" -exec dotnet build {} \;
     - name: Test
