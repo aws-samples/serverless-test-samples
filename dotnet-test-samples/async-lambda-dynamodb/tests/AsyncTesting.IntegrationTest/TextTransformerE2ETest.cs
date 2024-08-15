@@ -57,13 +57,13 @@ public class TextTransformerE2ETest : IClassFixture<Setup>
         // Act
         var testString = "hello world";
         
-        await this.PutObjectIntoSourceBucket(
+        await PutObjectIntoSourceBucket(
             testString,
-            this.setup.SourceBucketName,
+            setup.SourceBucketName,
             testFileName);
 
         // Assert
-        var result = await this.PollForProcessedMessage(testFileName);
+        var result = await PollForProcessedMessage(testFileName);
 
         result.Should().BeNull();
     }
@@ -86,16 +86,16 @@ public class TextTransformerE2ETest : IClassFixture<Setup>
         this.setup.CreatedFiles.Add(testFilename);
     }
 
-    private async Task<string> PollForProcessedMessage(string testFilename)
+    private async Task<string?> PollForProcessedMessage(string testFilename)
     {
         var pollAttempts = 0;
 
         while (pollAttempts < MAX_POLL_ATTEMPTS)
         {
-            this.outputHelper.WriteLine($"Poll attempt {pollAttempts}");
+            outputHelper.WriteLine($"Poll attempt {pollAttempts}");
             
-            var result = await this.setup.DynamoDbClient.GetItemAsync(
-                this.setup.DestinationTableName,
+            var result = await this.setup.DynamoDbClient!.GetItemAsync(
+                setup.DestinationTableName,
                 new Dictionary<string, AttributeValue>(1)
                 {
                     { "id", new AttributeValue(testFilename) }
@@ -103,14 +103,14 @@ public class TextTransformerE2ETest : IClassFixture<Setup>
 
             if (result.IsItemSet)
             {
-                this.outputHelper.WriteLine($"Message found after {pollAttempts} attempt(s), returning");
+                outputHelper.WriteLine($"Message found after {pollAttempts} attempt(s), returning");
                 
                 return result.Item["message"].S;
             }
 
             pollAttempts++;
             
-            this.outputHelper.WriteLine($"Wait for {POLL_INTERVAL}");
+            outputHelper.WriteLine($"Wait for {POLL_INTERVAL}");
 
             await Task.Delay(TimeSpan.FromSeconds(POLL_INTERVAL));
         }

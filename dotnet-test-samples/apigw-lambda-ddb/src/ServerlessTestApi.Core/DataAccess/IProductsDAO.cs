@@ -4,7 +4,7 @@ using ServerlessTestApi.Core.Models;
 
 namespace ServerlessTestApi.Core.DataAccess;
 
-public interface IProductsDAO
+public interface IProductsDao
 {
     Task<ProductDTO?> GetProduct(string id, CancellationToken cancellationToken);
 

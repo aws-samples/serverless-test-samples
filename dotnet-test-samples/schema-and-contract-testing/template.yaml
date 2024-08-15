@@ -12,7 +12,7 @@ Globals:
     MemorySize: 1024
     Architectures:
       - x86_64
-    Runtime: dotnet6
+    Runtime: dotnet8
     Timeout: 30
     Tracing: Active
     Environment:

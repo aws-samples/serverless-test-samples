@@ -44,7 +44,7 @@ public static class DI
 
 public class Functions
 {
-    private readonly IHttpHandler? _handler;
+    private readonly IHttpHandler _handler;
 
     public Functions()
     {

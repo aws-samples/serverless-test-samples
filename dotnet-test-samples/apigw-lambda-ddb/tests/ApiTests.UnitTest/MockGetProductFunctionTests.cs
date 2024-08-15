@@ -20,7 +20,7 @@ public class MockGetProductFunctionTests : FunctionTest<Function>
             .Build();
 
         var expected = new ProductDTO("testid", "test product", 10);
-        var fakeProductDao = A.Fake<IProductsDAO>();
+        var fakeProductDao = A.Fake<IProductsDao>();
 
         A.CallTo(() => fakeProductDao.GetProduct(A<string>._, A<CancellationToken>._))
             .Returns(Task.FromResult<ProductDTO?>(expected));
@@ -50,7 +50,7 @@ public class MockGetProductFunctionTests : FunctionTest<Function>
             .WithHttpMethod(httpMethod)
             .Build();
         
-        var fakeProductDao = A.Fake<IProductsDAO>();
+        var fakeProductDao = A.Fake<IProductsDao>();
         var function = new Function(fakeProductDao, Logger, JsonOptions);
 
         // act
@@ -69,7 +69,7 @@ public class MockGetProductFunctionTests : FunctionTest<Function>
             .WithHttpMethod(HttpMethod.Get)
             .Build();
         
-        var fakeProductDao = A.Fake<IProductsDAO>();
+        var fakeProductDao = A.Fake<IProductsDao>();
 
         A.CallTo(() => fakeProductDao.GetProduct(A<string>._, A<CancellationToken>._))
             .Throws<NullReferenceException>();
@@ -92,7 +92,7 @@ public class MockGetProductFunctionTests : FunctionTest<Function>
             .WithHttpMethod(HttpMethod.Get)
             .Build();
 
-        var fakeProductDao = A.Fake<IProductsDAO>();
+        var fakeProductDao = A.Fake<IProductsDao>();
 
         A.CallTo(() => fakeProductDao.GetProduct(A<string>._, A<CancellationToken>._))
             .Throws<TaskCanceledException>();
@@ -115,7 +115,7 @@ public class MockGetProductFunctionTests : FunctionTest<Function>
             .WithPathParameter("id", "123456")
             .Build();
         
-        var fakeProductDao = A.Fake<IProductsDAO>();
+        var fakeProductDao = A.Fake<IProductsDao>();
 
         A.CallTo(() => fakeProductDao.GetProduct(A<string>._, A<CancellationToken>._))
             .Returns(Task.FromResult<ProductDTO?>(null));

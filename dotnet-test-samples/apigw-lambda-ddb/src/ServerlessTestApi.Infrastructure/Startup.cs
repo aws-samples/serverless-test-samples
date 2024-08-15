@@ -39,7 +39,7 @@ public static class Startup
         services.TryAddTransient<IValidateOptions<DynamoDbOptions>, DynamoDbOptionsValidator>();
         services.AddLogging(builder => builder.AddSerilog(logger));
         services.TryAddSingleton<IAmazonDynamoDB>(static sp => new AmazonDynamoDBClient());
-        services.TryAddSingleton<IProductsDAO, DynamoDbProducts>();
+        services.TryAddSingleton<IProductsDao, DynamoDbProducts>();
     }
 
     private static IServiceProvider InitializeServiceProvider()

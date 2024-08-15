@@ -7,13 +7,8 @@ using GetStock.IntegrationTest.TestUtilities;
 
 namespace GetStock.IntegrationTest.Adapters;
 
-public class StockDynamoDbTests : DynamoDbTestBase
+public class StockDynamoDbTests(DynamoDbFixture fixture) : DynamoDbTestBase(fixture)
 {
-    public StockDynamoDbTests(DynamoDbFixture fixture)
-        : base("test-stocks", fixture)
-    {
-    }
-
     [Fact]
     public async Task GetStockValue_With_StockNotInDb_Should_ThrowStockNotFoundException()
     {

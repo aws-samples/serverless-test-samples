@@ -19,25 +19,25 @@ namespace DeleteProduct;
 
 public class Function
 {
-    private readonly IProductsDAO _dataAccess;
+    private readonly IProductsDao _dataAccess;
     private readonly ILogger<Function> _logger;
 
     public Function() : this(Startup.ServiceProvider) { }
 
-    public Function(IProductsDAO dataAccess, ILogger<Function> logger)
+    public Function(IProductsDao dataAccess, ILogger<Function> logger)
         : this(NewServiceProvider(dataAccess, logger)) { }
 
     private Function(IServiceProvider serviceProvider)
     {
-        _dataAccess = serviceProvider.GetRequiredService<IProductsDAO>();
+        _dataAccess = serviceProvider.GetRequiredService<IProductsDao>();
         _logger = serviceProvider.GetRequiredService<ILogger<Function>>();
     }
 
-    private static IServiceProvider NewServiceProvider(IProductsDAO dataAccess, ILogger<Function> logger)
+    private static IServiceProvider NewServiceProvider(IProductsDao dataAccess, ILogger<Function> logger)
     {
         var container = new System.ComponentModel.Design.ServiceContainer();
 
-        container.AddService(typeof(IProductsDAO), dataAccess);
+        container.AddService(typeof(IProductsDao), dataAccess);
         container.AddService(typeof(ILogger<Function>), logger);
 
         return container;

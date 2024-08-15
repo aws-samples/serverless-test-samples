@@ -10,18 +10,17 @@ using Amazon.S3.Model;
 
 public class Setup : IAsyncLifetime
 {
-    private string? _tableName;
     public IAmazonDynamoDB? DynamoDbClient { get; set; }
 
-    public IAmazonS3 S3Client { get; set; }
+    public IAmazonS3 S3Client { get; set; } = null!;
     
-    public string SourceBucketName { get; set; }
+    public string SourceBucketName { get; set; }= null!;
     
-    public string DestinationBucketName { get; set; }
+    public string DestinationBucketName { get; set; }= null!;
     
-    public string DestinationTableName { get; set; }
+    public string DestinationTableName { get; set; }= null!;
 
-    public List<string> CreatedFiles { get; set; } = new();
+    public List<string> CreatedFiles { get; } = new();
 
     public async Task InitializeAsync()
     {
@@ -64,8 +63,8 @@ public class Setup : IAsyncLifetime
 
             try
             {
-                await this.DynamoDbClient.DeleteItemAsync(
-                    this.DestinationTableName,
+                await this.DynamoDbClient!.DeleteItemAsync(
+                    DestinationTableName,
                     new Dictionary<string, AttributeValue>(1)
                     {
                         { "id", new AttributeValue(file) }

@@ -5,27 +5,49 @@ namespace GetStock.IntegrationTest.Fixtures
 {
     public class DynamoDbTestBase : IClassFixture<DynamoDbFixture>, IDisposable
     {
-        private const string _tableNamePrefix = "test-stocks";
+        private const string TableNamePrefix = "test-stocks";
         protected string TableName { get; }
         protected IAmazonDynamoDB Client { get; }
 
-        public DynamoDbTestBase(string tableNamePrefix, DynamoDbFixture fixture)
+        protected DynamoDbTestBase(DynamoDbFixture fixture)
         {
-            TableName = $"{_tableNamePrefix}{Guid.NewGuid()}";
+            TableName = $"{TableNamePrefix}{Guid.NewGuid()}";
             Client = fixture.Client;
 
             var request = new CreateTableRequest
             {
                 TableName = TableName,
-                AttributeDefinitions = new List<AttributeDefinition>
-                {
-                    new("StockId", "S")
-                },
-                KeySchema = new List<KeySchemaElement> { new("StockId", Amazon.DynamoDBv2.KeyType.HASH) },
+                AttributeDefinitions = [new AttributeDefinition("StockId", "S")],
+                KeySchema = [new KeySchemaElement("StockId", KeyType.HASH)],
                 ProvisionedThroughput = new ProvisionedThroughput { ReadCapacityUnits = 1, WriteCapacityUnits = 1 }
             };
 
             Client.CreateTableAsync(request).Wait();
+            
+            WaitUntilDynamoDbActive().Wait();
+        }
+
+        private async Task WaitUntilDynamoDbActive()
+        {
+            int sleepDuration = 2000;
+
+            var describeTableRequest = new DescribeTableRequest
+            {
+                TableName = TableName
+            };
+
+            TableStatus status;
+            
+            do
+            {
+                Thread.Sleep(sleepDuration);
+
+                var describeTableResponse = await Client.DescribeTableAsync(describeTableRequest);
+                status = describeTableResponse.Table.TableStatus;
+
+                Console.Write(".");
+            }
+            while (status != TableStatus.ACTIVE);
         }
 
         public void Dispose()

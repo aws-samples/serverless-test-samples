@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <AssemblyName>KinesisEventHandler.Infrastructure</AssemblyName>
@@ -13,16 +13,16 @@
     </PropertyGroup>
     
     <ItemGroup>
-        <PackageReference Include="AWS.Lambda.Powertools.Logging" Version="1.0.1" />
-        <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.102.22" />
-        <PackageReference Include="Amazon.Lambda.Core" Version="2.1.0" />
-        <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.3.0" />
-        <PackageReference Include="AWSXRayRecorder.Handlers.AwsSdk" Version="2.12.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="7.0.0" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="7.0.0" />
+        <PackageReference Include="AWS.Lambda.Powertools.Logging" Version="1.5.1" />
+        <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.400.2" />
+        <PackageReference Include="Amazon.Lambda.Core" Version="2.2.0" />
+        <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.4.3" />
+        <PackageReference Include="AWSXRayRecorder.Handlers.AwsSdk" Version="2.13.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.2" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
     </ItemGroup>
     
     <ItemGroup>

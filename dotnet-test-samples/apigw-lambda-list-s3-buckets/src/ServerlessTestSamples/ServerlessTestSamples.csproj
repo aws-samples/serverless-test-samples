@@ -1,19 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <AWSProjectType>Lambda</AWSProjectType>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Amazon.Lambda.Core" Version="2.1.0" />
-    <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.2.0" />
-    <PackageReference Include="Amazon.Lambda.APIGatewayEvents" Version="2.4.0" />
-    <PackageReference Include="AWSSDK.S3" Version="3.7.9.18" />
-    <PackageReference Include="AWSXRayRecorder.Core" Version="2.10.1" />
-    <PackageReference Include="AWSXRayRecorder.Handlers.AwsSdk" Version="2.8.3" />
-    <PackageReference Include="AWSXRayRecorder.Handlers.System.Net" Version="2.7.3" />
+    <PackageReference Include="Amazon.Lambda.Core" Version="2.2.0" />
+    <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.4.3" />
+    <PackageReference Include="Amazon.Lambda.APIGatewayEvents" Version="2.7.0" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.400.2" />
+    <PackageReference Include="AWSXRayRecorder.Core" Version="2.15.0" />
+    <PackageReference Include="AWSXRayRecorder.Handlers.AwsSdk" Version="2.13.0" />
+    <PackageReference Include="AWSXRayRecorder.Handlers.System.Net" Version="2.12.0" />
   </ItemGroup>
 
   <ItemGroup>

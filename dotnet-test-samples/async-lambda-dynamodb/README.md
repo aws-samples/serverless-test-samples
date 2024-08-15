@@ -1,4 +1,4 @@
-[![.NET: 6.0](https://img.shields.io/badge/.NET-6.0-Green)]()
+[![.NET: 8.0](https://img.shields.io/badge/.NET-8.0-Green)]()
 [![AWS: Lambda](https://img.shields.io/badge/AWS-Lambda-blueviolet)]()
 [![Amazon: S3](https://img.shields.io/badge/Amazon-S3-blueviolet)]()
 [![Amazon: DynamoDB](https://img.shields.io/badge/Amazon-DynamoDB-blueviolet)]()
@@ -39,7 +39,7 @@ The SAM CLI is an extension of the AWS CLI that adds functionality for building 
 To use the SAM CLI, you need the following tools.
 
 - SAM CLI - [Install the SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
-- .NET 6 - [Install .NET 6](https://dotnet.microsoft.com/en-us/download)
+- .NET 8 - [Install .NET 8](https://dotnet.microsoft.com/en-us/download)
 
 [[top]](#asynchronous-integration-test-with-lambda-event-listener-and-dynamodb)
 
