@@ -296,8 +296,8 @@ Resources:
            Description: Allow outbound access
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: !Ref iECRStreamlitPort
-          ToPort: !Ref iECRStreamlitPort
+          FromPort: 8501
+          ToPort: 8501
           CidrIp: 0.0.0.0/0
           Description: Inbound only on Streamlit port
       VpcId: !Ref StreamlitVPC
@@ -406,7 +406,7 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
       LoadBalancerArn: !Ref LoadBalancer
-      Port: !Ref iECRStreamlitPort
+      Port: 8501
       Protocol: HTTP
       DefaultActions:
         - Type: forward
@@ -417,13 +417,13 @@ Resources:
     Properties:
       Name: !Sub "${AWS::StackName}-tg-http"
       VpcId: !Ref StreamlitVPC
-      Port: !Ref iECRStreamlitPort
+      Port: 8501
       Protocol: HTTP
       TargetType: ip
       HealthCheckEnabled: true
       HealthCheckIntervalSeconds: 60
       HealthCheckPath: "/_stcore/health"
-      HealthCheckPort: !Ref iECRStreamlitPort
+      HealthCheckPort: 8501
       HealthCheckProtocol: HTTP
       TargetGroupAttributes:
         - Key: stickiness.enabled
@@ -449,13 +449,16 @@ Resources:
       TaskRoleArn: !Ref TaskRole
       ContainerDefinitions:
         - Name: "streamlit"
-          Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/docsearch-ecr"
+          Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/urs-ui"
           MemoryReservation: 2048
           Cpu: 2048
           Memory: 4096
           Essential: true
           PortMappings:
-            - ContainerPort: !Ref iECRStreamlitPort
+            - ContainerPort: 8501
+          Environment:
+            - Name: BACKEND_STACK_NAME
+              Value: !Sub "{AWS::StackName}"
           LogConfiguration:
             LogDriver: awslogs
             Options:
@@ -500,24 +503,57 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              Service: ecs-tasks.amazonaws.com
+              Service:
+                - ecs.amazonaws.com
+                - ecs-tasks.amazonaws.com
             Action: 'sts:AssumeRole'
       Policies:
-        - PolicyName: root
+        - PolicyName: cw
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
-                - "ecr:GetAuthorizationToken"
-                - "ecr:BatchCheckLayerAvailability"
-                - "ecr:GetDownloadUrlForLayer"
-                - "ecr:BatchGetImage"
-                - "logs:CreateLogStream"
-                - "logs:PutLogEvents"
-                - "logs:CreateLogGroup"
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
                 Resource: '*'
-
+        - PolicyName: s3-read-access-policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:ListBucket
+                  - s3:GetBucketLocation
+                  - s3:GetObjectVersion
+                  - s3:GetLifecycleConfiguration
+                  - s3:PutObject
+                Resource: 
+                  - !Sub "arn:aws:s3:::unicorn-inv-${AWS::StackName}-${AWS::AccountId}"
+                  - !Sub "arn:aws:s3:::unicorn-inv-${AWS::StackName}-${AWS::AccountId}/*"
+        - PolicyName: ecr_access_policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ecr:GetAuthorizationToken
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:BatchGetImage
+                Resource: "*"
+        - PolicyName: stack_describe_for_config
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - cloudformation:DescribeStacks
+                Resource: 
+                  - !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${AWS::StackName}"
+                  - !Sub "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/${AWS::StackName}"
   TaskRole:
     Type: AWS::IAM::Role
     Properties:
@@ -528,6 +564,9 @@ Resources:
             Principal:
               Service: ecs-tasks.amazonaws.com
             Action: 'sts:AssumeRole'
+
+
+
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
