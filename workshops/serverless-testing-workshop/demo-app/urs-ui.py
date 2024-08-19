@@ -12,12 +12,22 @@ import os
 import uuid
 import time
 import requests
+import boto3
 import streamlit as st
 from streamlit_js_eval import streamlit_js_eval
 
 # Initialize Contexts
 if 'api_endpoint_url' not in st.session_state:
-    if os.path.isfile("config.json"):
+    try:
+        cfn_client = boto3.client('cloudformation')
+        response = cfn_client.describe_stacks(StackName=os.environ.get('BACKEND_STACK_NAME','urs-backend'))
+        for output in response['Stacks'][0]['Outputs']:
+            if output['OutputKey'] == 'ApiEndpoint':
+                st.session_state['api_endpoint_url'] = output['OutputValue']
+    except:
+        print("Failed to get API Endpoint from CloudFormation Stack")
+
+    if os.path.isfile("config.json") and 'api_endpoint_url' not in st.session_state:
         with open("config.json","r",encoding="utf-8") as f:
             app_config = json.load(f)
         st.session_state['api_endpoint_url'] = app_config["api_endpoint"].strip()
