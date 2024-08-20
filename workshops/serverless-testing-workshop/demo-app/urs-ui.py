@@ -225,6 +225,13 @@ with admin_tab:
                   key="api_endpoint_url",
                   on_change=update_api_endpoint
     )
+    if st.button("Retrieve API Endpoint"):
+        cfn_client = boto3.client('cloudformation')
+        response = cfn_client.describe_stacks(StackName=os.environ.get('BACKEND_STACK_NAME','urs-backend'))
+        for output in response['Stacks'][0]['Outputs']:
+            if output['OutputKey'] == 'ApiEndpoint':
+                st.session_state['api_endpoint_url'] = output['OutputValue']
+
     
     # File picker for uploading to the unicorn inventory
     uploaded_file = st.file_uploader("Choose a CSV file for the Unicorn Inventory.", type=["csv"])
