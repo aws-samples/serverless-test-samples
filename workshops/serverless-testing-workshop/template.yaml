@@ -9,6 +9,8 @@ Description: SAM Template for serverless-test-workshop
 Globals:
   Function:
     Timeout: 30
+    Architectures:
+      - arm64
 
 Parameters:
   iECRStreamlitPort:
