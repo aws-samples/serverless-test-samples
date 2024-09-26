@@ -10,7 +10,7 @@ Globals:
   Function:
     Timeout: 30
     Architectures:
-      - arm64
+      - x86_64
 
 Parameters:
   iECRStreamlitPort:
@@ -93,7 +93,7 @@ Resources:
             TableName: !Ref UnicornInventoryTable
       CodeUri: src/Checkout/
       Handler: app.lambda_handler
-      Runtime: python3.11
+      Runtime: python3.12
       Environment:
         Variables:
           DYNAMODB_TABLE_NAME:
@@ -115,7 +115,7 @@ Resources:
             TableName: !Ref UnicornInventoryTable
       CodeUri: src/GetInventory/
       Handler: app.lambda_handler
-      Runtime: python3.11
+      Runtime: python3.12
       Environment:
         Variables:
           DYNAMODB_TABLE_NAME:
@@ -146,7 +146,7 @@ Resources:
             TableName: !Ref UnicornInventoryTable
       CodeUri: src/GetLocations/
       Handler: app.lambda_handler
-      Runtime: python3.11
+      Runtime: python3.12
       Environment:
         Variables:
           DYNAMODB_TABLE_NAME:
@@ -170,7 +170,7 @@ Resources:
             BucketName: !Sub "unicorn-inv-${AWS::StackName}-${AWS::AccountId}"
       CodeUri: src/GetSignedUrlForInventoryFilePost/
       Handler: app.lambda_handler
-      Runtime: python3.11
+      Runtime: python3.12
       Environment:
         Variables:
           S3_BUCKET_NAME: !Sub "unicorn-inv-${AWS::StackName}-${AWS::AccountId}"
@@ -187,7 +187,7 @@ Resources:
       Tracing: Active
       CodeUri: src/FileValidator/
       Handler: app.lambda_handler
-      Runtime: python3.11
+      Runtime: python3.12
       Policies:
         - AWSXrayWriteOnlyAccess
         - S3ReadPolicy:
@@ -199,7 +199,7 @@ Resources:
       Tracing: Active
       CodeUri: src/CreateLocations/
       Handler: app.lambda_handler
-      Runtime: python3.11
+      Runtime: python3.12
       Environment:
         Variables:
           DYNAMODB_TABLE_NAME:
