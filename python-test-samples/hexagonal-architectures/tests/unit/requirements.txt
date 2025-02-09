@@ -1,0 +1,7 @@
+aws-xray-sdk
+aws_lambda_powertools
+fastjsonschema
+boto3
+pytest
+moto
+pytest-cov
