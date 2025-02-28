@@ -1,0 +1,136 @@
+{
+  "Comment": "CRUD state machine for basic operations against a local DynamoDB",
+  "StartAt": "ChoiceOperation",
+  "States": {
+    "ChoiceOperation": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.Operation",
+          "StringEquals": "Create",
+          "Next": "DynamoDB Create"
+        },
+        {
+          "Variable": "$.Operation",
+          "StringEquals": "Read",
+          "Next": "DynamoDB Read"
+        },
+        {
+          "Variable": "$.Operation",
+          "StringEquals": "Update",
+          "Next": "DynamoDB Update"
+        },
+        {
+          "Variable": "$.Operation",
+          "StringEquals": "Delete",
+          "Next": "DynamoDB Delete"
+        },
+        {
+          "Variable": "$.Operation",
+          "StringEquals": "Init",
+          "Next": "DynamoDB Init"
+        }
+      ],
+      "Default": "DynamoDB Read"
+    },
+    "DynamoDB Create": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::dynamodb:putItem",
+      "Parameters": {
+        "TableName.$": "$.TableName",
+        "Item": {
+          "Id": {
+            "S.$": "$.ItemId"
+          },
+          "Name": {
+            "S.$": "$.ItemName"
+          }
+        }
+      },
+      "End": true
+    },
+    "DynamoDB Read": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::dynamodb:getItem",
+      "Parameters": {
+        "TableName.$": "$.TableName",
+        "Key": {
+          "Id": {
+            "S.$": "$.ItemId"
+          }
+        }
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "DynamoDB.AmazonDynamoDBException"
+          ],
+          "IntervalSeconds": 3,
+          "MaxAttempts": 2,
+          "BackoffRate": 1.5
+        }
+      ],
+      "End": true
+    },
+    "DynamoDB Update": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::dynamodb:updateItem",
+      "Parameters": {
+        "TableName.$": "$.TableName",
+        "Key": {
+          "Id": {
+            "S.$": "$.ItemId"
+          }
+        },
+        "UpdateExpression": "SET #name = :name, #age = :age",
+        "ExpressionAttributeNames": {
+          "#name": "Name",
+          "#age": "Age"
+        },
+        "ExpressionAttributeValues": {
+          ":name": {
+            "S.$": "$.ItemName"
+          },
+          ":age": {
+            "N.$": "$.ItemAge"
+          }
+        }
+      },
+      "End": true
+    },
+    "DynamoDB Delete": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::dynamodb:deleteItem",
+      "Parameters": {
+        "TableName.$": "$.TableName",
+        "Key": {
+          "Id": {
+            "S.$": "$.ItemId"
+          }
+        }
+      },
+      "End": true
+    },
+    "DynamoDB Init": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:dynamodb:createTable",
+      "Parameters": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "Id",
+            "AttributeType": "S"
+          }
+        ],
+        "TableName.$": "$.TableName",
+        "KeySchema": [
+          {
+            "AttributeName": "Id",
+            "KeyType": "HASH"
+          }
+        ],
+        "BillingMode": "PAY_PER_REQUEST"
+      },
+      "End": true
+    }
+  }
+}
