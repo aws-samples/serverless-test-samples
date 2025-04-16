@@ -67,6 +67,9 @@ Event-driven architectures (EDA) are an architecture style that uses events and 
 |System Under Test|Language|Description|
 |---|---|---|
 | [Step Functions](./java-test-samples/step-functions-local) [External] |Java|This project shows a technique for testing an AWS Step Functions workflow in a local desktop environment.|
+| [Step Functions](./java-test-samples/step-functions-local-helloworld) |Python|This project demostrates how to test a "Hello World" AWS Step Functions workflow locally using Docker and PyTest.| 
+| [Step Functions](./java-test-samples/step-functions-local-lambda) |Python|This project shows a technique for testing an AWS Step Functions state machines that integrate with Lambda functions locally.|
+| [Step Functions](./java-test-samples/step-functions-local-mock) |Python|This project shows a technique for testing an AWS Step Functions workflows locally using service mocks.|
 
 ## Data Processing
 | System Under Test|Language|Description|
@@ -92,3 +95,4 @@ Emulation is not a replacement for testing against actual cloud resources, and i
 # How do I contribute?
 
 See our [Contributing](./CONTRIBUTING.md) guide for more detail providing additions, enhancements, and edits.
+
