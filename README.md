@@ -22,7 +22,6 @@ If you'd like to jump right into code, you can begin with a starter project in y
 - [Java starter](./java-test-samples/apigw-lambda-list-s3-buckets)
 - [TypeScript starter](./typescript-test-samples/typescript-test-intro)
 - [.NET starter](./dotnet-test-samples/apigw-lambda-list-s3-buckets)
-- [Local starter](./local-test-samples/apigateway-crud-lambda-dynamodb)
 
 # Language Directories
 The repository is divided into several language directories. If you would like to browse by language, you can navigate to the main page of each language directory:
@@ -31,8 +30,6 @@ The repository is divided into several language directories. If you would like t
 - [Java main directory](./java-test-samples/)
 - [TypeScript main directory](./typescript-test-samples/)
 - [.NET main directory](./dotnet-test-samples/)
-- [Local starter](./local-test-samples/)
-
 
 # Workload Types
 This repository contains sample code for testing a variety of different types of workloads, including API's, Event-Driven Architectures, Service Orchestration, Data Processing, and AWS Partner Patterns.
@@ -48,8 +45,6 @@ This repository contains sample code for testing a variety of different types of
 | [API Gateway, Lambda Authorizer, Lambda, DynamoDB](https://github.com/aws-samples/serverless-samples/tree/main/serverless-rest-api/javascript-http-sam) [External] | Node.js |
 | [API Gateway, Lambda, S3](./dotnet-test-samples/apigw-lambda-list-s3-buckets)|.NET|
 | [API Gateway, Lambda, DynamoDB](./dotnet-test-samples/apigw-lambda-ddb)|.NET|
-| [Api Gateway, Lambda, DynamoDB](./local-test-samples/apigateway-crud-lambda-dynamodb)|Local|
-| [Api Gateway, MOCK](./local-test-samples/apigateway-mock)|Local|
 | [SQS, Lambda, DynamoDB](./dotnet-test-samples/sqs-lambda)|.NET|
 | [API Gateway, Lambda, DynamoDB](./java-test-samples/apigw-lambda-ddb)|Java|
 | [AppSync, DynamoDB](./java-test-samples/java-appsync-sam)|Java|
@@ -62,8 +57,6 @@ Event-driven architectures (EDA) are an architecture style that uses events and 
 |[Schemas and Contracts](./typescript-test-samples/schema-and-contract-testing)|TypeScript|Event driven architectures decouple producers and consumers at the infrastructure layer, but these resources may still be coupled at the application layer by the event contract. Learn how to test for breaking changes in the contract.|
 |[S3, Lambda, DynamoDB](./dotnet-test-samples/async-lambda-dynamodb)|.NET|This example shows how to test async system by using DynamoDB during to store incoming asynchronous events during testing|
 |[S3, Lambda, SQS](./dotnet-test-samples/async-lambda-sqs)|.NET|An example to how to test asynchronous workflow by long polling the queue that resulting messages are sent to.|
-|[Lambda, SAM, HelloWorld](./local-test-samples/lambda-sam-helloworld)|Local| Local Lambda HelloWorld implementation |
-|[Lambda, SAM, Layers](./local-test-samples/lambda-sam-layers)|Local| Local Lambda emulator  Layers implementation |
 
 ## Architectural patterns
 |Pattern|Services used|Language|Description|
@@ -74,21 +67,12 @@ Event-driven architectures (EDA) are an architecture style that uses events and 
 |System Under Test|Language|Description|
 |---|---|---|
 | [Step Functions](./java-test-samples/step-functions-local) [External] |Java|This project shows a technique for testing an AWS Step Functions workflow in a local desktop environment.|
-| [Step Functions, HelloWorld](./local-test-samples/stepfunctions-helloworld) |Local| Local Hello World Step Functions implementation |
-| [Step Functions, Lambda](./local-test-samples/stepfunctions-lambda) |Local| Local Lambda execution integrated with local Hello World Step Functions implementation |
-| [Step Functions, MOCK](./local-test-samples/stepfunctions-mock) |Local| Mocking answers from local Hello World Step Functions implementation |
 
 ## Data Processing
 | System Under Test|Language|Description|
 |---|---|---|
 |[Kinesis Data Stream, Lambda](./typescript-test-samples/kinesis-lambda-dynamodb)|TypeScript|This project shows a technique for testing a streaming data processing system.|
 |[Kinesis Data Stream, Lambda, DynamoDB](./dotnet-test-samples/kinesis-lambda-dynamodb)|.NET|This pattern creates an AWS Lambda function that consumes messages from an Amazon Kinesis Data Streams and dumps them to Amazon DynamoDB using SAM and .NET 6.|
-
-## Database
-| System Under Test|Language|Description|
-| [DynamoDB, aws cli](./local-test-samples/dynamodb-crud-cli)|Local| DynamoDB CRUD operations using local docker image and aws cli |
-| [DynamoDB, Lambda](./local-test-samples/dynamodb-crud-lambda)|Local| DynamoDB CRUD operations using docker image and local lambda local emulator |
-| [DynamoDB, StepFunctions](./local-test-samples/dynamodb-crud-stepfunctions)|Local| DynamoDB CRUD operations using docker image and step functions local emulator |
 
 ## AWS Partner Patterns
 | Partner |System Under Test|Language|Description|
