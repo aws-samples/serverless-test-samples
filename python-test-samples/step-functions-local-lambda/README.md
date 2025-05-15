@@ -115,9 +115,6 @@ The test process leverages PyTest fixtures to manage the lifecycle of the servic
    - Executes the state machine with `execute_stepfunction` and validates the results
 
 5. **Cleanup**: After tests complete, the container is automatically shut down by the finalizer in the `sfn_container` fixture.
-6. 
-
----
 
 ---
 
@@ -128,7 +125,7 @@ The test process leverages PyTest fixtures to manage the lifecycle of the servic
 > Make sure Docker engine is running before running the tests.
 
 ```shell
-$ docker version
+step-functions-local-lambda$ docker version
 Client: Docker Engine - Community
  Version:           24.0.6
  API version:       1.43
@@ -138,7 +135,7 @@ Client: Docker Engine - Community
 To set up the Python environment:
 
 ```shell
-$ cd tests
+step-functions-local-lambda$ cd tests
 $ python3 -m venv venv
 $ source venv/bin/activate
 $ pip install --upgrade pip
@@ -150,14 +147,18 @@ $ pip install -r requirements.txt
 Start the SAM Local Lambda emulator in a separate terminal:
 
 ```shell
-$ sam local start-lambda -p 3001 --docker-network host
+step-functions-local-lambda/tests$ cd ..
+$ sam local start-lambda -p 3001 --docker-network host &
 ```
 
 ### Run the Unit Tests
 
 ```shell
-$ cd tests
-$ python3 -m pytest -s unit/src/test_step_functions_local.py -v
+step-functions-local-lambda$ cd tests
+export AWS_ACCESS_KEY_ID='DUMMYIDEXAMPLE'
+export AWS_SECRET_ACCESS_KEY='DUMMYEXAMPLEKEY'
+export REGION='us-east-1'
+python3 -m pytest -s unit/src/test_step_functions_local.py -v
 ```
 
 Expected output:
@@ -197,6 +198,7 @@ If you need to manually verify the state machine or execution details, you can u
 #### Configure environment
 
 ```sh
+step-functions-local-lambda$
 export AWS_ACCESS_KEY_ID='DUMMYIDEXAMPLE'
 export AWS_SECRET_ACCESS_KEY='DUMMYEXAMPLEKEY'
 export REGION='us-east-1'
@@ -205,6 +207,7 @@ export REGION='us-east-1'
 #### Start Lambda emulator
 
 ```sh
+step-functions-local-lambda$
 sam local start-lambda -p 3001 --docker-network host &
 ```
 
@@ -214,14 +217,14 @@ sam local start-lambda -p 3001 --docker-network host &
 aws lambda invoke \
     --function-name StepFunctionExampleSumLambda \
     --endpoint-url http://127.0.0.1:3001 \
-    --payload '{"x": 10, "y": 20, "z": 30}' \
+    --payload fileb://statemachine/test/valid_input_lambda_sum.json  \
     output.txt
 
 # Test Square Lambda
 aws lambda invoke \
     --function-name StepFunctionExampleSquareLambda \
     --endpoint-url http://127.0.0.1:3001 \
-    --payload '{"result": 9}' \
+    --payload fileb://statemachine/test/valid_input_lambda_square.json  \
     output.txt
 ```
 
@@ -276,7 +279,7 @@ aws stepfunctions create-state-machine --endpoint http://localhost:8083 \
 aws stepfunctions start-execution \
     --endpoint http://localhost:8083 \
     --state-machine [STATE-MACHINE-ARN] \
-    --input '{"x": 2s "y": 8, "z": 7}'
+    --input '{"x": 2, "y": 8, "z": 7}'
 ```
 
 #### Check State Machine Execution
@@ -329,7 +332,7 @@ If tests are skipped with "Lambda invocation failed, SAM might not be running pr
 ### Step Functions Container Fails to Start
 
 If the Step Functions container fails to start:
-- Check if the container name is already in use with `docker ps -a`
+- Check if the container image "amazon/aws-stepfunctions-local" is already in use with `docker ps -a`
 - Verify Docker permissions and network settings
 - Ensure port 8083 is available
 
