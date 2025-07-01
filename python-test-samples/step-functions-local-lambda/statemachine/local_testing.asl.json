@@ -1,34 +1,10 @@
-{
-  "Comment": "This state machine is called: MathOperationsStateMachine",
-  "StartAt": "Lambda Sum State",
+{   
+  "Comment": "Hello World State Machine of the Amazon States Language using a Pass state",
+  "StartAt": "HelloWorld",
   "States": {
-    "Lambda Sum State": {
-      "Type": "Task",
-      "Resource": "arn:aws:states:::lambda:invoke",
-      "Parameters": {
-        "FunctionName": "arn:aws:lambda:us-east-1:123456789012:function:StepFunctionExampleSumLambda",
-        "Payload.$": "$"
-      },
-      "InputPath": "$",
-      "OutputPath": "$.Payload",
-      "Next": "Wait State"
-    },
-    "Wait State": {
-      "Type": "Wait",
-      "Seconds": 3,
-      "Next": "Lambda Square State"
-    },
-    "Lambda Square State": {
-      "Type": "Task",
-      "Resource": "arn:aws:states:::lambda:invoke",
-      "Parameters": {
-        "FunctionName": "arn:aws:lambda:us-east-1:123456789012:function:StepFunctionExampleSquareLambda",
-        "Payload.$": "$"
-      },
-      "InputPath": "$.Payload",
-      "OutputPath": "$.Payload",
+    "HelloWorld": {
+      "Type": "Pass",
       "End": true
     }
-  },
-  "TimeoutSeconds": 300
+  }
 }

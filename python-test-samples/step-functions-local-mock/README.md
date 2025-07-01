@@ -23,7 +23,6 @@ This project demonstrates how to test AWS Step Functions workflows locally using
   - [Prerequisites](#prerequisites)
   - [Test Scenarios](#test-scenarios)
   - [Testing Workflows](#testing-workflows)
-  - [Debug](#debug)
   - [Additional Resources](#additional-resources)
 
 ---
@@ -48,14 +47,15 @@ Components:
 ## Project Structure
 ```
 ├── img/
-│   └── stepfunctions-mock-states.png               _# step functions MOCK state flow_
+│   ├── stepfunctions-mock-states.png               _# step functions MOCK state flow_
 │   └── stepfunctions-mock.png                      _# visual architecture diagram_
 ├── statemachine/                              
-│   └── test/MockConfigFile.json                    _# json file defining MOCK answers from Step Funtions state machine_
+│   ├── test/MockConfigFile.json                    _# json file defining MOCK answers from Step Funtions state machine_
 │   └── local_testing.asl.json                      _# json file containing MOCK state machine definition_
 ├── tests/
-│   └── unit/src/test_step_functions_local.py       _# python PyTest test definition_
+│   ├── unit/src/test_step_functions_local.py       _# python PyTest test definition_
 │   └── requirements.txt                            _# pip requirements dependencies file_
+├── aws-stepfunctions-local-credentials.txt         _# Step Functions Docker image environment vars_
 └── README.md                                       _# instructions file_
 ```
 
@@ -92,6 +92,8 @@ Components:
 
 ## Testing Workflows
 
+### Setup Docker Environment
+
 > Make sure docker engine is running before running the tests.
 
 ``` shell
@@ -101,7 +103,9 @@ Client: Docker Engine - Community
  API version:       1.43
 ```
 
-To set it up:
+### Run the Unit Test - End to end python test
+
+> Set up the python environment:
 
 ``` shell
 step-functions-local-mock$ cd tests
@@ -111,17 +115,18 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-To run the unit tests:
+#### Run the Unit Tests
 
 ``` shell
-step-functions-local-mock$ cd tests
-python3 -m pytest -s unit/src/test_step_functions_local.py -v
+step-functions-local-mock/tests$
+python3 -m pytest -s unit/src/test_step_functions_local.py
 ```
 
-expected output
+Expected output
 
-```
-step-functions-local-mock$ python3 -m pytest -s unit/src/test_step_functions_local.py -v
+``` shell
+step-functions-local-mock/tests$
+python3 -m pytest -s unit/src/test_step_functions_local.py
 ============================================================== test session starts ==============================================================
 platform linux -- Python 3.10.12, pytest-8.3.5, pluggy-1.5.0 -- /home/ubuntu/environment/step-functions-local-mock/tests/venv/bin/python3
 cachedir: .pytest_cache
@@ -133,34 +138,84 @@ Container started: 86676d42c5de
 Waiting for container <Container: 86676d42c5de> with image testcontainers/ryuk:0.8.1 to be ready ...
 Pulling image amazon/aws-stepfunctions-local
 Container started: 034b00a0307a
-Waiting for container <Container: 034b00a0307a> with image amazon/aws-stepfunctions-local to be ready ...
+Waiting for container <Container: bfd3d626a311> with image amazon/aws-stepfunctions-local to be ready ...
 PASSED
+unit/src/test_step_functions_local.py::test_retry_path PASSED
+unit/src/test_step_functions_local.py::test_hybrid_path PASSED
+
+======================================================================== 3 passed in 25.94s =========================================================================
+```
+
+
+#### Clean up section
+
+> clean pyenv environment
+
+```sh
+step-functions-local-helloworld/tests$
+deactivate
+rm -rf venv/
+```
+
+> unsetting variables
+
+```sh
+unset AWS_ACCESS_KEY_ID='DUMMYIDEXAMPLE'
+unset AWS_SECRET_ACCESS_KEY='DUMMYEXAMPLEKEY'
+unset AWS_REGION='us-east-1'
+```
+
+> cleanning docker
+
+```sh
+docker ps --filter "ancestor=amazon/aws-stepfunctions-local" -q | xargs -r docker kill
+docker rmi amazon/aws-stepfunctions-local
+```
+
+#### Debug - PyTest Debugging
+
+For more detailed debugging in pytest:
+
+```sh
+# Run with verbose output and show print statements
+python3 -m pytest -s -v unit/src/test_step_functions_local.py
+
+# Run with debug logging
+python3 -m pytest -s -v unit/src/test_step_functions_local.py --log-cli-level=DEBUG
+
+# Run only a specific test
+python3 -m pytest -s -v unit/src/test_step_functions_local.py::test_hybrid_path
+python3 -m pytest -s -v unit/src/test_step_functions_local.py::test_retry_path
 ```
 
 ---
 
-## Debug
+### Fast local development for Step Functions
 
-### AWS CLI Commands for Manual Testing
+#### AWS CLI Commands for Manual Verification
 
-#### 1. Start the Step Functions Local container:
+If you need to manually verify the state machine or execution details, you can use these commands:
+
+#### Configure environment variables:
 
 ```sh
+step-functions-local-lambda$
+export AWS_ACCESS_KEY_ID='DUMMYIDEXAMPLE'
+export AWS_SECRET_ACCESS_KEY='DUMMYEXAMPLEKEY'
+export AWS_REGION='us-east-1'
+```
+
+#### Debug state machine - 1. Start the Step Functions Local container:
+
+```sh
+step-functions-local-mock$
 docker run -d -p 8083:8083 \
-    --mount type=bind,readonly,source=$(pwd)/MockConfigFile.json,destination=/home/StepFunctionsLocal/MockConfigFile.json \
+    --mount type=bind,readonly,source=$(pwd)/statemachine/test/MockConfigFile.json,destination=/home/StepFunctionsLocal/MockConfigFile.json \
     --env-file aws-stepfunctions-local-credentials.txt \
     amazon/aws-stepfunctions-local
 ```
 
-#### 2. Set up environment variables:
-
-```sh
-export AWS_ACCESS_KEY_ID='DUMMYIDEXAMPLE'
-export AWS_SECRET_ACCESS_KEY='DUMMYEXAMPLEKEY'
-export REGION='us-east-1'
-```
-
-#### 3. Create the state machine:
+#### Debug state machine - 2. Create the state machine:
 
 ```sh
 aws stepfunctions create-state-machine \
@@ -170,7 +225,7 @@ aws stepfunctions create-state-machine \
     --role-arn "arn:aws:iam::123456789012:role/DummyRole"
 ```
 
-#### 4. Execute test scenarios:
+#### Debug state machine - 3. Execute test scenarios:
 
 Happy Path:
 ```sh
@@ -193,13 +248,18 @@ aws stepfunctions start-execution \
     --state-machine "arn:aws:states:us-east-1:123456789012:stateMachine:LambdaSQSIntegration#HybridPath"
 ```
 
-#### 5. Inspect execution results:
+#### Debug state machines - 4. Inspect execution results:
 
 Checking state machine execution
 ```sh
 aws stepfunctions describe-execution \
     --endpoint http://localhost:8083 \
     --execution-arn "<execution-arn>"
+```
+
+#### Debug state machines - 5. Checking docker image logs
+```sh
+docker ps --filter "ancestor=amazon/aws-stepfunctions-local" -q | xargs docker logs
 ```
 
 Checking state machine definition
@@ -218,21 +278,6 @@ Checking state machine states execution variables
 ```sh
 aws stepfunctions get-execution-history     --endpoint http://localhost:8083    \
   --execution-arn [STATE-MACHINE-EXECUTION-ARN]
-```
-
-### PyTest Debugging
-
-For more detailed debugging in pytest:
-
-```sh
-# Run with verbose output and show print statements
-python3 -m pytest -s -v unit/src/test_step_functions_local.py
-
-# Run with debug logging
-python3 -m pytest -s -v unit/src/test_step_functions_local.py --log-cli-level=DEBUG
-
-# Run only a specific test
-python3 -m pytest -s -v unit/src/test_step_functions_local.py::test_hybrid_path
 ```
 
 ---
