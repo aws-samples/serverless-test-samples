@@ -165,9 +165,9 @@ rm -rf venv/
 > unsetting variables
 
 ```sh
-unset AWS_ACCESS_KEY_ID='DUMMYIDEXAMPLE'
-unset AWS_SECRET_ACCESS_KEY='DUMMYEXAMPLEKEY'
-unset AWS_REGION='us-east-1'
+unset AWS_ACCESS_KEY_ID
+unset AWS_SECRET_ACCESS_KEY
+unset AWS_REGION
 ```
 
 > cleanning docker
@@ -211,7 +211,7 @@ export AWS_REGION='us-east-1'
 ```sh
 # Runing step functions docker image in the background
 step-functions-local-helloworld/tests$
-docker run -d --network host            \
+docker run -d                           \
     --name stepfunctions -p 8083:8083   \
     --env-file aws-stepfunctions-local-credentials.txt amazon/aws-stepfunctions-local
 ```

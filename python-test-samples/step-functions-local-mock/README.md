@@ -105,6 +105,16 @@ Client: Docker Engine - Community
 
 ### Run the Unit Test - End to end python test
 
+
+#### Configure environment variables:
+
+``` shell
+step-functions-local-mock$
+export AWS_ACCESS_KEY_ID='DUMMYIDEXAMPLE'
+export AWS_SECRET_ACCESS_KEY='DUMMYEXAMPLEKEY'
+export AWS_REGION='us-east-1'
+```
+
 > Set up the python environment:
 
 ``` shell
@@ -160,9 +170,9 @@ rm -rf venv/
 > unsetting variables
 
 ```sh
-unset AWS_ACCESS_KEY_ID='DUMMYIDEXAMPLE'
-unset AWS_SECRET_ACCESS_KEY='DUMMYEXAMPLEKEY'
-unset AWS_REGION='us-east-1'
+unset AWS_ACCESS_KEY_ID
+unset AWS_SECRET_ACCESS_KEY
+unset AWS_REGION
 ```
 
 > cleanning docker
@@ -196,6 +206,8 @@ python3 -m pytest -s -v unit/src/test_step_functions_local.py::test_retry_path
 
 If you need to manually verify the state machine or execution details, you can use these commands:
 
+Note: Unlike other samples in this repository, these commands should be run from the project root directory step-functions-local-lambda, not from within the /tests directory. These allows direct file paths without having to use "../" references
+
 #### Configure environment variables:
 
 ```sh
@@ -204,6 +216,7 @@ export AWS_ACCESS_KEY_ID='DUMMYIDEXAMPLE'
 export AWS_SECRET_ACCESS_KEY='DUMMYEXAMPLEKEY'
 export AWS_REGION='us-east-1'
 ```
+
 
 #### Debug state machine - 1. Start the Step Functions Local container:
 
