@@ -1,0 +1,18 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: AWS SAM Template for Lambda SAM local testing - Hello World
+
+Resources:
+  # Lambda function running Hello World
+  LambdaHelloWorld:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: app.lambda_handler
+      CodeUri: lambda_helloworld_src/
+      Runtime: python3.9
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /path
+            Method: get

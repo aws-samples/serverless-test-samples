@@ -1,0 +1,49 @@
+# Core testing framework - using more stable versions
+pytest==7.4.4
+pytest-timeout==2.1.0
+
+# AWS SDK for Lambda client
+boto3==1.35.36
+botocore==1.35.36
+
+# Essential testing utilities - compatible versions
+pytest-xdist==3.3.1
+pytest-html==3.2.0
+pytest-cov==4.1.0
+
+# Performance testing and benchmarking
+pytest-benchmark==4.0.0
+
+# JSON validation and schema testing
+jsonschema==4.21.1
+
+# Better output and logging
+colorlog==6.8.2
+rich==13.7.1
+
+# Date/time utilities
+python-dateutil==2.8.2
+
+# Performance monitoring
+memory-profiler==0.61.0
+
+# Process and system utilities
+psutil==5.9.8
+
+# Mock and patch utilities
+pytest-mock==3.11.1
+
+# Advanced assertions
+assertpy==1.1
+
+# Environment variable management  
+python-dotenv==1.0.1
+
+# Data generation for testing
+faker==24.4.0
+
+# Network utilities (for port checking)
+netifaces==0.11.0
+
+# Timeout utilities for long-running tests
+timeout-decorator==0.5.0
