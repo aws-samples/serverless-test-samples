@@ -1,0 +1,20 @@
+# Core testing framework
+pytest==7.4.4
+
+# HTTP client for API requests (replaces curl commands)
+requests==2.31.0
+
+# Docker container management for DynamoDB Local
+docker==7.0.0
+
+# Basic testing utilities
+pytest-timeout==2.1.0
+
+# JSON processing and validation
+jsonschema==4.21.1
+
+# Date/time utilities (used in test)
+python-dateutil==2.8.2
+
+# Better output formatting (optional but helpful)
+colorlog==6.8.2
