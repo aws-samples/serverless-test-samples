@@ -1,0 +1,7 @@
+{
+  "httpMethod": "GET",
+  "path": "/MOCK",
+  "headers": {
+    "Accept": "application/json"
+  }
+}
