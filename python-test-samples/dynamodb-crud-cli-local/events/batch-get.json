@@ -1,0 +1,26 @@
+{
+  "CRUDLocalTable": {
+    "Keys": [
+      {
+        "Id": {"S": "batch-001"}
+      },
+      {
+        "Id": {"S": "batch-002"}
+      },
+      {
+        "Id": {"S": "batch-003"}
+      },
+      {
+        "Id": {"S": "batch-004"}
+      },
+      {
+        "Id": {"S": "batch-005"}
+      }
+    ],
+    "ProjectionExpression": "Id, #name, #role, city, age",
+    "ExpressionAttributeNames": {
+      "#name": "name",
+      "#role": "role"
+    }
+  }
+}
