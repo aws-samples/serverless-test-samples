@@ -1,0 +1,91 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: AWS SAM Template for CRUD operations in Python Lambda Functions with Local DynamoDB
+
+Resources:
+  # DynamoDB table persisting CRUD operations
+  CRUDLocalTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: CRUDLocalTable
+      AttributeDefinitions:
+        - AttributeName: Id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: Id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+
+  # Lambda function to initialize the DynamoDB table
+  CRUDLambdaInitFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../lambda_crud_src/lambda_crud_init_src
+      Handler: app.lambda_handler
+      Runtime: python3.10
+      Timeout: 60
+      Environment:
+        Variables:
+          DYNAMODB_TABLE: CRUDLocalTable
+          AWS_ACCESS_KEY_ID: DUMMYIDEXAMPLE
+          AWS_SECRET_ACCESS_KEY: DUMMYEXAMPLEKEY
+          REGION: us-east-1
+
+  # Lambda function creating items on DynamoDB table
+  CRUDLambdaCreateFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../lambda_crud_src/lambda_crud_create_src
+      Handler: app.lambda_handler
+      Runtime: python3.10
+      Environment:
+        Variables:
+          DYNAMODB_TABLE: CRUDLocalTable
+          AWS_ACCESS_KEY_ID: DUMMYIDEXAMPLE
+          AWS_SECRET_ACCESS_KEY: DUMMYEXAMPLEKEY
+          REGION: us-east-1
+     
+  # Lambda function reading items on DynamoDB table
+  CRUDLambdaReadFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../lambda_crud_src/lambda_crud_read_src
+      Handler: app.lambda_handler
+      Runtime: python3.10
+      Timeout: 60
+      Environment:
+        Variables:
+          DYNAMODB_TABLE: CRUDLocalTable
+          AWS_ACCESS_KEY_ID: DUMMYIDEXAMPLE
+          AWS_SECRET_ACCESS_KEY: DUMMYEXAMPLEKEY
+          REGION: us-east-1
+
+  # Lambda function deleting items on DynamoDB table
+  CRUDLambdaDeleteFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../lambda_crud_src/lambda_crud_delete_src
+      Handler: app.lambda_handler
+      Runtime: python3.10
+      Environment:
+        Variables:
+          DYNAMODB_TABLE: CRUDLocalTable
+          AWS_ACCESS_KEY_ID: DUMMYIDEXAMPLE
+          AWS_SECRET_ACCESS_KEY: DUMMYEXAMPLEKEY
+          REGION: us-east-1
+
+  # Lambda function updating items on DynamoDB table
+  CRUDLambdaUpdateFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../lambda_crud_src/lambda_crud_update_src
+      Handler: app.lambda_handler
+      Runtime: python3.10
+      Environment:
+        Variables:
+          DYNAMODB_TABLE: CRUDLocalTable
+          AWS_ACCESS_KEY_ID: DUMMYIDEXAMPLE
+          AWS_SECRET_ACCESS_KEY: DUMMYEXAMPLEKEY
+          REGION: us-east-1
