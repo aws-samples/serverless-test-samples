@@ -17,7 +17,7 @@ import moto
 from src import app
 
 # Mock the DynamoDB Service during the test
-@moto.mock_dynamodb
+@moto.mock_aws
 
 class TestSampleLambdaWithDynamoDB(TestCase):
     """
