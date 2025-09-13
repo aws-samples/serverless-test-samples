@@ -10,15 +10,14 @@ from uuid import uuid4
 import yaml
 import boto3
 from boto3.dynamodb.conditions import Key
-import moto
+from moto import mock_aws  # Changed from import moto
 
 
 # Import the handler under test
 from src import app
 
 # Mock the DynamoDB Service during the test
-@moto.mock_dynamodb
-
+@mock_aws  # Changed from @moto.mock_dynamodb
 class TestSampleLambdaWithDynamoDB(TestCase):
     """
     Unit Test class for src/app.py
@@ -137,6 +136,3 @@ class TestSampleLambdaWithDynamoDB(TestCase):
         for item in id_items["Items"]:
             self.assertEqual(item["data"], "NOTFOUND: Name Not Found for ID TEST002" + self.id_postfix)
             self.assertEqual(item["SK"][0:11], "DT#" + datetime.now().strftime("%Y%m%d"))
-        
-
-    

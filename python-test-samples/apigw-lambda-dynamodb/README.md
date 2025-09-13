@@ -1,4 +1,4 @@
-[![python: 3.9](https://img.shields.io/badge/Python-3.9-green)](https://img.shields.io/badge/Python-3.9-green)
+[![python: 3.13](https://img.shields.io/badge/Python-3.13-green)](https://img.shields.io/badge/Python-3.13-green)
 [![AWS: DynamoDB](https://img.shields.io/badge/AWS-DynamoDB-blueviolet)](https://img.shields.io/badge/AWS-DynamoDB-blueviolet)
 [![test: unit](https://img.shields.io/badge/Test-Unit-blue)](https://img.shields.io/badge/Test-Unit-blue)
 [![test: integration](https://img.shields.io/badge/Test-Integration-yellow)](https://img.shields.io/badge/Test-Integration-yellow)
@@ -86,11 +86,15 @@ The [unit test tear-down](tests/unit/mock_test.py#L61-66) removes the mocked Dyn
 To run the unit test, execute the following
 ```shell
 # Run from the project directory serverless-test-samples/python-test-samples/apigw-lambda-dynamodb
+# Verify Python version (Should show Python 3.13.x)
+
+python3 --version
+pip3 --version
+
 # Create and Activate a Python Virtual Environment
 # One-time setup
-
 pip3 install virtualenv
-python3 -m venv venv
+python3 -m virtualenv venv
 source ./venv/bin/activate
 
 # install dependencies
