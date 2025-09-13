@@ -1,7 +1,7 @@
-pytest
-pytest-mock
-boto3
-moto
-aws_lambda_powertools
-aws-xray-sdk
-fastjsonschema
+pytest>=7.0.0
+pytest-mock>=3.10.0
+boto3>=1.26.0
+moto>=4.0.0
+aws_lambda_powertools>=2.0.0
+aws-xray-sdk>=2.12.0
+fastjsonschema>=2.16.0
