@@ -1,4 +1,4 @@
-[![python: 3.9](https://img.shields.io/badge/Python-3.9-green)](https://img.shields.io/badge/Python-3.9-green)
+[![python: 3.13](https://img.shields.io/badge/Python-3.13-green)](https://img.shields.io/badge/Python-3.13-green)
 [![AWS: DynamoDB](https://img.shields.io/badge/AWS-DynamoDB-blueviolet)](https://img.shields.io/badge/AWS-DynamoDB-blueviolet)
 [![AWS: S#](https://img.shields.io/badge/AWS-S3-green)](https://img.shields.io/badge/AWS-AWS-S3-green)
 [![test: unit](https://img.shields.io/badge/Test-Unit-blue)](https://img.shields.io/badge/Test-Unit-blue)
@@ -70,14 +70,14 @@ This pattern can be used with a variety of infrastructure as code systems includ
 
 The code in this project is simplified - we’ve opted for concise snippets over fully completed or PEP8 compliant production code.
 
-[Top](#contents)
+[Top](#contents)x
 
 ---
 ## Prerequisites
 
 * [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
 * [AWS Serverless Application Model (SAM) CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
-* [Python 3.9](https://www.python.org/downloads/)
+* [Python 3.13](https://www.python.org/downloads/)
 * [Make build utility](https://www.gnu.org/software/make/)
 
 [Top](#contents)
@@ -100,6 +100,7 @@ The project Makefile contains helper commands for working with the project:
 
 ## Running the project
 
+* Setting default region: export AWS_DEFAULT_REGION=us-east-1
 * First, create the Python Virtual Environment by using the ```make install``` command.
 * Run the unit tests with the ```make test``` command.
 * To (optionally) deploy the project, use the ```make deploy.g``` command.
