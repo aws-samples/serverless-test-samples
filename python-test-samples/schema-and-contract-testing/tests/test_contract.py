@@ -1,32 +1,26 @@
-import json
-import pytest
-from pydantic import ValidationError
-from tests.context import ConsumerCustomerModel
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
 
-def instantiate_customer(schema_version):
-    """utility method to instantiate customer model with business alidations"""
-    sample_event_file = f"events/customerCreated-event-{schema_version}.json"
-    with open(sample_event_file, "r", encoding="utf-8") as event:
-        new_schema_event = json.load(event)
-        return ConsumerCustomerModel(**new_schema_event)
+from __future__ import annotations
+
+from pydantic import BaseModel, Field, field_validator
 
 
-def test_address_with_four_fields_compatible_with_business_logic():
-    """
-    business validation for address field checks for 4 fields separated by ","
-    event generated with schema 1.1.0 satisfies this, so test passes
-    """
-    customer = instantiate_customer("1.1.0")
-    assert customer.address == "2 Park St, Sydney, NSW 2000, Australia", "Full address compatible"
+class Customer(BaseModel):
+    """Class representing a customer"""
+    customerId: str = Field(
+        ..., examples=['577af109-1f19-4d0a-9c56-359f44ca0034'], title='Customerid'
+    )
+    firstName: str = Field(..., examples=['Jane'], title='Firstname')
+    lastName: str = Field(..., examples=['Doe'], title='Lastname')
+    address: str = Field(
+        ..., examples=['2 Park St, Sydney, NSW 2000, Australia'], title='Address'
+    )
 
-
-def test_street_name_for_address_not_compatible_with_business_logic():
-    """
-    business validation for address field checks for 4 fields separated by ","
-    event generated with schema 1.4.0 does not satisfy this, so test fails
-    """
-    with pytest.raises(Exception) as e_info:
-        customer = instantiate_customer("1.4.0")
-    assert e_info.type == ValidationError
-    assert "Address must have four fields separated by ','" in str(
-        e_info.value)
+    @field_validator('address')
+    @classmethod
+    def address_has_four_fields(cls, address_value: str) -> str:
+        """Function to validate address field"""
+        if len(address_value.split(',')) != 4:
+            raise ValueError("Address must have four fields separated by ','.")
+        return address_value

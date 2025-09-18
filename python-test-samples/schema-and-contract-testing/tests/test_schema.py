@@ -41,9 +41,11 @@ def test_removing_required_element_not_backward_compatible():
     with pytest.raises(Exception) as e_info:
         customer = instantiate_customer("1.3.0")
     assert e_info.type == ValidationError
-    assert "field required" in str(e_info.value)
-    assert "firstName" in str(e_info.value)
-    assert "lastName" in str(e_info.value)
+    # Updated for Pydantic v2 error message format
+    error_message = str(e_info.value)
+    assert "Field required" in error_message  # Pydantic v2 uses "Field required"
+    assert "firstName" in error_message
+    assert "lastName" in error_message
 
 
 def test_changing_business_logic_existing_field_backward_compatible():
