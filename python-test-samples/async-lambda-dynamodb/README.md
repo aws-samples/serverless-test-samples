@@ -29,7 +29,7 @@ The SAM CLI is an extension of the AWS CLI that adds functionality for building 
 To use the SAM CLI, you need the following tools.
 
 - SAM CLI - [Install the SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
-- Python 3 - [Install Python 3](https://www.python.org/downloads/)
+- Python 3.13 - [Install Python 3.13](https://www.python.org/downloads/)
 - Docker - [Install Docker community edition](https://hub.docker.com/search/?type=edition&offering=community)
 
 This project uses the `make` build automation tool to provide convenient commands for building, deploying and testing this sample application. To view the available commands make sure this utility is installed and run the `make` command in the terminal from the same directory as the `Makefile`.
@@ -72,3 +72,4 @@ Run these four commands in sequence.
 - `exit`        - Close the virtual environment shell
 
 [[top]](#asynchronous-integration-test-with-lambda-event-listener-and-dynamodb)
+
