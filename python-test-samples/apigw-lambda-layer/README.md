@@ -1,4 +1,4 @@
-[![python: 3.9](https://img.shields.io/badge/Python-3.9-green)](https://img.shields.io/badge/Python-3.9-green)
+[![python: 3.13](https://img.shields.io/badge/Python-3.13-green)](https://img.shields.io/badge/Python-3.13-green)
 [![AWS: Lambda](https://img.shields.io/badge/AWS-Lambda-blueviolet)](https://img.shields.io/badge/AWS-Lambda-blueviolet)
 [![test: unit](https://img.shields.io/badge/Test-Unit-blue)](https://img.shields.io/badge/Test-Unit-blue)
 
@@ -97,11 +97,16 @@ To run the unit tests:
 ```shell
 
 # Run from the project directory serverless-test-samples/python-test-samples/apigw-lambda-layer
-# install dependencies
+# Verify Python version (Should show Python 3.13.x)
 
+python3 --version
+pip3 --version
+
+# Create and Activate a Python Virtual Environment
+# One-time setup
 pip3 install virtualenv
-python3 -m venv venv
-source venv/bin/activate
+python3 -m virtualenv venv
+source ./venv/bin/activate
 pip3 install -r tests/requirements.txt
 
 # run Lambda layer unit tests with mocks
