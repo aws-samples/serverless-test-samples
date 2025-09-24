@@ -1,0 +1,131 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: AWS SAM Template for CRUD operations with API Gateway and Python Lambda Functions and Local DynamoDB
+
+Resources:
+  # API Gateway with CRUD integration
+  APIGatewayCRUD:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+
+  # DynamoDB table persisting CRUD operations
+  CRUDLocalTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: CRUDLocalTable
+      AttributeDefinitions:
+        - AttributeName: Id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: Id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+
+  # Lambda function to initialize the DynamoDB table
+  CRUDLambdaInitFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda_crud_src/lambda_crud_init_src
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Timeout: 30
+      Environment:
+        Variables:
+          DYNAMODB_TABLE: CRUDLocalTable
+          AWS_ACCESS_KEY_ID: DUMMYIDEXAMPLE
+          AWS_SECRET_ACCESS_KEY: DUMMYEXAMPLEKEY
+          REGION: eu-west-1
+      Events:
+        EventInit:
+          Type: Api
+          Properties:
+            Path: /init
+            Method: get
+            RestApiId: !Ref APIGatewayCRUD
+
+  # Lambda function creating items on DynamoDB table
+  CRUDLambdaCreateFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda_crud_src/lambda_crud_create_src
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Environment:
+        Variables:
+          DYNAMODB_TABLE: CRUDLocalTable
+          AWS_ACCESS_KEY_ID: DUMMYIDEXAMPLE
+          AWS_SECRET_ACCESS_KEY: DUMMYEXAMPLEKEY
+          REGION: eu-west-1
+      Events:
+        EventCreate:
+          Type: Api
+          Properties:
+            Path: /create
+            Method: post
+            RestApiId: !Ref APIGatewayCRUD
+
+  # Lambda function reading items on DynamoDB table
+  CRUDLambdaReadFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda_crud_src/lambda_crud_read_src
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Environment:
+        Variables:
+          DYNAMODB_TABLE: CRUDLocalTable
+          AWS_ACCESS_KEY_ID: DUMMYIDEXAMPLE
+          AWS_SECRET_ACCESS_KEY: DUMMYEXAMPLEKEY
+          REGION: eu-west-1
+      Events:
+        EventGet:
+          Type: Api
+          Properties:
+            Path: /read
+            Method: get
+            RestApiId: !Ref APIGatewayCRUD
+
+  # Lambda function deleting items on DynamoDB table
+  CRUDLambdaDeleteFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda_crud_src/lambda_crud_delete_src
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Environment:
+        Variables:
+          DYNAMODB_TABLE: CRUDLocalTable
+          AWS_ACCESS_KEY_ID: DUMMYIDEXAMPLE
+          AWS_SECRET_ACCESS_KEY: DUMMYEXAMPLEKEY
+          REGION: eu-west-1
+      Events:
+        EventDelete:
+          Type: Api
+          Properties:
+            Path: /delete
+            Method: get
+            RestApiId: !Ref APIGatewayCRUD
+
+  # Lambda function updating items on DynamoDB table
+  CRUDLambdaUpdateFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda_crud_src/lambda_crud_update_src
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Environment:
+        Variables:
+          DYNAMODB_TABLE: CRUDLocalTable
+          AWS_ACCESS_KEY_ID: DUMMYIDEXAMPLE
+          AWS_SECRET_ACCESS_KEY: DUMMYEXAMPLEKEY
+          REGION: eu-west-1
+      Events:
+        EventUpdate:
+          Type: Api
+          Properties:
+            Path: /update
+            Method: post
+            RestApiId: !Ref APIGatewayCRUD
