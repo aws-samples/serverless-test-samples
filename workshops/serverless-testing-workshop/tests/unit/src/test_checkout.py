@@ -27,8 +27,8 @@ from schemas import OUTPUT_SCHEMA                     # pylint: disable=wrong-im
 # Import the handler under test
 import app
 
-# Mock the DynamoDB Service during the test
-@moto.mock_dynamodb
+# Mock all AWS Services 
+@moto.mock_aws
 
 
 class TestSampleLambdaWithDynamoDB(TestCase):

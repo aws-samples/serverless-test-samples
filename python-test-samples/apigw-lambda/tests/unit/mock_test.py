@@ -5,7 +5,7 @@ import json
 from urllib import response
 import boto3
 import pytest
-from moto import mock_s3
+from moto import mock_aws
 from aws_lambda_powertools.utilities.data_classes import APIGatewayProxyEvent
 from src import app
 
@@ -16,11 +16,11 @@ def apigw_event() ->  APIGatewayProxyEvent:
         return APIGatewayProxyEvent(json.load(f))
 
 
-@mock_s3
+@mock_aws
 def test_lambda_handler(apigw_event: dict) -> None:
 
     # set up test bucket
-    s3_client = boto3.client('s3')
+    s3_client = boto3.client('s3', region_name='us-east-1')
     test_bucket_names = ["test_bucket1","test_bucket2"]
     test_data = b'col_1,col_2\n1,2\n3,4\n'
     for test_bucket_name in test_bucket_names:
