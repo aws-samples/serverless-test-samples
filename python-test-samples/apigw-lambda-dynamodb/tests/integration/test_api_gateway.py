@@ -39,7 +39,7 @@ class TestApiGateway(TestCase):
         """
         stack_name = TestApiGateway.get_stack_name()
 
-        client = boto3.client("cloudformation")
+        client = boto3.client("cloudformation", region_name=self.aws_region)
 
         try:
             response = client.describe_stacks(StackName=stack_name)
@@ -63,41 +63,64 @@ class TestApiGateway(TestCase):
         # Using unique id's per unit test will isolate test data
         self.id_postfix = "_" + str(uuid4())
 
-
         # Seed the DynamoDB Table with Test Data
-        dynamodb_resource = boto3.resource("dynamodb", region_name = self.aws_region)
-        dynamodb_table = dynamodb_resource.Table(name=self.dynamodb_table_name)
-        dynamodb_table.put_item(Item={"PK": "TEST001" + self.id_postfix, 
-                                      "SK": "NAME#",
-                                      "data": "Unit Test Name Data"})
-
+        try:
+            dynamodb_resource = boto3.resource("dynamodb", region_name=self.aws_region)
+            dynamodb_table = dynamodb_resource.Table(name=self.dynamodb_table_name)
+            dynamodb_table.put_item(Item={"PK": "TEST001" + self.id_postfix, 
+                                          "SK": "NAME#",
+                                          "data": "Unit Test Name Data"})
+            print(f"Successfully seeded test data for TEST001{self.id_postfix}")
+        except Exception as e:
+            print(f"Warning: Could not seed test data: {e}")
+            raise
 
     def tearDown(self) -> None:
         """
-        # For tear-down, remove any data injected for the tests
-        # Take particular care to ensure these values are unique and identifiable as TEST data.
+        For tear-down, remove any data injected for the tests
+        Take particular care to ensure these values are unique and identifiable as TEST data.
         """
-        dynamodb_resource = boto3.resource("dynamodb", region_name = self.aws_region)
-        dynamodb_table = dynamodb_resource.Table(name=self.dynamodb_table_name)
+        try:
+            dynamodb_resource = boto3.resource("dynamodb", region_name=self.aws_region)
+            dynamodb_table = dynamodb_resource.Table(name=self.dynamodb_table_name)
 
-        for id in ["TEST001" + self.id_postfix,"TEST002" + self.id_postfix]:
-            id_items = dynamodb_table.query(
-                KeyConditionExpression=Key('PK').eq(id)
-            )
-            if "Items" in id_items:
-                for item in id_items["Items"]:
-                    dynamodb_table.delete_item(Key={"PK":item["PK"],"SK":item["SK"]})
+            for id in ["TEST001" + self.id_postfix,"TEST002" + self.id_postfix]:
+                try:
+                    id_items = dynamodb_table.query(
+                        KeyConditionExpression=Key('PK').eq(id)
+                    )
+                    if "Items" in id_items:
+                        for item in id_items["Items"]:
+                            dynamodb_table.delete_item(Key={"PK":item["PK"],"SK":item["SK"]})
+                    print(f"Successfully cleaned up test data for {id}")
+                except Exception as item_error:
+                    print(f"Could not clean up items for {id}: {item_error}")
+        except Exception as e:
+            print(f"Warning: tearDown cleanup failed (this may be a credentials issue): {e}")
+            print("Test data may remain in DynamoDB - clean up manually if needed")
 
     def test_api_gateway_200(self):
         """
         Call the API Gateway endpoint and check the response for a 200
         """
-        response = requests.get(self.api_endpoint.replace("{id}","TEST001" + self.id_postfix))
-        self.assertEqual(response.status_code, requests.codes.ok)
+        try:
+            response = requests.get(self.api_endpoint.replace("{id}","TEST001" + self.id_postfix))
+            print(f"API Response Status: {response.status_code}")
+            print(f"API Response Body: {response.text}")
+            self.assertEqual(response.status_code, requests.codes.ok)
+        except Exception as e:
+            print(f"Test failed with error: {e}")
+            raise
 
     def test_api_gateway_404(self):
         """
         Call the API Gateway endpoint and check the response for a 404 (id not found)
         """    
-        response = requests.get(self.api_endpoint.replace("{id}","TEST002" + self.id_postfix))
-        self.assertEqual(response.status_code, requests.codes.not_found)
+        try:
+            response = requests.get(self.api_endpoint.replace("{id}","TEST002" + self.id_postfix))
+            print(f"API Response Status: {response.status_code}")
+            print(f"API Response Body: {response.text}")
+            self.assertEqual(response.status_code, requests.codes.not_found)
+        except Exception as e:
+            print(f"Test failed with error: {e}")
+            raise
