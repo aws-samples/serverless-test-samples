@@ -1,0 +1,23 @@
+.venv
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+*.cover
+*cache
+.github
+__pycache__/
+junit.xml
+
+# Python build artifacts
+*.egg-info/
+*.egg
+dist/
+build/
+
+# CDK output
+cdk.out/
+cdk-outputs.json
+*.js
+*.d.ts
+node_modules/

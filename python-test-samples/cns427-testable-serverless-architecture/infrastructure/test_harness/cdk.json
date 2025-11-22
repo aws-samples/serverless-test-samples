@@ -1,0 +1,10 @@
+{
+  "app": "poetry run python app.py",
+  "context": {
+    "project_name": "cns427-task-api",
+    "environment": "dev",
+    "region": "us-west-2",
+    "@aws-cdk/aws-lambda:recognizeLayerVersion": true,
+    "@aws-cdk/core:checkSecretUsage": true
+  }
+}

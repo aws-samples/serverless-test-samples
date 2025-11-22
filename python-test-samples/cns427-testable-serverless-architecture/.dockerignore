@@ -1,0 +1,15 @@
+cdk.out
+cdk-outputs.json
+.mypy_cache
+.ruff_cache
+.pytest_cache
+__pycache__
+.venv
+.git
+tests
+infrastructure
+docs
+scripts
+ai-dlc
+*.md
+
