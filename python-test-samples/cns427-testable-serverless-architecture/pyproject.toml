@@ -1,0 +1,121 @@
+[build-system]
+requires = ["poetry>=2.0.1"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "cns427-task-api"
+version = "1.0.0"
+description = "CNS427 Task Management API - Serverless testing demonstration"
+authors = ["CNS427 Demo"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3.13",
+]
+readme = "README.md"
+keywords = ["serverless", "testing", "aws", "lambda"]
+license = "MIT-0"
+packages = [
+    {include = "services"},
+    {include = "shared"}
+]
+
+[tool.poetry.dependencies]
+python = "^3.13.0"
+pydantic = { version = "^2.0.3" }
+aws-lambda-powertools = { extras = ["tracer"], version = "^2.20.0" }
+mypy-boto3-dynamodb = "*"
+mypy-boto3-events = "*"
+boto3 = "^1.26.125"
+aws-lambda-env-modeler = { version = "^1.0.5" }
+
+[tool.poetry.group.dev.dependencies]
+# CDK
+cns427-infrastructure = { path = "infrastructure", develop = true }
+aws-cdk-lib = ">=2.100.0"
+constructs = ">=10.0.0"
+cdk-nag = ">2.0.0"
+# Testing
+pytest = "*"
+pytest-mock = "*"
+pytest-cov = "*"
+pytest-html = "*"
+pytest-asyncio = "*"
+pytest-socket = "*"
+moto = "*"
+requests = "*"  # For E2E tests with API Gateway
+hypothesis = "*"
+# Development
+ruff = "*"
+mypy = "*"
+pre-commit = "*"
+
+[tool.poetry.scripts]
+# Setup validation
+validate-setup = "scripts.validate_setup:validate_setup"
+# Main application deployment
+deploy = "scripts.deploy:main"
+destroy = "scripts.destroy:main"
+# Test infrastructure management (using bash scripts)
+# Use: make deploy-test-infra, make destroy-test-infra, make check-test-infra
+# Testing commands
+test-unit = "scripts.testing:run_unit_tests"
+test-integration = "scripts.testing:run_integration_tests"
+test-e2e = "scripts.testing:run_e2e_tests"
+test-all = "scripts.testing:run_all_tests"
+# Development commands
+lint = "scripts.dev:lint"
+format = "scripts.dev:format"
+type-check = "scripts.dev:type_check"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--verbose",
+    "--tb=short",
+    "--strict-markers",
+]
+markers = [
+    "unit: Unit tests (no external dependencies)",
+    "integration: Integration tests (with AWS services)",
+    "e2e: End-to-end tests (full workflow)",
+    "slow: Slow running tests"
+]
+
+[tool.ruff]
+exclude = [
+    ".git",
+    ".mypy_cache",
+    ".ruff_cache",
+    ".venv",
+    "venv",
+    "cdk.out",
+    ".pytest_cache",
+]
+line-length = 150
+indent-width = 4
+target-version = "py313"
+
+[tool.ruff.lint]
+select = [
+    "E", # pycodestyle errors
+    "W", # pycodestyle warnings
+    "F", # pyflakes
+    "I", # isort
+    "C", # flake8-comprehensions
+    "B", # flake8-bugbear
+]
+ignore = ["E203", "E266", "E501", "W191"]
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
+line-ending = "auto"
+
+[tool.ruff.lint.isort]
+known-third-party = ["pydantic", "aws_lambda_powertools"]

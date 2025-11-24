@@ -1,0 +1,1 @@
+"""Notification service domain layer."""
