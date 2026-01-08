@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 
 class Customer(BaseModel):
@@ -17,9 +17,10 @@ class Customer(BaseModel):
         ..., examples=['2 Park St, Sydney, NSW 2000, Australia'], title='Address'
     )
 
-    @validator('address')
-    def address_has_four_fields(cls, address_value):
-        """Fucntion to validate address field"""
-        if len(address_value.split(',')) != 4:
+    @field_validator('address', mode='before')
+    @classmethod
+    def address_has_four_fields(cls, address_value: str) -> str:
+        """Function to validate address field"""
+        if isinstance(address_value, str) and len(address_value.split(',')) != 4:
             raise ValueError("Address must have four fields separated by ','.")
         return address_value
