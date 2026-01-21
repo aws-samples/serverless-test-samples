@@ -20,9 +20,8 @@ from src.sample_lambda.app import LambdaDynamoDBClass, LambdaS3Class   # pylint:
 from src.sample_lambda.app import lambda_handler, create_letter_in_s3  # pylint: disable=wrong-import-position
 from src.sample_lambda.schemas import INPUT_SCHEMA                     # pylint: disable=wrong-import-position
 
-# [1] Mock all AWS Services in use
-@moto.mock_dynamodb
-@moto.mock_s3
+# [1] Mock all AWS Services 
+@moto.mock_aws
 class TestSampleLambda(TestCase):
     """
     Test class for the application sample AWS Lambda Function
