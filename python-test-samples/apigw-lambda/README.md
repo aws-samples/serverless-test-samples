@@ -1,4 +1,4 @@
-[![python: 3.9](https://img.shields.io/badge/Python-3.9-green)](https://img.shields.io/badge/Python-3.9-green)
+[![python: 3.13](https://img.shields.io/badge/Python-3.13-green)](https://img.shields.io/badge/Python-3.13-green)
 [![AWS: Lambda](https://img.shields.io/badge/AWS-Lambda-blueviolet)](https://img.shields.io/badge/AWS-Lambda-blueviolet)
 [![test: unit](https://img.shields.io/badge/Test-Unit-blue)](https://img.shields.io/badge/Test-Unit-blue)
 [![test: integration](https://img.shields.io/badge/Test-Integration-yellow)](https://img.shields.io/badge/Test-Integration-yellow)
@@ -45,7 +45,7 @@ The SAM CLI extends the AWS CLI that adds functionality for building and testing
 To use the SAM CLI, you need the following tools.
 
 * SAM CLI - [Install the SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
-* Python 3 - [Install Python 3](https://www.python.org/downloads/)
+* Python 3.13 - [Install Python 3.13](https://www.python.org/downloads/)
 * Docker - [Install Docker community edition](https://hub.docker.com/search/?type=edition&offering=community)
 
 [[top]](#python-test-samples-project)
@@ -172,11 +172,15 @@ The project uses the [moto](http://docs.getmoto.org/en/latest/) dependency libra
 # Create and Activate a Python Virtual Environment
 
 pip3 install virtualenv
-python3 -m venv venv
+python3 -m virtualenv venv
 source ./venv/bin/activate
 
-# install dependencies
+# Verify Python version (Should show Python 3.13.x)
 
+python3 --version
+pip3 --version
+
+# install dependencies
 pip3 install -r tests/requirements.txt
 
 # run unit tests with mocks
@@ -202,7 +206,7 @@ The `AWS CLI` enables you to invoke a Lambda function in the cloud.
 ```shell
 # invoke a Lambda function in the cloud using the AWS CLI.  Substitute the function name as created in your stack.
 
-aws lambda invoke --function-name apigw-lambda-PythonTestDemo-6Ecinx8IauZv outfile.txt
+aws lambda invoke --function-name apigw-lambda-PythonTestDemo-XlkJiaHvJn1t outfile.txt
 ```
 [[top]](#python-test-samples-project)
 
@@ -218,7 +222,7 @@ sam logs -n PythonTestDemo --stack-name apigw-lambda --tail
 In a new terminal, curl the API Gateway and watch the log output.
 
 ```shell
-curl <API Gateway url>
+curl https://<API Gateway deploy>.execute-api.eu-west-1.amazonaws.com/Prod/hello
 ```
 
 You can find more information and examples about filtering Lambda function logs in the [SAM CLI Documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-logging.html).
