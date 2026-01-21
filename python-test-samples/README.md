@@ -12,6 +12,7 @@ This portion of the repository contains code samples for testing serverless appl
 |[Lambda local testing with Mocks](./lambda-mock)|This project contains unit tests for Lambda using mocks.|
 |[Lambda Layers with Mocks](./apigw-lambda-layer)|This project contains unit tests for Lambda layers using mocks.|
 |[API Gateway with Lambda and DynamoDB](./apigw-lambda-dynamodb)|This project contains unit and integration tests for a pattern using API Gateway, AWS Lambda and Amazon DynamoDB.|
+|[API Gateway with local Lambda and local DynamoDB](./apigw-lambda-dynamodb-crud-local)|This project contains unit test for local execution CRUD paterns using API Gateway, AWS Lambda and Amazon DynamoDB.|
 |[Schema and Contract Testing](./schema-and-contract-testing)|This project contains sample schema and contract tests for an event driven architecture.|
 |[Kinesis with Lambda and DynamoDB](./kinesis-lambda-dynamodb)|This project contains a example of testing an application with an Amazon Kinesis Data Stream.|
 |[SQS with Lambda](./apigw-sqs-lambda-sqs)|This project demonstrates testing SQS as a source and destination in an integration test|
