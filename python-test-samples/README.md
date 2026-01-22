@@ -14,6 +14,7 @@ This portion of the repository contains code samples for testing serverless appl
 |[API Gateway with Lambda and DynamoDB](./apigw-lambda-dynamodb)|This project contains unit and integration tests for a pattern using API Gateway, AWS Lambda and Amazon DynamoDB.|
 |[Schema and Contract Testing](./schema-and-contract-testing)|This project contains sample schema and contract tests for an event driven architecture.|
 |[Kinesis with Lambda and DynamoDB](./kinesis-lambda-dynamodb)|This project contains a example of testing an application with an Amazon Kinesis Data Stream.|
+|[DynamoDB CRUD Local](./dynamodb-crud-local)|This project contains unit pytest for CRUD operations with DynamoDB on local Docker container.|
 |[SQS with Lambda](./apigw-sqs-lambda-sqs)|This project demonstrates testing SQS as a source and destination in an integration test|
 |[Step Functions Local](./step-functions-local)| An example of testing Step Functions workflow locally using pytest and Testcontainers | 
 

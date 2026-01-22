@@ -1,0 +1,75 @@
+{
+  "CRUDLocalTable": [
+    {
+      "PutRequest": {
+        "Item": {
+          "Id": {"S": "batch-001"},
+          "name": {"S": "Batman"},
+          "role": {"S": "Superhero"},
+          "city": {"S": "Gotham"},
+          "age": {"N": "35"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "Id": {"S": "batch-002"},
+          "name": {"S": "Superman"},
+          "role": {"S": "Superhero"},
+          "city": {"S": "Metropolis"},
+          "age": {"N": "30"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "Id": {"S": "batch-003"},
+          "name": {"S": "Wonder Woman"},
+          "role": {"S": "Superhero"},
+          "city": {"S": "Themyscira"},
+          "age": {"N": "25"}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "Id": {"S": "batch-004"},
+          "name": {"S": "Flash"},
+          "role": {"S": "Superhero"},
+          "city": {"S": "Central City"},
+          "age": {"N": "28"},
+          "powers": {"SS": ["Super Speed", "Time Travel", "Dimensional Travel"]}
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "Id": {"S": "batch-005"},
+          "name": {"S": "Green Lantern"},
+          "role": {"S": "Superhero"},
+          "city": {"S": "Coast City"},
+          "age": {"N": "32"},
+          "sector": {"N": "2814"}
+        }
+      }
+    },
+    {
+      "DeleteRequest": {
+        "Key": {
+          "Id": {"S": "old-record-001"}
+        }
+      }
+    },
+    {
+      "DeleteRequest": {
+        "Key": {
+          "Id": {"S": "old-record-002"}
+        }
+      }
+    }
+  ]
+}
