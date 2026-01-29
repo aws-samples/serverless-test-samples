@@ -24,5 +24,5 @@ This portion of the repository contains code samples for testing serverless appl
 |---|---|
 |[Schema & Contract Testing](./schema-and-contract-testing)|This project contains examples on how to do schema and contract testing for your event driven applications.|
 |[Lambda with DynamoDB](./async-lambda-dynamodb) |You may use a variety of resource types to create the event listener for your asynchronous system under test. We recommend starting with AWS Lambda and Amazon DynamoDB. DynamoDB creates a persistent storage resource that can enable long running tests or an aggregate a set of results.|
-|[Lambda with SQS](./async-lambda-sqs) |You may do not need to add a special event listener in case your asynchronous system contains a queue as the target of the lambda function. Since the existing queue is a persistant storage that can be used to verify the result of your end to end tests. 
+|[Lambda with SQS](./async-lambda-sqs) |You may not need to add a special event listener when your asynchronous system contains a queue as the target of the lambda function. Since the existing queue has persistant storage, it can be used to verify the result of your end to end tests. 
 
