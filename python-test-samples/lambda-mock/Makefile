@@ -9,7 +9,7 @@ clean: ##=> Deletes current build environment and latest build
 	rm -rf ./.aws-sam/ ./venv/
 
 checkOSDependencies:
-	python3 --version || grep "3.9" || (echo "Error: Requires Python 3.9" && exit 1)
+	python3 --version | grep "3.13" || (echo "Error: Requires Python 3.13" && exit 1)
 
 all: clean build
 
