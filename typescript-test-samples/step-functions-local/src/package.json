@@ -7,8 +7,8 @@
   "author": "Jordi Macià",
   "license": "MIT",
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.965.0",
-    "@aws-sdk/client-sfn": "^3.965.0",
+    "@aws-sdk/client-s3": "^3.997.0",
+    "@aws-sdk/client-sfn": "^3.997.0",
     "esbuild": "^0.14.14"
   },
   "scripts": {
