@@ -13,14 +13,15 @@ import yaml
 import boto3
 from boto3 import Session
 from boto3.dynamodb.conditions import Key
-import moto
+from moto import mock_aws
 
 # Mock the DynamoDB Service during the test
-@moto.mock_dynamodb
+@mock_aws  # Only use this decorator, remove @moto.mock_dynamodb
 class TestKinesisLambdaWithDynamoDB(TestCase):
     """
     Unit Test class for src/app.py
     """
+    
     def setUp(self) -> None:
         """
         Test Set up:
@@ -35,7 +36,7 @@ class TestKinesisLambdaWithDynamoDB(TestCase):
         os.environ["DYNAMODB_TABLE_NAME"] = self.test_ddb_table_name
         sam_template_table = self.read_sam_template()["Resources"]["DynamoDBTable"]
         sam_template_table_properties = sam_template_table["Properties"]
-        self.mock_dynamodb = boto3.Session(region_name="us-east-1").resource("dynamodb")
+        self.mock_dynamodb = boto3.Session.resource("dynamodb")
         self.mock_dynamodb_table = self.mock_dynamodb.create_table(
             TableName = self.test_ddb_table_name,
             KeySchema = sam_template_table_properties["KeySchema"],
@@ -47,7 +48,6 @@ class TestKinesisLambdaWithDynamoDB(TestCase):
         """
         For teardown, remove the environment variable
         """
-        
         del os.environ['DYNAMODB_TABLE_NAME']
 
     def read_sam_template(self, sam_template_fn : str = "template.yaml" ) -> dict:
@@ -64,7 +64,6 @@ class TestKinesisLambdaWithDynamoDB(TestCase):
         Add the test isolation postfix to the path parameter {id}
         """
         try:
-            
             with open(f"tests/events/{test_event_file_name}.json","r") as file_name:
                 event = json.load(file_name)
                 return event
