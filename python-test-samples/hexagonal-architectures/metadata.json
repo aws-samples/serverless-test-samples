@@ -1,0 +1,35 @@
+{
+    "title": "Hexagonal Architecture",
+    "description": "This project contains unit and integration tests for an application designed with Hexagonal Architecture.",
+    "content_language": "English",
+    "language": "Python",
+    "type": ["Unit", "Integration"],
+    "diagram": "/img/hexagonal-architecture-diagram.png",
+    "framework": "SAM",
+    "services": ["apigw", "lambda", "dynamodb"],
+    "git_repo_url": "https://github.com/aws-samples/serverless-test-samples",
+    "pattern_source": "AWS",
+    "pattern_detail_tabs": [
+        {
+            "title": "Application Code",
+            "filepath": "/src/app.py"
+        },
+        {
+            "title": "Unit Tests",
+            "filepath": "/tests/unit/mock_test.py"
+        },
+        {
+            "title": "Integration Test",
+            "filepath": "/tests/integration/test_api_gateway.py"
+        }
+    ],
+    "authors": [
+        {
+          "name": "Rohan Mehta",
+          "image": "https://media.licdn.com/dms/image/C4D03AQG1qfZlu1eemw/profile-displayphoto-shrink_800_800/0/1573532217447?e=1687392000&v=beta&t=732VxZY4sKbyP0gkofdK4KJIbV0dRFpfxqos_KR_PYQ",
+          "bio": "Cloud Application Architect at AWS",
+          "linkedin": "https://www.linkedin.com/in/rohan-mehta-dev/",
+          "twitter": "https://twitter.com/rohanmehta_dev"
+        }
+    ]
+}
