@@ -102,7 +102,7 @@ Resources:
         - AmazonSQSFullAccess
       CodeUri: src/process-input-queue
       Handler: process_input_queue.lambda_handler
-      Runtime: python3.9
+      Runtime: python3.13  # Changed from python3.9
       Environment:
         Variables:
           OUTPUT_QUEUE_NAME: !Ref OutputQueue
@@ -120,7 +120,7 @@ Resources:
     Properties:
       CodeUri: src/write-test-result
       Handler: write_test_result.lambda_handler
-      Runtime: python3.9
+      Runtime: python3.13  # Changed from python3.9
       MemorySize: 128
       Timeout: 5
       Tracing: Active
