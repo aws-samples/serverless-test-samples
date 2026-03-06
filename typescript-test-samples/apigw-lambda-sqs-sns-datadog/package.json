@@ -13,7 +13,7 @@
     "cdk": "cdk"
   },
   "devDependencies": {
-    "@aws-sdk/client-sns": "^3.321.1",
+    "@aws-sdk/client-sns": "^3.1004.0",
     "@types/jest": "^29.4.0",
     "@types/node": "18.14.6",
     "aws-cdk": "2.76.0",
