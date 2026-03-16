@@ -5,7 +5,7 @@ Description: SAM Template for apigw-lambda-layer
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
-      Runtime: python3.9
+      Runtime: python3.13
       Timeout: 30
       Architectures:
         - arm64
@@ -17,7 +17,7 @@ Resources:
     Type: 'AWS::Serverless::LayerVersion'
     Properties:
       CompatibleRuntimes:
-        - python3.9
+        - python3.13
       ContentUri: src/sampleCodeLayer
       Description: Common code layer
       LayerName: !Sub "${AWS::StackName}-CodeLayer"
@@ -26,7 +26,7 @@ Resources:
     Type: 'AWS::Serverless::LayerVersion'
     Properties:
       CompatibleRuntimes:
-        - python3.9
+        - python3.13
       ContentUri: src/sampleSchemaLayer
       Description: Common schema (API contract) layer
       LayerName: !Sub "${AWS::StackName}-SchemaLayer"    
@@ -68,4 +68,3 @@ Outputs:
   PythonTestDemoIamRole:
     Description: "Implicit IAM Role created for Hello World function"
     Value: !GetAtt PythonTestDemoRole.Arn
-
