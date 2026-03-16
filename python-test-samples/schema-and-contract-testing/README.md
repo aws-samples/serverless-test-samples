@@ -1,4 +1,4 @@
-[![python: 3.9](https://img.shields.io/badge/Python-3.9-green)](https://img.shields.io/badge/Python-3.11-green)
+[![python: 3.13](https://img.shields.io/badge/Python-3.13-green)](https://img.shields.io/badge/Python-3.13-green)
 [![test: unit](https://img.shields.io/badge/Test-Unit-blue)](https://img.shields.io/badge/Test-Unit-blue)
 
 # Python: Schema and Contract Testing for Event-Driven Architectures
@@ -116,7 +116,7 @@ In order to detect breaking changes using schema testing, we will generate an ev
 Create a virtual environment and install the dependencies.
 
 ```shell
-python3 -m venv .venv
+python3 -m virtualenv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
