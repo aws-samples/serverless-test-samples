@@ -2,5 +2,5 @@ iniconfig==2.0.0
 packaging==23.1
 pluggy==1.0.0
 pydantic==1.10.13
-pytest==7.3.1
+pytest==9.0.3
 typing_extensions==4.5.0
