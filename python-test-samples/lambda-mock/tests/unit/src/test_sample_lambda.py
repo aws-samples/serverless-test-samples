@@ -11,7 +11,7 @@ import json
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 from boto3 import resource, client
-import moto
+from moto import mock_aws  # Changed from import moto
 from aws_lambda_powertools.utilities.validation import validate
 
 # [0] Import the Globals, Classes, Schemas, and Functions from the Lambda Handler
@@ -21,8 +21,7 @@ from src.sample_lambda.app import lambda_handler, create_letter_in_s3  # pylint:
 from src.sample_lambda.schemas import INPUT_SCHEMA                     # pylint: disable=wrong-import-position
 
 # [1] Mock all AWS Services in use
-@moto.mock_dynamodb
-@moto.mock_s3
+@mock_aws  # Changed from @moto.mock_dynamodb @moto.mock_s3
 class TestSampleLambda(TestCase):
     """
     Test class for the application sample AWS Lambda Function
