@@ -1,0 +1,25 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: AWS SAM Template for API Gateway with Mock and Lambda integration using Python
+
+Resources:
+  # API Gateway with MOCK integration
+  APIGatewayMock:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+
+  # Lambda function to run the MOCK
+  LambdaMockFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: app.lambda_handler
+      Runtime: python3.10
+      CodeUri: lambda_mock_src/
+      Events:
+        EventMock:
+          Type: Api
+          Properties:
+            Path: /MOCK
+            Method: get
+            RestApiId: !Ref APIGatewayMock
