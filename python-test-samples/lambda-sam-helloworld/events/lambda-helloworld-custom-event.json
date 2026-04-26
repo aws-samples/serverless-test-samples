@@ -1,0 +1,21 @@
+{
+    "test_type": "custom_message",
+    "custom_field": "test_value",
+    "user_name": "TestUser",
+    "timestamp": "2024-07-31T10:00:00Z",
+    "nested_object": {
+        "key1": "value345",
+        "key2": 123
+    },
+    "array_field": [1, 2, 3, "string", true, null],
+    "settings": {
+        "language": "en",
+        "region": "us-east-1",
+        "debug": true
+    },
+    "metadata": {
+        "source": "custom_event",
+        "version": "1.0",
+        "environment": "local"
+    }
+}
